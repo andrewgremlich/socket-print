@@ -24,9 +24,13 @@
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.0.5"
+    "vitest": "^2.0.5",
+    "web-vitals": "^4.2.3"
   },
   "dependencies": {
-    "@jscad/modeling": "^2.12.2"
+    "@jscad/core": "^2.6.9",
+    "@jscad/modeling": "^2.12.2",
+    "@jscad/regl-renderer": "^2.6.9",
+    "three": "^0.167.1"
   }
 }
