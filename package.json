@@ -6,9 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky",
+    "test": "vitest src/",
+    "type-check": "tsc --noEmit",
+    "check": "biome check --write ./src"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "npm run check"
+    ]
   },
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "husky": "^9.1.4",
+    "lint-staged": "^15.2.8",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
     "vite-tsconfig-paths": "^4.3.2",
