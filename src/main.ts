@@ -1,31 +1,32 @@
-// import "./style.css";
+import "./style.css";
 
-import { primitives } from "@jscad/modeling";
-import {
-	cameras,
-	controls,
-	drawCommands,
-	entitiesFromSolids,
-	prepareRender,
-} from "@jscad/regl-renderer";
+import * as THREE from "three";
 
-import { hello } from "@/control";
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(
+	75,
+	window.innerWidth / window.innerHeight,
+	0.1,
+	1000,
+);
+const renderer = new THREE.WebGLRenderer();
 
-hello();
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setAnimationLoop(animate);
 
-const app = document.getElementById("app");
+document.body.appendChild(renderer.domElement);
 
-if (app === null) {
-	throw new Error("Element with id 'app' not found");
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cube = new THREE.Mesh(geometry, material);
+
+scene.add(cube);
+
+camera.position.z = 5;
+
+function animate() {
+	cube.rotation.x += 0.01;
+	cube.rotation.y += 0.01;
+
+	renderer.render(scene, camera);
 }
-
-prepareRender({ glOptions: { container: app } });
-
-const { cube } = primitives;
-
-const main = () => {
-	const myCube = cube({ size: 10 });
-	return myCube;
-};
-
-console.log(main());
