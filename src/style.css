@@ -1,1 +1,25 @@
-body { margin: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, label, p {
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+  letter-spacing: 5px;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
