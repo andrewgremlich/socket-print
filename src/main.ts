@@ -6,7 +6,7 @@ import { Lighting } from "./classes/Lighting";
 
 const app = new Application();
 const lighting = new Lighting();
-const cube = new Cube();
+const cube = new Cube({ x: 1, y: 1, z: 1 }, 0xd1383b);
 
 app.addToScene(lighting.directionalLight);
 app.addToScene(lighting.directionalLightHelper);

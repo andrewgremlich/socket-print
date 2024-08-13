@@ -1,3 +1,4 @@
+import { GUI as GUIImport } from "dat.gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
@@ -6,9 +7,9 @@ export class Application {
 	#camera: THREE.PerspectiveCamera;
 	#renderer: THREE.WebGLRenderer;
 	#controls: OrbitControls;
-	#gridHelper: THREE.GridHelper;
 	#raycaster: THREE.Raycaster;
 	#mouse: THREE.Vector2;
+	#gui: GUIImport;
 
 	constructor() {
 		this.#scene = new THREE.Scene();
@@ -20,16 +21,17 @@ export class Application {
 		);
 		this.#renderer = new THREE.WebGLRenderer();
 		this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
-		this.#gridHelper = new THREE.GridHelper(10, 10);
 		this.#raycaster = new THREE.Raycaster();
 		this.#mouse = new THREE.Vector2();
 
 		this.#renderer.setSize(window.innerWidth, window.innerHeight);
 		this.#renderer.setAnimationLoop(this.#animate);
+		this.#gui = new GUIImport();
 
 		this.#camera.position.set(5, 3, 9);
 
-		this.addToScene(this.#gridHelper);
+		this.addToScene(new THREE.GridHelper(10, 10));
+		this.addGui();
 
 		document.body.appendChild(this.#renderer.domElement);
 	}
@@ -52,6 +54,16 @@ export class Application {
 		this.#controls.update();
 		this.#renderer.render(this.#scene, this.#camera);
 	};
+
+	addGui() {
+		const folder = this.#gui.addFolder("Camera");
+
+		folder.add(this.#camera.position, "x", -10, 10, 0.01);
+		folder.add(this.#camera.position, "y", -10, 10, 0.01);
+		folder.add(this.#camera.position, "z", -10, 10, 0.01);
+
+		folder.open();
+	}
 
 	addToScene(object: THREE.Object3D) {
 		this.#scene.add(object);
