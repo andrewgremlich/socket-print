@@ -8,7 +8,13 @@ export class Cube {
 
 	mesh: THREE.Mesh;
 
-	constructor({ x, y, z }: { x: number; y: number; z: number }, color: number) {
+	constructor({
+		size: { x, y, z },
+		color,
+	}: {
+		size: { x: number; y: number; z: number };
+		color: number;
+	}) {
 		this.#geometry = new THREE.BoxGeometry(x, y, z);
 		this.#material = [
 			new THREE.MeshPhongMaterial({ color }), // Right face

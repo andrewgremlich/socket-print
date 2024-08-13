@@ -29,6 +29,7 @@ export class Application {
 		this.#gui = new GUIImport();
 
 		this.#camera.position.set(5, 3, 9);
+		this.#controls.enableDamping = true;
 
 		this.addToScene(new THREE.GridHelper(10, 10));
 		this.addGui();

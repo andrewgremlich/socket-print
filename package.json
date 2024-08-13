@@ -1,7 +1,7 @@
 {
   "name": "socket-print",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -20,15 +20,16 @@
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
     "@playwright/test": "^1.46.0",
+    "@types/dat.gui": "^0.7.13",
     "@types/node": "^22.1.0",
     "@types/three": "^0.167.1",
     "husky": "^9.1.4",
     "lint-staged": "^15.2.8",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
+    "vite-plugin-pwa": "^0.20.1",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.0.5",
-    "@types/dat.gui": "^0.7.13",
     "web-vitals": "^4.2.3"
   },
   "dependencies": {

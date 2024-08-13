@@ -2,7 +2,11 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+	define: {
+		__APP_VERSION__: JSON.stringify(require("./package.json").version),
+		__SOCKET_PRINT_ENV__: JSON.stringify(mode),
+	},
 	plugins: [
 		tsconfigPaths(),
 		VitePWA({
@@ -28,4 +32,4 @@ export default defineConfig({
 			},
 		}),
 	],
-});
+}));
