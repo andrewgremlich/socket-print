@@ -36,6 +36,7 @@ export class Application {
 		this.addGui();
 
 		document.body.appendChild(this.#renderer.domElement);
+		window.addEventListener("resize", this.#onWindowResize);
 	}
 
 	#animate = () => {
@@ -57,7 +58,7 @@ export class Application {
 		this.#renderer.render(this.#scene, this.#camera);
 	};
 
-	addGui() {
+	addGui = () => {
 		const folder = this.#gui.addFolder("Camera");
 
 		folder.add(this.#camera.position, "x", -10, 10, 0.01);
@@ -65,9 +66,16 @@ export class Application {
 		folder.add(this.#camera.position, "z", -10, 10, 0.01);
 
 		folder.open();
-	}
+	};
 
-	addToScene(object: THREE.Object3D) {
+	addToScene = (object: THREE.Object3D) => {
 		this.#scene.add(object);
-	}
+	};
+
+	#onWindowResize = () => {
+		this.#camera.aspect = window.innerWidth / window.innerHeight;
+		this.#camera.updateProjectionMatrix();
+		this.#renderer.setSize(window.innerWidth, window.innerHeight);
+		this.#renderer.setPixelRatio(window.devicePixelRatio);
+	};
 }
