@@ -31,6 +31,8 @@
     "web-vitals": "^4.2.3"
   },
   "dependencies": {
+    "@types/dat.gui": "^0.7.13",
+    "dat.gui": "^0.7.9",
     "three": "^0.167.1"
   }
 }

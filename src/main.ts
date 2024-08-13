@@ -1,36 +1,23 @@
 import "./style.css";
 
-import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Application } from "./classes/Application";
+import { Cube } from "./classes/Cube";
+import { Lighting } from "./classes/Lighting";
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-	75,
-	window.innerWidth / window.innerHeight,
-	0.1,
-	1000,
-);
-const renderer = new THREE.WebGLRenderer();
-const controls = new OrbitControls(camera, renderer.domElement);
+const app = new Application();
+const lighting = new Lighting();
+const cube = new Cube();
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setAnimationLoop(animate);
+app.addToScene(lighting.directionalLight);
+app.addToScene(lighting.directionalLightHelper);
+app.addToScene(cube.mesh);
 
-document.body.appendChild(renderer.domElement);
+// Function to handle mouse move
+// function onMouseMove(event: MouseEvent) {
+// Calculate mouse position in normalized device coordinates
+//   app.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+//   app.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+// }
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-const gridHelper = new THREE.GridHelper(10, 10);
-
-scene.add(cube);
-scene.add(gridHelper);
-
-camera.position.set(5, 2, 5);
-
-function animate() {
-	// cube.rotation.x += 0.01;
-	// cube.rotation.y += 0.01;
-	controls.update();
-	renderer.render(scene, camera);
-}
+// Add event listener for mouse move
+// window.addEventListener("mousemove", onMouseMove, false);
