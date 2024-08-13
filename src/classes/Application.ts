@@ -26,6 +26,7 @@ export class Application {
 
 		this.#renderer.setSize(window.innerWidth, window.innerHeight);
 		this.#renderer.setAnimationLoop(this.#animate);
+		this.#renderer.setPixelRatio(window.devicePixelRatio);
 		this.#gui = new GUIImport();
 
 		this.#camera.position.set(5, 3, 9);
