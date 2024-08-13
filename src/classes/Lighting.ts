@@ -29,8 +29,10 @@ export class Lighting {
 
 		this.directionalLight.position.set(x, y, z);
 
-		if (window.__SOCKET_PRINT_ENV__ === "development") {
+		if (import.meta.env.MODE === "development") {
 			this.addGui();
+		} else {
+			console.log("Production mode");
 		}
 	}
 
