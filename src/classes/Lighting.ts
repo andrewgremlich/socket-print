@@ -1,14 +1,14 @@
 import type GUI from "lil-gui";
-import * as THREE from "three";
+import { DirectionalLight, DirectionalLightHelper } from "three";
 
 import { getGui } from "@/utils/gui";
 
-export class Lighting {
+export class DirectionalLighting {
 	#gui: GUI;
 	#name: string;
 
-	directionalLight: THREE.DirectionalLight;
-	directionalLightHelper: THREE.DirectionalLightHelper;
+	directionalLight: DirectionalLight;
+	directionalLightHelper: DirectionalLightHelper;
 
 	constructor({
 		color,
@@ -21,8 +21,8 @@ export class Lighting {
 		position: { x: number; y: number; z: number };
 		name: string;
 	}) {
-		this.directionalLight = new THREE.DirectionalLight(color, intensity);
-		this.directionalLightHelper = new THREE.DirectionalLightHelper(
+		this.directionalLight = new DirectionalLight(color, intensity);
+		this.directionalLightHelper = new DirectionalLightHelper(
 			this.directionalLight,
 			3,
 		);
@@ -33,18 +33,16 @@ export class Lighting {
 
 		if (import.meta.env.MODE === "development") {
 			this.#addGui();
-		} else {
-			console.log("Production mode");
 		}
 	}
 
 	#addGui() {
 		const folder = this.#gui.addFolder(this.#name);
 
-		folder.add(this.directionalLight.position, "x", -10, 10, 0.01);
-		folder.add(this.directionalLight.position, "y", -10, 10, 0.01);
-		folder.add(this.directionalLight.position, "z", -10, 10, 0.01);
-		folder.add(this.directionalLight, "intensity", 0, 10, 0.01);
+		folder.add(this.directionalLight.position, "x", -10, 10, 0.5);
+		folder.add(this.directionalLight.position, "y", -10, 10, 0.5);
+		folder.add(this.directionalLight.position, "z", -10, 10, 0.5);
+		folder.add(this.directionalLight, "intensity", 0, 10, 0.5);
 
 		folder.open();
 	}

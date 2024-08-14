@@ -1,14 +1,14 @@
 import type GUI from "lil-gui";
-import * as THREE from "three";
+import { BoxGeometry, Mesh, MeshPhongMaterial } from "three";
 
 import { getGui } from "@/utils/gui";
 
 export class Cube {
-	#geometry: THREE.BoxGeometry;
-	#material: THREE.MeshPhongMaterial[];
+	#geometry: BoxGeometry;
+	#material: MeshPhongMaterial[];
 	#gui: GUI;
 
-	mesh: THREE.Mesh;
+	mesh: Mesh;
 
 	constructor({
 		size: { x, y, z },
@@ -17,16 +17,16 @@ export class Cube {
 		size: { x: number; y: number; z: number };
 		color: number;
 	}) {
-		this.#geometry = new THREE.BoxGeometry(x, y, z);
+		this.#geometry = new BoxGeometry(x, y, z);
 		this.#material = [
-			new THREE.MeshPhongMaterial({ color }), // Right face
-			new THREE.MeshPhongMaterial({ color }), // Left face
-			new THREE.MeshPhongMaterial({ color }), // Top face
-			new THREE.MeshPhongMaterial({ color }), // Bottom face
-			new THREE.MeshPhongMaterial({ color }), // Front face
-			new THREE.MeshPhongMaterial({ color }), // Back face
+			new MeshPhongMaterial({ color }), // Right face
+			new MeshPhongMaterial({ color }), // Left face
+			new MeshPhongMaterial({ color }), // Top face
+			new MeshPhongMaterial({ color }), // Bottom face
+			new MeshPhongMaterial({ color }), // Front face
+			new MeshPhongMaterial({ color }), // Back face
 		];
-		this.mesh = new THREE.Mesh(this.#geometry, this.#material);
+		this.mesh = new Mesh(this.#geometry, this.#material);
 		this.#gui = getGui();
 
 		this.#addGui();
