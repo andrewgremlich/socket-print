@@ -1,6 +1,8 @@
-import { GUI as GUIImport } from "dat.gui";
+import type GUI from "lil-gui";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+import { getGui } from "@/utils/gui";
 
 export class Application {
 	#scene: THREE.Scene;
@@ -9,7 +11,7 @@ export class Application {
 	#controls: OrbitControls;
 	#raycaster: THREE.Raycaster;
 	#mouse: THREE.Vector2;
-	#gui: GUIImport;
+	#gui: GUI;
 
 	constructor() {
 		this.#scene = new THREE.Scene();
@@ -27,13 +29,13 @@ export class Application {
 		this.#renderer.setSize(window.innerWidth, window.innerHeight);
 		this.#renderer.setAnimationLoop(this.#animate);
 		this.#renderer.setPixelRatio(window.devicePixelRatio);
-		this.#gui = new GUIImport();
+		this.#gui = getGui();
 
 		this.#camera.position.set(5, 3, 9);
 		this.#controls.enableDamping = true;
 
 		this.addToScene(new THREE.GridHelper(10, 10));
-		this.addGui();
+		this.#addGui();
 
 		document.body.appendChild(this.#renderer.domElement);
 		window.addEventListener("resize", this.#onWindowResize);
@@ -58,7 +60,7 @@ export class Application {
 		this.#renderer.render(this.#scene, this.#camera);
 	};
 
-	addGui = () => {
+	#addGui = () => {
 		const folder = this.#gui.addFolder("Camera");
 
 		folder.add(this.#camera.position, "x", -10, 10, 0.01);

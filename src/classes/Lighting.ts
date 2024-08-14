@@ -1,8 +1,10 @@
-import { GUI as GUIImport } from "dat.gui";
+import type GUI from "lil-gui";
 import * as THREE from "three";
 
+import { getGui } from "@/utils/gui";
+
 export class Lighting {
-	#gui: GUIImport;
+	#gui: GUI;
 	#name: string;
 
 	directionalLight: THREE.DirectionalLight;
@@ -24,19 +26,19 @@ export class Lighting {
 			this.directionalLight,
 			3,
 		);
-		this.#gui = new GUIImport();
+		this.#gui = getGui();
 		this.#name = name;
 
 		this.directionalLight.position.set(x, y, z);
 
 		if (import.meta.env.MODE === "development") {
-			this.addGui();
+			this.#addGui();
 		} else {
 			console.log("Production mode");
 		}
 	}
 
-	addGui() {
+	#addGui() {
 		const folder = this.#gui.addFolder(this.#name);
 
 		folder.add(this.directionalLight.position, "x", -10, 10, 0.01);

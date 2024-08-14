@@ -1,10 +1,12 @@
-import { GUI as GUIImport } from "dat.gui";
+import type GUI from "lil-gui";
 import * as THREE from "three";
+
+import { getGui } from "@/utils/gui";
 
 export class Cube {
 	#geometry: THREE.BoxGeometry;
 	#material: THREE.MeshPhongMaterial[];
-	#gui: GUIImport;
+	#gui: GUI;
 
 	mesh: THREE.Mesh;
 
@@ -25,12 +27,12 @@ export class Cube {
 			new THREE.MeshPhongMaterial({ color }), // Back face
 		];
 		this.mesh = new THREE.Mesh(this.#geometry, this.#material);
-		this.#gui = new GUIImport();
+		this.#gui = getGui();
 
-		this.addGui();
+		this.#addGui();
 	}
 
-	addGui() {
+	#addGui() {
 		const folder = this.#gui.addFolder("Cube");
 
 		folder.add(this.mesh.rotation, "x", 0, Math.PI * 2, 0.01);
