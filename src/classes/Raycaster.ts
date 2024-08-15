@@ -16,29 +16,11 @@ export class RayCaster {
 		this.#raycaster = new Raycaster();
 		this.#mouse = new Vector2();
 		this.#objectsToIntersect = [];
-
-		// this.#renderer.domElement.addEventListener(
-		// 	"pointermove",
-		// 	this.#onPointerMove.bind(this),
-		// );
 	}
 
 	addObjectsToIntersect = (objects: Object3D[]) => {
 		this.#objectsToIntersect.push(...objects);
 	};
-	//TODO: these ones don't seem to work
-	// setFromCamera = (x: number, y: number, camera: PerspectiveCamera) => {
-	// 	this.#mouse.x = (x / window.innerWidth) * 2 - 1;
-	// 	this.#mouse.y = -(y / window.innerHeight) * 2 + 1;
-
-	// 	this.#raycaster.setFromCamera(this.#mouse, camera);
-	// };
-
-	// getIntersects = (camera: PerspectiveCamera) => {
-	// 	this.setFromCamera(this.#mouse.x, this.#mouse.y, camera);
-
-	// 	return this.#raycaster.intersectObjects(this.#objectsToIntersect, true);
-	// };
 
 	onPointerMove =
 		(camera: PerspectiveCamera) =>
@@ -55,6 +37,9 @@ export class RayCaster {
 				this.#objectsToIntersect,
 				true,
 			);
+
+			// NOTE: to see the intersection in the console.
+			// console.log(intersects);
 
 			if (intersects.length > 0) {
 				this.touchedObject = intersects[0].object;

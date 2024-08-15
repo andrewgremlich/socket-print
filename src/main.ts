@@ -23,27 +23,9 @@ const cube = new Cube({ size: { x: 1, y: 1, z: 1 }, color: 0xd1383b });
 const socket = new Socket();
 const raycaster = new RayCaster();
 
-raycaster.addObjectsToIntersect([cube.mesh]);
+raycaster.addObjectsToIntersect([cube.mesh, socket.mesh]);
 
 window.addEventListener("pointermove", raycaster.onPointerMove(app.camera));
-
-//TODO: these ones don't seem to work
-// window.addEventListener("mousemove", (event) => {
-// 	raycaster.setFromCamera(event.clientX, event.clientY, app.camera);
-// });
-
-// window.addEventListener("click", () => {
-// 	console.log('click');
-
-// 	const intersects = raycaster.getIntersects(app.camera);
-
-// 	console.log(intersects);
-
-// 	if (intersects.length > 0) {
-// 		const firstIntersectedObject = intersects[0].object;
-// 		console.log(`Touched object: ${firstIntersectedObject.name}`);
-// 	}
-// });
 
 app.addToScene(lighting1.directionalLight);
 app.addToScene(lighting2.directionalLight);
