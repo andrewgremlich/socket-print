@@ -62,6 +62,7 @@ export class Application {
 		folder.open();
 	};
 
+	// TODO: on resize change the camera aspect ratio
 	// #onWindowResize = () => {
 	// 	this.#camera.aspect = window.innerWidth / window.innerHeight;
 	// 	this.#camera.updateProjectionMatrix();
