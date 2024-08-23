@@ -1,59 +1,88 @@
-import type GUI from "lil-gui";
-import { ExtrudeGeometry, Mesh, MeshStandardMaterial, Shape } from "three";
-
-import { getGui } from "@/utils/gui";
+import GUI from "lil-gui";
+import {
+	BufferAttribute,
+	BufferGeometry,
+	Mesh,
+	MeshPhongMaterial,
+	MeshStandardMaterial,
+} from "three";
 
 export class Socket {
 	#gui: GUI;
-	#originCoordinates: { x: number; y: number; z: number };
 
 	mesh: Mesh;
 
 	constructor() {
-		this.#originCoordinates = { x: 0, y: 0, z: 0 };
+		this.#gui = new GUI();
 
-		const shape = new Shape();
+		const geometry = new BufferGeometry();
 
-		// Start drawing the profile
-		shape.moveTo(this.#originCoordinates.x, this.#originCoordinates.y); // Bottom narrow part
-		shape.quadraticCurveTo(0, 0.4, 2, 2); // Curve outward
-		shape.quadraticCurveTo(2, 3, 1, 4); // Curve inward
-		shape.lineTo(0, 4); // Top edge
-		shape.quadraticCurveTo(-1, 3.8, -2, 3); // Curve inward
-		shape.quadraticCurveTo(
-			-2,
-			1.5,
-			this.#originCoordinates.x,
-			this.#originCoordinates.y,
-		); // Back to bottom
+		// Define the vertices (position attributes)
+		const vertices = new Float32Array([
+			0,
+			1,
+			0, // Top vertex
+			-1,
+			-1,
+			1, // Front-left vertex
+			1,
+			-1,
+			1, // Front-right vertex
+			1,
+			-1,
+			-1, // Back-right vertex
+			-1,
+			-1,
+			-1, // Back-left vertex
+		]);
 
-		// Define the extrusion settings
-		const extrudeSettings = {
-			steps: 2, // Number of segments along the depth
-			depth: 2, // Depth of the extrusion (height of the socket)
-			bevelEnabled: true, // Bevel the edges for smoother appearance
-			bevelThickness: 0.1,
-			bevelSize: 0.1,
-			bevelSegments: 5,
-		};
+		// Define the faces (triangles) by specifying vertex indices
+		const indices = [
+			0,
+			1,
+			2, // Front face
+			0,
+			2,
+			3, // Right face
+			0,
+			3,
+			4, // Back face
+			0,
+			4,
+			1, // Left face
+			1,
+			4,
+			3, // Bottom face (optional, if you want a closed shape)
+			1,
+			3,
+			2, // Bottom face
+		];
 
-		// Create the geometry by extruding the shape
-		const geometry = new ExtrudeGeometry(shape, extrudeSettings);
+		// Assign the vertices to the geometry
+		geometry.setAttribute("position", new BufferAttribute(vertices, 3));
 
-		// Create a material and mesh
-		const material = new MeshStandardMaterial({ color: 0x808080 });
+		// Assign the indices to the geometry
+		geometry.setIndex(indices);
 
-		this.#gui = getGui();
-		this.mesh = new Mesh(geometry, material);
+		// Compute the normals (necessary for correct lighting)
+		geometry.computeVertexNormals();
+
+		// Create a material (you can customize this)
+		const material = new MeshPhongMaterial({
+			color: 0xff0000,
+		});
+
+		// Create the mesh
+		const mesh = new Mesh(geometry, material);
+
+		this.mesh = mesh;
 	}
 
-	addGui = () => {
+	#addSocketGui = () => {
 		const folder = this.#gui.addFolder("Socket");
 
 		folder.add(this.mesh.rotation, "x", 0, Math.PI * 2, 0.01);
 		folder.add(this.mesh.rotation, "y", 0, Math.PI * 2, 0.01);
 		folder.add(this.mesh.rotation, "z", 0, Math.PI * 2, 0.01);
-
-		folder.open();
 	};
 }
