@@ -4,7 +4,6 @@ import {
 	BufferGeometry,
 	Mesh,
 	MeshPhongMaterial,
-	MeshStandardMaterial,
 } from "three";
 
 export class Socket {
@@ -76,6 +75,8 @@ export class Socket {
 		const mesh = new Mesh(geometry, material);
 
 		this.mesh = mesh;
+
+		this.#addSocketGui();
 	}
 
 	#addSocketGui = () => {

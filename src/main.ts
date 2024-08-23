@@ -6,10 +6,8 @@ import { Application } from "./classes/Application";
 import { Cube } from "./classes/Cube";
 import { ExtrudeGeo } from "./classes/ExtrudeGeo";
 import { GroupMeshes } from "./classes/GroupMeshes";
-import { LatheGeo } from "./classes/LatheGeo";
 import { DirectionalLighting } from "./classes/Lighting";
 import { RayCaster } from "./classes/Raycaster";
-import { Socket } from "./classes/Socket";
 
 const app = new Application();
 const lighting1 = new DirectionalLighting({
@@ -26,8 +24,8 @@ const lighting2 = new DirectionalLighting({
 });
 const cube = new Cube({ size: { x: 1, y: 1, z: 1 }, color: 0xd1383b });
 const extrudeGeo = new ExtrudeGeo();
-const latheGeo = new LatheGeo();
-const socket = new Socket();
+// const latheGeo = new LatheGeo();
+// const socket = new Socket();
 const raycaster = new RayCaster();
 
 // raycaster.addObjectsToIntersect([cube.mesh, extrudeGeo.mesh]);
