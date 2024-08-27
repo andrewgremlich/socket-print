@@ -6,7 +6,7 @@ import {
 	MeshPhongMaterial,
 } from "three";
 
-export class Socket {
+export class SocketGeo {
 	#gui: GUI;
 
 	mesh: Mesh;
@@ -68,7 +68,7 @@ export class Socket {
 
 		// Create a material (you can customize this)
 		const material = new MeshPhongMaterial({
-			color: 0xff0000,
+			color: 0xfff000,
 		});
 
 		// Create the mesh
