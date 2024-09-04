@@ -24,6 +24,9 @@ function createSTLInput(): HTMLInputElement {
 			console.log("stlData", stlData);
 
 			// https://chatgpt.com/share/12754f6c-cb3d-4688-90e0-555579bb5948
+			// https://stackoverflow.com/questions/48536836/3d-slicing-web-app-javascript-and-three-js
+			// https://crates.io/crates/nom_stl
+			// https://crates.io/crates/stl_io
 			const plane = new Plane(new Vector3(0, 1, 0), 0);
 			const slicedGeometry = sliceGeometryWithPlane(stlData, plane);
 

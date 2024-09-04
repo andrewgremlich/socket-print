@@ -12,9 +12,16 @@ body {
   margin: 0;
 }
 
-h1, h2, h3, h4, h5, h6, label, p {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label,
+p {
   color: #fff;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 h1 {
@@ -26,4 +33,12 @@ canvas {
   top: 0;
   left: 0;
   z-index: -1;
+}
+
+input[type="file"]::file-selector-button {
+  padding: 6px 12px;
+  margin: 10px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }

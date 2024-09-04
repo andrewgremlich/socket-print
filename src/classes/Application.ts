@@ -1,5 +1,6 @@
 import type GUI from "lil-gui";
 import {
+	DirectionalLight,
 	GridHelper,
 	type Object3D,
 	PerspectiveCamera,
@@ -25,7 +26,7 @@ export class Application {
 			0.1,
 			1000,
 		);
-		this.#renderer = new WebGLRenderer();
+		this.#renderer = new WebGLRenderer({ antialias: true });
 		this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
 
 		this.#renderer.setSize(window.innerWidth, window.innerHeight);
@@ -33,14 +34,21 @@ export class Application {
 		this.#renderer.setPixelRatio(window.devicePixelRatio);
 		this.#gui = getGui();
 
-		this.#camera.position.set(5, 3, 9);
+		this.#camera.position.set(5, 5, 10);
 		this.#controls.enableDamping = true;
 
-		this.addToScene(new GridHelper(10, 10));
+		const light = new DirectionalLight(0xffffff, 1);
+		light.position.set(1, 1, 1).normalize();
+		this.#scene.add(light);
 
-		if (import.meta.env.MODE === "development") {
-			this.#addCameraGui();
-		}
+		const ambientLight = new DirectionalLight(0xffffff);
+		this.#scene.add(ambientLight);
+
+		this.addToScene(new GridHelper(100, 100));
+
+		// if (import.meta.env.MODE === "development") {
+		// 	this.#addCameraGui();
+		// }
 
 		document.body.appendChild(this.#renderer.domElement);
 	}
@@ -72,5 +80,13 @@ export class Application {
 
 	get camera() {
 		return this.#camera;
+	}
+
+	get controls() {
+		return this.#controls;
+	}
+
+	get renderer() {
+		return this.#renderer;
 	}
 }
