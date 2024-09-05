@@ -1,6 +1,5 @@
-import type GUI from "lil-gui";
+// import type GUI from "lil-gui";
 import {
-	DirectionalLight,
 	GridHelper,
 	type Object3D,
 	PerspectiveCamera,
@@ -9,14 +8,14 @@ import {
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { getGui } from "@/utils/gui";
+// import { getGui } from "@/utils/gui";
 
 export class Application {
 	#scene: Scene;
 	#camera: PerspectiveCamera;
 	#renderer: WebGLRenderer;
 	#controls: OrbitControls;
-	#gui: GUI;
+	// #gui: GUI;
 
 	constructor() {
 		this.#scene = new Scene();
@@ -32,17 +31,10 @@ export class Application {
 		this.#renderer.setSize(window.innerWidth, window.innerHeight);
 		this.#renderer.setAnimationLoop(this.#animate);
 		this.#renderer.setPixelRatio(window.devicePixelRatio);
-		this.#gui = getGui();
+		// this.#gui = getGui();
 
 		this.#camera.position.set(10, 10, 30);
 		this.#controls.enableDamping = true;
-
-		const light = new DirectionalLight(0xffffff, 1);
-		light.position.set(1, 1, 1).normalize();
-		this.#scene.add(light);
-
-		const ambientLight = new DirectionalLight(0xffffff);
-		this.#scene.add(ambientLight);
 
 		this.addToScene(new GridHelper(50, 50));
 
@@ -60,15 +52,15 @@ export class Application {
 		this.#renderer.render(this.#scene, this.#camera);
 	};
 
-	#addCameraGui = () => {
-		const folder = this.#gui.addFolder("Camera");
+	// #addCameraGui = () => {
+	// 	const folder = this.#gui.addFolder("Camera");
 
-		folder.add(this.#camera.position, "x", -10, 10, 0.01);
-		folder.add(this.#camera.position, "y", -10, 10, 0.01);
-		folder.add(this.#camera.position, "z", -10, 10, 0.01);
+	// 	folder.add(this.#camera.position, "x", -10, 10, 0.01);
+	// 	folder.add(this.#camera.position, "y", -10, 10, 0.01);
+	// 	folder.add(this.#camera.position, "z", -10, 10, 0.01);
 
-		folder.open();
-	};
+	// 	folder.open();
+	// };
 
 	// TODO: on resize change the camera aspect ratio
 	// #onWindowResize = () => {

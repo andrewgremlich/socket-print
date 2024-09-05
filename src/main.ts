@@ -1,8 +1,8 @@
 import "@/global-style.css";
 
 import { Application } from "@/classes/Application";
-import { DirectionalLighting } from "@/classes/Lighting";
-import { RayCaster } from "@/classes/Raycaster";
+// import { DirectionalLighting } from "@/classes/Lighting";
+// import { RayCaster } from "@/classes/Raycaster";
 import { STLLoader } from "@/classes/STLLoader";
 
 document.querySelector("body")?.appendChild(STLLoader.createSTLInput());
@@ -21,7 +21,7 @@ const app = new Application();
 // 	name: "Lighting 2",
 // });
 // const raycaster = new RayCaster();
-const stlLoader = new STLLoader({
+new STLLoader({
 	app,
 	controls: app.controls,
 	camera: app.camera,

@@ -2,10 +2,7 @@ import {
 	type BufferGeometry,
 	Mesh,
 	MeshBasicMaterial,
-	MeshPhongMaterial,
-	MeshStandardMaterial,
 	type PerspectiveCamera,
-	Vector3,
 } from "three";
 import type { OrbitControls } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -61,30 +58,61 @@ export class STLLoader {
 			const geometry = await this.#readSTLFile(file);
 			this.geometry = geometry;
 			const material = new MeshBasicMaterial({
-				color: 0x00ff00,
+				color: 0xffffff,
 				wireframe: true,
 			});
 			const mesh = new Mesh(geometry, material);
 
+			this.#generateGCode();
+
 			mesh.scale.set(0.1, 0.1, 0.1);
 
 			this.app.addToScene(mesh);
-
-			// https://chatgpt.com/share/12754f6c-cb3d-4688-90e0-555579bb5948
-			// https://stackoverflow.com/questions/48536836/3d-slicing-web-app-javascript-and-three-js
-			// https://crates.io/crates/nom_stl
-			// https://crates.io/crates/stl_io
-			// const plane = new Plane(new Vector3(0, 1, 0), 0);
-			// const slicedGeometry = this.#sliceGeometryWithPlane(stlData, plane);
-
-			// console.log("slicedGeometry", slicedGeometry);
-
-			// const sliceMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-			//       const sliceMesh = new THREE.LineSegments(sliceGeometry, sliceMaterial);
-			//       scene.add(sliceMesh);
-
-			//       animate();
 		}
+	};
+
+	#generateGCode = () => {
+		if (!this.geometry) {
+			return;
+		}
+
+		const vertices = this.geometry.attributes.position.array;
+
+		// Example slicing settings
+		const layerHeight = 0.2; // Layer height in mm
+		let currentZ = 0;
+
+		// Generate G-code
+		let gcode = "G21 ; Set units to mm\nG90 ; Absolute positioning\n";
+
+		// Iterate through vertices and create G-code
+		for (let i = 0; i < vertices.length; i += 9) {
+			const x1 = vertices[i];
+			const y1 = vertices[i + 1];
+			const z1 = vertices[i + 2];
+
+			const x2 = vertices[i + 3];
+			const y2 = vertices[i + 4];
+			// const z2 = vertices[i + 5];
+
+			const x3 = vertices[i + 6];
+			const y3 = vertices[i + 7];
+			// const z3 = vertices[i + 8];
+
+			if (z1 >= currentZ) {
+				// Add G-code for a new layer
+				gcode += `; Layer at Z = ${currentZ.toFixed(2)}\n`;
+				gcode += `G1 Z${currentZ.toFixed(2)} F3000\n`; // Move to new layer height
+				currentZ += layerHeight;
+			}
+
+			// G-code for movement to triangle vertices
+			gcode += `G1 X${x1.toFixed(2)} Y${y1.toFixed(2)} F1500 ; Move to vertex 1\n`;
+			gcode += `G1 X${x2.toFixed(2)} Y${y2.toFixed(2)} ; Move to vertex 2\n`;
+			gcode += `G1 X${x3.toFixed(2)} Y${y3.toFixed(2)} ; Move to vertex 3\n`;
+		}
+
+		console.log("Generated G-code:\n", gcode);
 	};
 
 	#readSTLFile = async (file: File): Promise<BufferGeometry> => {
