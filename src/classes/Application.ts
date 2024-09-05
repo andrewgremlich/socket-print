@@ -34,7 +34,7 @@ export class Application {
 		this.#renderer.setPixelRatio(window.devicePixelRatio);
 		this.#gui = getGui();
 
-		this.#camera.position.set(5, 5, 10);
+		this.#camera.position.set(10, 10, 30);
 		this.#controls.enableDamping = true;
 
 		const light = new DirectionalLight(0xffffff, 1);
@@ -44,7 +44,7 @@ export class Application {
 		const ambientLight = new DirectionalLight(0xffffff);
 		this.#scene.add(ambientLight);
 
-		this.addToScene(new GridHelper(100, 100));
+		this.addToScene(new GridHelper(50, 50));
 
 		// if (import.meta.env.MODE === "development") {
 		// 	this.#addCameraGui();

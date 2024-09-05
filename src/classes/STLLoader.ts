@@ -1,6 +1,7 @@
 import {
 	type BufferGeometry,
 	Mesh,
+	MeshBasicMaterial,
 	MeshPhongMaterial,
 	MeshStandardMaterial,
 	type PerspectiveCamera,
@@ -59,16 +60,13 @@ export class STLLoader {
 		if (file) {
 			const geometry = await this.#readSTLFile(file);
 			this.geometry = geometry;
-			const material = new MeshPhongMaterial({
-				color: 0x0055ff,
-				specular: 0x111111,
-				shininess: 200,
+			const material = new MeshBasicMaterial({
+				color: 0x00ff00,
+				wireframe: true,
 			});
 			const mesh = new Mesh(geometry, material);
 
 			mesh.scale.set(0.1, 0.1, 0.1);
-
-			console.log("mesh", mesh);
 
 			this.app.addToScene(mesh);
 
