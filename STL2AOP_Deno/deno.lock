@@ -1,0 +1,69 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:gl-matrix": "npm:gl-matrix@3.4.3"
+    },
+    "npm": {
+      "gl-matrix@3.4.3": {
+        "integrity": "sha512-wcCp8vu8FT22BnvKVPjXa/ICBWRq/zjFfdofZy1WSpQZpphblv12/bOQLBC1rMM7SGOFS9ltVmKOHil5+Ml7gA==",
+        "dependencies": {}
+      }
+    }
+  },
+  "redirects": {
+    "https://cdn.pika.dev/big.js/^5.2.2": "https://cdn.skypack.dev/big.js@^5.2.2"
+  },
+  "remote": {
+    "https://cdn.skypack.dev/-/big.js@v5.2.2-sUR8fKsGHRxsJyqyvOSP/dist=es2019,mode=imports/optimized/bigjs.js": "b6d8e6af0c1f7bdc7e8cd0890819ecee2dcbb0776ec4089eae281de8ebd7b2bd",
+    "https://cdn.skypack.dev/-/gl-matrix@v3.4.3-OSmwlRYK5GW1unkuAQkN/dist=es2019,mode=imports/optimized/gl-matrix.js": "66b1471ca193b1fb95b19a1ebc750d83ba2c8d6b0f69f31da7d5374b00692d51",
+    "https://cdn.skypack.dev/big.js@^5.2.2": "f74e8935c06af6664d64a5534d1d6db1ab66649df8164696117ab5a1cd10714e",
+    "https://cdn.skypack.dev/gl-matrix": "21765ddd1efbdcbdfabbd4c2bb04c6a2a32acab8a09e68aa96766b50a7d84216",
+    "https://deno.land/x/math@v1.1.0/abs.ts": "d64fe603ae4bb57037f06a1a5004285b99ed016dab6bfcded07c8155efce24b7",
+    "https://deno.land/x/math@v1.1.0/big/mod.ts": "ba561f56a24ecc9f03542693ed0c81166ed0c921f8017d220ec70c963e935509",
+    "https://deno.land/x/math@v1.1.0/div.ts": "5dda45b8bb5c1f778f2cfb28cbee648c5c7aa818f915acce336651fd13994f07",
+    "https://deno.land/x/math@v1.1.0/eq.ts": "145727b71b5bdd993c5d44fd9c9089419dac508527ef3812c590aabcd943236c",
+    "https://deno.land/x/math@v1.1.0/gt.ts": "6e493f3cc2ecd9be244bb67dde28b1d5ec4d4218747fc9efd6f551a52093aaf7",
+    "https://deno.land/x/math@v1.1.0/gte.ts": "4eddc58c2b79315974c328d92b512e133796d785e1f570f9e8d232e32d620e66",
+    "https://deno.land/x/math@v1.1.0/lt.ts": "999e4d118c9a5e8e653bd34a32ef532634a68e0dd4ba6a200ad35cc7fd9ceb31",
+    "https://deno.land/x/math@v1.1.0/lte.ts": "637c12db7307d33024054d9671f4f932a42dbaad4c60559c47be17c94f39eb1e",
+    "https://deno.land/x/math@v1.1.0/matrix/eye.ts": "b7b060fc60a6f4ae4e3caa82e5a094cd622bd8519f67ad81e305b197a9d19d1c",
+    "https://deno.land/x/math@v1.1.0/matrix/identity.ts": "00246e8133f2fac4a1481af7390907cc4cf3e8415a00d29a1e0beb47bdd81074",
+    "https://deno.land/x/math@v1.1.0/matrix/matrix.ts": "2b80cd4fb8aa0ab9eca31cf6eb1037a2885f37ae7f84e1b7f050fa831089e937",
+    "https://deno.land/x/math@v1.1.0/matrix/mod.ts": "123212ccd86007864c3400ca3deaa998c7e9453b77538094d06edc1add50f199",
+    "https://deno.land/x/math@v1.1.0/max.ts": "bf646a3553e8800de240fad977eabbef365c388d33f79ef6fb5f015d8d7ff104",
+    "https://deno.land/x/math@v1.1.0/min.ts": "9a617f3b2c76045f9169324787399cb709eba81fae8dbd4ff540336ea82eb470",
+    "https://deno.land/x/math@v1.1.0/minus.ts": "e64bfe637c5d5c790f40dd6681b206dc9996303daacb6cd1533e7dc1969acda6",
+    "https://deno.land/x/math@v1.1.0/mod.ts": "85f6d29ba8faaae2fb24c4ac3f5772474f1452ee27068714521a7c9aabfd1ee6",
+    "https://deno.land/x/math@v1.1.0/modulo.ts": "c83ebdc4f4c9ddabf64ade595802502f2333220b1f59010457f4064e4bb94e6c",
+    "https://deno.land/x/math@v1.1.0/plus.ts": "8d500d86c8f27acc9a754f636c530abe17bdb8f240aea2ece4b29e86ca121f40",
+    "https://deno.land/x/math@v1.1.0/pow.ts": "47120d27e42fce01572340e724de26039beef6daae25133029af6df6fa7dec4c",
+    "https://deno.land/x/math@v1.1.0/round.ts": "1b54a5d440f9a0d44d4ff8ba000f59b4895c37a1b2c2aaf5ec59a5fe8081e308",
+    "https://deno.land/x/math@v1.1.0/sqrt.ts": "50d94b4d1d9077f887eec904d73cf5439c1ef4b724d1949414ba5ec7fb9343b3",
+    "https://deno.land/x/math@v1.1.0/sum.ts": "6a0fddf3b50a965c79d96edc7fe2e146d4a95915fce90928fb4068abe9d8f059",
+    "https://deno.land/x/math@v1.1.0/times.ts": "7359e88b8456fc121bdb800543712d637e0ca260777aa1bb0d43724fe576222e",
+    "https://deno.land/x/math@v1.1.0/to_exponential.ts": "9038215c1cfd430acb835ca5e9c967f1a9da8d0658f7eeab8852662b201596d4",
+    "https://deno.land/x/math@v1.1.0/to_fixed.ts": "3702a47b14950a9d37f13147e1340b5a3f5f07183d480af59fcdf9d10bb6084e",
+    "https://deno.land/x/math@v1.1.0/to_precision.ts": "b7fb70b79649c9fd48f3747d285a5086e457487986c0f395a8275302e13a9b5e",
+    "https://deno.land/x/numpy@0.2.0/deps.ts": "98eab4ead2d8a42aeb8fabb101c275ad64c92ab0d6aa8351c58675cee9ddadc4",
+    "https://deno.land/x/numpy@0.2.0/mod.ts": "f7b41774316f6c1bc3192724ff985dafa8bca5bb19c329c1eea39fc2c731a08e",
+    "https://deno.land/x/numpy@0.2.0/src/array/dtype.ts": "933a106addbd8b898a00c96dd9a39ace289614d78febe5621b689d9222188b4c",
+    "https://deno.land/x/numpy@0.2.0/src/array/indexing_routines.ts": "15eb6a2772c8e470c7587a9f46bfff2e899fbd7aece72652ff599208639d3d23",
+    "https://deno.land/x/numpy@0.2.0/src/array/mod.ts": "6d9888b28ab8b2788c4aaa4dc0477947932657b15cd63b9013c615ce3d70b595",
+    "https://deno.land/x/numpy@0.2.0/src/array/ndarray.ts": "c2e06c402ad2c52a701fd3f99ce3f46392f9d2266bf156a125f63473a410f63c",
+    "https://deno.land/x/numpy@0.2.0/src/array/scalar.ts": "f7e4b212627bb45ea942297b2ee16d404b71da1a67403ae3f719e9a0dc106ad1",
+    "https://deno.land/x/numpy@0.2.0/src/constants.ts": "07ae1ecc1f079ff0e6e8445b8c22b5c2bf56a1dbc2eae5478eccc570f8917157",
+    "https://deno.land/x/numpy@0.2.0/src/routines/array_creation.ts": "87026ef7d016e9220a88f94559cc71dcf73b8b7b1ba4e945f0df60c87e626769",
+    "https://deno.land/x/numpy@0.2.0/src/routines/array_manipulation.ts": "db1214f417766086e1d3bf3ce79f553777c1edf83bece92077eb580493f83789",
+    "https://deno.land/x/numpy@0.2.0/src/routines/mathematical_functions.ts": "273f285657821b2ace6ee6f3694a86785a4778552970d63bcba216fc612415f0",
+    "https://deno.land/x/numpy@0.2.0/src/routines/mod.ts": "2254ce4671530347711a5366a7cb473641419998395bad661f49e29dd633eeea",
+    "https://deno.land/x/numpy@0.2.0/src/routines/sorting.ts": "5d04efc3731ad4228f56e638d61cad2288865beeeabc2d983c1521c8348570d9",
+    "https://deno.land/x/numpy@0.2.0/src/shared/numpy.ts": "f7f3412b2a398ec71e3be445887f57efc9e9cb4493ee89cb9a639675b2d459c9",
+    "https://deno.land/x/numpy@0.2.0/src/shared/util.ts": "7b20668c659727e27b6f31aee587b6f0a5165b1e10267ad42b55b1d696c065d7",
+    "https://deno.land/x/python@0.2.4/mod.ts": "36292020f3a7e8c9774d5de7fe32e261b3b5ddfbb6689a78bb499014d40baa82",
+    "https://deno.land/x/python@0.2.4/src/ffi.ts": "507237560989233ea5594c64c94425017025e5740891c242bf3c1b818e4531a7",
+    "https://deno.land/x/python@0.2.4/src/python.ts": "dfb1e266cb64acb34cf7ba146d1b38e033c12061c266cab16bc0ef4680abfe35",
+    "https://deno.land/x/python@0.2.4/src/symbols.ts": "2c87cb1a468bea2e36df21c015232d49cf019e12ecd96a53069d9fa26dd60503",
+    "https://deno.land/x/python@0.2.4/src/util.ts": "440bd1d13558c2a826df60f98d8448abe57e40949d91fd73a9a81f10708547ef"
+  }
+}

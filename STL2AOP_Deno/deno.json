@@ -1,0 +1,6 @@
+{
+	"tasks": {
+		"start": "deno run --allow-read STL2AOP_Provel.ts"
+	},
+	"imports": {}
+}

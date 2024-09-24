@@ -40,6 +40,8 @@ For detailed operation and integration into larger workflows, consider setting u
 """
 
 
+# import sys
+# sys.path.append('./custom_amp1')
 
 import logging
 import os
@@ -51,7 +53,7 @@ from custom_amp1.custom_amp_object import CustomAmpObject
 
 # User Configurable Parameters
 # Update the variable below with the absolute path to your STL file
-stl_file_path = r"C:\path\to\your\file.stl"
+stl_file_path = r"./test_stl_file.stl"
 slice_height = 1.0  # Slice pitch in mm
 spokes = 120  # Number of points per slice
 adaptive_slicing = False  # Enable adaptive slicing most likely not needed for the application
