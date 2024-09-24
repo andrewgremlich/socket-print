@@ -1,46 +1,52 @@
 import "@/global-style.css";
 
 import { Application } from "@/classes/Application";
-// import { DirectionalLighting } from "@/classes/Lighting";
-// import { RayCaster } from "@/classes/Raycaster";
+import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
-
-document.querySelector("body")?.appendChild(STLLoader.createSTLInput());
+import { BufferAttribute } from "three";
+import { Cylinder } from "./classes/Cylinder";
 
 const app = new Application();
-// const lighting1 = new DirectionalLighting({
-// 	color: 0xffffff,
-// 	intensity: 5,
-// 	position: { x: 3, y: 6, z: 2 },
-// 	name: "Lighting 1",
-// });
-// const lighting2 = new DirectionalLighting({
-// 	color: 0xffffff,
-// 	intensity: 2,
-// 	position: { x: -3, y: -4, z: -2 },
-// 	name: "Lighting 2",
-// });
-// const raycaster = new RayCaster();
+
+const cylinder = new Cylinder({ radius: 5, height: 20, color: 0xffffff });
+
 new STLLoader({
-	app,
-	controls: app.controls,
-	camera: app.camera,
+	stlLoadedCallback: ({ mesh }) => {
+		app.addToScene(mesh);
+
+		const nonIndexCylinder = cylinder.mesh.geometry.toNonIndexed();
+		const stlMeshGeo = mesh.geometry;
+
+		if (!nonIndexCylinder.attributes.normal) {
+			nonIndexCylinder.computeVertexNormals();
+		}
+		if (!nonIndexCylinder.attributes.uv) {
+			const uvSphere = new Float32Array(
+				nonIndexCylinder.attributes.position.count * 2,
+			);
+			nonIndexCylinder.setAttribute("uv", new BufferAttribute(uvSphere, 2));
+		}
+
+		if (!stlMeshGeo.attributes.normal) {
+			stlMeshGeo.computeVertexNormals();
+		}
+		if (!stlMeshGeo.attributes.uv) {
+			const uvBox = new Float32Array(stlMeshGeo.attributes.position.count * 2);
+			stlMeshGeo.setAttribute("uv", new BufferAttribute(uvBox, 2));
+		}
+
+		const mergeGeometries = new MergeGeometries({
+			geometries: [cylinder.mesh.geometry.toNonIndexed(), mesh.geometry],
+		});
+
+		app.addToScene(mergeGeometries.mesh);
+	},
 });
+
+app.addToScene(cylinder.mesh);
 
 window.addEventListener("resize", () => {
 	app.camera.aspect = window.innerWidth / window.innerHeight;
 	app.camera.updateProjectionMatrix();
 	app.renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
-// raycaster.addObjectsToIntersect([cube.mesh, extrudeGeo.mesh]);
-
-// window.addEventListener("pointermove", raycaster.onPointerMove(app.camera));
-
-// app.addToScene(lighting1.directionalLight);
-// app.addToScene(lighting2.directionalLight);
-
-// if (import.meta.env.MODE === "development") {
-// 	app.addToScene(lighting1.directionalLightHelper);
-// 	app.addToScene(lighting2.directionalLightHelper);
-// }

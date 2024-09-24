@@ -1,40 +1,40 @@
+import type GUI from "lil-gui";
 import {
 	type BufferGeometry,
 	Mesh,
 	MeshBasicMaterial,
+	type Object3D,
 	type PerspectiveCamera,
+	Vector3,
 } from "three";
 import type { OrbitControls } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
+import { getGui } from "@/utils/gui";
 import type { Application } from "./Application";
 
 const stlFileInputId = "stlFileInput";
 const stlFileInputLabelId = "stlFileInputLabel";
 
 export class STLLoader {
+	#gui: GUI;
+
+	layerHeight = 0.2;
+	extrusionWidth = 0.4;
 	geometry: BufferGeometry | null = null;
-	app: Application;
-	controls: OrbitControls;
-	camera: PerspectiveCamera;
+	mesh: Mesh | null = null;
+	stlLoadedCallback: (params: { mesh: Mesh }) => void;
 
 	constructor({
-		app,
-		controls,
-		camera,
-	}: { app: Application; controls: OrbitControls; camera: PerspectiveCamera }) {
-		const stlFileInput = document.getElementById(
-			stlFileInputId,
-		) as HTMLInputElement;
+		stlLoadedCallback,
+	}: { stlLoadedCallback?: (params: { mesh: Mesh }) => void }) {
+		this.stlLoadedCallback = stlLoadedCallback ?? (() => {});
+		this.#gui = getGui();
 
-		stlFileInput.addEventListener("change", this.#onStlFileChange);
-
-		this.app = app;
-		this.controls = controls;
-		this.camera = camera;
+		document.querySelector("body")?.appendChild(this.#createSTLInput());
 	}
 
-	static createSTLInput = (): HTMLLabelElement => {
+	#createSTLInput = (): HTMLLabelElement => {
 		const input = document.createElement("input");
 		const label = document.createElement("label");
 
@@ -46,9 +46,42 @@ export class STLLoader {
 		label.textContent = "STL file";
 		label.id = stlFileInputLabelId;
 
+		input.addEventListener("change", this.#onStlFileChange);
+
 		label.appendChild(input);
 
 		return label;
+	};
+
+	#addGui = () => {
+		const rotationFolder = this.#gui.addFolder("STL Rotation");
+		const positionFolder = this.#gui.addFolder("STL Position");
+
+		if (!this.mesh) {
+			return;
+		}
+
+		rotationFolder
+			.add(this.mesh.rotation, "x", -Math.PI * 2, Math.PI * 2, 0.1)
+			.name("Rotation X");
+		rotationFolder
+			.add(this.mesh.rotation, "y", -Math.PI * 2, Math.PI * 2, 0.1)
+			.name("Rotation Y");
+		rotationFolder
+			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, 0.1)
+			.name("Rotation Z");
+
+		positionFolder
+			.add(this.mesh.position, "x", -15, 15, 0.1)
+			.name("Position X");
+		positionFolder
+			.add(this.mesh.position, "y", -15, 15, 0.1)
+			.name("Position Y");
+		positionFolder
+			.add(this.mesh.position, "z", -15, 15, 0.1)
+			.name("Position Z");
+
+		rotationFolder.open();
 	};
 
 	#onStlFileChange = async (e: Event) => {
@@ -63,11 +96,13 @@ export class STLLoader {
 			});
 			const mesh = new Mesh(geometry, material);
 
-			this.#generateGCode();
+			this.mesh = mesh;
+			// this.#generateGCode();
 
 			mesh.scale.set(0.1, 0.1, 0.1);
 
-			this.app.addToScene(mesh);
+			this.stlLoadedCallback({ mesh });
+			this.#addGui();
 		}
 	};
 
@@ -76,50 +111,105 @@ export class STLLoader {
 			return;
 		}
 
-		const vertices = this.geometry.attributes.position.array;
+		//https://docs.duet3d.com/en/User_manual/Reference/Gcodes
+		let gcode = "G10 P0 S195 R175\nT0\n";
+		let currentHeight = 0;
+		let extrusionAmount = 0;
 
-		// Example slicing settings
-		const layerHeight = 0.2; // Layer height in mm
-		let currentZ = 0;
+		// Get the bounding box of the model to determine slicing range
+		this.geometry.computeBoundingBox();
+		const boundingBox = this.geometry.boundingBox;
+		const maxZ = boundingBox?.max.z ?? 0;
 
-		// Generate G-code
-		let gcode = "G21 ; Set units to mm\nG90 ; Absolute positioning\n";
+		// Iterate through each layer
+		while (currentHeight <= maxZ) {
+			const sliceLines = this.#sliceGeometry(this.geometry, currentHeight);
 
-		// Iterate through vertices and create G-code
-		for (let i = 0; i < vertices.length; i += 9) {
-			const x1 = vertices[i];
-			const y1 = vertices[i + 1];
-			const z1 = vertices[i + 2];
+			gcode += `; Layer at Z=${currentHeight.toFixed(2)}mm\n`;
 
-			const x2 = vertices[i + 3];
-			const y2 = vertices[i + 4];
-			// const z2 = vertices[i + 5];
+			// Convert each slice line into G-code movements
+			for (const line of sliceLines) {
+				const start = line[0];
+				const end = line[1];
 
-			const x3 = vertices[i + 6];
-			const y3 = vertices[i + 7];
-			// const z3 = vertices[i + 8];
+				extrusionAmount += this.#calculateExtrusion(
+					start,
+					end,
+					this.extrusionWidth,
+				);
 
-			if (z1 >= currentZ) {
-				// Add G-code for a new layer
-				gcode += `; Layer at Z = ${currentZ.toFixed(2)}\n`;
-				gcode += `G1 Z${currentZ.toFixed(2)} F3000\n`; // Move to new layer height
-				currentZ += layerHeight;
+				gcode += `G1 X${start.x.toFixed(2)} Y${start.y.toFixed(2)} Z${currentHeight.toFixed(2)} F3000\n`;
+				gcode += `G1 X${end.x.toFixed(2)} Y${end.y.toFixed(2)} E${extrusionAmount.toFixed(4)}\n`;
 			}
 
-			// G-code for movement to triangle vertices
-			gcode += `G1 X${x1.toFixed(2)} Y${y1.toFixed(2)} F1500 ; Move to vertex 1\n`;
-			gcode += `G1 X${x2.toFixed(2)} Y${y2.toFixed(2)} ; Move to vertex 2\n`;
-			gcode += `G1 X${x3.toFixed(2)} Y${y3.toFixed(2)} ; Move to vertex 3\n`;
+			currentHeight += this.layerHeight;
 		}
 
-		console.log("Generated G-code:\n", gcode);
+		gcode += "M104 S0 ; Turn off extruder\n";
+		gcode += "M140 S0 ; Turn off bed\n";
+		gcode += "G28 ; Home all axes\n";
+		gcode += "M84 ; Disable motors\n";
+
+		return gcode;
+	};
+
+	#sliceGeometry = (geometry: BufferGeometry, currentHeight: number) => {
+		const sliceLines = [];
+
+		for (const face of geometry.faces) {
+			const v1 = geometry.vertices[face.a];
+			const v2 = geometry.vertices[face.b];
+			const v3 = geometry.vertices[face.c];
+
+			// Check if the triangle intersects with the current height plane
+			const intersections = [];
+			if (
+				(v1.z < currentHeight && v2.z > currentHeight) ||
+				(v1.z > currentHeight && v2.z < currentHeight)
+			) {
+				intersections.push(this.#interpolate(v1, v2, currentHeight));
+			}
+			if (
+				(v2.z < currentHeight && v3.z > currentHeight) ||
+				(v2.z > currentHeight && v3.z < currentHeight)
+			) {
+				intersections.push(this.#interpolate(v2, v3, currentHeight));
+			}
+			if (
+				(v3.z < currentHeight && v1.z > currentHeight) ||
+				(v3.z > currentHeight && v1.z < currentHeight)
+			) {
+				intersections.push(this.#interpolate(v3, v1, currentHeight));
+			}
+
+			// If there are exactly two intersection points, we have a line segment in this slice
+			if (intersections.length === 2) {
+				sliceLines.push(intersections);
+			}
+		}
+
+		return sliceLines;
+	};
+
+	#interpolate = (v1, v2, currentHeight) => {
+		const t = (currentHeight - v1.z) / (v2.z - v1.z);
+		return new Vector3(
+			v1.x + t * (v2.x - v1.x),
+			v1.y + t * (v2.y - v1.y),
+			currentHeight,
+		);
+	};
+
+	#calculateExtrusion = (start, end, extrusionWidth) => {
+		const distance = start.distanceTo(end);
+		return extrusionWidth * distance;
 	};
 
 	#readSTLFile = async (file: File): Promise<BufferGeometry> => {
 		return new Promise((resolve, _reject) => {
 			const reader = new FileReader();
 
-			reader.onload = (e) => {
+			reader.onload = async (e) => {
 				const buffer = e.target?.result as ArrayBuffer;
 				const loader = new ThreeSTLLoader();
 				const geometry = loader.parse(buffer);
