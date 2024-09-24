@@ -26,6 +26,16 @@ https://www.npmjs.com/package/@toybox-labs/cura-wasm
 
 https://www.npmjs.com/package/cura-wasm-tkml
 
+view gcode in browser? https://github.com/etrombly/gcode-yew
+
+### gcode reference
+
+https://all3dp.com/2/3d-printer-g-code-commands-list-tutorial/
+
+https://docs.duet3d.com/en/User_manual/Reference/Gcodes
+
+https://howtomechatronics.com/tutorials/g-code-explained-list-of-most-important-g-code-commands/
+
 ## Testing
 
 In order to test GCode files, use the [NCViewer](https://ncviewer.com/) website.
