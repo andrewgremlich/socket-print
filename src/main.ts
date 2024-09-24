@@ -3,7 +3,7 @@ import "@/global-style.css";
 import { Application } from "@/classes/Application";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
-import { BufferAttribute } from "three";
+import { BufferAttribute, type Object3D } from "three";
 import { Cylinder } from "./classes/Cylinder";
 
 const app = new Application();
@@ -39,7 +39,7 @@ new STLLoader({
 			geometries: [cylinder.mesh.geometry.toNonIndexed(), mesh.geometry],
 		});
 
-		app.addToScene(mergeGeometries.mesh);
+		app.addToScene(mergeGeometries.mesh as Object3D);
 	},
 });
 

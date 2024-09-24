@@ -32,10 +32,6 @@ export class MergeGeometries {
 
 		button.addEventListener("click", () => {
 			console.log("Merging geometries");
-
-			const mergeGeos = new MergeGeometries({
-				geometries: [],
-			});
 		});
 
 		document.querySelector("body")?.appendChild(button);
@@ -43,6 +39,10 @@ export class MergeGeometries {
 
 	#addGui = () => {
 		const positionFolder = this.#gui.addFolder("MergeGeometries Position");
+
+		if (!this.mesh) {
+			return;
+		}
 
 		positionFolder
 			.add(this.mesh.position, "x", -15, 15, 0.1)
