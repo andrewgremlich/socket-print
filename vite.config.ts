@@ -8,7 +8,6 @@ export default defineConfig(() => ({
 		rollupOptions: {
 			input: {
 				main: resolve(__dirname, "index.html"),
-				conversion: resolve(__dirname, "pages/conversion/index.html"),
 			},
 		},
 	},
