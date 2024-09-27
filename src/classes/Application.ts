@@ -12,29 +12,29 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 export class Application {
 	#scene: Scene;
-	#camera: PerspectiveCamera;
-	#renderer: WebGLRenderer;
-	#controls: OrbitControls;
+	camera: PerspectiveCamera;
+	renderer: WebGLRenderer;
+	controls: OrbitControls;
 	// #gui: GUI;
 
 	constructor() {
 		this.#scene = new Scene();
-		this.#camera = new PerspectiveCamera(
+		this.camera = new PerspectiveCamera(
 			75,
 			window.innerWidth / window.innerHeight,
 			0.1,
 			1000,
 		);
-		this.#renderer = new WebGLRenderer({ antialias: true });
-		this.#controls = new OrbitControls(this.#camera, this.#renderer.domElement);
+		this.renderer = new WebGLRenderer({ antialias: true });
+		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-		this.#renderer.setSize(window.innerWidth, window.innerHeight);
-		this.#renderer.setAnimationLoop(this.#animate);
-		this.#renderer.setPixelRatio(window.devicePixelRatio);
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setAnimationLoop(this.#animate);
+		this.renderer.setPixelRatio(window.devicePixelRatio);
 		// this.#gui = getGui();
 
-		this.#camera.position.set(10, 10, 30);
-		this.#controls.enableDamping = true;
+		this.camera.position.set(10, 10, 30);
+		this.controls.enableDamping = true;
 
 		this.addToScene(new GridHelper(50, 50));
 
@@ -42,14 +42,14 @@ export class Application {
 		// 	this.#addCameraGui();
 		// }
 
-		document.body.appendChild(this.#renderer.domElement);
+		document.body.appendChild(this.renderer.domElement);
 	}
 
 	addToScene = (object: Object3D) => this.#scene.add(object);
 
 	#animate = () => {
-		this.#controls.update();
-		this.#renderer.render(this.#scene, this.#camera);
+		this.controls.update();
+		this.renderer.render(this.#scene, this.camera);
 	};
 
 	// #addCameraGui = () => {
@@ -69,16 +69,4 @@ export class Application {
 	// 	this.#renderer.setSize(window.innerWidth, window.innerHeight);
 	// 	this.#renderer.setPixelRatio(window.devicePixelRatio);
 	// };
-
-	get camera() {
-		return this.#camera;
-	}
-
-	get controls() {
-		return this.#controls;
-	}
-
-	get renderer() {
-		return this.#renderer;
-	}
 }
