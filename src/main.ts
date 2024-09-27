@@ -1,19 +1,19 @@
 import "@/global-style.css";
 
 import { Application } from "@/classes/Application";
-import { MergeGeometries } from "@/classes/MergeGeometries";
+// import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
 // import type { Object3D } from "three";
-import { Cylinder } from "./classes/Cylinder";
-import { downloadGCodeFile, generateGCode } from "./utils/generateGCode";
-import { sliceGeometry } from "./utils/sliceGeometry";
+// import { Cylinder } from "./classes/Cylinder";
+// import { downloadGCodeFile, generateGCode } from "./utils/generateGCode";
+// import { sliceGeometry } from "./utils/sliceGeometry";
 
 const app = new Application();
 
 // const cylinder = new Cylinder({ radius: 5, height: 20, color: 0xffffff });
 
 new STLLoader({
-	stlLoadedCallback: ({ mesh, maxSize, meshMergeCompatible, size }) => {
+	stlLoadedCallback: ({ mesh, maxSize, meshMergeCompatible: _m, size }) => {
 		// Position the camera a little further from the model
 		app.camera.position.set(0, 0, maxSize * 1.5);
 		app.camera.lookAt(0, 0, 0);

@@ -4,7 +4,6 @@ import {
 	BufferAttribute,
 	type BufferGeometry,
 	Mesh,
-	MeshBasicMaterial,
 	MeshPhongMaterial,
 	Vector3,
 } from "three";
