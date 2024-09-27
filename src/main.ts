@@ -11,7 +11,11 @@ const app = new Application();
 const cylinder = new Cylinder({ radius: 5, height: 20, color: 0xffffff });
 
 new STLLoader({
-	stlLoadedCallback: ({ mesh }) => {
+	stlLoadedCallback: ({ mesh, maxSize }) => {
+		// Position the camera a little further from the model
+		app.camera.position.set(0, 0, maxSize * 1.5);
+		app.camera.lookAt(0, 0, 0);
+
 		app.addToScene(mesh);
 
 		const nonIndexCylinder = cylinder.mesh.geometry.toNonIndexed();

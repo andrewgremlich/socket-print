@@ -1,11 +1,19 @@
 import type GUI from "lil-gui";
-import { type BufferGeometry, Mesh, MeshBasicMaterial } from "three";
+import {
+	Box3,
+	type BufferGeometry,
+	Mesh,
+	MeshBasicMaterial,
+	Vector3,
+} from "three";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
 import { getGui } from "@/utils/gui";
 
 const stlFileInputId = "stlFileInput";
 const stlFileInputLabelId = "stlFileInputLabel";
+
+type StlLoadedCallback = (params: { mesh: Mesh; maxSize: number }) => void;
 
 export class STLLoader {
 	#gui: GUI;
@@ -14,11 +22,13 @@ export class STLLoader {
 	extrusionWidth = 0.4;
 	geometry: BufferGeometry | null = null;
 	mesh: Mesh | null = null;
-	stlLoadedCallback: (params: { mesh: Mesh }) => void;
+	stlLoadedCallback: StlLoadedCallback;
 
 	constructor({
 		stlLoadedCallback,
-	}: { stlLoadedCallback?: (params: { mesh: Mesh }) => void }) {
+	}: {
+		stlLoadedCallback?: StlLoadedCallback;
+	}) {
 		this.stlLoadedCallback = stlLoadedCallback ?? (() => {});
 		this.#gui = getGui();
 
@@ -86,13 +96,23 @@ export class STLLoader {
 				wireframe: true,
 			});
 			const mesh = new Mesh(geometry, material);
+			const boundingBox = new Box3().setFromObject(mesh);
+			const center = new Vector3();
+
+			boundingBox.getCenter(center);
+			mesh.position.sub(center);
+
+			const size = new Vector3();
+			boundingBox.getSize(size);
+
+			// Fit the model into the camera view by scaling it down if it's too large
+			const maxSize = Math.max(size.x, size.y, size.z);
+			const scaleFactor = 10 / maxSize; // Adjust 10 to whatever scale fits your scene
+			mesh.scale.setScalar(scaleFactor);
 
 			this.mesh = mesh;
-			// this.#generateGCode();
 
-			mesh.scale.set(0.1, 0.1, 0.1);
-
-			this.stlLoadedCallback({ mesh });
+			this.stlLoadedCallback({ mesh, maxSize });
 			this.#addGui();
 		}
 	};

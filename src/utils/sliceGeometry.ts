@@ -22,7 +22,7 @@ export function sliceGeometry(
 function getSliceAtZ(geometry: BufferGeometry, z: number): Vector3[][] {
 	const contours: Vector3[][] = [];
 	const positionAttribute = geometry.getAttribute("position");
-	const vertices = [];
+	// const vertices = [];
 
 	// Extract vertices
 	for (let i = 0; i < positionAttribute.count; i += 3) {
