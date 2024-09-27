@@ -34,6 +34,6 @@
   "dependencies": {
     "file-type": "^19.4.1",
     "lil-gui": "^0.19.2",
-    "three": "^0.167.1"
+    "three": "^0.168.0"
   }
 }
