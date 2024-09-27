@@ -39,6 +39,7 @@ export class MergeGeometries {
 
 	#addGui = () => {
 		const positionFolder = this.#gui.addFolder("MergeGeometries Position");
+		const rotationFolder = this.#gui.addFolder("MergeGeometries Rotation");
 
 		if (!this.mesh) {
 			return;
@@ -53,5 +54,15 @@ export class MergeGeometries {
 		positionFolder
 			.add(this.mesh.position, "z", -15, 15, 0.1)
 			.name("Position Z");
+
+		rotationFolder
+			.add(this.mesh.rotation, "x", -Math.PI * 2, Math.PI * 2, 0.1)
+			.name("Rotation X");
+		rotationFolder
+			.add(this.mesh.rotation, "y", -Math.PI * 2, Math.PI * 2, 0.1)
+			.name("Rotation Y");
+		rotationFolder
+			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, 0.1)
+			.name("Rotation Z");
 	};
 }

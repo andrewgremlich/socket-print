@@ -1,6 +1,7 @@
 import type GUI from "lil-gui";
 import {
 	Box3,
+	BufferAttribute,
 	type BufferGeometry,
 	Mesh,
 	MeshBasicMaterial,
@@ -13,7 +14,11 @@ import { getGui } from "@/utils/gui";
 const stlFileInputId = "stlFileInput";
 const stlFileInputLabelId = "stlFileInputLabel";
 
-type StlLoadedCallback = (params: { mesh: Mesh; maxSize: number }) => void;
+type StlLoadedCallback = (params: {
+	mesh: Mesh;
+	maxSize: number;
+	meshMergeCompatible: BufferGeometry;
+}) => void;
 
 export class STLLoader {
 	#gui: GUI;
@@ -112,7 +117,17 @@ export class STLLoader {
 
 			this.mesh = mesh;
 
-			this.stlLoadedCallback({ mesh, maxSize });
+			const meshMergeCompatible = this.toMergeCompatible();
+
+			if (!meshMergeCompatible) {
+				return;
+			}
+
+			this.stlLoadedCallback({
+				mesh,
+				maxSize,
+				meshMergeCompatible,
+			});
 			this.#addGui();
 		}
 	};
@@ -131,5 +146,24 @@ export class STLLoader {
 
 			reader.readAsArrayBuffer(file);
 		});
+	};
+
+	toMergeCompatible = () => {
+		if (!this.mesh) {
+			return;
+		}
+
+		const meshCopy = this.mesh?.clone();
+		const stlMeshGeo = meshCopy.geometry;
+
+		if (!stlMeshGeo.attributes.normal) {
+			stlMeshGeo.computeVertexNormals();
+		}
+		if (!stlMeshGeo.attributes.uv) {
+			const uvBox = new Float32Array(stlMeshGeo.attributes.position.count * 2);
+			stlMeshGeo.setAttribute("uv", new BufferAttribute(uvBox, 2));
+		}
+
+		return stlMeshGeo;
 	};
 }

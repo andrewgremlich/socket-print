@@ -1,5 +1,10 @@
 import type GUI from "lil-gui";
-import { CylinderGeometry, Mesh, MeshBasicMaterial } from "three";
+import {
+	BufferAttribute,
+	CylinderGeometry,
+	Mesh,
+	MeshBasicMaterial,
+} from "three";
 
 import { getGui } from "@/utils/gui";
 
@@ -33,6 +38,23 @@ export class Cylinder {
 
 		this.#addGui();
 	}
+
+	toMergeCompatible = () => {
+		const meshCopy = this.mesh.clone();
+		const nonIndexCylinder = meshCopy.geometry.toNonIndexed();
+
+		if (!nonIndexCylinder.attributes.normal) {
+			nonIndexCylinder.computeVertexNormals();
+		}
+		if (!nonIndexCylinder.attributes.uv) {
+			const uvSphere = new Float32Array(
+				nonIndexCylinder.attributes.position.count * 2,
+			);
+			nonIndexCylinder.setAttribute("uv", new BufferAttribute(uvSphere, 2));
+		}
+
+		return nonIndexCylinder;
+	};
 
 	#addGui() {
 		const cylinderRotation = this.#gui.addFolder("Cylinder Rotation");
