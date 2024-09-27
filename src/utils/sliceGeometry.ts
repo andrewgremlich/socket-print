@@ -4,6 +4,14 @@ export function sliceGeometry(
 	geometry: BufferGeometry,
 	layerHeight: number,
 ): Vector3[][][] {
+	if (!geometry) {
+		throw new Error("Geometry is required");
+	}
+
+	if (layerHeight <= 0) {
+		throw new Error("Layer height must be greater than 0");
+	}
+
 	const slices: Vector3[][][] = [];
 
 	const bbox = new Box3().setFromObject(new Mesh(geometry));

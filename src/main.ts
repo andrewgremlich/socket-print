@@ -5,6 +5,8 @@ import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
 import type { Object3D } from "three";
 import { Cylinder } from "./classes/Cylinder";
+// import { sliceGeometry } from "./utils/sliceGeometry";
+// import { generateGCode } from "./utils/generateGCode";
 
 const app = new Application();
 
@@ -17,6 +19,10 @@ new STLLoader({
 		app.camera.lookAt(0, 0, 0);
 
 		app.addToScene(mesh);
+
+		// const sliceCylinder = sliceGeometry(mesh.geometry, 0.2);
+		// const gCodeCylinder = generateGCode(sliceCylinder, 2);
+		// console.log(gCodeCylinder);
 
 		const cyl = cylinder.toMergeCompatible();
 
