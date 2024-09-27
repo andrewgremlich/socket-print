@@ -40,3 +40,20 @@ export function generateGCode(
 
 	return gcode;
 }
+
+export function downloadGCodeFile(
+	gcodeString: string,
+	fileName = "file.gcode",
+) {
+	const blob = new Blob([gcodeString], { type: "text/plain" });
+	const link = document.createElement("a");
+
+	link.href = URL.createObjectURL(blob);
+	link.download = fileName;
+
+	document.body.appendChild(link);
+
+	link.click();
+
+	document.body.removeChild(link);
+}
