@@ -1,12 +1,13 @@
 import type GUI from "lil-gui";
-import { DirectionalLight, DirectionalLightHelper } from "three";
+import { AmbientLight, DirectionalLight, DirectionalLightHelper } from "three";
 
 import { getGui } from "@/utils/gui";
 
-export class DirectionalLighting {
+export class Lighting {
 	#gui: GUI;
 	#name: string;
 
+	ambientLight: AmbientLight;
 	directionalLight: DirectionalLight;
 	directionalLightHelper: DirectionalLightHelper;
 
@@ -21,6 +22,7 @@ export class DirectionalLighting {
 		position: { x: number; y: number; z: number };
 		name: string;
 	}) {
+		this.ambientLight = new AmbientLight(color);
 		this.directionalLight = new DirectionalLight(color, intensity);
 		this.directionalLightHelper = new DirectionalLightHelper(
 			this.directionalLight,

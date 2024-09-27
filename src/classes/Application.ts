@@ -1,4 +1,4 @@
-// import type GUI from "lil-gui";
+import type GUI from "lil-gui";
 import {
 	GridHelper,
 	type Object3D,
@@ -8,14 +8,16 @@ import {
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-// import { getGui } from "@/utils/gui";
+import { getGui } from "@/utils/gui";
+import { Lighting } from "./Lighting";
 
 export class Application {
 	#scene: Scene;
 	camera: PerspectiveCamera;
 	renderer: WebGLRenderer;
 	controls: OrbitControls;
-	// #gui: GUI;
+	gridHelper: GridHelper;
+	#gui: GUI;
 
 	constructor() {
 		this.#scene = new Scene();
@@ -27,20 +29,30 @@ export class Application {
 		);
 		this.renderer = new WebGLRenderer({ antialias: true });
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+		this.gridHelper = new GridHelper(200, 50);
 
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setAnimationLoop(this.#animate);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
-		// this.#gui = getGui();
+		this.#gui = getGui();
 
-		this.camera.position.set(10, 10, 30);
+		this.camera.position.set(0, -50, 0);
 		this.controls.enableDamping = true;
 
-		this.addToScene(new GridHelper(50, 50));
+		const lighting = new Lighting({
+			color: 0xffffff,
+			intensity: 1,
+			position: { x: 0, y: 100, z: 100 },
+			name: "Directional Light",
+		});
 
-		// if (import.meta.env.MODE === "development") {
-		// 	this.#addCameraGui();
-		// }
+		this.addToScene(this.gridHelper);
+		this.addToScene(lighting.directionalLight);
+		this.addToScene(lighting.ambientLight);
+
+		if (import.meta.env.MODE === "development") {
+			this.#addCameraGui();
+		}
 
 		document.body.appendChild(this.renderer.domElement);
 	}
@@ -52,15 +64,15 @@ export class Application {
 		this.renderer.render(this.#scene, this.camera);
 	};
 
-	// #addCameraGui = () => {
-	// 	const folder = this.#gui.addFolder("Camera");
+	#addCameraGui = () => {
+		const folder = this.#gui.addFolder("Camera");
 
-	// 	folder.add(this.#camera.position, "x", -10, 10, 0.01);
-	// 	folder.add(this.#camera.position, "y", -10, 10, 0.01);
-	// 	folder.add(this.#camera.position, "z", -10, 10, 0.01);
+		folder.add(this.camera.position, "x", -10, 10, 0.01);
+		folder.add(this.camera.position, "y", -10, 10, 0.01);
+		folder.add(this.camera.position, "z", -10, 10, 0.01);
 
-	// 	folder.open();
-	// };
+		folder.open();
+	};
 
 	// TODO: on resize change the camera aspect ratio
 	// #onWindowResize = () => {

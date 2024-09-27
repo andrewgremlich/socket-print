@@ -5,6 +5,7 @@ import {
 	type BufferGeometry,
 	Mesh,
 	MeshBasicMaterial,
+	MeshPhongMaterial,
 	Vector3,
 } from "three";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -18,6 +19,7 @@ type StlLoadedCallback = (params: {
 	mesh: Mesh;
 	maxSize: number;
 	meshMergeCompatible: BufferGeometry;
+	size: Vector3;
 }) => void;
 
 export class STLLoader {
@@ -96,9 +98,8 @@ export class STLLoader {
 		if (file) {
 			const geometry = await this.#readSTLFile(file);
 			this.geometry = geometry;
-			const material = new MeshBasicMaterial({
+			const material = new MeshPhongMaterial({
 				color: 0xffffff,
-				wireframe: true,
 			});
 			const mesh = new Mesh(geometry, material);
 			const boundingBox = new Box3().setFromObject(mesh);
@@ -107,13 +108,12 @@ export class STLLoader {
 			boundingBox.getCenter(center);
 			mesh.position.sub(center);
 
-			const size = new Vector3();
-			boundingBox.getSize(size);
+			const size = boundingBox.getSize(new Vector3());
 
 			// Fit the model into the camera view by scaling it down if it's too large
 			const maxSize = Math.max(size.x, size.y, size.z);
-			const scaleFactor = 10 / maxSize; // Adjust 10 to whatever scale fits your scene
-			mesh.scale.setScalar(scaleFactor);
+			// const scaleFactor = 1000 / maxSize; // Adjust 10 to whatever scale fits your scene
+			// mesh.scale.setScalar(scaleFactor);
 
 			this.mesh = mesh;
 
@@ -127,6 +127,7 @@ export class STLLoader {
 				mesh,
 				maxSize,
 				meshMergeCompatible,
+				size,
 			});
 			this.#addGui();
 		}
