@@ -32,7 +32,7 @@
     "web-vitals": "^4.2.3"
   },
   "dependencies": {
-    "file-type": "^19.4.1",
+    "file-type": "^19.5.0",
     "lil-gui": "^0.19.2",
     "three": "^0.168.0"
   }
