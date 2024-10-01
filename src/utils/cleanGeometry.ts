@@ -33,7 +33,7 @@ export function cleanGeometry(geometry: BufferGeometry): BufferGeometry {
  * @param z The Z coordinate of the vertex
  * @returns True if the vertex is on the surface, otherwise false
  */
-function isOnSurface(x: number, y: number, z: number): boolean {
+function isOnSurface(x: number, _y: number, _z: number): boolean {
 	// Add complex logic here to determine whether a vertex is internal or external
 	return true; // Placeholder logic, customize based on your needs
 }
