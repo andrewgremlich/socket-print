@@ -1,15 +1,15 @@
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-  background-color: #000;
+	background-color: #000;
 }
 
 body {
-  margin: 0;
+	margin: 0;
 }
 
 h1,
@@ -20,25 +20,25 @@ h5,
 h6,
 label,
 p {
-  color: #fff;
-  font-family: "Roboto", sans-serif;
+	color: #fff;
+	font-family: "Roboto", sans-serif;
 }
 
 h1 {
-  letter-spacing: 5px;
+	letter-spacing: 5px;
 }
 
 canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
 }
 
 input[type="file"]::file-selector-button {
-  padding: 6px 12px;
-  margin: 10px 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+	padding: 6px 12px;
+	margin: 10px 10px;
+	background-color: #f0f0f0;
+	border: 1px solid #ccc;
+	border-radius: 4px;
 }
