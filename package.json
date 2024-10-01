@@ -18,22 +18,22 @@
     ]
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.3",
-    "@playwright/test": "^1.46.1",
-    "@types/node": "^22.5.0",
-    "@types/three": "^0.167.2",
-    "husky": "^9.1.5",
-    "lint-staged": "^15.2.9",
-    "typescript": "^5.2.2",
-    "vite": "^5.4.2",
-    "vite-plugin-pwa": "^0.20.1",
+    "@biomejs/biome": "^1.9.2",
+    "@playwright/test": "^1.47.2",
+    "@types/node": "^22.7.4",
+    "@types/three": "^0.169.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "vite-plugin-pwa": "^0.20.5",
     "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^2.0.5",
+    "vitest": "^2.1.1",
     "web-vitals": "^4.2.3"
   },
   "dependencies": {
-    "file-type": "^19.4.1",
+    "file-type": "^19.5.0",
     "lil-gui": "^0.19.2",
-    "three": "^0.168.0"
+    "three": "^0.169.0"
   }
 }
