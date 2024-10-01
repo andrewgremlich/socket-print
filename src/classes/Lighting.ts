@@ -5,47 +5,42 @@ import { getGui } from "@/utils/gui";
 
 export class Lighting {
 	#gui: GUI;
-	#name: string;
 
 	ambientLight: AmbientLight;
 	directionalLight: DirectionalLight;
-	directionalLightHelper: DirectionalLightHelper;
+	directionalLightHelper?: DirectionalLightHelper;
 
-	constructor({
-		color,
-		intensity,
-		position: { x, y, z },
-		name,
-	}: {
-		color: number;
-		intensity: number;
-		position: { x: number; y: number; z: number };
-		name: string;
-	}) {
-		this.ambientLight = new AmbientLight(color);
-		this.directionalLight = new DirectionalLight(color, intensity);
-		this.directionalLightHelper = new DirectionalLightHelper(
-			this.directionalLight,
-			3,
-		);
+	constructor() {
+		this.ambientLight = new AmbientLight(0xffffff, 1);
+		this.directionalLight = new DirectionalLight(0xffffff, 1);
 		this.#gui = getGui();
-		this.#name = name;
 
-		this.directionalLight.position.set(x, y, z);
+		this.directionalLight.castShadow = true;
+		this.directionalLight.position.set(0, 0, 0);
+		this.ambientLight.position.set(0, 0, 0);
 
 		if (import.meta.env.MODE === "development") {
+			this.directionalLightHelper = new DirectionalLightHelper(
+				this.directionalLight,
+				5,
+			);
 			this.#addGui();
 		}
 	}
 
 	#addGui() {
-		const folder = this.#gui.addFolder(this.#name);
+		const directionalLight = this.#gui.addFolder("Directional Light");
+		// const ambientLight = this.#gui.addFolder("Ambient Light");
 
-		folder.add(this.directionalLight.position, "x", -10, 10, 0.5);
-		folder.add(this.directionalLight.position, "y", -10, 10, 0.5);
-		folder.add(this.directionalLight.position, "z", -10, 10, 0.5);
-		folder.add(this.directionalLight, "intensity", 0, 10, 0.5);
+		directionalLight.add(this.directionalLight.position, "x", -100, 100, 10);
+		directionalLight.add(this.directionalLight.position, "y", -100, 100, 10);
+		directionalLight.add(this.directionalLight.position, "z", -100, 100, 10);
+		directionalLight.add(this.directionalLight, "intensity", 0, 10, 0.25);
 
-		folder.open();
+		// ambientLight.add(this.ambientLight.position, "x", -100, 100, 10);
+		// ambientLight.add(this.ambientLight.position, "y", -100, 100, 10);
+		// ambientLight.add(this.ambientLight.position, "z", -100, 100, 10);
+		// ambientLight.add(this.ambientLight, "intensity", 0, 5, 0.1);
+		// ambientLight.addColor(this.ambientLight, "color");
 	}
 }

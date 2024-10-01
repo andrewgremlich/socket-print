@@ -1,22 +1,24 @@
 import "@/global-style.css";
 
 import { Application } from "@/classes/Application";
-// import { MergeGeometries } from "@/classes/MergeGeometries";
+import { Cylinder } from "@/classes/Cylinder";
 import { STLLoader } from "@/classes/STLLoader";
-// import type { Object3D } from "three";
-// import { Cylinder } from "./classes/Cylinder";
-// import { downloadGCodeFile, generateGCode } from "./utils/generateGCode";
-// import { sliceGeometry } from "./utils/sliceGeometry";
+import { MergeGeometries } from "./classes/MergeGeometries";
+import { downloadGCodeFile, generateGCode } from "./utils/generateGCode";
+import { sliceGeometry } from "./utils/sliceGeometry";
 
 const app = new Application();
-
-// const cylinder = new Cylinder({ radius: 5, height: 20, color: 0xffffff });
-
-new STLLoader({
-	stlLoadedCallback: ({ mesh, maxSize, meshMergeCompatible: _m, size }) => {
-		// Position the camera a little further from the model
+const cylinder = new Cylinder();
+const stlModel = new STLLoader({
+	stlLoadedCallback: ({
+		mesh,
+		maxSize,
+		meshMergeCompatible: _m,
+		size,
+		center,
+	}) => {
 		app.camera.position.set(0, 0, maxSize * 1.5);
-		app.camera.lookAt(0, 0, 0);
+		app.camera.lookAt(center);
 
 		app.addToScene(mesh);
 
@@ -37,9 +39,23 @@ new STLLoader({
 	},
 });
 
-// MergeGeometries.mergeGeometriesButton();
+app.addToScene(cylinder.mesh);
 
-// app.addToScene(cylinder.mesh);
+const mergeGeos = new MergeGeometries(stlModel, cylinder);
+
+const button = document.createElement("button");
+
+button.textContent = "Merge Geometries";
+
+button.addEventListener("click", () => {
+	const mergedGeos = mergeGeos.getGeometry();
+	const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.2);
+	const gCode = generateGCode(slicedGeometry, 2);
+
+	downloadGCodeFile(gCode);
+});
+
+document.querySelector("body")?.appendChild(button);
 
 window.addEventListener("resize", () => {
 	app.camera.aspect = window.innerWidth / window.innerHeight;

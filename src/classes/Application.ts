@@ -9,7 +9,6 @@ import {
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import { getGui } from "@/utils/gui";
-import { Lighting } from "./Lighting";
 
 export class Application {
 	#scene: Scene;
@@ -39,16 +38,7 @@ export class Application {
 		this.camera.position.set(0, -50, 0);
 		this.controls.enableDamping = true;
 
-		const lighting = new Lighting({
-			color: 0xffffff,
-			intensity: 1,
-			position: { x: 0, y: 100, z: 100 },
-			name: "Directional Light",
-		});
-
 		this.addToScene(this.gridHelper);
-		this.addToScene(lighting.directionalLight);
-		this.addToScene(lighting.ambientLight);
 
 		if (import.meta.env.MODE === "development") {
 			this.#addCameraGui();
@@ -67,9 +57,9 @@ export class Application {
 	#addCameraGui = () => {
 		const folder = this.#gui.addFolder("Camera");
 
-		folder.add(this.camera.position, "x", -10, 10, 0.01);
-		folder.add(this.camera.position, "y", -10, 10, 0.01);
-		folder.add(this.camera.position, "z", -10, 10, 0.01);
+		folder.add(this.camera.position, "x", -100, 100, 10);
+		folder.add(this.camera.position, "y", -100, 100, 10);
+		folder.add(this.camera.position, "z", -100, 100, 10);
 
 		folder.open();
 	};

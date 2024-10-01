@@ -2,6 +2,7 @@ import type GUI from "lil-gui";
 import {
 	BufferAttribute,
 	CylinderGeometry,
+	DoubleSide,
 	Mesh,
 	MeshBasicMaterial,
 } from "three";
@@ -10,21 +11,19 @@ import { getGui } from "@/utils/gui";
 
 export class Cylinder {
 	#geometry: CylinderGeometry;
-	#material: MeshBasicMaterial;
 	#gui: GUI;
 
 	mesh: Mesh;
 
-	constructor({
-		radius,
-		height,
-		color,
-	}: {
-		radius: number;
-		height: number;
-		color: number;
-	}) {
-		const radialSegments = 32; // Segments for smoothness
+	constructor() {
+		const radialSegments = 32;
+		const radius = 14;
+		const height = 24;
+		const material = new MeshBasicMaterial({
+			color: 0xffffff,
+			side: DoubleSide,
+			wireframe: true,
+		});
 
 		this.#geometry = new CylinderGeometry(
 			radius,
@@ -32,8 +31,7 @@ export class Cylinder {
 			height,
 			radialSegments,
 		);
-		this.#material = new MeshBasicMaterial({ color, wireframe: true });
-		this.mesh = new Mesh(this.#geometry, this.#material);
+		this.mesh = new Mesh(this.#geometry, material);
 		this.#gui = getGui();
 
 		this.#addGui();
@@ -57,27 +55,10 @@ export class Cylinder {
 	};
 
 	#addGui() {
-		const cylinderRotation = this.#gui.addFolder("Cylinder Rotation");
 		const cylinderPosition = this.#gui.addFolder("Cylinder Position");
 
-		cylinderRotation
-			.add(this.mesh.rotation, "x", 0, Math.PI * 2, 0.01)
-			.name("Rotation X");
-		cylinderRotation
-			.add(this.mesh.rotation, "y", 0, Math.PI * 2, 0.01)
-			.name("Rotation Y");
-		cylinderRotation
-			.add(this.mesh.rotation, "z", 0, Math.PI * 2, 0.01)
-			.name("Rotation Z");
-
-		cylinderPosition
-			.add(this.mesh.position, "x", -15, 15, 0.1)
-			.name("Position X");
-		cylinderPosition
-			.add(this.mesh.position, "y", -15, 15, 0.1)
-			.name("Position Y");
-		cylinderPosition
-			.add(this.mesh.position, "z", -15, 15, 0.1)
-			.name("Position Z");
+		cylinderPosition.add(this.mesh.position, "x", -100, 100, 1).name("X");
+		cylinderPosition.add(this.mesh.position, "y", -100, 100, 1).name("Y");
+		cylinderPosition.add(this.mesh.position, "z", -100, 100, 1).name("Z");
 	}
 }

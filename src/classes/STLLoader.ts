@@ -4,7 +4,7 @@ import {
 	BufferAttribute,
 	type BufferGeometry,
 	Mesh,
-	MeshPhongMaterial,
+	MeshBasicMaterial,
 	Vector3,
 } from "three";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -19,13 +19,14 @@ type StlLoadedCallback = (params: {
 	maxSize: number;
 	meshMergeCompatible: BufferGeometry;
 	size: Vector3;
+	center: Vector3;
 }) => void;
 
 export class STLLoader {
 	#gui: GUI;
 
-	layerHeight = 0.2;
-	extrusionWidth = 0.4;
+	layerHeight = 0.2; // TODO: let's stick with 1mm for now. customizable later? // look for centroid 40 mm above z0
+	extrusionWidth = 0.4; //TODO: is this nozzle offset?
 	geometry: BufferGeometry | null = null;
 	mesh: Mesh | null = null;
 	stlLoadedCallback: StlLoadedCallback;
@@ -70,23 +71,17 @@ export class STLLoader {
 
 		rotationFolder
 			.add(this.mesh.rotation, "x", -Math.PI * 2, Math.PI * 2, 0.1)
-			.name("Rotation X");
+			.name("X");
 		rotationFolder
 			.add(this.mesh.rotation, "y", -Math.PI * 2, Math.PI * 2, 0.1)
-			.name("Rotation Y");
+			.name("Y");
 		rotationFolder
 			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, 0.1)
-			.name("Rotation Z");
+			.name("Z");
 
-		positionFolder
-			.add(this.mesh.position, "x", -15, 15, 0.1)
-			.name("Position X");
-		positionFolder
-			.add(this.mesh.position, "y", -15, 15, 0.1)
-			.name("Position Y");
-		positionFolder
-			.add(this.mesh.position, "z", -15, 15, 0.1)
-			.name("Position Z");
+		positionFolder.add(this.mesh.position, "x", -15, 15, 0.1).name("X");
+		positionFolder.add(this.mesh.position, "y", -15, 15, 0.1).name("Y");
+		positionFolder.add(this.mesh.position, "z", -15, 15, 0.1).name("Z");
 
 		rotationFolder.open();
 	};
@@ -96,24 +91,18 @@ export class STLLoader {
 
 		if (file) {
 			const geometry = await this.#readSTLFile(file);
-			this.geometry = geometry;
-			const material = new MeshPhongMaterial({
+			const material = new MeshBasicMaterial({
 				color: 0xffffff,
+				wireframe: true,
 			});
 			const mesh = new Mesh(geometry, material);
+
 			const boundingBox = new Box3().setFromObject(mesh);
-			const center = new Vector3();
-
-			boundingBox.getCenter(center);
-			mesh.position.sub(center);
-
 			const size = boundingBox.getSize(new Vector3());
-
-			// Fit the model into the camera view by scaling it down if it's too large
+			const center = boundingBox.getCenter(new Vector3());
 			const maxSize = Math.max(size.x, size.y, size.z);
-			// const scaleFactor = 1000 / maxSize; // Adjust 10 to whatever scale fits your scene
-			// mesh.scale.setScalar(scaleFactor);
 
+			this.geometry = geometry;
 			this.mesh = mesh;
 
 			const meshMergeCompatible = this.toMergeCompatible();
@@ -127,6 +116,7 @@ export class STLLoader {
 				maxSize,
 				meshMergeCompatible,
 				size,
+				center,
 			});
 			this.#addGui();
 		}
