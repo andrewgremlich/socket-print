@@ -19,6 +19,13 @@ const stlModel = new STLLoader({
 		size,
 		center,
 	}) => {
+		const lightDistance = Math.max(size.x, size.y, size.z) * 2; // Distance based on the size of the model
+		lighting.directionalLight.position.set(
+			center.x + lightDistance,
+			center.y + lightDistance,
+			center.z + lightDistance,
+		);
+
 		app.camera.position.set(0, 0, maxSize * 1.5);
 		app.camera.lookAt(center);
 
@@ -43,6 +50,10 @@ const stlModel = new STLLoader({
 
 app.addToScene(cylinder.mesh);
 app.addToScene(lighting.directionalLight);
+if (import.meta.env.MODE === "development" && lighting.directionalLightHelper) {
+	app.addToScene(lighting.directionalLightHelper);
+}
+app.addToScene(lighting.ambientLight);
 
 const mergeGeos = new MergeGeometries(stlModel, cylinder);
 
