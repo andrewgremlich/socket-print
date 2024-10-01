@@ -2,9 +2,8 @@ import type GUI from "lil-gui";
 import {
 	BufferAttribute,
 	CylinderGeometry,
-	DoubleSide,
 	Mesh,
-	MeshBasicMaterial,
+	MeshStandardMaterial,
 } from "three";
 
 import { getGui } from "@/utils/gui";
@@ -19,10 +18,8 @@ export class Cylinder {
 		const radialSegments = 32;
 		const radius = 14;
 		const height = 24;
-		const material = new MeshBasicMaterial({
+		const material = new MeshStandardMaterial({
 			color: 0xffffff,
-			side: DoubleSide,
-			wireframe: true,
 		});
 
 		this.#geometry = new CylinderGeometry(

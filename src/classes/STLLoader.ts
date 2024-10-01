@@ -3,8 +3,9 @@ import {
 	Box3,
 	BufferAttribute,
 	type BufferGeometry,
+	DoubleSide,
 	Mesh,
-	MeshBasicMaterial,
+	MeshStandardMaterial,
 	Vector3,
 } from "three";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -91,9 +92,13 @@ export class STLLoader {
 
 		if (file) {
 			const geometry = await this.#readSTLFile(file);
-			const material = new MeshBasicMaterial({
+
+			geometry.computeVertexNormals();
+			console.log(geometry);
+
+			const material = new MeshStandardMaterial({
 				color: 0xffffff,
-				wireframe: true,
+				side: DoubleSide,
 			});
 			const mesh = new Mesh(geometry, material);
 

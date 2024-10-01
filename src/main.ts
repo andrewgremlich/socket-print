@@ -2,12 +2,14 @@ import "@/global-style.css";
 
 import { Application } from "@/classes/Application";
 import { Cylinder } from "@/classes/Cylinder";
+import { Lighting } from "@/classes/Lighting";
+import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
-import { MergeGeometries } from "./classes/MergeGeometries";
-import { downloadGCodeFile, generateGCode } from "./utils/generateGCode";
-import { sliceGeometry } from "./utils/sliceGeometry";
+import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
+import { sliceGeometry } from "@/utils/sliceGeometry";
 
 const app = new Application();
+const lighting = new Lighting();
 const cylinder = new Cylinder();
 const stlModel = new STLLoader({
 	stlLoadedCallback: ({
@@ -40,6 +42,7 @@ const stlModel = new STLLoader({
 });
 
 app.addToScene(cylinder.mesh);
+app.addToScene(lighting.directionalLight);
 
 const mergeGeos = new MergeGeometries(stlModel, cylinder);
 
