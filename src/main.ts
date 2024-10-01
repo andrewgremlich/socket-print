@@ -63,8 +63,8 @@ button.textContent = "Merge Geometries";
 
 button.addEventListener("click", () => {
 	const mergedGeos = mergeGeos.getGeometry();
-	const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.2);
-	const gCode = generateGCode(slicedGeometry, 2);
+	const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.1);
+	const gCode = generateGCode(slicedGeometry, 0.1);
 
 	downloadGCodeFile(gCode);
 });
