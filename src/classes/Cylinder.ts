@@ -51,6 +51,12 @@ export class Cylinder {
 		return nonIndexCylinder;
 	};
 
+	updateMatrixWorld = () => {
+		this.mesh.updateMatrixWorld(true);
+		this.#geometry.applyMatrix4(this.mesh.matrixWorld);
+		this.#geometry.computeVertexNormals();
+	};
+
 	#addGui() {
 		const cylinderPosition = this.#gui.addFolder("Cylinder Position");
 

@@ -14,17 +14,9 @@ https://github.com/SynDaverCO/symple-slicer/tree/master
 
 try out?
 
-https://github.com/Cloud-CNC/cura-wasm
+https://blog.promaton.com/three-steps-to-slice-a-mesh-with-threejs-a7879ed54664
 
-https://github.com/SynDaverCO/symple-slicer/tree/master
-
-https://github.com/Ultimaker/CuraEngine
-
-https://github.com/SynDaverCO/cura-engine/tree/b085ee8d5cec136c9d9d49351fa055c12b4c3648
-
-https://www.npmjs.com/package/@toybox-labs/cura-wasm
-
-https://www.npmjs.com/package/cura-wasm-tkml
+https://github.com/gkjohnson/three-mesh-bvh
 
 view gcode in browser? https://github.com/etrombly/gcode-yew
 
@@ -43,3 +35,9 @@ In order to test GCode files, use the [NCViewer](https://ncviewer.com/) website.
 ## Notes
 
 In order to Group models, use the `GroupMeshes` class from three js.
+
+## Reference
+
+https://threejs.org/docs/#api/en/math/Vector3
+
+https://threejs.org/docs/?q=VEctor#api/en/math/Box3

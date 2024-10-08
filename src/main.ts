@@ -62,11 +62,16 @@ const button = document.createElement("button");
 button.textContent = "Merge Geometries";
 
 button.addEventListener("click", () => {
+	cylinder.updateMatrixWorld();
+	stlModel.updateMatrixWorld();
+
 	const mergedGeos = mergeGeos.getGeometry();
 	const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.1);
 	const gCode = generateGCode(slicedGeometry, 0.1);
 
-	downloadGCodeFile(gCode);
+	console.log(gCode);
+
+	// downloadGCodeFile(gCode);
 });
 
 document.querySelector("body")?.appendChild(button);

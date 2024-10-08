@@ -7,7 +7,16 @@ export function generateGCode(
 	feedrate = 1500,
 ): string {
 	//https://docs.duet3d.com/en/User_manual/Reference/Gcodes
-	let gcode = "G10 P0 S195 R175\nT0\n";
+	let gcode = `;customInfo currentMaterial="PolyProp"
+;customInfo currentNozzleSize = "5mm"
+;customInfo currentCup = "93x38"
+;customInfo currentTemp = "200C"
+; estimated printing time (normal mode) = Xh YYm ZZs
+G10 P0 S195 R175
+T0
+`;
+
+	// TODO: provide estimated print time above.
 
 	gcode += "G21 ; Set units to millimeters\n";
 	gcode += "G90 ; Use absolute positioning\n";

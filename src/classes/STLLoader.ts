@@ -62,6 +62,14 @@ export class STLLoader {
 		return label;
 	};
 
+	updateMatrixWorld = () => {
+		if (this.mesh && this.geometry) {
+			this.mesh.updateMatrixWorld(true);
+			this.geometry.applyMatrix4(this.mesh.matrixWorld);
+			this.geometry.computeVertexNormals();
+		}
+	};
+
 	#addGui = () => {
 		const rotationFolder = this.#gui.addFolder("STL Rotation");
 		const positionFolder = this.#gui.addFolder("STL Position");
@@ -94,7 +102,7 @@ export class STLLoader {
 			const geometry = await this.#readSTLFile(file);
 
 			geometry.computeVertexNormals();
-			console.log(geometry);
+			geometry.computeBoundingBox();
 
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
@@ -154,6 +162,7 @@ export class STLLoader {
 		if (!stlMeshGeo.attributes.normal) {
 			stlMeshGeo.computeVertexNormals();
 		}
+
 		if (!stlMeshGeo.attributes.uv) {
 			const uvBox = new Float32Array(stlMeshGeo.attributes.position.count * 2);
 			stlMeshGeo.setAttribute("uv", new BufferAttribute(uvBox, 2));
