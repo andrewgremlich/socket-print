@@ -18,6 +18,7 @@ T0
 
 	// TODO: provide estimated print time above.
 
+	gcode += 'M98 P"0:/sys/provel/start.g"\n';
 	gcode += "G21 ; Set units to millimeters\n";
 	gcode += "G90 ; Use absolute positioning\n";
 	gcode += "G28 ; Home all axes\n";
@@ -46,6 +47,7 @@ T0
 
 	gcode += "G28 ; Home all axes\n";
 	gcode += "M84 ; Disable motors\n";
+	gcode += 'M98 P"0:/sys/provel/end.g"\n';
 
 	return gcode;
 }
