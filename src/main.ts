@@ -33,18 +33,6 @@ const stlModel = new STLLoader({
 
 		app.gridHelper.position.set(0, -maxSize / 2, 0);
 		app.gridHelper.scale.set(size.x / 200, 1, size.z / 200);
-
-		// const sliceCylinder = sliceGeometry(mesh.geometry, 0.2);
-		// const gCodeCylinder = generateGCode(sliceCylinder, 2);
-		// downloadGCodeFile(gCodeCylinder);
-
-		// const cyl = cylinder.toMergeCompatible();
-
-		// const mergeGeometries = new MergeGeometries({
-		// 	geometries: [cyl, meshMergeCompatible],
-		// });
-
-		// app.addToScene(mergeGeometries.mesh as Object3D);
 	},
 });
 
