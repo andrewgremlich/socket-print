@@ -71,7 +71,7 @@ button.addEventListener("click", () => {
 
 	console.log(gCode);
 
-	// downloadGCodeFile(gCode);
+	downloadGCodeFile(gCode);
 });
 
 document.querySelector("body")?.appendChild(button);
