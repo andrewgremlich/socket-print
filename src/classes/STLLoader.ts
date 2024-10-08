@@ -12,9 +12,6 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 
 import { getGui } from "@/utils/gui";
 
-const stlFileInputId = "stlFileInput";
-const stlFileInputLabelId = "stlFileInputLabel";
-
 type StlLoadedCallback = (params: {
 	mesh: Mesh;
 	maxSize: number;
@@ -40,27 +37,14 @@ export class STLLoader {
 		this.stlLoadedCallback = stlLoadedCallback ?? (() => {});
 		this.#gui = getGui();
 
-		document.querySelector("body")?.appendChild(this.#createSTLInput());
+		const stlFileInput = document.getElementById("stlFileInput");
+
+		if (!stlFileInput) {
+			throw new Error("STL File Input not found");
+		}
+
+		stlFileInput?.addEventListener("change", this.#onStlFileChange);
 	}
-
-	#createSTLInput = (): HTMLLabelElement => {
-		const input = document.createElement("input");
-		const label = document.createElement("label");
-
-		input.type = "file";
-		input.accept = ".stl";
-		input.id = stlFileInputId;
-
-		label.htmlFor = stlFileInputId;
-		label.textContent = "STL file";
-		label.id = stlFileInputLabelId;
-
-		input.addEventListener("change", this.#onStlFileChange);
-
-		label.appendChild(input);
-
-		return label;
-	};
 
 	updateMatrixWorld = () => {
 		if (this.mesh && this.geometry) {

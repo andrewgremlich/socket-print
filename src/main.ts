@@ -45,9 +45,11 @@ app.addToScene(lighting.ambientLight);
 
 const mergeGeos = new MergeGeometries(stlModel, cylinder);
 
-const button = document.createElement("button");
+const button = document.getElementById("mergeGeometries");
 
-button.textContent = "Merge Geometries";
+if (!button) {
+	throw new Error("Button not found");
+}
 
 button.addEventListener("click", () => {
 	cylinder.updateMatrixWorld();
@@ -61,8 +63,6 @@ button.addEventListener("click", () => {
 
 	downloadGCodeFile(gCode);
 });
-
-document.querySelector("body")?.appendChild(button);
 
 window.addEventListener("resize", () => {
 	app.camera.aspect = window.innerWidth / window.innerHeight;
