@@ -9,34 +9,33 @@ import {
 import { getGui } from "@/utils/gui";
 
 export class Cylinder {
-	#geometry: CylinderGeometry;
+	geometry: CylinderGeometry;
 	#gui: GUI;
 
 	mesh: Mesh;
 
 	constructor() {
-		const radialSegments = 32;
-		const radius = 14;
-		const height = 24;
+		const radialSegments = 64;
+		const radius = 34;
+		const height = 34;
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
 		});
 
-		this.#geometry = new CylinderGeometry(
+		this.geometry = new CylinderGeometry(
 			radius,
 			radius,
 			height,
 			radialSegments,
 		);
-		this.mesh = new Mesh(this.#geometry, material);
+		this.mesh = new Mesh(this.geometry, material);
 		this.#gui = getGui();
 
 		this.#addGui();
 	}
 
 	toMergeCompatible = () => {
-		const meshCopy = this.mesh.clone();
-		const nonIndexCylinder = meshCopy.geometry.toNonIndexed();
+		const nonIndexCylinder = this.mesh.geometry.toNonIndexed();
 
 		if (!nonIndexCylinder.attributes.normal) {
 			nonIndexCylinder.computeVertexNormals();
@@ -53,8 +52,10 @@ export class Cylinder {
 
 	updateMatrixWorld = () => {
 		this.mesh.updateMatrixWorld(true);
-		this.#geometry.applyMatrix4(this.mesh.matrixWorld);
-		this.#geometry.computeVertexNormals();
+		this.geometry.applyMatrix4(this.mesh.matrixWorld);
+
+		this.mesh.rotation.set(0, 0, 0);
+		this.mesh.position.set(0, 0, 0);
 	};
 
 	#addGui() {

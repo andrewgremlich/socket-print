@@ -11,7 +11,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { getGui } from "@/utils/gui";
 
 export class Application {
-	#scene: Scene;
+	scene: Scene;
 	camera: PerspectiveCamera;
 	renderer: WebGLRenderer;
 	controls: OrbitControls;
@@ -19,7 +19,7 @@ export class Application {
 	#gui: GUI;
 
 	constructor() {
-		this.#scene = new Scene();
+		this.scene = new Scene();
 		this.camera = new PerspectiveCamera(
 			75,
 			window.innerWidth / window.innerHeight,
@@ -47,11 +47,11 @@ export class Application {
 		document.body.appendChild(this.renderer.domElement);
 	}
 
-	addToScene = (object: Object3D) => this.#scene.add(object);
+	addToScene = (object: Object3D) => this.scene.add(object);
 
 	#animate = () => {
 		this.controls.update();
-		this.renderer.render(this.#scene, this.camera);
+		this.renderer.render(this.scene, this.camera);
 	};
 
 	#addCameraGui = () => {

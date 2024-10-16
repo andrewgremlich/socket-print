@@ -50,7 +50,9 @@ export class STLLoader {
 		if (this.mesh && this.geometry) {
 			this.mesh.updateMatrixWorld(true);
 			this.geometry.applyMatrix4(this.mesh.matrixWorld);
-			this.geometry.computeVertexNormals();
+
+			this.mesh.rotation.set(0, 0, 0);
+			this.mesh.position.set(0, 0, 0);
 		}
 	};
 
@@ -63,13 +65,13 @@ export class STLLoader {
 		}
 
 		rotationFolder
-			.add(this.mesh.rotation, "x", -Math.PI * 2, Math.PI * 2, 0.1)
+			.add(this.mesh.rotation, "x", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
 			.name("X");
 		rotationFolder
-			.add(this.mesh.rotation, "y", -Math.PI * 2, Math.PI * 2, 0.1)
+			.add(this.mesh.rotation, "y", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
 			.name("Y");
 		rotationFolder
-			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, 0.1)
+			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
 			.name("Z");
 
 		positionFolder.add(this.mesh.position, "x", -15, 15, 0.1).name("X");
@@ -81,8 +83,15 @@ export class STLLoader {
 
 	#onStlFileChange = async (e: Event) => {
 		const file = (e.target as HTMLInputElement).files?.[0];
+		const loadingScreen = document.getElementById("loading");
+
+		if (!loadingScreen) {
+			throw new Error("Loading screen not found");
+		}
 
 		if (file) {
+			loadingScreen.style.display = "flex";
+
 			const geometry = await this.#readSTLFile(file);
 
 			geometry.computeVertexNormals();

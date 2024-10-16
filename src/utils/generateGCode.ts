@@ -1,4 +1,17 @@
-import type { Vector3 } from "three";
+import type { BufferGeometry, Vector3 } from "three";
+
+// INFO: use this to troubleshoot the geometry
+export function geometryToGCode(geometry: BufferGeometry): string {
+	let gcode = "";
+
+	console.log(geometry);
+
+	for (let i = 0; i < geometry.attributes.position.array.length; i += 3) {
+		gcode += `G1 X${geometry.attributes.position.array[i].toFixed(2)} Y${geometry.attributes.position.array[i + 1].toFixed(2)} Z${geometry.attributes.position.array[i + 2].toFixed(2)}\n`;
+	}
+
+	return gcode;
+}
 
 // Function to generate G-code from the slices
 export function generateGCode(
@@ -26,17 +39,17 @@ T0
 
 	slices.forEach((slice, layerIndex) => {
 		gcode += `; Layer ${layerIndex}\n`;
-		const z = (layerIndex + 1) * layerHeight;
+		const y = layerIndex * layerHeight;
 
 		for (const contour of slice) {
 			if (contour.length > 0) {
 				const startPoint = contour[0];
-				gcode += `G0 X${startPoint.x.toFixed(2)} Y${startPoint.y.toFixed(2)} Z${z.toFixed(2)} F${feedrate}\n`;
+				gcode += `G0 X${startPoint.x.toFixed(2)} Y${y.toFixed(2)} Z${startPoint.z.toFixed(2)} F${feedrate}\n`;
 				gcode += "G1 F1500 ; Start extrusion\n";
 
 				contour.forEach((point, pointIndex) => {
 					if (pointIndex > 0) {
-						gcode += `G1 X${point.x.toFixed(2)} Y${point.y.toFixed(2)} E1 ; Extrude\n`;
+						gcode += `G1 X${point.x.toFixed(2)} Y${y.toFixed(2)} Z${point.z.toFixed(2)} E1 ; Extrude\n`;
 					}
 				});
 

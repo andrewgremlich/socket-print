@@ -1,4 +1,4 @@
-import { type BufferGeometry, Mesh, MeshPhongMaterial } from "three";
+import { Mesh, MeshPhongMaterial } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
 import type { Cylinder } from "./Cylinder";
@@ -18,9 +18,13 @@ export class MergeGeometries {
 	}
 
 	getGeometry = () => {
+		if (this.#stlModel.geometry === null) {
+			throw new Error("STL Model geometry is required");
+		}
+
 		const mergedGeometry = BufferGeometryUtils.mergeGeometries([
 			this.#cyliner.toMergeCompatible(),
-			this.#stlModel.geometry as BufferGeometry,
+			this.#stlModel.geometry,
 		]);
 
 		const material = new MeshPhongMaterial({

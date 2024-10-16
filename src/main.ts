@@ -2,11 +2,20 @@ import "@/global-style.css";
 
 import { Application } from "@/classes/Application";
 import { Cylinder } from "@/classes/Cylinder";
+import { DebugPoint } from "@/classes/DebugPoint";
 import { Lighting } from "@/classes/Lighting";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
-import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
+import { generateGCode, geometryToGCode } from "@/utils/generateGCode";
+// import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import { sliceGeometry } from "@/utils/sliceGeometry";
+import { STLExporter } from "three/examples/jsm/Addons.js";
+
+const loadingScreen = document.getElementById("loading");
+
+if (!loadingScreen) {
+	throw new Error("Loading screen not found");
+}
 
 const app = new Application();
 const lighting = new Lighting();
@@ -33,6 +42,8 @@ const stlModel = new STLLoader({
 
 		app.gridHelper.position.set(0, -maxSize / 2, 0);
 		app.gridHelper.scale.set(size.x / 200, 1, size.z / 200);
+
+		loadingScreen.style.display = "none";
 	},
 });
 
@@ -45,23 +56,40 @@ app.addToScene(lighting.ambientLight);
 
 const mergeGeos = new MergeGeometries(stlModel, cylinder);
 
-const button = document.getElementById("mergeGeometries");
+const mergeGeosButton = document.getElementById("mergeGeometries");
 
-if (!button) {
-	throw new Error("Button not found");
+if (!mergeGeosButton) {
+	throw new Error("Merged Geometries Button not found");
 }
 
-button.addEventListener("click", () => {
-	cylinder.updateMatrixWorld();
-	stlModel.updateMatrixWorld();
+mergeGeosButton.addEventListener("click", () => {
+	loadingScreen.style.display = "flex";
 
-	const mergedGeos = mergeGeos.getGeometry();
-	const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.1);
-	const gCode = generateGCode(slicedGeometry, 0.1);
+	setTimeout(() => {
+		cylinder.updateMatrixWorld();
+		stlModel.updateMatrixWorld();
 
-	console.log(gCode);
+		const mergedGeos = mergeGeos.getGeometry();
+		const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.1);
 
-	downloadGCodeFile(gCode);
+		console.log(slicedGeometry);
+
+		const debugPoint1 = new DebugPoint(slicedGeometry[0][0][0]);
+		const debugPoint2 = new DebugPoint(slicedGeometry[0][0][1]);
+		const debugPoint3 = new DebugPoint(slicedGeometry[0][1][0]);
+
+		app.addToScene(debugPoint1.mesh);
+		app.addToScene(debugPoint2.mesh);
+		app.addToScene(debugPoint3.mesh);
+
+		const gCode = generateGCode(slicedGeometry, 0.1);
+
+		loadingScreen.style.display = "none";
+
+		console.log(gCode);
+
+		// downloadGCodeFile(gCode);
+	}, 1000);
 });
 
 window.addEventListener("resize", () => {
