@@ -12,7 +12,6 @@ export function geometryToGCode(geometry: BufferGeometry): string {
 
 	return gcode;
 }
-
 // Function to generate G-code from the slices
 export function generateGCode(
 	slices: Vector3[][][],
@@ -35,28 +34,28 @@ T0
 	gcode += "G21 ; Set units to millimeters\n";
 	gcode += "G90 ; Use absolute positioning\n";
 	gcode += "G28 ; Home all axes\n";
-	gcode += "G1 Z0.3 F5000 ; Lift\n";
+	gcode += "G1 X0.3 F5000 ; Lift\n";
 
-	slices.forEach((slice, layerIndex) => {
-		gcode += `; Layer ${layerIndex}\n`;
-		const y = layerIndex * layerHeight;
+	for (let i = 0; i < slices.length; i++) {
+		gcode += `; Layer ${i}\n`;
+		const y = i * layerHeight;
 
-		for (const contour of slice) {
+		for (const contour of slices[i]) {
 			if (contour.length > 0) {
 				const startPoint = contour[0];
 				gcode += `G0 X${startPoint.x.toFixed(2)} Y${y.toFixed(2)} Z${startPoint.z.toFixed(2)} F${feedrate}\n`;
 				gcode += "G1 F1500 ; Start extrusion\n";
 
-				contour.forEach((point, pointIndex) => {
-					if (pointIndex > 0) {
-						gcode += `G1 X${point.x.toFixed(2)} Y${y.toFixed(2)} Z${point.z.toFixed(2)} E1 ; Extrude\n`;
+				for (let j = 0; j < contour.length; j++) {
+					if (j > 0) {
+						gcode += `G1 X${contour[j].x.toFixed(2)} Y${y.toFixed(2)} Z${contour[j].z.toFixed(2)} E1 ; Extrude\n`;
 					}
-				});
+				}
 
 				gcode += "G0 F3000 ; Stop extrusion\n";
 			}
 		}
-	});
+	}
 
 	gcode += "G28 ; Home all axes\n";
 	gcode += "M84 ; Disable motors\n";

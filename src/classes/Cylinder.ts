@@ -51,11 +51,13 @@ export class Cylinder {
 	};
 
 	updateMatrixWorld = () => {
-		this.mesh.updateMatrixWorld(true);
-		this.geometry.applyMatrix4(this.mesh.matrixWorld);
+		if (this.mesh && this.geometry) {
+			this.mesh.updateMatrixWorld(true);
+			this.geometry.applyMatrix4(this.mesh.matrixWorld);
 
-		this.mesh.rotation.set(0, 0, 0);
-		this.mesh.position.set(0, 0, 0);
+			this.mesh.rotation.set(0, 0, 0);
+			this.mesh.position.set(0, 0, 0);
+		}
 	};
 
 	#addGui() {

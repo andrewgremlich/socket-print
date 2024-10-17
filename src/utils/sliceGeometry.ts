@@ -4,15 +4,15 @@ import { Box3, type BufferGeometry, Mesh, Vector3 } from "three";
  * Slice a geometry along the Y-axis and return contours at each layer.
  *
  * @param geometry - The geometry to be sliced (BufferGeometry)
- * @param layerHeight - The height between slices
+ * @param layerWidth - The width between slices
  * @returns An array of slices, where each slice is an array of contours, and each contour is an array of Vector3 points
  */
 export function sliceGeometry(
 	geometry: BufferGeometry,
-	layerHeight: number,
+	layerWidth: number,
 ): Vector3[][][] {
-	if (layerHeight <= 0) {
-		throw new Error("Layer height must be greater than 0");
+	if (layerWidth <= 0) {
+		throw new Error("Layer width must be greater than 0");
 	}
 
 	// Output: Array of layers, each containing arrays of contours
@@ -27,7 +27,7 @@ export function sliceGeometry(
 	const positionAttribute = geometry.attributes.position;
 
 	// Iterate over Y layers from the bottom (minY) to the top (maxY)
-	for (let y = minY; y <= maxY; y += layerHeight) {
+	for (let y = minY; y <= maxY; y += layerWidth) {
 		const contours: Vector3[][] = []; // Array to hold the contours for this slice
 
 		// Loop through each triangle in the geometry

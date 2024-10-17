@@ -70,9 +70,12 @@ mergeGeosButton.addEventListener("click", () => {
 		stlModel.updateMatrixWorld();
 
 		const mergedGeos = mergeGeos.getGeometry();
+
+		console.log(mergedGeos);
+
 		const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.1);
 
-		console.log(slicedGeometry);
+		// console.log(slicedGeometry);
 
 		const debugPoint1 = new DebugPoint(slicedGeometry[0][0][0]);
 		const debugPoint2 = new DebugPoint(slicedGeometry[0][0][1]);

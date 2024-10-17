@@ -47,6 +47,7 @@ export class STLLoader {
 	}
 
 	updateMatrixWorld = () => {
+		console.log("updateMatrixWorld", this.mesh, this.geometry);
 		if (this.mesh && this.geometry) {
 			this.mesh.updateMatrixWorld(true);
 			this.geometry.applyMatrix4(this.mesh.matrixWorld);
@@ -74,9 +75,9 @@ export class STLLoader {
 			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
 			.name("Z");
 
-		positionFolder.add(this.mesh.position, "x", -15, 15, 0.1).name("X");
-		positionFolder.add(this.mesh.position, "y", -15, 15, 0.1).name("Y");
-		positionFolder.add(this.mesh.position, "z", -15, 15, 0.1).name("Z");
+		positionFolder.add(this.mesh.position, "x", -150, 150, 10).name("X");
+		positionFolder.add(this.mesh.position, "y", -150, 150, 10).name("Y");
+		positionFolder.add(this.mesh.position, "z", -150, 150, 10).name("Z");
 
 		rotationFolder.open();
 	};
