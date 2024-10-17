@@ -138,6 +138,8 @@ export class STLLoader {
 				const loader = new ThreeSTLLoader();
 				const geometry = loader.parse(buffer);
 
+				geometry.rotateX(-Math.PI * 0.5);
+
 				resolve(geometry);
 			};
 

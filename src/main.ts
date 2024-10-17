@@ -2,14 +2,12 @@ import "@/global-style.css";
 
 import { Application } from "@/classes/Application";
 import { Cylinder } from "@/classes/Cylinder";
-import { DebugPoint } from "@/classes/DebugPoint";
 import { Lighting } from "@/classes/Lighting";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
-import { generateGCode, geometryToGCode } from "@/utils/generateGCode";
+import { generateGCode } from "@/utils/generateGCode";
 // import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import { sliceGeometry } from "@/utils/sliceGeometry";
-import { STLExporter } from "three/examples/jsm/Addons.js";
 
 const loadingScreen = document.getElementById("loading");
 
@@ -71,19 +69,9 @@ mergeGeosButton.addEventListener("click", () => {
 
 		const mergedGeos = mergeGeos.getGeometry();
 
-		console.log(mergedGeos);
+		mergedGeos.geometry.rotateX(Math.PI * 0.5);
 
 		const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.1);
-
-		// console.log(slicedGeometry);
-
-		const debugPoint1 = new DebugPoint(slicedGeometry[0][0][0]);
-		const debugPoint2 = new DebugPoint(slicedGeometry[0][0][1]);
-		const debugPoint3 = new DebugPoint(slicedGeometry[0][1][0]);
-
-		app.addToScene(debugPoint1.mesh);
-		app.addToScene(debugPoint2.mesh);
-		app.addToScene(debugPoint3.mesh);
 
 		const gCode = generateGCode(slicedGeometry, 0.1);
 

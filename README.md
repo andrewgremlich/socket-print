@@ -21,3 +21,6 @@ https://howtomechatronics.com/tutorials/g-code-explained-list-of-most-important-
 https://threejs.org/docs/#api/en/math/Vector3
 
 https://threejs.org/docs/?q=VEctor#api/en/math/Box3
+
+
+[Perhaps look to this repository for a better slicer.](https://github.com/yomboprime/MinceSlicer/tree/136b102124c40e0b48aa8ba64a219c94c11efb80)
