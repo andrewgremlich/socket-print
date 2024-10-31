@@ -22,5 +22,10 @@ https://threejs.org/docs/#api/en/math/Vector3
 
 https://threejs.org/docs/?q=VEctor#api/en/math/Box3
 
+[CuraWASM?](https://www.npmjs.com/package/cura-wasm/v/1.3.1)
 
 [Perhaps look to this repository for a better slicer.](https://github.com/yomboprime/MinceSlicer/tree/136b102124c40e0b48aa8ba64a219c94c11efb80)
+
+[Also perhaps this one for a slicer](https://github.com/skarab42/SLAcer.js/blob/gh-pages/js/slacer/slicer.js)
+
+[Perhaps use this repository as a reference for a WASM Slicer](https://github.com/TileHalo/stl.rs/tree/master)

@@ -32,9 +32,9 @@ export class STLLoader {
 	constructor({
 		stlLoadedCallback,
 	}: {
-		stlLoadedCallback?: StlLoadedCallback;
+		stlLoadedCallback: StlLoadedCallback;
 	}) {
-		this.stlLoadedCallback = stlLoadedCallback ?? (() => {});
+		this.stlLoadedCallback = stlLoadedCallback;
 		this.#gui = getGui();
 
 		const stlFileInput = document.getElementById("stlFileInput");
@@ -47,7 +47,6 @@ export class STLLoader {
 	}
 
 	updateMatrixWorld = () => {
-		console.log("updateMatrixWorld", this.mesh, this.geometry);
 		if (this.mesh && this.geometry) {
 			this.mesh.updateMatrixWorld(true);
 			this.geometry.applyMatrix4(this.mesh.matrixWorld);
@@ -112,6 +111,11 @@ export class STLLoader {
 			this.geometry = geometry;
 			this.mesh = mesh;
 
+			this.mesh.position.set(0, Math.abs(boundingBox.min.y), 0);
+			this.geometry.rotateX(-Math.PI * 0.5);
+			this.mesh.position.set(0, boundingBox.max.y, 0);
+			this.updateMatrixWorld();
+
 			const meshMergeCompatible = this.toMergeCompatible();
 
 			if (!meshMergeCompatible) {
@@ -137,9 +141,6 @@ export class STLLoader {
 				const buffer = e.target?.result as ArrayBuffer;
 				const loader = new ThreeSTLLoader();
 				const geometry = loader.parse(buffer);
-
-				geometry.rotateX(-Math.PI * 0.5);
-
 				resolve(geometry);
 			};
 

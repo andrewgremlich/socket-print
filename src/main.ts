@@ -5,6 +5,7 @@ import { Cylinder } from "@/classes/Cylinder";
 import { Lighting } from "@/classes/Lighting";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
+import { findCentroid } from "@/utils/findCentroid";
 import { generateGCode } from "@/utils/generateGCode";
 // import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import { sliceGeometry } from "@/utils/sliceGeometry";
@@ -16,8 +17,17 @@ if (!loadingScreen) {
 }
 
 const app = new Application();
+
 const lighting = new Lighting();
-const cylinder = new Cylinder();
+app.addToScene(lighting.directionalLight);
+if (import.meta.env.MODE === "development" && lighting.directionalLightHelper) {
+	app.addToScene(lighting.directionalLightHelper);
+}
+app.addToScene(lighting.ambientLight);
+
+const cylinder = new Cylinder("large");
+app.addToScene(cylinder.mesh);
+
 const stlModel = new STLLoader({
 	stlLoadedCallback: ({
 		mesh,
@@ -32,25 +42,22 @@ const stlModel = new STLLoader({
 			center.y + lightDistance,
 			center.z + lightDistance,
 		);
+		const centroid = findCentroid(mesh, 40);
+
+		// TODO: place the centroid at the top of the cylinder
+		cylinder.mesh.position.set(
+			centroid.x,
+			centroid.y - cylinder.height / 2,
+			centroid.z,
+		);
 
 		app.camera.position.set(0, 0, maxSize * 1.5);
 		app.camera.lookAt(center);
-
 		app.addToScene(mesh);
-
-		app.gridHelper.position.set(0, -maxSize / 2, 0);
-		app.gridHelper.scale.set(size.x / 200, 1, size.z / 200);
 
 		loadingScreen.style.display = "none";
 	},
 });
-
-app.addToScene(cylinder.mesh);
-app.addToScene(lighting.directionalLight);
-if (import.meta.env.MODE === "development" && lighting.directionalLightHelper) {
-	app.addToScene(lighting.directionalLightHelper);
-}
-app.addToScene(lighting.ambientLight);
 
 const mergeGeos = new MergeGeometries(stlModel, cylinder);
 
@@ -81,10 +88,4 @@ mergeGeosButton.addEventListener("click", () => {
 
 		// downloadGCodeFile(gCode);
 	}, 1000);
-});
-
-window.addEventListener("resize", () => {
-	app.camera.aspect = window.innerWidth / window.innerHeight;
-	app.camera.updateProjectionMatrix();
-	app.renderer.setSize(window.innerWidth, window.innerHeight);
 });

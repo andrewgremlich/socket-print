@@ -30,17 +30,14 @@ export class Lighting {
 
 	#addGui() {
 		const directionalLight = this.#gui.addFolder("Directional Light");
-		// const ambientLight = this.#gui.addFolder("Ambient Light");
+		const ambientLight = this.#gui.addFolder("Ambient Light");
 
 		directionalLight.add(this.directionalLight.position, "x", -100, 100, 10);
 		directionalLight.add(this.directionalLight.position, "y", -100, 100, 10);
 		directionalLight.add(this.directionalLight.position, "z", -100, 100, 10);
 		directionalLight.add(this.directionalLight, "intensity", 0, 10, 0.25);
 
-		// ambientLight.add(this.ambientLight.position, "x", -100, 100, 10);
-		// ambientLight.add(this.ambientLight.position, "y", -100, 100, 10);
-		// ambientLight.add(this.ambientLight.position, "z", -100, 100, 10);
-		// ambientLight.add(this.ambientLight, "intensity", 0, 5, 0.1);
-		// ambientLight.addColor(this.ambientLight, "color");
+		ambientLight.add(this.ambientLight, "intensity", 0, 5, 0.1);
+		ambientLight.addColor(this.ambientLight, "color");
 	}
 }
