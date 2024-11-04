@@ -58,7 +58,7 @@ export class Cylinder {
 		button.addEventListener("click", () => {
 			const reverseSize = this.#size === "large" ? "small" : "large";
 
-			button.textContent = `Change Distal Cup Size to ${reverseSize}`;
+			button.textContent = `Change Distal Cup Size to ${this.#size}`;
 
 			this.changeSize(reverseSize);
 		});
