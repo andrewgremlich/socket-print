@@ -20,20 +20,22 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@playwright/test": "^1.48.2",
-    "@types/node": "^22.8.4",
+    "@types/node": "^22.9.0",
     "@types/three": "^0.169.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "typescript": "^5.6.3",
     "vite": "^5.4.10",
     "vite-plugin-pwa": "^0.20.5",
-    "vite-tsconfig-paths": "^5.0.1",
+    "vite-tsconfig-paths": "^5.1.0",
     "vitest": "^2.1.4",
     "web-vitals": "^4.2.4"
   },
   "dependencies": {
     "file-type": "^19.6.0",
-    "lil-gui": "^0.19.2",
-    "three": "^0.169.0"
+    "lil-gui": "^0.20.0",
+    "three": "^0.170.0",
+    "three-bvh-csg": "^0.0.16",
+    "three-mesh-bvh": "^0.8.3"
   }
 }

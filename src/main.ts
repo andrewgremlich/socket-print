@@ -3,12 +3,13 @@ import "@/global-style.css";
 import { Application } from "@/classes/Application";
 import { Cylinder } from "@/classes/Cylinder";
 import { Lighting } from "@/classes/Lighting";
-import { MergeGeometries } from "@/classes/MergeGeometries";
 import { STLLoader } from "@/classes/STLLoader";
-import { findCentroid } from "@/utils/findCentroid";
-import { generateGCode } from "@/utils/generateGCode";
 // import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
-import { sliceGeometry } from "@/utils/sliceGeometry";
+// import { sliceGeometry } from "@/utils/sliceGeometry";
+import { Vector3 } from "three";
+import { DebugPoint } from "./classes/DebugPoint";
+import { EvaluateGeometries } from "./classes/EvaluateGeometries";
+import { mergeGeosButton } from "./utils/htmlElements";
 
 const loadingScreen = document.getElementById("loading");
 
@@ -26,42 +27,33 @@ if (import.meta.env.MODE === "development" && lighting.directionalLightHelper) {
 app.addToScene(lighting.ambientLight);
 
 const cylinder = new Cylinder("large");
+if (!cylinder.mesh) {
+	throw new Error("Cylinder mesh not found");
+}
 app.addToScene(cylinder.mesh);
 
+const debugPoint = new DebugPoint(new Vector3(0.7309, 0, 2.847));
+app.addToScene(debugPoint.mesh);
+
 const stlModel = new STLLoader({
-	stlLoadedCallback: ({
-		mesh,
-		maxSize,
-		meshMergeCompatible: _m,
-		size,
-		center,
-	}) => {
-		const lightDistance = Math.max(size.x, size.y, size.z) * 2; // Distance based on the size of the model
-		lighting.directionalLight.position.set(
-			center.x + lightDistance,
-			center.y + lightDistance,
-			center.z + lightDistance,
-		);
-		const centroid = findCentroid(mesh, 40);
-
-		// TODO: place the centroid at the top of the cylinder
+	stlLoadedCallback: ({ mesh, maxDimension, center }) => {
+		if (!cylinder.mesh) {
+			throw new Error("Cylinder mesh not found");
+		}
 		cylinder.mesh.position.set(
-			centroid.x,
-			centroid.y - cylinder.height / 2,
-			centroid.z,
+			center.x,
+			center.y - (cylinder.height - 40 / 2),
+			center.z,
 		);
 
-		app.camera.position.set(0, 0, maxSize * 1.5);
+		app.camera.position.set(0, 0, maxDimension * 1.5);
+		//TODO: adjust this center...
 		app.camera.lookAt(center);
 		app.addToScene(mesh);
 
 		loadingScreen.style.display = "none";
 	},
 });
-
-const mergeGeos = new MergeGeometries(stlModel, cylinder);
-
-const mergeGeosButton = document.getElementById("mergeGeometries");
 
 if (!mergeGeosButton) {
 	throw new Error("Merged Geometries Button not found");
@@ -74,17 +66,30 @@ mergeGeosButton.addEventListener("click", () => {
 		cylinder.updateMatrixWorld();
 		stlModel.updateMatrixWorld();
 
-		const mergedGeos = mergeGeos.getGeometry();
+		if (!stlModel.mesh) {
+			throw new Error("STL data has not been loaded!");
+		}
 
-		mergedGeos.geometry.rotateX(Math.PI * 0.5);
+		if (!cylinder.mesh) {
+			throw new Error("Cylinder mesh not found");
+		}
 
-		const slicedGeometry = sliceGeometry(mergedGeos.geometry, 0.1);
+		const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
 
-		const gCode = generateGCode(slicedGeometry, 0.1);
+		if (!evaluateGeometries.mesh) {
+			throw new Error("Geometry not found");
+		}
+
+		app.addToScene(evaluateGeometries.mesh);
+
+		mergeGeosButton.disabled = true;
+
+		// const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, 0.1);
+		// const gCode = generateGCode(slicedGeometry, 0.1);
 
 		loadingScreen.style.display = "none";
 
-		console.log(gCode);
+		// console.log(gCode);
 
 		// downloadGCodeFile(gCode);
 	}, 1000);

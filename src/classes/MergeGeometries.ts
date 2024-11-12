@@ -18,13 +18,19 @@ export class MergeGeometries {
 	}
 
 	getGeometry = () => {
-		if (this.#stlModel.geometry === null) {
+		if (this.#stlModel.mesh === null) {
 			throw new Error("STL Model geometry is required");
 		}
 
+		const mergeableCylinder = this.#cyliner.toMergeCompatible();
+
+		if (!mergeableCylinder) {
+			throw new Error("Cylinder geometry is not merge compatible");
+		}
+
 		const mergedGeometry = BufferGeometryUtils.mergeGeometries([
-			this.#cyliner.toMergeCompatible(),
-			this.#stlModel.geometry,
+			mergeableCylinder,
+			this.#stlModel.mesh.geometry,
 		]);
 
 		const material = new MeshPhongMaterial({

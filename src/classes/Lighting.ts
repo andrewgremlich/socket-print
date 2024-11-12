@@ -16,7 +16,7 @@ export class Lighting {
 		this.#gui = getGui();
 
 		this.directionalLight.castShadow = true;
-		this.directionalLight.position.set(100, 100, 100);
+		this.directionalLight.position.set(100, 100, 300);
 		this.ambientLight.position.set(0, 0, 0);
 
 		if (import.meta.env.MODE === "development") {
@@ -32,9 +32,9 @@ export class Lighting {
 		const directionalLight = this.#gui.addFolder("Directional Light");
 		const ambientLight = this.#gui.addFolder("Ambient Light");
 
-		directionalLight.add(this.directionalLight.position, "x", -100, 100, 10);
-		directionalLight.add(this.directionalLight.position, "y", -100, 100, 10);
-		directionalLight.add(this.directionalLight.position, "z", -100, 100, 10);
+		directionalLight.add(this.directionalLight.position, "x", -100, 500, 10);
+		directionalLight.add(this.directionalLight.position, "y", -100, 500, 10);
+		directionalLight.add(this.directionalLight.position, "z", -100, 500, 10);
 		directionalLight.add(this.directionalLight, "intensity", 0, 10, 0.25);
 
 		ambientLight.add(this.ambientLight, "intensity", 0, 5, 0.1);

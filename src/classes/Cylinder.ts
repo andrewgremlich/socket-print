@@ -8,85 +8,107 @@ import {
 } from "three";
 
 import { getGui } from "@/utils/gui";
+import { changeDistalCupSize, userInterface } from "@/utils/htmlElements";
 
-export class Cylinder {
+import { AppObject, type AppObjectFunctions } from "./AppObject";
+
+export class Cylinder extends AppObject implements AppObjectFunctions {
 	#gui: GUI;
-	#radialSegments = 64;
+	#cylinderGui: GUI;
+	#radialSegments = 512;
 	// measurements in mm
 	// distal cup diameter measurement from outside to the inside 90 => 78 => 66.2
-	#radiusTop = 78 / 2;
-	#radiusBottom = 78 / 2;
+	#radius = 78 / 2;
 	#size: "large" | "small";
-
-	geometry: CylinderGeometry;
 	height: number;
-	mesh: Mesh;
 
-	constructor(size: "large" | "small") {
+	constructor(
+		size: "large" | "small" = "large",
+		options: { openEnded: boolean } = { openEnded: true },
+	) {
+		super();
+
 		this.height = size === "large" ? 41.3 : 28.5;
-
 		this.#size = size;
 
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
 			side: DoubleSide,
 		});
-
-		this.geometry = new CylinderGeometry(
-			this.#radiusTop,
-			this.#radiusBottom,
+		const geometry = new CylinderGeometry(
+			this.#radius,
+			this.#radius,
 			this.height,
 			this.#radialSegments,
 			1,
-			true,
+			options.openEnded,
 		);
-		this.mesh = new Mesh(this.geometry, material);
+
+		this.mesh = new Mesh(geometry, material);
 		this.mesh.position.set(0, this.height / 2, 0);
 		this.updateMatrixWorld();
 
 		this.#gui = getGui();
+		this.#cylinderGui = this.#gui.addFolder("Cylinder Position");
 
-		this.#addGui();
+		this.addGui();
 
 		this.changeSizeUi();
 	}
 
 	changeSizeUi = () => {
-		const button = document.createElement("button");
-		button.textContent = `Change Distal Cup Size to ${this.#size === "large" ? "small" : "large"}`;
+		if (!changeDistalCupSize) {
+			throw new Error("Change Distal Cup Size not found");
+		}
 
-		button.addEventListener("click", () => {
+		changeDistalCupSize.textContent = `Change Distal Cup Size to ${this.#size === "large" ? "small" : "large"}`;
+
+		changeDistalCupSize.addEventListener("click", () => {
 			const reverseSize = this.#size === "large" ? "small" : "large";
 
-			button.textContent = `Change Distal Cup Size to ${this.#size}`;
+			if (!changeDistalCupSize) {
+				throw new Error("Change Distal Cup Size not found");
+			}
+
+			changeDistalCupSize.textContent = `Change Distal Cup Size to ${this.#size}`;
 
 			this.changeSize(reverseSize);
 		});
 
-		document.getElementById("user-interface")?.appendChild(button);
+		userInterface?.appendChild(changeDistalCupSize);
 	};
+
+	cloneCyliner = () => this.cloneMesh();
 
 	changeSize = (size: "large" | "small") => {
 		this.height = size === "large" ? 41.3 : 28.5;
 		this.#size = size;
 
-		this.geometry.dispose();
-		this.geometry = new CylinderGeometry(
-			this.#radiusTop,
-			this.#radiusBottom,
+		if (!this.mesh) {
+			throw new Error("Geometry or mesh is missing");
+		}
+
+		this.mesh.geometry.dispose();
+		this.mesh.geometry = new CylinderGeometry(
+			this.#radius,
+			this.#radius,
 			this.height,
 			this.#radialSegments,
 			1,
 			true,
 		);
 
-		this.mesh.geometry = this.geometry;
+		this.mesh.geometry = this.mesh.geometry;
 
 		this.mesh.position.set(0, this.height / 2, 0);
 		this.updateMatrixWorld();
 	};
 
 	toMergeCompatible = () => {
+		if (!this.mesh) {
+			throw new Error("Geometry or mesh is missing");
+		}
+
 		const nonIndexCylinder = this.mesh.geometry.toNonIndexed();
 
 		if (!nonIndexCylinder.attributes.normal) {
@@ -104,21 +126,17 @@ export class Cylinder {
 		return nonIndexCylinder;
 	};
 
-	updateMatrixWorld = () => {
-		if (this.mesh && this.geometry) {
-			this.mesh.updateMatrixWorld(true);
-			this.geometry.applyMatrix4(this.mesh.matrixWorld);
-
-			this.mesh.rotation.set(0, 0, 0);
-			this.mesh.position.set(0, 0, 0);
+	addGui() {
+		if (!this.mesh) {
+			throw new Error("Geometry or mesh is missing");
 		}
-	};
 
-	#addGui() {
-		const cylinderPosition = this.#gui.addFolder("Cylinder Position");
+		this.#cylinderGui.add(this.mesh.position, "x", -100, 100, 1).name("X");
+		this.#cylinderGui.add(this.mesh.position, "y", -100, 100, 1).name("Y");
+		this.#cylinderGui.add(this.mesh.position, "z", -100, 100, 1).name("Z");
+	}
 
-		cylinderPosition.add(this.mesh.position, "x", -100, 100, 1).name("X");
-		cylinderPosition.add(this.mesh.position, "y", -100, 100, 1).name("Y");
-		cylinderPosition.add(this.mesh.position, "z", -100, 100, 1).name("Z");
+	removeGui() {
+		this.#cylinderGui.destroy();
 	}
 }

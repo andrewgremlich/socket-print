@@ -10,23 +10,22 @@ import {
 } from "three";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
-import { getGui } from "@/utils/gui";
+import { loadingScreen, stlFileInput } from "@/utils/htmlElements";
+import { AppObject, type AppObjectFunctions } from "./AppObject";
 
 type StlLoadedCallback = (params: {
 	mesh: Mesh;
-	maxSize: number;
+	maxDimension: number;
 	meshMergeCompatible: BufferGeometry;
-	size: Vector3;
 	center: Vector3;
 }) => void;
 
-export class STLLoader {
-	#gui: GUI;
+export class STLLoader extends AppObject implements AppObjectFunctions {
+	#rotationFolder: GUI;
+	#positionFolder: GUI;
 
 	layerHeight = 0.2; // TODO: let's stick with 1mm for now. customizable later? // look for centroid 40 mm above z0
 	extrusionWidth = 0.4; //TODO: is this nozzle offset?
-	geometry: BufferGeometry | null = null;
-	mesh: Mesh | null = null;
 	stlLoadedCallback: StlLoadedCallback;
 
 	constructor({
@@ -34,10 +33,11 @@ export class STLLoader {
 	}: {
 		stlLoadedCallback: StlLoadedCallback;
 	}) {
-		this.stlLoadedCallback = stlLoadedCallback;
-		this.#gui = getGui();
+		super();
 
-		const stlFileInput = document.getElementById("stlFileInput");
+		this.stlLoadedCallback = stlLoadedCallback;
+		this.#rotationFolder = this.gui.addFolder("STL Rotation");
+		this.#positionFolder = this.gui.addFolder("STL Position");
 
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
@@ -47,46 +47,28 @@ export class STLLoader {
 	}
 
 	updateMatrixWorld = () => {
-		if (this.mesh && this.geometry) {
+		if (this.mesh) {
 			this.mesh.updateMatrixWorld(true);
-			this.geometry.applyMatrix4(this.mesh.matrixWorld);
+
+			this.mesh.geometry.applyMatrix4(this.mesh.matrixWorld);
 
 			this.mesh.rotation.set(0, 0, 0);
 			this.mesh.position.set(0, 0, 0);
+
+			this.mesh.geometry.computeVertexNormals();
+			this.mesh.geometry.computeBoundingBox();
 		}
 	};
 
-	#addGui = () => {
-		const rotationFolder = this.#gui.addFolder("STL Rotation");
-		const positionFolder = this.#gui.addFolder("STL Position");
-
-		if (!this.mesh) {
-			return;
-		}
-
-		rotationFolder
-			.add(this.mesh.rotation, "x", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
-			.name("X");
-		rotationFolder
-			.add(this.mesh.rotation, "y", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
-			.name("Y");
-		rotationFolder
-			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
-			.name("Z");
-
-		positionFolder.add(this.mesh.position, "x", -150, 150, 10).name("X");
-		positionFolder.add(this.mesh.position, "y", -150, 150, 10).name("Y");
-		positionFolder.add(this.mesh.position, "z", -150, 150, 10).name("Z");
-
-		rotationFolder.open();
-	};
-
-	#onStlFileChange = async (e: Event) => {
-		const file = (e.target as HTMLInputElement).files?.[0];
-		const loadingScreen = document.getElementById("loading");
+	#onStlFileChange = async ({ target: inputFiles }: Event) => {
+		const file = (inputFiles as HTMLInputElement).files?.[0];
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
+		}
+
+		if (!stlFileInput) {
+			throw new Error("STL File Input not found");
 		}
 
 		if (file) {
@@ -94,8 +76,7 @@ export class STLLoader {
 
 			const geometry = await this.#readSTLFile(file);
 
-			geometry.computeVertexNormals();
-			geometry.computeBoundingBox();
+			geometry.rotateX(-Math.PI * 0.5);
 
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
@@ -105,16 +86,10 @@ export class STLLoader {
 
 			const boundingBox = new Box3().setFromObject(mesh);
 			const size = boundingBox.getSize(new Vector3());
-			const center = boundingBox.getCenter(new Vector3());
-			const maxSize = Math.max(size.x, size.y, size.z);
+			const maxDimension = Math.max(size.x, size.y, size.z);
 
-			this.geometry = geometry;
 			this.mesh = mesh;
-
-			this.mesh.position.set(0, Math.abs(boundingBox.min.y), 0);
-			this.geometry.rotateX(-Math.PI * 0.5);
-			this.mesh.position.set(0, boundingBox.max.y, 0);
-			this.updateMatrixWorld();
+			this.mesh.position.set(0, size.y / 2, 0);
 
 			const meshMergeCompatible = this.toMergeCompatible();
 
@@ -122,14 +97,17 @@ export class STLLoader {
 				return;
 			}
 
+			this.updateMatrixWorld();
+
 			this.stlLoadedCallback({
 				mesh,
-				maxSize,
+				maxDimension,
 				meshMergeCompatible,
-				size,
-				center,
+				center: boundingBox.getCenter(new Vector3()),
 			});
-			this.#addGui();
+
+			stlFileInput.disabled = true;
+			this.addGui();
 		}
 	};
 
@@ -153,7 +131,12 @@ export class STLLoader {
 			return;
 		}
 
-		const meshCopy = this.mesh?.clone();
+		const meshCopy = this.cloneMesh();
+
+		if (!meshCopy) {
+			return;
+		}
+
 		const stlMeshGeo = meshCopy.geometry;
 
 		if (!stlMeshGeo.attributes.normal) {
@@ -166,5 +149,30 @@ export class STLLoader {
 		}
 
 		return stlMeshGeo;
+	};
+
+	addGui = () => {
+		if (!this.mesh) {
+			return;
+		}
+
+		this.#rotationFolder
+			.add(this.mesh.rotation, "x", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
+			.name("X");
+		this.#rotationFolder
+			.add(this.mesh.rotation, "y", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
+			.name("Y");
+		this.#rotationFolder
+			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
+			.name("Z");
+
+		this.#positionFolder.add(this.mesh.position, "x", -150, 150, 10).name("X");
+		this.#positionFolder.add(this.mesh.position, "y", -150, 150, 10).name("Y");
+		this.#positionFolder.add(this.mesh.position, "z", -150, 150, 10).name("Z");
+	};
+
+	removeGui = () => {
+		this.#positionFolder.destroy();
+		this.#rotationFolder.destroy();
 	};
 }

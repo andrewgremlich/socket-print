@@ -1,5 +1,6 @@
 import {
 	GridHelper,
+	type Mesh,
 	type Object3D,
 	PerspectiveCamera,
 	Scene,
@@ -30,7 +31,7 @@ export class Application {
 		this.renderer.setAnimationLoop(this.#animate);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 
-		this.camera.position.set(0, -50, 0);
+		this.camera.position.set(200, 100, 0);
 		this.controls.enableDamping = true;
 
 		this.addToScene(this.gridHelper);
@@ -42,6 +43,28 @@ export class Application {
 	}
 
 	addToScene = (object: Object3D) => this.scene.add(object);
+
+	removeAllMeshesFromScene = () => {
+		for (const object of this.scene.children) {
+			if (object.type === "Mesh") {
+				const obj = object as Mesh;
+
+				if (obj.geometry) obj.geometry.dispose();
+
+				if (obj.material) {
+					if (Array.isArray(obj.material)) {
+						for (const material of obj.material) {
+							material.dispose();
+						}
+					} else {
+						obj.material.dispose();
+					}
+				}
+
+				this.scene.remove(obj);
+			}
+		}
+	};
 
 	#animate = () => {
 		this.controls.update();
