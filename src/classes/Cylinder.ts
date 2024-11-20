@@ -15,7 +15,7 @@ import { AppObject, type AppObjectFunctions } from "./AppObject";
 export class Cylinder extends AppObject implements AppObjectFunctions {
 	#gui: GUI;
 	#cylinderGui: GUI;
-	#radialSegments = 512;
+	#radialSegments = 30;
 	// measurements in mm
 	// distal cup diameter measurement from outside to the inside 90 => 78 => 66.2
 	#radius = 78 / 2;
@@ -34,6 +34,7 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
 			side: DoubleSide,
+			wireframe: false,
 		});
 		const geometry = new CylinderGeometry(
 			this.#radius,
@@ -131,9 +132,9 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 			throw new Error("Mesh is missing");
 		}
 
-		this.#cylinderGui.add(this.mesh.position, "x", -100, 100, 1).name("X");
-		this.#cylinderGui.add(this.mesh.position, "y", -100, 100, 1).name("Y");
-		this.#cylinderGui.add(this.mesh.position, "z", -100, 100, 1).name("Z");
+		this.#cylinderGui.add(this.mesh.position, "x", -500, 500, 1).name("X");
+		this.#cylinderGui.add(this.mesh.position, "y", -500, 500, 1).name("Y");
+		this.#cylinderGui.add(this.mesh.position, "z", -500, 500, 1).name("Z");
 	}
 
 	removeGui() {

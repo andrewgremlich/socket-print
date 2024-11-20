@@ -26,7 +26,6 @@ export class MergeGeometries extends AppObject {
 		]);
 		const material = new MeshPhongMaterial({
 			color: 0xffffff,
-			side: DoubleSide,
 		});
 
 		this.mesh = new Mesh(mergedGeometry, material);

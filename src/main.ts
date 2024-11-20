@@ -9,7 +9,7 @@ import { EllipsoidFiller } from "@/classes/EllipsoidFiller";
 import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
 import { STLLoader } from "@/classes/STLLoader";
-import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
+import { generateGCode } from "@/utils/generateGCode";
 import {
 	addFillerEllipsoid,
 	changeDistalCupSize,
@@ -17,8 +17,6 @@ import {
 	mergeGeosButton,
 } from "@/utils/htmlElements";
 import { sliceGeometry } from "@/utils/sliceGeometry";
-import { Brush, Evaluator, SUBTRACTION } from "three-bvh-csg";
-import { MergeGeometries } from "./classes/MergeGeometries";
 
 const app = new Application();
 
@@ -45,7 +43,7 @@ const stlModel = new STLLoader({
 		}
 
 		app.camera.position.set(0, 0, maxDimension * 1.5);
-		app.camera.lookAt(center);
+		app.camera.lookAt(new Vector3(center.x, center.y, center.z));
 		app.addToScene(mesh);
 
 		mergeGeosButton.disabled = false;
@@ -81,33 +79,26 @@ mergeGeosButton.addEventListener("click", () => {
 			throw new Error("Cylinder mesh not found");
 		}
 
-		console.log("CYLINDER", cylinder.mesh.geometry);
-		console.log("STL", stlModel.mesh.geometry);
-
-		const mergedGeos = new MergeGeometries(stlModel, cylinder);
-
 		app.removeAllMeshesFromScene();
 		cylinder.removeGui();
 		stlModel.removeGui();
 
-		if (!mergedGeos.mesh) {
-			throw new Error("Merged geometry not found");
+		const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
+
+		if (!evaluateGeometries.mesh) {
+			throw new Error("CSG mesh not found");
 		}
 
-		app.addToScene(mergedGeos.mesh);
+		app.addToScene(evaluateGeometries.mesh);
 
-		// const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
+		mergeGeosButton.disabled = true;
+		changeDistalCupSize.disabled = true;
 
-		// if (!evaluateGeometries.mesh) {
-		// 	throw new Error("Geometry not found");
-		// }
-
-		// app.addToScene(evaluateGeometries.mesh);
-
-		// mergeGeosButton.disabled = true;
-		// changeDistalCupSize.disabled = true;
-
-		// const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, 0.1);
+		// const slicedGeometry = sliceGeometry(
+		// 	evaluateGeometries.mesh.geometry,
+		// 	0.1,
+		// 	{ minY: 0, maxY: 0.5 },
+		// );
 		// const gCode = generateGCode(slicedGeometry, 0.1);
 
 		if (!loadingScreen) {

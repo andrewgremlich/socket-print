@@ -1,20 +1,21 @@
 import type GUI from "lil-gui";
 import {
 	Box3,
-	BoxGeometry,
-	BufferAttribute,
 	type BufferGeometry,
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
-	Object3D,
 	Vector3,
 } from "three";
+import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
+import {
+	closeUpBottomLimbGeometry,
+	closeUpTopLimbGeometry,
+} from "@/utils/closeUpLimbGeometry";
 import { ensureUV } from "@/utils/ensureUV";
 import { loadingScreen, stlFileInput } from "@/utils/htmlElements";
-import { Brush, Evaluator, INTERSECTION } from "three-bvh-csg";
 import { AppObject, type AppObjectFunctions } from "./AppObject";
 
 type StlLoadedCallback = (params: {
@@ -81,33 +82,31 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 			const geometry = await this.#readSTLFile(file);
 
 			geometry.rotateX(-Math.PI * 0.5);
+			geometry.deleteAttribute("normal");
 
-			ensureUV(geometry);
+			const closeBottom = closeUpBottomLimbGeometry(geometry);
+			const closeTop = closeUpTopLimbGeometry(geometry);
+
+			const mergedGeometry = BufferGeometryUtils.mergeGeometries([
+				geometry,
+				closeBottom,
+				closeTop,
+			]);
+
+			mergedGeometry.computeBoundingBox();
+			mergedGeometry.computeVertexNormals();
+			ensureUV(mergedGeometry);
 
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
 				side: DoubleSide,
+				wireframe: false,
 			});
-			const mesh = new Mesh(geometry, material);
+			const mesh = new Mesh(mergedGeometry, material);
 
 			const boundingBox = new Box3().setFromObject(mesh);
 			const size = boundingBox.getSize(new Vector3());
 			const maxDimension = Math.max(size.x, size.y, size.z);
-
-			// const fillerGeometry = new BoxGeometry(
-			// 	boundingBox.max.x - boundingBox.min.x,
-			// 	boundingBox.max.y - boundingBox.min.y,
-			// 	boundingBox.max.z - boundingBox.min.z,
-			// );
-			// const fillerBrush = new Brush(fillerGeometry, material);
-			// const stlBrush = new Brush(geometry, material);
-
-			// const evaluate = new Evaluator();
-			// const result = evaluate.evaluate(
-			// 	fillerBrush,
-			// 	stlBrush,
-			// 	INTERSECTION,
-			// );
 
 			this.mesh = mesh;
 			this.mesh.position.set(0, size.y / 2, 0);
@@ -156,9 +155,9 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
 			.name("Z");
 
-		this.#positionFolder.add(this.mesh.position, "x", -150, 150, 10).name("X");
-		this.#positionFolder.add(this.mesh.position, "y", -150, 150, 10).name("Y");
-		this.#positionFolder.add(this.mesh.position, "z", -150, 150, 10).name("Z");
+		this.#positionFolder.add(this.mesh.position, "x", -500, 500, 10).name("X");
+		this.#positionFolder.add(this.mesh.position, "y", -500, 500, 10).name("Y");
+		this.#positionFolder.add(this.mesh.position, "z", -500, 500, 10).name("Z");
 	};
 
 	removeGui = () => {

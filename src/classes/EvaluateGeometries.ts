@@ -1,30 +1,21 @@
-import {
-	type BufferGeometry,
-	CylinderGeometry,
-	DoubleSide,
-	Mesh,
-	MeshStandardMaterial,
-} from "three";
-import {
-	ADDITION,
-	Brush,
-	type CSGOperation,
-	Evaluator,
-	SUBTRACTION,
-} from "three-bvh-csg";
+import type GUI from "lil-gui";
+import { CSG } from "three-csg-ts";
 
-import { AppObject } from "./AppObject";
+import { getGui } from "@/utils/gui";
+
+import { AppObject, type AppObjectFunctions } from "./AppObject";
 import type { Cylinder } from "./Cylinder";
 import type { STLLoader } from "./STLLoader";
 
-export class EvaluateGeometries extends AppObject {
-	hiddenCylinderDebug: Mesh | null = null;
+export class EvaluateGeometries
+	extends AppObject
+	implements AppObjectFunctions
+{
+	#gui: GUI;
+	#mergedMeshGui: GUI;
 
 	constructor(stlModel: STLLoader, cylinder: Cylinder) {
 		super();
-		const clipCylinder = this.createClipCylinder(cylinder);
-
-		this.hiddenCylinderDebug = clipCylinder;
 
 		if (!stlModel.mesh) {
 			throw new Error("STL data has not been loaded!");
@@ -34,75 +25,31 @@ export class EvaluateGeometries extends AppObject {
 			throw new Error("Cylinder mesh not found");
 		}
 
-		const clipCylinderBrush = this.evaluateGeometry(clipCylinder.geometry);
-		const visibleCylinderBrush = this.evaluateGeometry(cylinder.mesh.geometry);
-		const stlBrush = this.evaluateGeometry(stlModel.mesh.geometry);
+		stlModel.updateMatrixWorld();
+		cylinder.updateMatrixWorld();
 
-		this.mesh = this.evaluateBrushes(stlBrush, clipCylinderBrush, SUBTRACTION);
-		// this.mesh = this.evaluateBrushes(
-		// 	subtractionEvaluator,
-		// 	visibleCylinderBrush,
-		// 	ADDITION,
-		// );
+		const subtraction = CSG.union(stlModel.mesh, cylinder.mesh);
+
+		this.mesh = subtraction;
 
 		this.updateMatrixWorld();
 
-		cylinder.mesh.visible = false;
-		stlModel.mesh.visible = false;
+		this.#gui = getGui();
+		this.#mergedMeshGui = this.#gui.addFolder("Merged Mesh Position");
+		this.addGui();
 	}
 
-	evaluateGeometry = (geometry: BufferGeometry) => {
-		const brushMaterial = new MeshStandardMaterial({
-			color: 0x00ff00,
-			roughness: 0.5,
-			metalness: 0.1,
-			side: DoubleSide,
-		});
-		const brush = new Brush(geometry, brushMaterial);
-
-		this.updateMatrixWorld();
-
-		return brush;
-	};
-
-	evaluateBrushes = (brush1: Brush, brush2: Brush, operation: CSGOperation) => {
-		const evaluator = new Evaluator();
-		const result = evaluator.evaluate(brush1, brush2, operation);
-
-		return result;
-	};
-
-	createClipCylinder = (cylinder: Cylinder) => {
-		const clonedCylinder = cylinder.cloneCyliner();
-
-		if (!clonedCylinder) {
-			throw new Error("Cylinder clone not found");
+	addGui() {
+		if (!this.mesh) {
+			throw new Error("Merged Mesh is missing");
 		}
 
-		if (!cylinder.mesh) {
-			throw new Error("Cylinder geometry not found");
-		}
+		this.#mergedMeshGui.add(this.mesh.position, "x", -500, 500, 1).name("X");
+		this.#mergedMeshGui.add(this.mesh.position, "y", -500, 500, 1).name("Y");
+		this.#mergedMeshGui.add(this.mesh.position, "z", -500, 500, 1).name("Z");
+	}
 
-		const { radiusTop, radiusBottom, radialSegments, heightSegments, height } =
-			(cylinder.mesh.geometry as CylinderGeometry).parameters;
-		const openEndedGeometry = new CylinderGeometry(
-			radiusTop,
-			radiusBottom,
-			height + 200,
-			radialSegments,
-			heightSegments,
-			false,
-		);
-
-		const newMeshCylinder = new Mesh(
-			openEndedGeometry,
-			clonedCylinder.material,
-		);
-
-		clonedCylinder.position.copy(cylinder.mesh.position);
-		clonedCylinder.rotation.copy(cylinder.mesh.rotation);
-		clonedCylinder.scale.copy(cylinder.mesh.scale);
-
-		return newMeshCylinder;
-	};
+	removeGui() {
+		this.#mergedMeshGui.destroy();
+	}
 }
