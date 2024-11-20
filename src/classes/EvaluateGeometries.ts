@@ -3,6 +3,7 @@ import { CSG } from "three-csg-ts";
 
 import { getGui } from "@/utils/gui";
 
+import { Box3 } from "three";
 import { AppObject, type AppObjectFunctions } from "./AppObject";
 import type { Cylinder } from "./Cylinder";
 import type { STLLoader } from "./STLLoader";
@@ -13,6 +14,8 @@ export class EvaluateGeometries
 {
 	#gui: GUI;
 	#mergedMeshGui: GUI;
+
+	boundingBox: Box3;
 
 	constructor(stlModel: STLLoader, cylinder: Cylinder) {
 		super();
@@ -31,6 +34,8 @@ export class EvaluateGeometries
 		const subtraction = CSG.union(stlModel.mesh, cylinder.mesh);
 
 		this.mesh = subtraction;
+		const boundingBox = new Box3().setFromObject(this.mesh);
+		this.boundingBox = boundingBox;
 
 		this.updateMatrixWorld();
 

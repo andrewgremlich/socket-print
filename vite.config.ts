@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import topLevelAwait from "vite-plugin-top-level-await";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(() => ({
@@ -18,6 +19,7 @@ export default defineConfig(() => ({
 	},
 	plugins: [
 		tsconfigPaths(),
+		topLevelAwait(),
 		VitePWA({
 			registerType: "prompt",
 			// includeAssets: ["/favicon.ico", "/robots.txt", "/safari-pinned-tab.svg"],

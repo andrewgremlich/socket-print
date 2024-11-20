@@ -17,6 +17,7 @@ import {
 	mergeGeosButton,
 } from "@/utils/htmlElements";
 import { sliceGeometry } from "@/utils/sliceGeometry";
+import { MergeGeometries } from "./classes/MergeGeometries";
 
 const app = new Application();
 
@@ -33,7 +34,7 @@ if (!cylinder.mesh) {
 }
 app.addToScene(cylinder.mesh);
 
-const debugPoint = new DebugPoint(new Vector3(0.7309, 0, 2.847));
+const debugPoint = new DebugPoint(new Vector3(0.7309, 100, 2.847));
 app.addToScene(debugPoint.mesh);
 
 const stlModel = new STLLoader({
@@ -83,23 +84,32 @@ mergeGeosButton.addEventListener("click", () => {
 		cylinder.removeGui();
 		stlModel.removeGui();
 
+		// const mergedGeos = new MergeGeometries(stlModel, cylinder);
+		// if (!mergedGeos.mesh) {
+		// 	throw new Error("Merged geometry not found");
+		// }
+		// app.addToScene(mergedGeos.mesh);
+
 		const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
 
 		if (!evaluateGeometries.mesh) {
-			throw new Error("CSG mesh not found");
+			throw new Error("Geometry not found");
 		}
 
 		app.addToScene(evaluateGeometries.mesh);
 
-		mergeGeosButton.disabled = true;
-		changeDistalCupSize.disabled = true;
+		// mergeGeosButton.disabled = true;
+		// changeDistalCupSize.disabled = true;
 
-		// const slicedGeometry = sliceGeometry(
-		// 	evaluateGeometries.mesh.geometry,
-		// 	0.1,
-		// 	{ minY: 0, maxY: 0.5 },
-		// );
-		// const gCode = generateGCode(slicedGeometry, 0.1);
+		const slicedGeometry = sliceGeometry(
+			evaluateGeometries.mesh.geometry,
+			0.1,
+			{
+				minY: evaluateGeometries.boundingBox.min.y,
+				maxY: evaluateGeometries.boundingBox.max.y,
+			},
+		);
+		const gCode = generateGCode(slicedGeometry, 0.1);
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
@@ -107,7 +117,7 @@ mergeGeosButton.addEventListener("click", () => {
 
 		loadingScreen.style.display = "none";
 
-		// console.log(gCode);
+		console.log(gCode);
 
 		// downloadGCodeFile(gCode);
 	}, 1000);

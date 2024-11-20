@@ -36,9 +36,9 @@ export class EllipsoidFiller extends AppObject implements AppObjectFunctions {
 		this.#ellipsoidGui.add(this.mesh.position, "y", -100, 100, 1).name("Y");
 		this.#ellipsoidGui.add(this.mesh.position, "z", -100, 100, 1).name("Z");
 
-		this.#ellipsoidGui.add(this.mesh.scale, "x", 0, 10, 1).name("Scale X");
-		this.#ellipsoidGui.add(this.mesh.scale, "y", 0, 10, 1).name("Scale Y");
-		this.#ellipsoidGui.add(this.mesh.scale, "z", 0, 10, 1).name("Scale Z");
+		this.#ellipsoidGui.add(this.mesh.scale, "x", -10, 10, 1).name("Scale X");
+		this.#ellipsoidGui.add(this.mesh.scale, "y", -10, 10, 1).name("Scale Y");
+		this.#ellipsoidGui.add(this.mesh.scale, "z", -10, 10, 1).name("Scale Z");
 	}
 
 	removeGui() {

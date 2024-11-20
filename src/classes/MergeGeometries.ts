@@ -1,13 +1,14 @@
-import { DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from "three";
+import type GUI from "lil-gui";
+import { Box3, Mesh, MeshPhongMaterial, Vector3 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
-import { AppObject } from "./AppObject";
+import { processGeometry } from "@/utils/processGeometry";
+import { AppObject, type AppObjectFunctions } from "./AppObject";
 import type { Cylinder } from "./Cylinder";
 import type { STLLoader } from "./STLLoader";
 
-export class MergeGeometries extends AppObject {
-	#stlModel: STLLoader;
-	#cylinder: Cylinder;
+export class MergeGeometries extends AppObject implements AppObjectFunctions {
+	#positionFolder: GUI;
 
 	constructor(stlModel: STLLoader, cylinder: Cylinder) {
 		super();
@@ -16,48 +17,52 @@ export class MergeGeometries extends AppObject {
 			throw new Error("STL Model mesh and cylinder mesh is required");
 		}
 
-		this.#stlModel = stlModel;
-		this.#cylinder = cylinder;
-
 		const mergeableCylinder = cylinder.toMergeCompatible();
+
+		console.log(mergeableCylinder, stlModel.mesh.geometry);
+
 		const mergedGeometry = BufferGeometryUtils.mergeGeometries([
 			mergeableCylinder,
 			stlModel.mesh.geometry,
 		]);
 		const material = new MeshPhongMaterial({
 			color: 0xffffff,
+			wireframe: true,
 		});
 
 		this.mesh = new Mesh(mergedGeometry, material);
+
+		this.#positionFolder = this.gui.addFolder("Merged Position");
+		this.addGui();
+
+		const boundingBox = new Box3().setFromObject(this.mesh);
+		const center = boundingBox.getCenter(new Vector3());
+
+		console.log(this.mesh.geometry);
+
+		const position = this.mesh.geometry.getAttribute("position");
+		const normal = this.mesh.geometry.getAttribute("normal");
+		const uv = this.mesh.geometry.getAttribute("uv");
+		const index = this.mesh.geometry.getIndex();
+		const serializedData = {
+			position: position ? position : null,
+			center: center,
+			height: { miny: boundingBox.min.y, maxy: boundingBox.max.y },
+		};
+
+		processGeometry(serializedData);
 	}
-
-	#orientCylinder() {
-		if (this.#stlModel.mesh === null || this.#cylinder.mesh === null) {
-			throw new Error("STL Model mesh and cylinder mesh is required");
+	addGui = () => {
+		if (!this.mesh) {
+			return;
 		}
 
-		// Orient the cylinder to the bottom of the model
-		const bbox = this.#stlModel.mesh.geometry.boundingBox;
-		if (bbox) {
-			const modelMinY = bbox.min.y;
-			this.#cylinder.mesh.position.y = modelMinY;
-		}
-	}
+		this.#positionFolder.add(this.mesh.position, "x", -500, 500, 10).name("X");
+		this.#positionFolder.add(this.mesh.position, "y", -500, 500, 10).name("Y");
+		this.#positionFolder.add(this.mesh.position, "z", -500, 500, 10).name("Z");
+	};
 
-	#positionCylinder() {
-		if (this.#stlModel.mesh === null || this.#cylinder.mesh === null) {
-			throw new Error("STL Model mesh and cylinder mesh is required");
-		}
-
-		// Calculate the centroid of the model and place the cylinder 40mm above z0
-		const bbox = this.#stlModel.mesh.geometry.boundingBox;
-		if (bbox) {
-			const centroid = new Vector3(
-				(bbox.min.x + bbox.max.x) / 2,
-				(bbox.min.y + bbox.max.y) / 2,
-				(bbox.min.z + bbox.max.z) / 2,
-			);
-			this.#cylinder.mesh.position.set(centroid.x, centroid.y + 40, centroid.z);
-		}
-	}
+	removeGui = () => {
+		this.#positionFolder.destroy();
+	};
 }

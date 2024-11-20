@@ -19,7 +19,6 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 	// measurements in mm
 	// distal cup diameter measurement from outside to the inside 90 => 78 => 66.2
 	#radius = 78 / 2;
-	#size: "large" | "small";
 	height: number;
 
 	constructor(
@@ -28,13 +27,11 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 	) {
 		super();
 
-		this.height = size === "large" ? 41.3 : 28.5;
-		this.#size = size;
+		this.height = 40;
 
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
-			side: DoubleSide,
-			wireframe: false,
+			wireframe: true,
 		});
 		const geometry = new CylinderGeometry(
 			this.#radius,
@@ -53,57 +50,7 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 		this.#cylinderGui = this.#gui.addFolder("Cylinder Position");
 
 		this.addGui();
-
-		this.changeSizeUi();
 	}
-
-	changeSizeUi = () => {
-		if (!changeDistalCupSize) {
-			throw new Error("Change Distal Cup Size not found");
-		}
-
-		changeDistalCupSize.textContent = `Change Distal Cup Size to ${this.#size === "large" ? "small" : "large"}`;
-
-		changeDistalCupSize.addEventListener("click", () => {
-			const reverseSize = this.#size === "large" ? "small" : "large";
-
-			if (!changeDistalCupSize) {
-				throw new Error("Change Distal Cup Size not found");
-			}
-
-			changeDistalCupSize.textContent = `Change Distal Cup Size to ${this.#size}`;
-
-			this.changeSize(reverseSize);
-		});
-
-		userInterface?.appendChild(changeDistalCupSize);
-	};
-
-	cloneCyliner = () => this.cloneMesh();
-
-	changeSize = (size: "large" | "small") => {
-		this.height = size === "large" ? 41.3 : 28.5;
-		this.#size = size;
-
-		if (!this.mesh) {
-			throw new Error("Geometry or mesh is missing");
-		}
-
-		this.mesh.geometry.dispose();
-		this.mesh.geometry = new CylinderGeometry(
-			this.#radius,
-			this.#radius,
-			this.height,
-			this.#radialSegments,
-			1,
-			true,
-		);
-
-		this.mesh.geometry = this.mesh.geometry;
-
-		this.mesh.position.set(0, this.height / 2, 0);
-		this.updateMatrixWorld();
-	};
 
 	toMergeCompatible = () => {
 		if (!this.mesh) {
@@ -135,6 +82,8 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 		this.#cylinderGui.add(this.mesh.position, "x", -500, 500, 1).name("X");
 		this.#cylinderGui.add(this.mesh.position, "y", -500, 500, 1).name("Y");
 		this.#cylinderGui.add(this.mesh.position, "z", -500, 500, 1).name("Z");
+
+		this.#cylinderGui.add(this.mesh.scale, "y", 0.1, 2, 0.1).name("Height");
 	}
 
 	removeGui() {

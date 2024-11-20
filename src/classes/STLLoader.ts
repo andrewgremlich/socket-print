@@ -82,27 +82,25 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 			const geometry = await this.#readSTLFile(file);
 
 			geometry.rotateX(-Math.PI * 0.5);
-			geometry.deleteAttribute("normal");
 
-			const closeBottom = closeUpBottomLimbGeometry(geometry);
-			const closeTop = closeUpTopLimbGeometry(geometry);
+			// const closeBottom = closeUpBottomLimbGeometry(geometry);
+			// const closeTop = closeUpTopLimbGeometry(geometry);
 
-			const mergedGeometry = BufferGeometryUtils.mergeGeometries([
-				geometry,
-				closeBottom,
-				closeTop,
-			]);
+			// const mergedGeometry = BufferGeometryUtils.mergeGeometries([
+			// 	geometry,
+			// 	closeBottom,
+			// 	closeTop,
+			// ]);
 
-			mergedGeometry.computeBoundingBox();
-			mergedGeometry.computeVertexNormals();
-			ensureUV(mergedGeometry);
+			// mergedGeometry.computeBoundingBox();
+			// mergedGeometry.computeVertexNormals();
+			ensureUV(geometry);
 
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
-				side: DoubleSide,
-				wireframe: false,
+				wireframe: true,
 			});
-			const mesh = new Mesh(mergedGeometry, material);
+			const mesh = new Mesh(geometry, material);
 
 			const boundingBox = new Box3().setFromObject(mesh);
 			const size = boundingBox.getSize(new Vector3());
