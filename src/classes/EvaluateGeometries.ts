@@ -18,9 +18,13 @@ import type { Cylinder } from "./Cylinder";
 import type { STLLoader } from "./STLLoader";
 
 export class EvaluateGeometries extends AppObject {
+	hiddenCylinderDebug: Mesh | null = null;
+
 	constructor(stlModel: STLLoader, cylinder: Cylinder) {
 		super();
-		const cloneCyliner = this.cloneCylinder(cylinder);
+		const clipCylinder = this.createClipCylinder(cylinder);
+
+		this.hiddenCylinderDebug = clipCylinder;
 
 		if (!stlModel.mesh) {
 			throw new Error("STL data has not been loaded!");
@@ -30,20 +34,16 @@ export class EvaluateGeometries extends AppObject {
 			throw new Error("Cylinder mesh not found");
 		}
 
-		const hiddenCylinderBrush = this.evaluateGeometry(cloneCyliner.geometry);
+		const clipCylinderBrush = this.evaluateGeometry(clipCylinder.geometry);
 		const visibleCylinderBrush = this.evaluateGeometry(cylinder.mesh.geometry);
 		const stlBrush = this.evaluateGeometry(stlModel.mesh.geometry);
 
-		const subtractionEvaluator = this.evaluateBrushes(
-			stlBrush,
-			hiddenCylinderBrush,
-			SUBTRACTION,
-		);
-		this.mesh = this.evaluateBrushes(
-			subtractionEvaluator,
-			visibleCylinderBrush,
-			ADDITION,
-		);
+		this.mesh = this.evaluateBrushes(stlBrush, clipCylinderBrush, SUBTRACTION);
+		// this.mesh = this.evaluateBrushes(
+		// 	subtractionEvaluator,
+		// 	visibleCylinderBrush,
+		// 	ADDITION,
+		// );
 
 		this.updateMatrixWorld();
 
@@ -72,7 +72,7 @@ export class EvaluateGeometries extends AppObject {
 		return result;
 	};
 
-	cloneCylinder = (cylinder: Cylinder) => {
+	createClipCylinder = (cylinder: Cylinder) => {
 		const clonedCylinder = cylinder.cloneCyliner();
 
 		if (!clonedCylinder) {
@@ -83,13 +83,12 @@ export class EvaluateGeometries extends AppObject {
 			throw new Error("Cylinder geometry not found");
 		}
 
-		const { radiusTop, radiusBottom, radialSegments, heightSegments } = (
-			cylinder.mesh.geometry as CylinderGeometry
-		).parameters;
+		const { radiusTop, radiusBottom, radialSegments, heightSegments, height } =
+			(cylinder.mesh.geometry as CylinderGeometry).parameters;
 		const openEndedGeometry = new CylinderGeometry(
 			radiusTop,
 			radiusBottom,
-			200,
+			height + 200,
 			radialSegments,
 			heightSegments,
 			false,

@@ -1,22 +1,25 @@
 import type GUI from "lil-gui";
 import {
 	Box3,
+	BoxGeometry,
 	BufferAttribute,
 	type BufferGeometry,
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
+	Object3D,
 	Vector3,
 } from "three";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
+import { ensureUV } from "@/utils/ensureUV";
 import { loadingScreen, stlFileInput } from "@/utils/htmlElements";
+import { Brush, Evaluator, INTERSECTION } from "three-bvh-csg";
 import { AppObject, type AppObjectFunctions } from "./AppObject";
 
 type StlLoadedCallback = (params: {
 	mesh: Mesh;
 	maxDimension: number;
-	meshMergeCompatible: BufferGeometry;
 	center: Vector3;
 }) => void;
 
@@ -27,6 +30,7 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 	layerHeight = 0.2; // TODO: let's stick with 1mm for now. customizable later? // look for centroid 40 mm above z0
 	extrusionWidth = 0.4; //TODO: is this nozzle offset?
 	stlLoadedCallback: StlLoadedCallback;
+	boundingBox?: Box3;
 
 	constructor({
 		stlLoadedCallback,
@@ -78,6 +82,8 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 
 			geometry.rotateX(-Math.PI * 0.5);
 
+			ensureUV(geometry);
+
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
 				side: DoubleSide,
@@ -88,21 +94,30 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 			const size = boundingBox.getSize(new Vector3());
 			const maxDimension = Math.max(size.x, size.y, size.z);
 
+			// const fillerGeometry = new BoxGeometry(
+			// 	boundingBox.max.x - boundingBox.min.x,
+			// 	boundingBox.max.y - boundingBox.min.y,
+			// 	boundingBox.max.z - boundingBox.min.z,
+			// );
+			// const fillerBrush = new Brush(fillerGeometry, material);
+			// const stlBrush = new Brush(geometry, material);
+
+			// const evaluate = new Evaluator();
+			// const result = evaluate.evaluate(
+			// 	fillerBrush,
+			// 	stlBrush,
+			// 	INTERSECTION,
+			// );
+
 			this.mesh = mesh;
 			this.mesh.position.set(0, size.y / 2, 0);
-
-			const meshMergeCompatible = this.toMergeCompatible();
-
-			if (!meshMergeCompatible) {
-				return;
-			}
+			this.boundingBox = boundingBox;
 
 			this.updateMatrixWorld();
 
 			this.stlLoadedCallback({
 				mesh,
 				maxDimension,
-				meshMergeCompatible,
 				center: boundingBox.getCenter(new Vector3()),
 			});
 
@@ -124,31 +139,6 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 
 			reader.readAsArrayBuffer(file);
 		});
-	};
-
-	toMergeCompatible = () => {
-		if (!this.mesh) {
-			return;
-		}
-
-		const meshCopy = this.cloneMesh();
-
-		if (!meshCopy) {
-			return;
-		}
-
-		const stlMeshGeo = meshCopy.geometry;
-
-		if (!stlMeshGeo.attributes.normal) {
-			stlMeshGeo.computeVertexNormals();
-		}
-
-		if (!stlMeshGeo.attributes.uv) {
-			const uvBox = new Float32Array(stlMeshGeo.attributes.position.count * 2);
-			stlMeshGeo.setAttribute("uv", new BufferAttribute(uvBox, 2));
-		}
-
-		return stlMeshGeo;
 	};
 
 	addGui = () => {

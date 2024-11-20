@@ -128,7 +128,7 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 
 	addGui() {
 		if (!this.mesh) {
-			throw new Error("Geometry or mesh is missing");
+			throw new Error("Mesh is missing");
 		}
 
 		this.#cylinderGui.add(this.mesh.position, "x", -100, 100, 1).name("X");

@@ -1,21 +1,24 @@
 import "@/global-style.css";
 
+import { Vector3 } from "three";
+
 import { Application } from "@/classes/Application";
 import { Cylinder } from "@/classes/Cylinder";
+import { DebugPoint } from "@/classes/DebugPoint";
+import { EllipsoidFiller } from "@/classes/EllipsoidFiller";
+import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
 import { STLLoader } from "@/classes/STLLoader";
-// import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
-// import { sliceGeometry } from "@/utils/sliceGeometry";
-import { Vector3 } from "three";
-import { DebugPoint } from "./classes/DebugPoint";
-import { EvaluateGeometries } from "./classes/EvaluateGeometries";
-import { mergeGeosButton } from "./utils/htmlElements";
-
-const loadingScreen = document.getElementById("loading");
-
-if (!loadingScreen) {
-	throw new Error("Loading screen not found");
-}
+import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
+import {
+	addFillerEllipsoid,
+	changeDistalCupSize,
+	loadingScreen,
+	mergeGeosButton,
+} from "@/utils/htmlElements";
+import { sliceGeometry } from "@/utils/sliceGeometry";
+import { Brush, Evaluator, SUBTRACTION } from "three-bvh-csg";
+import { MergeGeometries } from "./classes/MergeGeometries";
 
 const app = new Application();
 
@@ -40,16 +43,16 @@ const stlModel = new STLLoader({
 		if (!cylinder.mesh) {
 			throw new Error("Cylinder mesh not found");
 		}
-		cylinder.mesh.position.set(
-			center.x,
-			center.y - (cylinder.height - 40 / 2),
-			center.z,
-		);
 
 		app.camera.position.set(0, 0, maxDimension * 1.5);
-		//TODO: adjust this center...
 		app.camera.lookAt(center);
 		app.addToScene(mesh);
+
+		mergeGeosButton.disabled = false;
+
+		if (!loadingScreen) {
+			throw new Error("Loading screen not found");
+		}
 
 		loadingScreen.style.display = "none";
 	},
@@ -60,6 +63,10 @@ if (!mergeGeosButton) {
 }
 
 mergeGeosButton.addEventListener("click", () => {
+	if (!loadingScreen) {
+		throw new Error("Loading screen not found");
+	}
+
 	loadingScreen.style.display = "flex";
 
 	setTimeout(() => {
@@ -74,18 +81,38 @@ mergeGeosButton.addEventListener("click", () => {
 			throw new Error("Cylinder mesh not found");
 		}
 
-		const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
+		console.log("CYLINDER", cylinder.mesh.geometry);
+		console.log("STL", stlModel.mesh.geometry);
 
-		if (!evaluateGeometries.mesh) {
-			throw new Error("Geometry not found");
+		const mergedGeos = new MergeGeometries(stlModel, cylinder);
+
+		app.removeAllMeshesFromScene();
+		cylinder.removeGui();
+		stlModel.removeGui();
+
+		if (!mergedGeos.mesh) {
+			throw new Error("Merged geometry not found");
 		}
 
-		app.addToScene(evaluateGeometries.mesh);
+		app.addToScene(mergedGeos.mesh);
 
-		mergeGeosButton.disabled = true;
+		// const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
+
+		// if (!evaluateGeometries.mesh) {
+		// 	throw new Error("Geometry not found");
+		// }
+
+		// app.addToScene(evaluateGeometries.mesh);
+
+		// mergeGeosButton.disabled = true;
+		// changeDistalCupSize.disabled = true;
 
 		// const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, 0.1);
 		// const gCode = generateGCode(slicedGeometry, 0.1);
+
+		if (!loadingScreen) {
+			throw new Error("Loading screen not found");
+		}
 
 		loadingScreen.style.display = "none";
 
@@ -93,4 +120,12 @@ mergeGeosButton.addEventListener("click", () => {
 
 		// downloadGCodeFile(gCode);
 	}, 1000);
+});
+
+addFillerEllipsoid?.addEventListener("click", () => {
+	const ellipsoidFiller = new EllipsoidFiller();
+	if (!ellipsoidFiller.mesh) {
+		throw new Error("Ellipsoid mesh not found");
+	}
+	app.addToScene(ellipsoidFiller.mesh);
 });

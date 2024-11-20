@@ -8,4 +8,7 @@ export const mergeGeosButton = document.getElementById(
 ) as HTMLInputElement;
 export const changeDistalCupSize = document.getElementById(
 	"changeDistalCupSize",
-);
+) as HTMLInputElement;
+export const addFillerEllipsoid = document.getElementById(
+	"addFillerEllipsoid",
+) as HTMLInputElement;

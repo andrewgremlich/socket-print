@@ -1,4 +1,4 @@
-import { Box3, type BufferGeometry, Mesh, Vector3 } from "three";
+import { type BufferGeometry, Vector3 } from "three";
 
 /**
  * Slice a geometry along the Y-axis and return contours at each layer.
@@ -10,6 +10,7 @@ import { Box3, type BufferGeometry, Mesh, Vector3 } from "three";
 export function sliceGeometry(
 	geometry: BufferGeometry,
 	layerWidth: number,
+	{ minY, maxY }: { minY: number; maxY: number },
 ): Vector3[][][] {
 	if (layerWidth <= 0) {
 		throw new Error("Layer width must be greater than 0");
@@ -18,11 +19,6 @@ export function sliceGeometry(
 	// Output: Array of layers, each containing arrays of contours
 	const slices: Vector3[][][] = [];
 
-	// Compute the bounding box of the geometry
-	const bbox = new Box3().setFromObject(new Mesh(geometry));
-	const minY = bbox.min.y;
-	const maxY = bbox.max.y;
-
 	// Get the position attribute (vertex positions)
 	const positionAttribute = geometry.attributes.position;
 
@@ -30,12 +26,16 @@ export function sliceGeometry(
 	for (let y = minY; y <= maxY; y += layerWidth) {
 		const contours: Vector3[][] = []; // Array to hold the contours for this slice
 
+		const v1 = new Vector3();
+		const v2 = new Vector3();
+		const v3 = new Vector3();
+
 		// Loop through each triangle in the geometry
 		for (let i = 0; i < positionAttribute.count; i += 3) {
 			// Get the 3 vertices of the triangle
-			const v1 = new Vector3().fromBufferAttribute(positionAttribute, i);
-			const v2 = new Vector3().fromBufferAttribute(positionAttribute, i + 1);
-			const v3 = new Vector3().fromBufferAttribute(positionAttribute, i + 2);
+			v1.fromBufferAttribute(positionAttribute, i);
+			v2.fromBufferAttribute(positionAttribute, i + 1);
+			v3.fromBufferAttribute(positionAttribute, i + 2);
 
 			// Find the intersection of each edge of the triangle with the slice plane at Y = y
 			const intersections = [
