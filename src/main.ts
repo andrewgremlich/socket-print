@@ -9,7 +9,7 @@ import { EllipsoidFiller } from "@/classes/EllipsoidFiller";
 import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
 import { STLLoader } from "@/classes/STLLoader";
-import { generateGCode } from "@/utils/generateGCode";
+import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import {
 	addFillerEllipsoid,
 	changeDistalCupSize,
@@ -101,15 +101,11 @@ mergeGeosButton.addEventListener("click", () => {
 		// mergeGeosButton.disabled = true;
 		// changeDistalCupSize.disabled = true;
 
-		const slicedGeometry = sliceGeometry(
-			evaluateGeometries.mesh.geometry,
-			0.1,
-			{
-				minY: evaluateGeometries.boundingBox.min.y,
-				maxY: evaluateGeometries.boundingBox.max.y,
-			},
-		);
-		const gCode = generateGCode(slicedGeometry, 0.1);
+		const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, 1, {
+			minY: evaluateGeometries.boundingBox.min.y,
+			maxY: evaluateGeometries.boundingBox.max.y,
+		});
+		const gCode = generateGCode(slicedGeometry, 1);
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
@@ -118,7 +114,6 @@ mergeGeosButton.addEventListener("click", () => {
 		loadingScreen.style.display = "none";
 
 		console.log(gCode);
-
 		// downloadGCodeFile(gCode);
 	}, 1000);
 });
