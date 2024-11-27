@@ -24,7 +24,9 @@ export class EllipsoidFiller extends AppObject implements AppObjectFunctions {
 
 		this.mesh.scale.set(1, 1.5, 1);
 
-		this.addGui();
+		if (import.meta.env.MODE === "development") {
+			this.addGui();
+		}
 	}
 
 	addGui() {

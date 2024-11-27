@@ -15,3 +15,6 @@ export const addFillerEllipsoid = document.getElementById(
 export const appForm = document.getElementById(
 	"customizations",
 ) as HTMLFormElement;
+export const menuBarButtons = document.querySelectorAll(
+	".menuBarButton input",
+) as unknown as HTMLInputElement[];

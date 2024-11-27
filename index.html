@@ -10,85 +10,118 @@
 </head>
 
 <body>
-  <div id="menuBar">
-    <label for="stlFileInput" id="stlFileInputLabel" class="button">
-      STL file
-      <input type="file" accept=".stl" id="stlFileInput">
-    </label>
+  <nav id="menuBar">
+    <h1>ProvelPrint</h1>
 
-    <input type="button" id="mergeGeometries" value="Merge Shapes" class="button" disabled>
-  </div>
+    <div class="menuBarButtonContainer">
+      <label class="menuBarButton" for="fileMenuOption">File <input type="checkbox" class="menuOptionCheckbox"
+          id="fileMenuOption" name="fileMenuOption"></label>
 
-  <div id="userInterface">
-    <form id="customizations">
-      <label for="portSelection">Port</label>
-
-      <div>
-        <input type="number" id="portSelection" name="portSelection">
+      <div class="menuBarDropdown">
+        <label for="stlFileInput" id="stlFileInputLabel" class="button">
+          STL file
+          <input type="file" accept=".stl" id="stlFileInput">
+        </label>
       </div>
+    </div>
 
-      <label for="lockPosition">Lock</label>
+    <div class="menuBarButtonContainer">
+      <label class="menuBarButton" for="editMenuOption">Edit <input type="checkbox" class="menuOptionCheckbox"
+          id="editMenuOption" name="editMenuOption"></label>
 
-      <div></div>
+      <div class="menuBarDropdown">
+        <p>hello world</p>
+      </div>
+    </div>
 
-      <label for="cupSize">Cup</label>
+    <div class="menuBarButtonContainer">
+      <label class="menuBarButton" for="preferencesMenuOption">Preferences <input type="checkbox"
+          class="menuOptionCheckbox" id="preferencesMenuOption" name="preferencesMenuOption"></label>
+    </div>
 
-      <div><select name="cupSize" id="cupSize" name="cupSize">
-          <option value="93x38">93 x 38</option>
-          <option value="93x28">93 x 28</option>
-        </select></div>
+    <div class="menuBarButtonContainer">
+      <label class="menuBarButton" for="helpMenuOption">Help <input type="checkbox" class="menuOptionCheckbox"
+          id="helpMenuOption" name="helpMenuOption"></label>
+    </div>
 
-      <label for="nozzleSize">Nozzle Size</label>
+  </nav>
 
-      <div><select name="nozzleSize" id="nozzleSize" name="nozzleSize">
-          <option value="3">3mm</option>
-          <option value="4">4mm</option>
-          <option value="5">5mm</option>
-          <option value="6">6mm</option>
-          <option value="7">7mm</option>
-        </select></div>
+  <main>
+    <div id="userInterface">
+      <form id="customizations">
+        <label for="portSelection">Port</label>
 
-      <label for="layerHeight">Layer Height</label>
+        <div>
+          <input type="number" id="portSelection" name="portSelection">
+        </div>
 
-      <div><select name="layerHeight" id="layerHeight" name="layerHeight">
-          <option value="0.5">0.5mm</option>
-          <option value="1">1mm</option>
-          <option value="1.5">1.5mm</option>
-          <option value="2">2mm</option>
-        </select></div>
+        <label for="lockPosition">Lock</label>
 
-      <label for="material">Material</label>
+        <div></div>
 
-      <div><select name="material" id="material" name="material">
-          <option value="cp1">CP 1</option>
-          <option value="edit">Edit</option>
-        </select></div>
+        <label for="cupSize">Cup</label>
 
-      <label for="nozzleTemp">Nozzle Temp in C</label>
+        <div><select name="cupSize" id="cupSize" name="cupSize">
+            <option value="93x38">93 x 38</option>
+            <option value="93x28">93 x 28</option>
+          </select></div>
 
-      <div><input type="number" value="200" name="nozzleTemp" id="nozzleTemp"></div>
+        <label for="nozzleSize">Nozzle Size</label>
 
-      <label for="cupTemp">Cup Temp in C</label>
+        <div><select name="nozzleSize" id="nozzleSize" name="nozzleSize">
+            <option value="3">3mm</option>
+            <option value="4">4mm</option>
+            <option value="5">5mm</option>
+            <option value="6">6mm</option>
+            <option value="7">7mm</option>
+          </select></div>
 
-      <div><input type="cupTemp" value="130" name="cupTemp" id="cupTemp"></div>
+        <label for="layerHeight">Layer Height</label>
 
-      <label for="shrinkFactor">Shrink Factor %</label>
+        <div><select name="layerHeight" id="layerHeight" name="layerHeight">
+            <option value="0.5">0.5mm</option>
+            <option value="1">1mm</option>
+            <option value="1.5">1.5mm</option>
+            <option value="2">2mm</option>
+          </select></div>
 
-      <div><input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor"></div>
+        <label for="material">Material</label>
 
-      <label for="outputFactor">Output Factor</label>
+        <div><select name="material" id="material" name="material">
+            <option value="cp1">CP 1</option>
+            <option value="edit">Edit</option>
+          </select></div>
 
-      <div><input type="number" value="1" name="outputFactor" id="outputFactor"></div>
+        <label for="nozzleTemp">Nozzle Temp in C</label>
 
-      <label for="printTime">Print Time <span id="printTimeOutput"></span></label>
+        <div><input type="number" value="200" name="nozzleTemp" id="nozzleTemp"></div>
 
-      <div></div>
-    </form>
+        <label for="cupTemp">Cup Temp in C</label>
 
-    <!--
+        <div><input type="cupTemp" value="130" name="cupTemp" id="cupTemp"></div>
+
+        <label for="shrinkFactor">Shrink Factor %</label>
+
+        <div><input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor"></div>
+
+        <label for="outputFactor">Output Factor</label>
+
+        <div><input type="number" value="1" name="outputFactor" id="outputFactor"></div>
+
+        <label for="printTime">Print Time <span id="printTimeOutput"></span></label>
+
+        <div></div>
+
+        <input type="button" id="mergeGeometries" value="Merge Shapes" class="button" disabled>
+      </form>
+
+      <!--
     <input type="button" id="addFillerEllipsoid" value="Add Filler Ellipsoid" class="button">
     -->
-  </div>
+    </div>
+
+    <div id="provelPrint"></div>
+  </main>
 
   <div id="loading">
     <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#fff"

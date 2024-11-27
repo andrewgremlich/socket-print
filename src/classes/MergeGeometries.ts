@@ -32,22 +32,10 @@ export class MergeGeometries extends AppObject implements AppObjectFunctions {
 		this.mesh = new Mesh(mergedGeometry, material);
 
 		this.#positionFolder = this.gui.addFolder("Merged Position");
-		this.addGui();
 
-		// const boundingBox = new Box3().setFromObject(this.mesh);
-		// const center = boundingBox.getCenter(new Vector3());
-
-		// const position = this.mesh.geometry.getAttribute("position");
-		// const normal = this.mesh.geometry.getAttribute("normal");
-		// const uv = this.mesh.geometry.getAttribute("uv");
-		// const index = this.mesh.geometry.getIndex();
-		// const serializedData = {
-		// 	position: position ? position : null,
-		// 	center: center,
-		// 	height: { miny: boundingBox.min.y, maxy: boundingBox.max.y },
-		// };
-
-		// processGeometry(serializedData);
+		if (import.meta.env.MODE === "development") {
+			this.addGui();
+		}
 	}
 	addGui = () => {
 		if (!this.mesh) {

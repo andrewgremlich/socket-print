@@ -42,7 +42,9 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 		this.#gui = getGui();
 		this.#cylinderGui = this.#gui.addFolder("Cylinder Position");
 
-		this.addGui();
+		if (import.meta.env.MODE === "development") {
+			this.addGui();
+		}
 	}
 
 	toMergeCompatible = () => {

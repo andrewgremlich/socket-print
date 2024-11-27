@@ -113,7 +113,10 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 			});
 
 			stlFileInput.disabled = true;
-			this.addGui();
+
+			if (import.meta.env.MODE === "development") {
+				this.addGui();
+			}
 		}
 	};
 

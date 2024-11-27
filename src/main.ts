@@ -14,6 +14,7 @@ import {
 	addFillerEllipsoid,
 	appForm,
 	loadingScreen,
+	menuBarButtons,
 	mergeGeosButton,
 } from "@/utils/htmlElements";
 import { sliceGeometry } from "@/utils/sliceGeometry";
@@ -125,4 +126,19 @@ addFillerEllipsoid?.addEventListener("click", () => {
 		throw new Error("Ellipsoid mesh not found");
 	}
 	app.addToScene(ellipsoidFiller.mesh);
+});
+
+window.addEventListener("click", (event) => {
+	const target = event.target as HTMLInputElement;
+
+	if (
+		target.className === "menuBarButton" ||
+		target.className === "menuOptionCheckbox"
+	) {
+		return;
+	}
+
+	for (const menuButton of menuBarButtons) {
+		menuButton.checked = false;
+	}
 });

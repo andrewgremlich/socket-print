@@ -41,7 +41,10 @@ export class EvaluateGeometries
 
 		this.#gui = getGui();
 		this.#mergedMeshGui = this.#gui.addFolder("Merged Mesh Position");
-		this.addGui();
+
+		if (import.meta.env.MODE === "development") {
+			this.addGui();
+		}
 	}
 
 	addGui() {

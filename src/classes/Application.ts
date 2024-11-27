@@ -14,12 +14,26 @@ export class Application {
 	renderer: WebGLRenderer;
 	controls: OrbitControls;
 	gridHelper: GridHelper;
+	width: number;
+	height: number;
 
 	constructor() {
+		const provelPrintView = document.getElementById("provelPrint");
+
+		if (!provelPrintView) {
+			throw new Error("Provel Print View not found");
+		}
+
+		if (!provelPrintView) {
+			throw new Error("Provel Print View not found");
+		}
+
+		this.width = provelPrintView.clientWidth;
+		this.height = provelPrintView.clientHeight;
 		this.scene = new Scene();
 		this.camera = new PerspectiveCamera(
 			75,
-			window.innerWidth / window.innerHeight,
+			this.width / this.height,
 			0.1,
 			1000,
 		);
@@ -27,7 +41,7 @@ export class Application {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.gridHelper = new GridHelper(200, 50);
 
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setSize(this.width, this.height);
 		this.renderer.setAnimationLoop(this.#animate);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -36,7 +50,7 @@ export class Application {
 
 		this.addToScene(this.gridHelper);
 
-		document.body.appendChild(this.renderer.domElement);
+		provelPrintView?.appendChild(this.renderer.domElement);
 
 		// Add event listener for window resize
 		window.addEventListener("resize", this.#onWindowResize);
@@ -72,9 +86,9 @@ export class Application {
 	};
 
 	#onWindowResize = () => {
-		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.aspect = this.width / this.height;
 		this.camera.updateProjectionMatrix();
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setSize(this.width, this.height);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 	};
 }
