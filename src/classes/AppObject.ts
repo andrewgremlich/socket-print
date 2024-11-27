@@ -8,11 +8,13 @@ export interface AppObjectFunctions {
 }
 
 export class AppObject {
-	gui: GUI;
+	gui!: GUI;
 	mesh: Mesh | null = null;
 
 	constructor() {
-		this.gui = getGui();
+		if (import.meta.env.MODE === "development") {
+			this.gui = getGui();
+		}
 	}
 
 	cloneMesh = () => {
