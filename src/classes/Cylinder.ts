@@ -11,8 +11,8 @@ import { getGui } from "@/utils/gui";
 import { AppObject, type AppObjectFunctions } from "./AppObject";
 
 export class Cylinder extends AppObject implements AppObjectFunctions {
-	#gui: GUI;
-	#cylinderGui: GUI;
+	#gui!: GUI;
+	#cylinderGui!: GUI;
 	#radialSegments = 30;
 	#radius = 78 / 2;
 	height: number;
@@ -39,10 +39,9 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 		this.mesh.position.set(0, this.height / 2, 0);
 		this.updateMatrixWorld();
 
-		this.#gui = getGui();
-		this.#cylinderGui = this.#gui.addFolder("Cylinder Position");
-
 		if (import.meta.env.MODE === "development") {
+			this.#gui = getGui();
+			this.#cylinderGui = this.#gui.addFolder("Cylinder Position");
 			this.addGui();
 		}
 	}

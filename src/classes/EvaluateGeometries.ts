@@ -12,8 +12,8 @@ export class EvaluateGeometries
 	extends AppObject
 	implements AppObjectFunctions
 {
-	#gui: GUI;
-	#mergedMeshGui: GUI;
+	#gui!: GUI;
+	#mergedMeshGui!: GUI;
 
 	boundingBox: Box3;
 
@@ -39,10 +39,9 @@ export class EvaluateGeometries
 
 		this.updateMatrixWorld();
 
-		this.#gui = getGui();
-		this.#mergedMeshGui = this.#gui.addFolder("Merged Mesh Position");
-
 		if (import.meta.env.MODE === "development") {
+			this.#gui = getGui();
+			this.#mergedMeshGui = this.#gui.addFolder("Merged Mesh Position");
 			this.addGui();
 		}
 	}

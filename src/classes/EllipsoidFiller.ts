@@ -6,13 +6,11 @@ import { getGui } from "@/utils/gui";
 import { AppObject, type AppObjectFunctions } from "./AppObject";
 
 export class EllipsoidFiller extends AppObject implements AppObjectFunctions {
-	#gui: GUI;
-	#ellipsoidGui: GUI;
+	#gui!: GUI;
+	#ellipsoidGui!: GUI;
 
 	constructor() {
 		super();
-
-		this.#gui = getGui();
 
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
@@ -20,11 +18,12 @@ export class EllipsoidFiller extends AppObject implements AppObjectFunctions {
 		const ellipsoidFiller = new SphereGeometry(32, 32, 64);
 
 		this.mesh = new Mesh(ellipsoidFiller, material);
-		this.#ellipsoidGui = this.#gui.addFolder("Ellipsoid Filler Position");
 
 		this.mesh.scale.set(1, 1.5, 1);
 
 		if (import.meta.env.MODE === "development") {
+			this.#gui = getGui();
+			this.#ellipsoidGui = this.#gui.addFolder("Ellipsoid Filler Position");
 			this.addGui();
 		}
 	}

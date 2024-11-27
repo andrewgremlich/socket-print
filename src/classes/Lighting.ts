@@ -4,7 +4,7 @@ import { AmbientLight, DirectionalLight, DirectionalLightHelper } from "three";
 import { getGui } from "@/utils/gui";
 
 export class Lighting {
-	#gui: GUI;
+	#gui!: GUI;
 
 	ambientLight: AmbientLight;
 	directionalLight: DirectionalLight;
@@ -13,13 +13,13 @@ export class Lighting {
 	constructor() {
 		this.ambientLight = new AmbientLight(0xffffff, 1);
 		this.directionalLight = new DirectionalLight(0xffffff, 3);
-		this.#gui = getGui();
 
 		this.directionalLight.castShadow = true;
 		this.directionalLight.position.set(100, 100, 300);
 		this.ambientLight.position.set(0, 0, 0);
 
 		if (import.meta.env.MODE === "development") {
+			this.#gui = getGui();
 			this.directionalLightHelper = new DirectionalLightHelper(
 				this.directionalLight,
 				5,
