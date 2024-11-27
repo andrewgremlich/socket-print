@@ -19,8 +19,8 @@ type StlLoadedCallback = (params: {
 }) => void;
 
 export class STLLoader extends AppObject implements AppObjectFunctions {
-	#rotationFolder: GUI;
-	#positionFolder: GUI;
+	#rotationFolder!: GUI;
+	#positionFolder!: GUI;
 
 	layerHeight = 0.2; // TODO: let's stick with 1mm for now. customizable later? // look for centroid 40 mm above z0
 	extrusionWidth = 0.4; //TODO: is this nozzle offset?
@@ -35,8 +35,11 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 		super();
 
 		this.stlLoadedCallback = stlLoadedCallback;
-		this.#rotationFolder = this.gui.addFolder("STL Rotation");
-		this.#positionFolder = this.gui.addFolder("STL Position");
+
+		if (import.meta.env.MODE === "development") {
+			this.#rotationFolder = this.gui.addFolder("STL Rotation");
+			this.#positionFolder = this.gui.addFolder("STL Position");
+		}
 
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
