@@ -1,8 +1,7 @@
 import type GUI from "lil-gui";
-import { Box3, Mesh, MeshPhongMaterial, Vector3 } from "three";
+import { Mesh, MeshPhongMaterial } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
-import { processGeometry } from "@/utils/processGeometry";
 import { AppObject, type AppObjectFunctions } from "./AppObject";
 import type { Cylinder } from "./Cylinder";
 import type { STLLoader } from "./STLLoader";
@@ -35,22 +34,20 @@ export class MergeGeometries extends AppObject implements AppObjectFunctions {
 		this.#positionFolder = this.gui.addFolder("Merged Position");
 		this.addGui();
 
-		const boundingBox = new Box3().setFromObject(this.mesh);
-		const center = boundingBox.getCenter(new Vector3());
+		// const boundingBox = new Box3().setFromObject(this.mesh);
+		// const center = boundingBox.getCenter(new Vector3());
 
-		console.log(this.mesh.geometry);
+		// const position = this.mesh.geometry.getAttribute("position");
+		// const normal = this.mesh.geometry.getAttribute("normal");
+		// const uv = this.mesh.geometry.getAttribute("uv");
+		// const index = this.mesh.geometry.getIndex();
+		// const serializedData = {
+		// 	position: position ? position : null,
+		// 	center: center,
+		// 	height: { miny: boundingBox.min.y, maxy: boundingBox.max.y },
+		// };
 
-		const position = this.mesh.geometry.getAttribute("position");
-		const normal = this.mesh.geometry.getAttribute("normal");
-		const uv = this.mesh.geometry.getAttribute("uv");
-		const index = this.mesh.geometry.getIndex();
-		const serializedData = {
-			position: position ? position : null,
-			center: center,
-			height: { miny: boundingBox.min.y, maxy: boundingBox.max.y },
-		};
-
-		processGeometry(serializedData);
+		// processGeometry(serializedData);
 	}
 	addGui = () => {
 		if (!this.mesh) {

@@ -2,18 +2,12 @@ import type GUI from "lil-gui";
 import {
 	Box3,
 	type BufferGeometry,
-	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
 	Vector3,
 } from "three";
-import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
-import {
-	closeUpBottomLimbGeometry,
-	closeUpTopLimbGeometry,
-} from "@/utils/closeUpLimbGeometry";
 import { ensureUV } from "@/utils/ensureUV";
 import { loadingScreen, stlFileInput } from "@/utils/htmlElements";
 import { AppObject, type AppObjectFunctions } from "./AppObject";

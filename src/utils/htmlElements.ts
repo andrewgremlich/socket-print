@@ -1,4 +1,4 @@
-export const userInterface = document.getElementById("user-interface");
+export const userInterface = document.getElementById("userInterface");
 export const stlFileInput = document.getElementById(
 	"stlFileInput",
 ) as HTMLInputElement;
@@ -12,3 +12,6 @@ export const changeDistalCupSize = document.getElementById(
 export const addFillerEllipsoid = document.getElementById(
 	"addFillerEllipsoid",
 ) as HTMLInputElement;
+export const appForm = document.getElementById(
+	"customizations",
+) as HTMLFormElement;

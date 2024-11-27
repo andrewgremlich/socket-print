@@ -12,12 +12,11 @@ import { STLLoader } from "@/classes/STLLoader";
 import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import {
 	addFillerEllipsoid,
-	changeDistalCupSize,
+	appForm,
 	loadingScreen,
 	mergeGeosButton,
 } from "@/utils/htmlElements";
 import { sliceGeometry } from "@/utils/sliceGeometry";
-import { MergeGeometries } from "./classes/MergeGeometries";
 
 const app = new Application();
 
@@ -28,7 +27,7 @@ if (import.meta.env.MODE === "development" && lighting.directionalLightHelper) {
 }
 app.addToScene(lighting.ambientLight);
 
-const cylinder = new Cylinder("large");
+const cylinder = new Cylinder();
 if (!cylinder.mesh) {
 	throw new Error("Cylinder mesh not found");
 }
@@ -84,12 +83,6 @@ mergeGeosButton.addEventListener("click", () => {
 		cylinder.removeGui();
 		stlModel.removeGui();
 
-		// const mergedGeos = new MergeGeometries(stlModel, cylinder);
-		// if (!mergedGeos.mesh) {
-		// 	throw new Error("Merged geometry not found");
-		// }
-		// app.addToScene(mergedGeos.mesh);
-
 		const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
 
 		if (!evaluateGeometries.mesh) {
@@ -113,9 +106,17 @@ mergeGeosButton.addEventListener("click", () => {
 
 		loadingScreen.style.display = "none";
 
-		console.log(gCode);
-		// downloadGCodeFile(gCode);
+		downloadGCodeFile(gCode);
 	}, 1000);
+});
+
+appForm.addEventListener("change", (event) => {
+	event.preventDefault();
+
+	const formData = new FormData(appForm);
+	const values = Object.fromEntries(formData.entries());
+
+	console.log(values);
 });
 
 addFillerEllipsoid?.addEventListener("click", () => {

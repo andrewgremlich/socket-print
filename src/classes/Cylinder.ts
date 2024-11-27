@@ -2,13 +2,11 @@ import type GUI from "lil-gui";
 import {
 	BufferAttribute,
 	CylinderGeometry,
-	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
 
 import { getGui } from "@/utils/gui";
-import { changeDistalCupSize, userInterface } from "@/utils/htmlElements";
 
 import { AppObject, type AppObjectFunctions } from "./AppObject";
 
@@ -16,15 +14,10 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 	#gui: GUI;
 	#cylinderGui: GUI;
 	#radialSegments = 30;
-	// measurements in mm
-	// distal cup diameter measurement from outside to the inside 90 => 78 => 66.2
 	#radius = 78 / 2;
 	height: number;
 
-	constructor(
-		size: "large" | "small" = "large",
-		options: { openEnded: boolean } = { openEnded: true },
-	) {
+	constructor(options: { openEnded: boolean } = { openEnded: true }) {
 		super();
 
 		this.height = 40;

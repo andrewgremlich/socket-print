@@ -6,19 +6,84 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta description="A CAD software to design socket prothesis prints.">
-  <title>Socketprint</title>
+  <title>Provel Print</title>
 </head>
 
 <body>
-  <h1>Socket Print</h1>
-
-  <div id="user-interface">
+  <div id="menuBar">
     <label for="stlFileInput" id="stlFileInputLabel" class="button">
       STL file
       <input type="file" accept=".stl" id="stlFileInput">
     </label>
 
     <input type="button" id="mergeGeometries" value="Merge Shapes" class="button" disabled>
+  </div>
+
+  <div id="userInterface">
+    <form id="customizations">
+      <label for="portSelection">Port</label>
+
+      <div>
+        <input type="number" id="portSelection" name="portSelection">
+      </div>
+
+      <label for="lockPosition">Lock</label>
+
+      <div></div>
+
+      <label for="cupSize">Cup</label>
+
+      <div><select name="cupSize" id="cupSize" name="cupSize">
+          <option value="93x38">93 x 38</option>
+          <option value="93x28">93 x 28</option>
+        </select></div>
+
+      <label for="nozzleSize">Nozzle Size</label>
+
+      <div><select name="nozzleSize" id="nozzleSize" name="nozzleSize">
+          <option value="3">3mm</option>
+          <option value="4">4mm</option>
+          <option value="5">5mm</option>
+          <option value="6">6mm</option>
+          <option value="7">7mm</option>
+        </select></div>
+
+      <label for="layerHeight">Layer Height</label>
+
+      <div><select name="layerHeight" id="layerHeight" name="layerHeight">
+          <option value="0.5">0.5mm</option>
+          <option value="1">1mm</option>
+          <option value="1.5">1.5mm</option>
+          <option value="2">2mm</option>
+        </select></div>
+
+      <label for="material">Material</label>
+
+      <div><select name="material" id="material" name="material">
+          <option value="cp1">CP 1</option>
+          <option value="edit">Edit</option>
+        </select></div>
+
+      <label for="nozzleTemp">Nozzle Temp in C</label>
+
+      <div><input type="number" value="200" name="nozzleTemp" id="nozzleTemp"></div>
+
+      <label for="cupTemp">Cup Temp in C</label>
+
+      <div><input type="cupTemp" value="130" name="cupTemp" id="cupTemp"></div>
+
+      <label for="shrinkFactor">Shrink Factor %</label>
+
+      <div><input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor"></div>
+
+      <label for="outputFactor">Output Factor</label>
+
+      <div><input type="number" value="1" name="outputFactor" id="outputFactor"></div>
+
+      <label for="printTime">Print Time <span id="printTimeOutput"></span></label>
+
+      <div></div>
+    </form>
 
     <!--
     <input type="button" id="addFillerEllipsoid" value="Add Filler Ellipsoid" class="button">

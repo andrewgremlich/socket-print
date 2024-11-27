@@ -26,15 +26,14 @@ export function generateGCode(
 ; estimated printing time (normal mode) = Xh YYm ZZs
 G10 P0 S195 R175
 T0
+M98 P"0:/sys/provel/start.g"
+G21 ; Set units to millimeters
+G90 ; Use absolute positioning
+G28 ; Home all axes
+G1 X0.3 F5000 ; Lift
 `;
 
 	// TODO: provide estimated print time above.
-
-	gcode += 'M98 P"0:/sys/provel/start.g"\n';
-	gcode += "G21 ; Set units to millimeters\n";
-	gcode += "G90 ; Use absolute positioning\n";
-	gcode += "G28 ; Home all axes\n";
-	gcode += "G1 X0.3 F5000 ; Lift\n";
 
 	for (let i = 0; i < slices.length; i++) {
 		gcode += `; Layer ${i}\n`;
