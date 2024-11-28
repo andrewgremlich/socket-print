@@ -1,5 +1,6 @@
 import "@/global-style.css";
 import "@/utils/store";
+import "@/utils/events";
 
 import { Vector3 } from "three";
 
@@ -12,7 +13,6 @@ import { STLLoader } from "@/classes/STLLoader";
 import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import {
 	loadingScreen,
-	menuBarButtons,
 	mergeGeosButton,
 	toggleOpenCylinder,
 } from "@/utils/htmlElements";
@@ -91,9 +91,6 @@ mergeGeosButton.addEventListener("click", () => {
 
 		app.addToScene(evaluateGeometries.mesh);
 
-		// mergeGeosButton.disabled = true;
-		// changeDistalCupSize.disabled = true;
-
 		const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, 1, {
 			minY: evaluateGeometries.boundingBox.min.y,
 			maxY: evaluateGeometries.boundingBox.max.y,
@@ -108,21 +105,6 @@ mergeGeosButton.addEventListener("click", () => {
 
 		downloadGCodeFile(gCode);
 	}, 1000);
-});
-
-window.addEventListener("click", (event) => {
-	const target = event.target as HTMLInputElement;
-
-	if (
-		target.className === "menuBarButton" ||
-		target.className === "menuOptionCheckbox"
-	) {
-		return;
-	}
-
-	for (const menuButton of menuBarButtons) {
-		menuButton.checked = false;
-	}
 });
 
 toggleOpenCylinder?.addEventListener("click", (event) => {

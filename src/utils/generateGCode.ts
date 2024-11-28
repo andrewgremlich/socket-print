@@ -4,8 +4,6 @@ import type { BufferGeometry, Vector3 } from "three";
 export function geometryToGCode(geometry: BufferGeometry): string {
 	let gcode = "";
 
-	console.log(geometry);
-
 	for (let i = 0; i < geometry.attributes.position.array.length; i += 3) {
 		gcode += `G1 X${geometry.attributes.position.array[i].toFixed(2)} Y${geometry.attributes.position.array[i + 1].toFixed(2)} Z${geometry.attributes.position.array[i + 2].toFixed(2)}\n`;
 	}
@@ -20,9 +18,9 @@ export function generateGCode(
 ): string {
 	//https://docs.duet3d.com/en/User_manual/Reference/Gcodes
 	let gcode = `;customInfo currentMaterial="PolyProp"
-;customInfo currentNozzleSize = "5mm"
-;customInfo currentCup = "93x38"
-;customInfo currentTemp = "200C"
+;customInfo currentNozzleSize = "${window.provelPrintStore.nozzleSize}mm"
+;customInfo currentCup = "${window.provelPrintStore.cupSize}"
+;customInfo currentTemp = "${window.provelPrintStore.nozzleTemp}C"
 ; estimated printing time (normal mode) = Xh YYm ZZs
 G10 P0 S195 R175
 T0

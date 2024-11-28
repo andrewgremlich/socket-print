@@ -2,15 +2,15 @@ import type { ProvelPrintApp } from "@/global";
 import { appForm } from "./htmlElements";
 
 window.provelPrintStore = {
-	cupSize: 0,
-	cupTemp: 0,
-	layerHeight: 0,
-	material: "",
-	nozzleSize: 0,
-	nozzleTemp: 0,
-	outputFactor: 0,
-	ipAddress: "",
-	shrinkFactor: 0,
+	cupSize: "93x38",
+	cupTemp: 130,
+	layerHeight: 0.5,
+	material: "cp1",
+	nozzleSize: 3,
+	nozzleTemp: 200,
+	outputFactor: 1,
+	ipAddress: "http://",
+	shrinkFactor: 2.6,
 };
 
 appForm.addEventListener("change", (event) => {
@@ -33,7 +33,7 @@ appForm.addEventListener("change", (event) => {
 			return acc;
 		},
 		{
-			cupSize: 0,
+			cupSize: "93x38",
 			cupTemp: 0,
 			layerHeight: 0,
 			material: "",
