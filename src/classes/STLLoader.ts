@@ -78,7 +78,7 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 
 			const geometry = await this.#readSTLFile(file);
 
-			geometry.rotateX(-Math.PI * 0.5);
+			// geometry.rotateX(-Math.PI * 0.5);
 
 			// const closeBottom = closeUpBottomLimbGeometry(geometry);
 			// const closeTop = closeUpTopLimbGeometry(geometry);

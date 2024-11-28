@@ -26,5 +26,5 @@
       "@pointControl/*": ["./point-control/pkg/*"],
     }
   },
-  "include": ["src"]
+  "include": ["src"],
 }

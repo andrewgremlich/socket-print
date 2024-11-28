@@ -1,21 +1,20 @@
 import "@/global-style.css";
+import "@/utils/store";
 
 import { Vector3 } from "three";
 
 import { Application } from "@/classes/Application";
 import { Cylinder } from "@/classes/Cylinder";
 import { DebugPoint } from "@/classes/DebugPoint";
-import { EllipsoidFiller } from "@/classes/EllipsoidFiller";
 import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
 import { STLLoader } from "@/classes/STLLoader";
 import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import {
-	addFillerEllipsoid,
-	appForm,
 	loadingScreen,
 	menuBarButtons,
 	mergeGeosButton,
+	toggleOpenCylinder,
 } from "@/utils/htmlElements";
 import { sliceGeometry } from "@/utils/sliceGeometry";
 
@@ -111,23 +110,6 @@ mergeGeosButton.addEventListener("click", () => {
 	}, 1000);
 });
 
-appForm.addEventListener("change", (event) => {
-	event.preventDefault();
-
-	const formData = new FormData(appForm);
-	const values = Object.fromEntries(formData.entries());
-
-	console.log(values);
-});
-
-addFillerEllipsoid?.addEventListener("click", () => {
-	const ellipsoidFiller = new EllipsoidFiller();
-	if (!ellipsoidFiller.mesh) {
-		throw new Error("Ellipsoid mesh not found");
-	}
-	app.addToScene(ellipsoidFiller.mesh);
-});
-
 window.addEventListener("click", (event) => {
 	const target = event.target as HTMLInputElement;
 
@@ -142,3 +124,19 @@ window.addEventListener("click", (event) => {
 		menuButton.checked = false;
 	}
 });
+
+toggleOpenCylinder?.addEventListener("click", (event) => {
+	if (!cylinder.mesh) {
+		throw new Error("Cylinder mesh not found");
+	}
+
+	console.log("toggleOpenCylinder", event);
+});
+
+// TODO PSEUDOCODE
+// 1. Loop through the points of a merged geometry. The alignment should be bottom up.
+// 2. Pass the points and the center into a function.
+// 3. Calculate the distance between the first point and the center for the radius. Store that radius
+// 4. Loop through comparing the points radii to the stored radii. Perhaps skip every few.
+// 5. Once the radii changes, if it's bigger the reverse the loop and delete those points.
+//    If the radii is smaller delete all the subsequent ones.

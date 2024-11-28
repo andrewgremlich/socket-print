@@ -22,6 +22,8 @@
           STL file
           <input type="file" accept=".stl" id="stlFileInput">
         </label>
+
+        <input type="button" value="Restore Defaults">
       </div>
     </div>
 
@@ -30,18 +32,18 @@
           id="editMenuOption" name="editMenuOption"></label>
 
       <div class="menuBarDropdown">
-        <p>hello world</p>
+        <input id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
+        <input type="button" value="Undo">
       </div>
-    </div>
-
-    <div class="menuBarButtonContainer">
-      <label class="menuBarButton" for="preferencesMenuOption">Preferences <input type="checkbox"
-          class="menuOptionCheckbox" id="preferencesMenuOption" name="preferencesMenuOption"></label>
     </div>
 
     <div class="menuBarButtonContainer">
       <label class="menuBarButton" for="helpMenuOption">Help <input type="checkbox" class="menuOptionCheckbox"
           id="helpMenuOption" name="helpMenuOption"></label>
+
+      <div class="menuBarDropdown">
+        <input type="button" value="Help Document">
+      </div>
     </div>
 
   </nav>
@@ -49,21 +51,24 @@
   <main>
     <div id="userInterface">
       <form id="customizations">
-        <label for="portSelection">Port</label>
+        <label for="ipAddress">IP Address and Port</label>
 
         <div>
-          <input type="number" id="portSelection" name="portSelection">
+          <input type="text" id="ipAddress" name="ipAddress" value="http://">
         </div>
 
         <label for="lockPosition">Lock</label>
 
-        <div></div>
+        <div style="display:flex;">
+          <input style="width:100px;" type="button" value="Left">
+          <input style="width:100px;" type="button" value="Right">
+        </div>
 
         <label for="cupSize">Cup</label>
 
         <div><select name="cupSize" id="cupSize" name="cupSize">
-            <option value="93x38">93 x 38</option>
-            <option value="93x28">93 x 28</option>
+            <option value="93x38">93 x 38</option> <!-- Place 30 mm above printer --->
+            <option value="93x28">93 x 25</option> <!-- Place 17 mm above printer --->
           </select></div>
 
         <label for="nozzleSize">Nozzle Size</label>
@@ -110,9 +115,12 @@
 
         <label for="printTime">Print Time <span id="printTimeOutput"></span></label>
 
-        <div></div>
+        <div>
+          <p>21 million hours</p>
+        </div>
 
-        <input type="button" id="mergeGeometries" value="Merge Shapes" class="button" disabled>
+        <input type="button" id="sendToPrinter" value="Send" class="button" disabled>
+        <input type="button" id="stopSendToPrinter" value="Stop" class="button" disabled>
       </form>
 
       <!--

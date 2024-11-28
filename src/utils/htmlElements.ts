@@ -4,7 +4,7 @@ export const stlFileInput = document.getElementById(
 ) as HTMLInputElement;
 export const loadingScreen = document.getElementById("loading");
 export const mergeGeosButton = document.getElementById(
-	"mergeGeometries",
+	"sendToPrinter",
 ) as HTMLInputElement;
 export const changeDistalCupSize = document.getElementById(
 	"changeDistalCupSize",
@@ -18,3 +18,6 @@ export const appForm = document.getElementById(
 export const menuBarButtons = document.querySelectorAll(
 	".menuBarButton input",
 ) as unknown as HTMLInputElement[];
+export const toggleOpenCylinder = document.getElementById(
+	"toggleOpenCylinder",
+) as HTMLInputElement;
