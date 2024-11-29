@@ -4,7 +4,7 @@ export const stlFileInput = document.getElementById(
 ) as HTMLInputElement;
 export const loadingScreen = document.getElementById("loading");
 export const mergeGeosButton = document.getElementById(
-	"sendToPrinter",
+	"generateGCode",
 ) as HTMLInputElement;
 export const changeDistalCupSize = document.getElementById(
 	"changeDistalCupSize",

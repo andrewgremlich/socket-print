@@ -9,9 +9,10 @@ import { type BufferGeometry, Vector3 } from "three";
  */
 export function sliceGeometry(
 	geometry: BufferGeometry,
-	layerWidth: number,
 	{ minY, maxY }: { minY: number; maxY: number },
 ): Vector3[][][] {
+	const layerWidth = window.provelPrintStore.layerHeight as number;
+
 	if (layerWidth <= 0) {
 		throw new Error("Layer width must be greater than 0");
 	}

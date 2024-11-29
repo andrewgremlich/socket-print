@@ -11,13 +11,10 @@ export function geometryToGCode(geometry: BufferGeometry): string {
 	return gcode;
 }
 // Function to generate G-code from the slices
-export function generateGCode(
-	slices: Vector3[][][],
-	layerHeight: number,
-	feedrate = 1500,
-): string {
+export function generateGCode(slices: Vector3[][][], feedrate = 1500): string {
+	const layerWidth = window.provelPrintStore.layerHeight as number;
 	//https://docs.duet3d.com/en/User_manual/Reference/Gcodes
-	let gcode = `;customInfo currentMaterial="PolyProp"
+	let gcode = `;customInfo currentMaterial="${window.provelPrintStore.material}"
 ;customInfo currentNozzleSize = "${window.provelPrintStore.nozzleSize}mm"
 ;customInfo currentCup = "${window.provelPrintStore.cupSize}"
 ;customInfo currentTemp = "${window.provelPrintStore.nozzleTemp}C"
@@ -35,7 +32,7 @@ G1 X0.3 F5000 ; Lift
 
 	for (let i = 0; i < slices.length; i++) {
 		gcode += `; Layer ${i}\n`;
-		const y = i * layerHeight;
+		const y = i * layerWidth;
 
 		for (const contour of slices[i]) {
 			if (contour.length > 0) {

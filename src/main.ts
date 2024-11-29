@@ -55,10 +55,6 @@ const stlModel = new STLLoader({
 	},
 });
 
-if (!mergeGeosButton) {
-	throw new Error("Merged Geometries Button not found");
-}
-
 mergeGeosButton.addEventListener("click", () => {
 	if (!loadingScreen) {
 		throw new Error("Loading screen not found");
@@ -67,9 +63,6 @@ mergeGeosButton.addEventListener("click", () => {
 	loadingScreen.style.display = "flex";
 
 	setTimeout(() => {
-		cylinder.updateMatrixWorld();
-		stlModel.updateMatrixWorld();
-
 		if (!stlModel.mesh) {
 			throw new Error("STL data has not been loaded!");
 		}
@@ -77,6 +70,9 @@ mergeGeosButton.addEventListener("click", () => {
 		if (!cylinder.mesh) {
 			throw new Error("Cylinder mesh not found");
 		}
+
+		cylinder.updateMatrixWorld();
+		stlModel.updateMatrixWorld();
 
 		app.removeAllMeshesFromScene();
 
@@ -88,11 +84,11 @@ mergeGeosButton.addEventListener("click", () => {
 
 		app.addToScene(evaluateGeometries.mesh);
 
-		const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, 1, {
+		const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, {
 			minY: evaluateGeometries.boundingBox.min.y,
 			maxY: evaluateGeometries.boundingBox.max.y,
 		});
-		const gCode = generateGCode(slicedGeometry, 1);
+		const gCode = generateGCode(slicedGeometry);
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");

@@ -1,6 +1,7 @@
 import {
 	Box3,
 	type BufferGeometry,
+	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
 	Vector3,
@@ -50,16 +51,28 @@ export class STLLoader extends AppObject {
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
 		coronalRotate?.addEventListener("click", this.coronalRotate90);
 		xPosition?.addEventListener("input", ({ target }) => {
+			if (!this.mesh) {
+				return;
+			}
+
 			this.changeXPosition(
 				Number.parseFloat((target as HTMLInputElement).value),
 			);
 		});
 		yPosition?.addEventListener("input", ({ target }) => {
+			if (!this.mesh) {
+				return;
+			}
+
 			this.changeYPosition(
 				Number.parseFloat((target as HTMLInputElement).value),
 			);
 		});
 		zPosition?.addEventListener("input", ({ target }) => {
+			if (!this.mesh) {
+				return;
+			}
+
 			this.changeZPosition(
 				Number.parseFloat((target as HTMLInputElement).value),
 			);
@@ -96,22 +109,13 @@ export class STLLoader extends AppObject {
 
 			const geometry = await this.#readSTLFile(file);
 
-			// const closeBottom = closeUpBottomLimbGeometry(geometry);
-			// const closeTop = closeUpTopLimbGeometry(geometry);
-
-			// const mergedGeometry = BufferGeometryUtils.mergeGeometries([
-			// 	geometry,
-			// 	closeBottom,
-			// 	closeTop,
-			// ]);
-
-			// mergedGeometry.computeBoundingBox();
-			// mergedGeometry.computeVertexNormals();
+			geometry.computeBoundingBox();
+			geometry.computeVertexNormals();
 			ensureUV(geometry);
 
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
-				wireframe: true,
+				side: DoubleSide,
 			});
 			const mesh = new Mesh(geometry, material);
 
@@ -120,10 +124,8 @@ export class STLLoader extends AppObject {
 			const maxDimension = Math.max(size.x, size.y, size.z);
 
 			this.mesh = mesh;
-			this.mesh.position.set(0, size.y / 2, 0);
 			this.boundingBox = boundingBox;
-
-			this.updateMatrixWorld();
+			this.mesh.position.set(0, size.y / 2, 0);
 
 			this.stlLoadedCallback({
 				mesh,
@@ -137,7 +139,6 @@ export class STLLoader extends AppObject {
 			xPosition.disabled = false;
 			yPosition.disabled = false;
 			zPosition.disabled = false;
-
 			stlFileInput.disabled = true;
 		}
 	};

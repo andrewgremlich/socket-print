@@ -19,7 +19,7 @@
 
       <div class="menuBarDropdown">
         <label style="display: block;" class="menuBarDropdownButton" for="stlFileInput" id="stlFileInputLabel">
-          Import STL file
+          Open STL file
           <input type="file" accept=".stl" id="stlFileInput">
         </label>
 
@@ -32,8 +32,8 @@
           id="editMenuOption" name="editMenuOption"></label>
 
       <div class="menuBarDropdown">
-        <inpu class="menuBarDropdownButton" id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
-          <input class="menuBarDropdownButton" type="button" value="Undo">
+        <input class="menuBarDropdownButton" id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
+        <input class="menuBarDropdownButton" type="button" value="Undo">
       </div>
     </div>
 
@@ -85,7 +85,7 @@
 
         <div><select name="layerHeight" id="layerHeight" name="layerHeight">
             <option value="0.5">0.5mm</option>
-            <option value="1">1mm</option>
+            <option value="1" selected>1mm</option>
             <option value="1.5">1.5mm</option>
             <option value="2">2mm</option>
           </select></div>
@@ -103,7 +103,7 @@
 
         <label for="cupTemp">Cup Temp in C</label>
 
-        <div><input type="cupTemp" value="130" name="cupTemp" id="cupTemp"></div>
+        <div><input type="number" value="130" name="cupTemp" id="cupTemp"></div>
 
         <label for="shrinkFactor">Shrink Factor %</label>
 
@@ -117,6 +117,12 @@
 
         <div>
           <p>21 million hours</p>
+        </div>
+
+        <label>Test GCode Generate</label>
+
+        <div>
+          <input type="button" value="Generate G Code" class="button" id="generateGCode" disabled>
         </div>
 
         <input type="button" id="sendToPrinter" value="Send" class="button" disabled>

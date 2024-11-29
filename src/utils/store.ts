@@ -4,7 +4,7 @@ import { appForm } from "./htmlElements";
 window.provelPrintStore = {
 	cupSize: "93x38",
 	cupTemp: 130,
-	layerHeight: 0.5,
+	layerHeight: 1,
 	material: "cp1",
 	nozzleSize: 3,
 	nozzleTemp: 200,
@@ -25,6 +25,12 @@ appForm.addEventListener("change", (event) => {
 			const incomingKey = key as keyof ProvelPrintApp;
 
 			if (Number(values[incomingKey])) {
+				const converted = Number(values[incomingKey]);
+
+				if (converted <= 0) {
+					throw new Error(`Value for ${incomingKey} must be greater than 0`);
+				}
+
 				acc[incomingKey] = Number(values[incomingKey]);
 			} else {
 				acc[incomingKey] = values[incomingKey];

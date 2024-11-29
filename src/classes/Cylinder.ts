@@ -36,6 +36,20 @@ export class Cylinder extends AppObject {
 		this.updateMatrixWorld();
 	}
 
+	updateMatrixWorld = () => {
+		if (this.mesh) {
+			this.mesh.updateMatrixWorld(true);
+
+			this.mesh.geometry.applyMatrix4(this.mesh.matrixWorld);
+
+			this.mesh.rotation.set(0, 0, 0);
+			this.mesh.position.set(0, 0, 0);
+
+			this.mesh.geometry.computeVertexNormals();
+			this.mesh.geometry.computeBoundingBox();
+		}
+	};
+
 	toMergeCompatible = () => {
 		if (!this.mesh) {
 			throw new Error("Geometry or mesh is missing");
