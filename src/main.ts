@@ -22,9 +22,6 @@ const app = new Application();
 
 const lighting = new Lighting();
 app.addToScene(lighting.directionalLight);
-if (import.meta.env.MODE === "development" && lighting.directionalLightHelper) {
-	app.addToScene(lighting.directionalLightHelper);
-}
 app.addToScene(lighting.ambientLight);
 
 const cylinder = new Cylinder();
@@ -80,8 +77,6 @@ mergeGeosButton.addEventListener("click", () => {
 		}
 
 		app.removeAllMeshesFromScene();
-		cylinder.removeGui();
-		stlModel.removeGui();
 
 		const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
 

@@ -1,19 +1,15 @@
-import type GUI from "lil-gui";
 import {
 	BufferAttribute,
 	CylinderGeometry,
+	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
 
-import { getGui } from "@/utils/gui";
+import { AppObject } from "./AppObject";
 
-import { AppObject, type AppObjectFunctions } from "./AppObject";
-
-export class Cylinder extends AppObject implements AppObjectFunctions {
-	#gui!: GUI;
-	#cylinderGui!: GUI;
-	#radialSegments = 30;
+export class Cylinder extends AppObject {
+	#radialSegments = 128;
 	#radius = 78 / 2;
 	height: number;
 
@@ -24,7 +20,7 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
-			wireframe: true,
+			side: DoubleSide,
 		});
 		const geometry = new CylinderGeometry(
 			this.#radius,
@@ -38,12 +34,6 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 		this.mesh = new Mesh(geometry, material);
 		this.mesh.position.set(0, this.height / 2, 0);
 		this.updateMatrixWorld();
-
-		if (import.meta.env.MODE === "development") {
-			this.#gui = getGui();
-			this.#cylinderGui = this.#gui.addFolder("Cylinder Position");
-			this.addGui();
-		}
 	}
 
 	toMergeCompatible = () => {
@@ -67,20 +57,4 @@ export class Cylinder extends AppObject implements AppObjectFunctions {
 
 		return nonIndexCylinder;
 	};
-
-	addGui() {
-		if (!this.mesh) {
-			throw new Error("Mesh is missing");
-		}
-
-		this.#cylinderGui.add(this.mesh.position, "x", -500, 500, 1).name("X");
-		this.#cylinderGui.add(this.mesh.position, "y", -500, 500, 1).name("Y");
-		this.#cylinderGui.add(this.mesh.position, "z", -500, 500, 1).name("Z");
-
-		this.#cylinderGui.add(this.mesh.scale, "y", 0.1, 2, 0.1).name("Height");
-	}
-
-	removeGui() {
-		this.#cylinderGui.destroy();
-	}
 }

@@ -1,20 +1,11 @@
-import type GUI from "lil-gui";
 import { CSG } from "three-csg-ts";
 
-import { getGui } from "@/utils/gui";
-
 import { Box3 } from "three";
-import { AppObject, type AppObjectFunctions } from "./AppObject";
+import { AppObject } from "./AppObject";
 import type { Cylinder } from "./Cylinder";
 import type { STLLoader } from "./STLLoader";
 
-export class EvaluateGeometries
-	extends AppObject
-	implements AppObjectFunctions
-{
-	#gui!: GUI;
-	#mergedMeshGui!: GUI;
-
+export class EvaluateGeometries extends AppObject {
 	boundingBox: Box3;
 
 	constructor(stlModel: STLLoader, cylinder: Cylinder) {
@@ -38,25 +29,5 @@ export class EvaluateGeometries
 		this.boundingBox = boundingBox;
 
 		this.updateMatrixWorld();
-
-		if (import.meta.env.MODE === "development") {
-			this.#gui = getGui();
-			this.#mergedMeshGui = this.#gui.addFolder("Merged Mesh Position");
-			this.addGui();
-		}
-	}
-
-	addGui() {
-		if (!this.mesh) {
-			throw new Error("Merged Mesh is missing");
-		}
-
-		this.#mergedMeshGui.add(this.mesh.position, "x", -500, 500, 1).name("X");
-		this.#mergedMeshGui.add(this.mesh.position, "y", -500, 500, 1).name("Y");
-		this.#mergedMeshGui.add(this.mesh.position, "z", -500, 500, 1).name("Z");
-	}
-
-	removeGui() {
-		this.#mergedMeshGui.destroy();
 	}
 }

@@ -33,7 +33,7 @@
 
       <div class="menuBarDropdown">
         <inpu class="menuBarDropdownButton" id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
-        <input class="menuBarDropdownButton" type="button" value="Undo">
+          <input class="menuBarDropdownButton" type="button" value="Undo">
       </div>
     </div>
 
@@ -129,6 +129,22 @@
     </div>
 
     <div id="provelPrint"></div>
+
+    <div id="editSocket">
+      <div id="rotateSocket">
+        <input disabled id="transversalRotate" class="button" type="button" value="Transversal Rotate">
+        <input disabled id="sagittalRotate" class="button" type="button" value="Sagittal Rotate">
+        <input disabled id="coronalRotate" class="button" type="button" value="Frontal Rotate">
+      </div>
+      <div id="changePosition">
+        <label for="">X</label>
+        <input disabled id="xPosition" type="range" value="0" min="-200" max="200" step="1">
+        <label for="">Y</label>
+        <input disabled id="yPosition" type="range" value="0" min="-200" max="200" step="1">
+        <label for="">Z</label>
+        <input disabled id="zPosition" type="range" value="0" min="-200" max="200" step="1">
+      </div>
+    </div>
   </main>
 
   <div id="loading">

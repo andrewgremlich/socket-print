@@ -1,14 +1,11 @@
-import type GUI from "lil-gui";
 import { Mesh, MeshPhongMaterial } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
-import { AppObject, type AppObjectFunctions } from "./AppObject";
+import { AppObject } from "./AppObject";
 import type { Cylinder } from "./Cylinder";
 import type { STLLoader } from "./STLLoader";
 
-export class MergeGeometries extends AppObject implements AppObjectFunctions {
-	#positionFolder: GUI;
-
+export class MergeGeometries extends AppObject {
 	constructor(stlModel: STLLoader, cylinder: Cylinder) {
 		super();
 
@@ -30,24 +27,5 @@ export class MergeGeometries extends AppObject implements AppObjectFunctions {
 		});
 
 		this.mesh = new Mesh(mergedGeometry, material);
-
-		this.#positionFolder = this.gui.addFolder("Merged Position");
-
-		if (import.meta.env.MODE === "development") {
-			this.addGui();
-		}
 	}
-	addGui = () => {
-		if (!this.mesh) {
-			return;
-		}
-
-		this.#positionFolder.add(this.mesh.position, "x", -500, 500, 10).name("X");
-		this.#positionFolder.add(this.mesh.position, "y", -500, 500, 10).name("Y");
-		this.#positionFolder.add(this.mesh.position, "z", -500, 500, 10).name("Z");
-	};
-
-	removeGui = () => {
-		this.#positionFolder.destroy();
-	};
 }

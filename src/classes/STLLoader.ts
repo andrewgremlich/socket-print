@@ -1,4 +1,3 @@
-import type GUI from "lil-gui";
 import {
 	Box3,
 	type BufferGeometry,
@@ -9,8 +8,17 @@ import {
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
 import { ensureUV } from "@/utils/ensureUV";
-import { loadingScreen, stlFileInput } from "@/utils/htmlElements";
-import { AppObject, type AppObjectFunctions } from "./AppObject";
+import {
+	coronalRotate,
+	loadingScreen,
+	sagittalRotate,
+	stlFileInput,
+	transversalRotate,
+	xPosition,
+	yPosition,
+	zPosition,
+} from "@/utils/htmlElements";
+import { AppObject } from "./AppObject";
 
 type StlLoadedCallback = (params: {
 	mesh: Mesh;
@@ -18,10 +26,7 @@ type StlLoadedCallback = (params: {
 	center: Vector3;
 }) => void;
 
-export class STLLoader extends AppObject implements AppObjectFunctions {
-	#rotationFolder!: GUI;
-	#positionFolder!: GUI;
-
+export class STLLoader extends AppObject {
 	layerHeight = 0.2; // TODO: let's stick with 1mm for now. customizable later? // look for centroid 40 mm above z0
 	extrusionWidth = 0.4; //TODO: is this nozzle offset?
 	stlLoadedCallback: StlLoadedCallback;
@@ -36,16 +41,29 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 
 		this.stlLoadedCallback = stlLoadedCallback;
 
-		if (import.meta.env.MODE === "development") {
-			this.#rotationFolder = this.gui.addFolder("STL Rotation");
-			this.#positionFolder = this.gui.addFolder("STL Position");
-		}
-
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
 		}
 
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
+		transversalRotate?.addEventListener("click", this.transverseRotate90);
+		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
+		coronalRotate?.addEventListener("click", this.coronalRotate90);
+		xPosition?.addEventListener("input", ({ target }) => {
+			this.changeXPosition(
+				Number.parseFloat((target as HTMLInputElement).value),
+			);
+		});
+		yPosition?.addEventListener("input", ({ target }) => {
+			this.changeYPosition(
+				Number.parseFloat((target as HTMLInputElement).value),
+			);
+		});
+		zPosition?.addEventListener("input", ({ target }) => {
+			this.changeZPosition(
+				Number.parseFloat((target as HTMLInputElement).value),
+			);
+		});
 	}
 
 	updateMatrixWorld = () => {
@@ -77,8 +95,6 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 			loadingScreen.style.display = "flex";
 
 			const geometry = await this.#readSTLFile(file);
-
-			// geometry.rotateX(-Math.PI * 0.5);
 
 			// const closeBottom = closeUpBottomLimbGeometry(geometry);
 			// const closeTop = closeUpTopLimbGeometry(geometry);
@@ -115,11 +131,14 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 				center: boundingBox.getCenter(new Vector3()),
 			});
 
-			stlFileInput.disabled = true;
+			transversalRotate.disabled = false;
+			sagittalRotate.disabled = false;
+			coronalRotate.disabled = false;
+			xPosition.disabled = false;
+			yPosition.disabled = false;
+			zPosition.disabled = false;
 
-			if (import.meta.env.MODE === "development") {
-				this.addGui();
-			}
+			stlFileInput.disabled = true;
 		}
 	};
 
@@ -138,28 +157,51 @@ export class STLLoader extends AppObject implements AppObjectFunctions {
 		});
 	};
 
-	addGui = () => {
+	transverseRotate90 = () => {
 		if (!this.mesh) {
 			return;
 		}
 
-		this.#rotationFolder
-			.add(this.mesh.rotation, "x", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
-			.name("X");
-		this.#rotationFolder
-			.add(this.mesh.rotation, "y", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
-			.name("Y");
-		this.#rotationFolder
-			.add(this.mesh.rotation, "z", -Math.PI * 2, Math.PI * 2, Math.PI / 6)
-			.name("Z");
-
-		this.#positionFolder.add(this.mesh.position, "x", -500, 500, 10).name("X");
-		this.#positionFolder.add(this.mesh.position, "y", -500, 500, 10).name("Y");
-		this.#positionFolder.add(this.mesh.position, "z", -500, 500, 10).name("Z");
+		this.mesh.rotateX(Math.PI / 2);
 	};
 
-	removeGui = () => {
-		this.#positionFolder.destroy();
-		this.#rotationFolder.destroy();
+	sagittalRotate90 = () => {
+		if (!this.mesh) {
+			return;
+		}
+
+		this.mesh.rotateZ(Math.PI / 2);
+	};
+
+	coronalRotate90 = () => {
+		if (!this.mesh) {
+			return;
+		}
+
+		this.mesh.rotateY(Math.PI / 2);
+	};
+
+	changeYPosition = (value: number) => {
+		if (!this.mesh) {
+			return;
+		}
+
+		this.mesh.position.setY(value);
+	};
+
+	changeXPosition = (value: number) => {
+		if (!this.mesh) {
+			return;
+		}
+
+		this.mesh.position.setX(value);
+	};
+
+	changeZPosition = (value: number) => {
+		if (!this.mesh) {
+			return;
+		}
+
+		this.mesh.position.setZ(value);
 	};
 }
