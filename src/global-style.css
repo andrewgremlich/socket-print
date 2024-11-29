@@ -62,26 +62,16 @@ main {
 	font-size: 20px;
 	margin: 0 10px;
 	padding: 0 10px;
-	color: #000;
+	color: #fff;
 	border-radius: 5px;
-	border: 1px solid #999999;
-	background-color: #efefef;
+	border: none;
+	background-color: none;
 	cursor: pointer;
 
 	&:hover {
-		background-color: #b9b9b9;
+		text-decoration: underline;
+		text-underline-offset: 5px;
 	}
-}
-
-.menuBarDropdown {
-	background-color: #444;
-	height: auto;
-	width: auto;
-	position: absolute;
-	z-index: 9999;
-	left: 0;
-	top: 50px;
-	display: none;
 }
 
 .menuBarButtonContainer {
@@ -91,10 +81,36 @@ main {
 		display: none;
 	}
 
+	& .menuBarDropdown {
+		position: absolute;
+		z-index: 9999;
+		left: 0;
+		top: 50px;
+		display: none;
+		padding: 10px 10px 0 10px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+		border-radius: 5px;
+	}
+
 	&:has(input:checked) .menuBarDropdown {
 		display: block;
-		background-color: darkgreen;
+		background-color: #444;
 		color: red;
+	}
+}
+
+.menuBarDropdownButton {
+	background: none;
+	border: none;
+	color: #fff;
+	font-size: 16px;
+	padding: 5px 10px;
+	margin-bottom: 5px;
+
+	&:hover {
+		text-decoration: underline;
+		text-underline-offset: 5px;
+		cursor: pointer;
 	}
 }
 

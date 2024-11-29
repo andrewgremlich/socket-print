@@ -11,19 +11,19 @@
 
 <body>
   <nav id="menuBar">
-    <h1>ProvelPrint</h1>
+    <h1>ProvelPrint: Alpha</h1>
 
     <div class="menuBarButtonContainer">
       <label class="menuBarButton" for="fileMenuOption">File <input type="checkbox" class="menuOptionCheckbox"
           id="fileMenuOption" name="fileMenuOption"></label>
 
       <div class="menuBarDropdown">
-        <label for="stlFileInput" id="stlFileInputLabel" class="button">
-          STL file
+        <label style="display: block;" class="menuBarDropdownButton" for="stlFileInput" id="stlFileInputLabel">
+          Import STL file
           <input type="file" accept=".stl" id="stlFileInput">
         </label>
 
-        <input type="button" value="Restore Defaults">
+        <input class="menuBarDropdownButton" type="button" value="Restore Defaults">
       </div>
     </div>
 
@@ -32,8 +32,8 @@
           id="editMenuOption" name="editMenuOption"></label>
 
       <div class="menuBarDropdown">
-        <input id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
-        <input type="button" value="Undo">
+        <inpu class="menuBarDropdownButton" id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
+        <input class="menuBarDropdownButton" type="button" value="Undo">
       </div>
     </div>
 
@@ -42,7 +42,7 @@
           id="helpMenuOption" name="helpMenuOption"></label>
 
       <div class="menuBarDropdown">
-        <input type="button" value="Help Document">
+        <input class="menuBarDropdownButton" type="button" value="Help Document">
       </div>
     </div>
 
