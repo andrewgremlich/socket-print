@@ -30,8 +30,10 @@ if (!cylinder.mesh) {
 }
 app.addToScene(cylinder.mesh);
 
-const debugPoint = new DebugPoint(new Vector3(0.7309, 100, 2.847));
-app.addToScene(debugPoint.mesh);
+if (import.meta.env.MODE === "development") {
+	const debugPoint = new DebugPoint(new Vector3(0.7309, 100, 2.847));
+	app.addToScene(debugPoint.mesh);
+}
 
 const stlModel = new STLLoader({
 	stlLoadedCallback: ({ mesh, maxDimension, center }) => {
