@@ -1,7 +1,7 @@
 {
   "name": "socket-print",
   "private": true,
-  "version": "0.0.1",
+  "version": "alpha-v2.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
