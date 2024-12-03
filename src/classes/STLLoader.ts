@@ -1,5 +1,6 @@
 import {
 	Box3,
+	BoxHelper,
 	type BufferGeometry,
 	DoubleSide,
 	Mesh,
@@ -15,9 +16,6 @@ import {
 	sagittalRotate,
 	stlFileInput,
 	transversalRotate,
-	xPosition,
-	yPosition,
-	zPosition,
 } from "@/utils/htmlElements";
 import { AppObject } from "./AppObject";
 
@@ -25,6 +23,7 @@ type StlLoadedCallback = (params: {
 	mesh: Mesh;
 	maxDimension: number;
 	center: Vector3;
+	boxHelper: BoxHelper;
 }) => void;
 
 export class STLLoader extends AppObject {
@@ -32,6 +31,10 @@ export class STLLoader extends AppObject {
 	extrusionWidth = 0.4; //TODO: is this nozzle offset?
 	stlLoadedCallback: StlLoadedCallback;
 	boundingBox?: Box3;
+	center?: Vector3;
+	size?: Vector3;
+
+	boxHelper?: BoxHelper;
 
 	constructor({
 		stlLoadedCallback,
@@ -50,33 +53,7 @@ export class STLLoader extends AppObject {
 		transversalRotate?.addEventListener("click", this.transverseRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
 		coronalRotate?.addEventListener("click", this.coronalRotate90);
-		xPosition?.addEventListener("input", ({ target }) => {
-			if (!this.mesh) {
-				return;
-			}
-
-			this.changeXPosition(
-				Number.parseFloat((target as HTMLInputElement).value),
-			);
-		});
-		yPosition?.addEventListener("input", ({ target }) => {
-			if (!this.mesh) {
-				return;
-			}
-
-			this.changeYPosition(
-				Number.parseFloat((target as HTMLInputElement).value),
-			);
-		});
-		zPosition?.addEventListener("input", ({ target }) => {
-			if (!this.mesh) {
-				return;
-			}
-
-			this.changeZPosition(
-				Number.parseFloat((target as HTMLInputElement).value),
-			);
-		});
+		// autoAlignSocket?.addEventListener("click", this.autoAlignSocket);
 	}
 
 	updateMatrixWorld = () => {
@@ -126,19 +103,22 @@ export class STLLoader extends AppObject {
 			this.mesh = mesh;
 			this.boundingBox = boundingBox;
 			this.mesh.position.set(0, size.y / 2, 0);
+			this.center = boundingBox.getCenter(new Vector3());
+			this.size = size;
+
+			const boxHelper = new BoxHelper(mesh, 0xffff00);
+			this.boxHelper = boxHelper;
 
 			this.stlLoadedCallback({
 				mesh,
 				maxDimension,
-				center: boundingBox.getCenter(new Vector3()),
+				center: this.center,
+				boxHelper,
 			});
 
 			transversalRotate.disabled = false;
 			sagittalRotate.disabled = false;
 			coronalRotate.disabled = false;
-			xPosition.disabled = false;
-			yPosition.disabled = false;
-			zPosition.disabled = false;
 			stlFileInput.disabled = true;
 		}
 	};
@@ -158,12 +138,40 @@ export class STLLoader extends AppObject {
 		});
 	};
 
+	autoAlignMesh = () => {
+		if (!this.mesh) {
+			return;
+		}
+
+		const boundingBox = new Box3().setFromObject(this.mesh);
+		const size = boundingBox.getSize(new Vector3());
+		const center = boundingBox.getCenter(new Vector3());
+		const minY = boundingBox.min.y;
+
+		this.mesh.position.x -= center.x;
+		this.mesh.position.z -= center.z;
+
+		if (minY < 0) {
+			this.mesh.position.y += Math.abs(minY);
+		}
+
+		this.size = size;
+		this.boundingBox = boundingBox;
+		this.center = center;
+
+		this.updateMatrixWorld();
+		this.boxHelper?.update();
+	};
+
 	transverseRotate90 = () => {
 		if (!this.mesh) {
 			return;
 		}
 
 		this.mesh.rotateX(Math.PI / 2);
+		this.updateMatrixWorld();
+
+		this.autoAlignMesh();
 	};
 
 	sagittalRotate90 = () => {
@@ -172,6 +180,9 @@ export class STLLoader extends AppObject {
 		}
 
 		this.mesh.rotateZ(Math.PI / 2);
+		this.updateMatrixWorld();
+
+		this.autoAlignMesh();
 	};
 
 	coronalRotate90 = () => {
@@ -180,29 +191,8 @@ export class STLLoader extends AppObject {
 		}
 
 		this.mesh.rotateY(Math.PI / 2);
-	};
+		this.updateMatrixWorld();
 
-	changeYPosition = (value: number) => {
-		if (!this.mesh) {
-			return;
-		}
-
-		this.mesh.position.setY(value);
-	};
-
-	changeXPosition = (value: number) => {
-		if (!this.mesh) {
-			return;
-		}
-
-		this.mesh.position.setX(value);
-	};
-
-	changeZPosition = (value: number) => {
-		if (!this.mesh) {
-			return;
-		}
-
-		this.mesh.position.setZ(value);
+		this.autoAlignMesh();
 	};
 }

@@ -17,6 +17,7 @@ import {
 	toggleOpenCylinder,
 } from "@/utils/htmlElements";
 import { sliceGeometry } from "@/utils/sliceGeometry";
+import { prepForSlicing } from "./utils/prepForSlicing";
 
 const app = new Application();
 
@@ -31,12 +32,12 @@ if (!cylinder.mesh) {
 app.addToScene(cylinder.mesh);
 
 if (import.meta.env.MODE === "development") {
-	const debugPoint = new DebugPoint(new Vector3(0.7309, 100, 2.847));
+	const debugPoint = new DebugPoint(new Vector3(0.7309, 200, 2.847));
 	app.addToScene(debugPoint.mesh);
 }
 
 const stlModel = new STLLoader({
-	stlLoadedCallback: ({ mesh, maxDimension, center }) => {
+	stlLoadedCallback: ({ mesh, maxDimension, center, boxHelper }) => {
 		if (!cylinder.mesh) {
 			throw new Error("Cylinder mesh not found");
 		}
@@ -49,6 +50,10 @@ const stlModel = new STLLoader({
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
+		}
+
+		if (import.meta.env.MODE === "development") {
+			app.addToScene(boxHelper);
 		}
 
 		loadingScreen.style.display = "none";
@@ -84,7 +89,8 @@ mergeGeosButton.addEventListener("click", () => {
 
 		app.addToScene(evaluateGeometries.mesh);
 
-		const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, {
+		const preppedMesh = prepForSlicing(evaluateGeometries.mesh);
+		const slicedGeometry = sliceGeometry(preppedMesh.geometry, {
 			minY: evaluateGeometries.boundingBox.min.y,
 			maxY: evaluateGeometries.boundingBox.max.y,
 		});
@@ -107,11 +113,3 @@ toggleOpenCylinder?.addEventListener("click", (event) => {
 
 	console.log("toggleOpenCylinder", event);
 });
-
-// TODO PSEUDOCODE
-// 1. Loop through the points of a merged geometry. The alignment should be bottom up.
-// 2. Pass the points and the center into a function.
-// 3. Calculate the distance between the first point and the center for the radius. Store that radius
-// 4. Loop through comparing the points radii to the stored radii. Perhaps skip every few.
-// 5. Once the radii changes, if it's bigger the reverse the loop and delete those points.
-//    If the radii is smaller delete all the subsequent ones.

@@ -1,21 +1,7 @@
-import { getGui } from "@/utils/gui";
-import type GUI from "lil-gui";
 import type { Mesh } from "three";
 
-export interface AppObjectFunctions {
-	addGui: () => void;
-	removeGui: () => void;
-}
-
 export class AppObject {
-	gui!: GUI;
 	mesh: Mesh | null = null;
-
-	constructor() {
-		if (import.meta.env.MODE === "development") {
-			this.gui = getGui();
-		}
-	}
 
 	cloneMesh = () => {
 		if (this.mesh) {

@@ -6,7 +6,7 @@ window.provelPrintStore = {
 	cupTemp: 130,
 	layerHeight: 1,
 	material: "cp1",
-	nozzleSize: 3,
+	nozzleSize: 5,
 	nozzleTemp: 200,
 	outputFactor: 1,
 	ipAddress: "http://",

@@ -15,9 +15,6 @@ export const addFillerEllipsoid = document.getElementById(
 export const appForm = document.getElementById(
 	"customizations",
 ) as HTMLFormElement;
-export const menuBarButtons = document.querySelectorAll(
-	".menuBarButton input",
-) as unknown as HTMLInputElement[];
 export const toggleOpenCylinder = document.getElementById(
 	"toggleOpenCylinder",
 ) as HTMLInputElement;
@@ -30,12 +27,13 @@ export const sagittalRotate = document.getElementById(
 export const coronalRotate = document.getElementById(
 	"coronalRotate",
 ) as HTMLInputElement;
-export const xPosition = document.getElementById(
-	"xPosition",
-) as HTMLInputElement;
-export const yPosition = document.getElementById(
-	"yPosition",
-) as HTMLInputElement;
-export const zPosition = document.getElementById(
-	"zPosition",
-) as HTMLInputElement;
+// export const autoAlignSocket = document.getElementById(
+// 	"autoAlignSocket",
+// ) as HTMLInputElement;
+export const menuBar = document.getElementById("menuBar") as HTMLDivElement;
+export const menuBarButtonContainers = document.querySelectorAll(
+	".menuBarButtonContainer",
+) as unknown as HTMLDivElement[];
+export const menuBarDropdowns = document.querySelectorAll(
+	".menuBarDropdown",
+) as unknown as HTMLDivElement[];

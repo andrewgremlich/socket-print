@@ -1,16 +1,24 @@
-import { menuBarButtons } from "./htmlElements";
+import { menuBar, menuBarDropdowns } from "./htmlElements";
 
-window.addEventListener("click", (event) => {
-	const target = event.target as HTMLInputElement;
+menuBar.addEventListener("click", (evt) => {
+	const target = evt.target as HTMLElement;
 
-	if (
-		target.className === "menuBarButton" ||
-		target.className === "menuOptionCheckbox"
-	) {
-		return;
+	for (const dropdown of menuBarDropdowns) {
+		if (dropdown !== target.nextElementSibling) {
+			dropdown.classList.remove("show");
+		}
 	}
 
-	for (const menuButton of menuBarButtons) {
-		menuButton.checked = false;
+	if (target.matches(".menuBarButton")) {
+		const nextSibling = target.nextElementSibling as HTMLElement;
+		nextSibling.classList.toggle("show");
+	}
+});
+
+window.addEventListener("click", (evt) => {
+	if (!(evt.target as HTMLElement).matches(".menuBarButton")) {
+		for (const dropdown of menuBarDropdowns) {
+			dropdown.classList.remove("show");
+		}
 	}
 });

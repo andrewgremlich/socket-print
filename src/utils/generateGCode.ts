@@ -14,10 +14,10 @@ export function geometryToGCode(geometry: BufferGeometry): string {
 export function generateGCode(slices: Vector3[][][], feedrate = 1500): string {
 	const layerWidth = window.provelPrintStore.layerHeight as number;
 	//https://docs.duet3d.com/en/User_manual/Reference/Gcodes
-	let gcode = `;customInfo currentMaterial="${window.provelPrintStore.material}"
-;customInfo currentNozzleSize = "${window.provelPrintStore.nozzleSize}mm"
-;customInfo currentCup = "${window.provelPrintStore.cupSize}"
-;customInfo currentTemp = "${window.provelPrintStore.nozzleTemp}C"
+	let gcode = `;customInfo material="${window.provelPrintStore.material}"
+;customInfo nozzleSize = "${window.provelPrintStore.nozzleSize}mm"
+;customInfo cupSize = "${window.provelPrintStore.cupSize}"
+;customInfo nozzleTemp = "${window.provelPrintStore.nozzleTemp}C"
 ; estimated printing time (normal mode) = Xh YYm ZZs
 G10 P0 S195 R175
 T0

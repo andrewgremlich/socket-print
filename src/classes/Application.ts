@@ -1,12 +1,14 @@
 import {
 	GridHelper,
-	type Mesh,
+	Mesh,
+	MeshBasicMaterial,
 	type Object3D,
 	PerspectiveCamera,
 	Scene,
 	WebGLRenderer,
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { FontLoader, TextGeometry } from "three/examples/jsm/Addons.js";
 
 export class Application {
 	scene: Scene;
@@ -49,6 +51,7 @@ export class Application {
 		this.controls.enableDamping = true;
 
 		this.addToScene(this.gridHelper);
+		this.loadFont();
 
 		provelPrintView?.appendChild(this.renderer.domElement);
 
@@ -78,6 +81,30 @@ export class Application {
 				this.scene.remove(obj);
 			}
 		}
+	};
+
+	loadFont = () => {
+		const loader = new FontLoader();
+
+		loader.load(
+			"node_modules/three/examples/fonts/helvetiker_regular.typeface.json",
+			(font) => {
+				const anteriorViewLabel = new TextGeometry("Anterior", {
+					font,
+					size: 10,
+					depth: 1,
+				});
+				const textMesh = new Mesh(
+					anteriorViewLabel,
+					new MeshBasicMaterial({ color: 0xffffff }),
+				);
+
+				textMesh.rotateY(Math.PI / 2);
+				textMesh.position.set(100, 0, 0);
+
+				this.addToScene(textMesh);
+			},
+		);
 	};
 
 	#animate = () => {

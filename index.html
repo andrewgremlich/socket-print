@@ -3,19 +3,17 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta description="A CAD software to design socket prothesis prints.">
+  <meta description="A CAD-type software to join 3d scanned socket prosthesis to distal cups.">
   <title>Provel Print</title>
 </head>
 
 <body>
   <nav id="menuBar">
-    <h1>ProvelPrint: Alpha</h1>
+    <h1>ProvelPrint: Alpha-v2</h1>
 
     <div class="menuBarButtonContainer">
-      <label class="menuBarButton" for="fileMenuOption">File <input type="checkbox" class="menuOptionCheckbox"
-          id="fileMenuOption" name="fileMenuOption"></label>
+      <button class="menuBarButton">File</button>
 
       <div class="menuBarDropdown">
         <label style="display: block;" class="menuBarDropdownButton" for="stlFileInput" id="stlFileInputLabel">
@@ -28,21 +26,20 @@
     </div>
 
     <div class="menuBarButtonContainer">
-      <label class="menuBarButton" for="editMenuOption">Edit <input type="checkbox" class="menuOptionCheckbox"
-          id="editMenuOption" name="editMenuOption"></label>
+      <button class="menuBarButton">Edit</button>
 
       <div class="menuBarDropdown">
+        <input class="menuBarDropdownButton" id="editMaterialProfiles" type="button" value="Edit Material Profiles">
         <input class="menuBarDropdownButton" id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
         <input class="menuBarDropdownButton" type="button" value="Undo">
       </div>
     </div>
 
     <div class="menuBarButtonContainer">
-      <label class="menuBarButton" for="helpMenuOption">Help <input type="checkbox" class="menuOptionCheckbox"
-          id="helpMenuOption" name="helpMenuOption"></label>
+      <button class="menuBarButton">Help</button>
 
       <div class="menuBarDropdown">
-        <input class="menuBarDropdownButton" type="button" value="Help Document">
+        <a class="menuBarButton" href="/ProvelPrint Help 61523.docx">Help Document</a>
       </div>
     </div>
 
@@ -53,9 +50,7 @@
       <form id="customizations">
         <label for="ipAddress">IP Address and Port</label>
 
-        <div>
-          <input type="text" id="ipAddress" name="ipAddress" value="http://">
-        </div>
+        <input type="text" id="ipAddress" name="ipAddress" value="http://">
 
         <label for="lockPosition">Lock</label>
 
@@ -66,64 +61,60 @@
 
         <label for="cupSize">Cup</label>
 
-        <div><select name="cupSize" id="cupSize" name="cupSize">
-            <option value="93x38">93 x 38</option> <!-- Place 30 mm above printer --->
-            <option value="93x28">93 x 25</option> <!-- Place 17 mm above printer --->
-          </select></div>
+        <select name="cupSize" id="cupSize" name="cupSize">
+          <option value="93x38">93 x 38</option> <!-- Place 30 mm above printer --->
+          <option value="93x28">93 x 25</option> <!-- Place 17 mm above printer --->
+        </select>
 
         <label for="nozzleSize">Nozzle Size</label>
 
-        <div><select name="nozzleSize" id="nozzleSize" name="nozzleSize">
-            <option value="3">3mm</option>
-            <option value="4">4mm</option>
-            <option value="5">5mm</option>
-            <option value="6">6mm</option>
-            <option value="7">7mm</option>
-          </select></div>
+        <select name="nozzleSize" id="nozzleSize" name="nozzleSize">
+          <option value="3">3mm</option>
+          <option value="4">4mm</option>
+          <option value="5" selected>5mm</option>
+          <option value="6">6mm</option>
+          <option value="7">7mm</option>
+        </select>
 
         <label for="layerHeight">Layer Height</label>
 
-        <div><select name="layerHeight" id="layerHeight" name="layerHeight">
-            <option value="0.5">0.5mm</option>
-            <option value="1" selected>1mm</option>
-            <option value="1.5">1.5mm</option>
-            <option value="2">2mm</option>
-          </select></div>
+        <select name="layerHeight" id="layerHeight" name="layerHeight">
+          <option value="0.5">0.5mm</option>
+          <option value="1" selected>1mm</option>
+          <option value="1.5">1.5mm</option>
+          <option value="2">2mm</option>
+        </select>
 
         <label for="material">Material</label>
 
-        <div><select name="material" id="material" name="material">
-            <option value="cp1">CP 1</option>
-            <option value="edit">Edit</option>
-          </select></div>
+        <select name="material" id="material" name="material">
+          <option value="cp1">CP 1</option>
+          <option value="edit">Edit</option>
+        </select>
 
         <label for="nozzleTemp">Nozzle Temp in C</label>
 
-        <div><input type="number" value="200" name="nozzleTemp" id="nozzleTemp"></div>
+        <input class="displayInput" type="number" value="200" name="nozzleTemp" id="nozzleTemp" disabled>
 
         <label for="cupTemp">Cup Temp in C</label>
 
-        <div><input type="number" value="130" name="cupTemp" id="cupTemp"></div>
+        <input class="displayInput" type="number" value="130" name="cupTemp" id="cupTemp" disabled>
 
         <label for="shrinkFactor">Shrink Factor %</label>
 
-        <div><input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor"></div>
+        <input class="displayInput" type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" disabled>
 
         <label for="outputFactor">Output Factor</label>
 
-        <div><input type="number" value="1" name="outputFactor" id="outputFactor"></div>
+        <input class="displayInput" type="number" value="1" name="outputFactor" id="outputFactor" disabled>
 
-        <label for="printTime">Print Time <span id="printTimeOutput"></span></label>
+        <label style="margin: 10px 0px;" for="printTime">Print Time <span id="printTimeOutput"></span></label>
 
-        <div>
-          <p>21 million hours</p>
-        </div>
+        <p>21 million hours</p>
 
-        <label>Test GCode Generate</label>
+        <label>Test GCode</label>
 
-        <div>
-          <input type="button" value="Generate G Code" class="button" id="generateGCode" disabled>
-        </div>
+        <input type="button" value="Generate" class="button" id="generateGCode" disabled>
 
         <input type="button" id="sendToPrinter" value="Send" class="button" disabled>
         <input type="button" id="stopSendToPrinter" value="Stop" class="button" disabled>
@@ -138,17 +129,13 @@
 
     <div id="editSocket">
       <div id="rotateSocket">
-        <input disabled id="transversalRotate" class="button" type="button" value="Transversal Rotate">
-        <input disabled id="sagittalRotate" class="button" type="button" value="Sagittal Rotate">
-        <input disabled id="coronalRotate" class="button" type="button" value="Frontal Rotate">
+        <p>Rotate</p>
+        <input disabled id="transversalRotate" class="button" type="button" value="Transverse">
+        <input disabled id="sagittalRotate" class="button" type="button" value="Sagittal">
+        <input disabled id="coronalRotate" class="button" type="button" value="Coronal">
       </div>
       <div id="changePosition">
-        <label for="">X</label>
-        <input disabled id="xPosition" type="range" value="0" min="-200" max="200" step="1">
-        <label for="">Y</label>
-        <input disabled id="yPosition" type="range" value="0" min="-200" max="200" step="1">
-        <label for="">Z</label>
-        <input disabled id="zPosition" type="range" value="0" min="-200" max="200" step="1">
+        <!-- <input disabled id="autoAlignSocket" type="button" value="Auto Align Socket" class="button"> -->
       </div>
     </div>
   </main>
