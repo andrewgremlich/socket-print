@@ -86,25 +86,22 @@ export class Application {
 	loadFont = () => {
 		const loader = new FontLoader();
 
-		loader.load(
-			"node_modules/three/examples/fonts/helvetiker_regular.typeface.json",
-			(font) => {
-				const anteriorViewLabel = new TextGeometry("Anterior", {
-					font,
-					size: 10,
-					depth: 1,
-				});
-				const textMesh = new Mesh(
-					anteriorViewLabel,
-					new MeshBasicMaterial({ color: 0xffffff }),
-				);
+		loader.load("helvetiker_regular.typeface.json", (font) => {
+			const anteriorViewLabel = new TextGeometry("Anterior", {
+				font,
+				size: 10,
+				depth: 1,
+			});
+			const textMesh = new Mesh(
+				anteriorViewLabel,
+				new MeshBasicMaterial({ color: 0xffffff }),
+			);
 
-				textMesh.rotateY(Math.PI / 2);
-				textMesh.position.set(100, 0, 0);
+			textMesh.rotateY(Math.PI / 2);
+			textMesh.position.set(100, 0, 0);
 
-				this.addToScene(textMesh);
-			},
-		);
+			this.addToScene(textMesh);
+		});
 	};
 
 	#animate = () => {
