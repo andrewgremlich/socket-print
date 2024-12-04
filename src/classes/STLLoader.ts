@@ -86,6 +86,8 @@ export class STLLoader extends AppObject {
 
 			const geometry = await this.#readSTLFile(file);
 
+			// convert Z - Y
+			geometry.rotateX(-Math.PI / 2);
 			geometry.computeBoundingBox();
 			geometry.computeVertexNormals();
 			ensureUV(geometry);
@@ -108,6 +110,8 @@ export class STLLoader extends AppObject {
 
 			const boxHelper = new BoxHelper(mesh, 0xffff00);
 			this.boxHelper = boxHelper;
+
+			this.updateMatrixWorld();
 
 			this.stlLoadedCallback({
 				mesh,
@@ -169,8 +173,6 @@ export class STLLoader extends AppObject {
 		}
 
 		this.mesh.rotateX(Math.PI / 2);
-		this.updateMatrixWorld();
-
 		this.autoAlignMesh();
 	};
 
@@ -180,8 +182,6 @@ export class STLLoader extends AppObject {
 		}
 
 		this.mesh.rotateZ(Math.PI / 2);
-		this.updateMatrixWorld();
-
 		this.autoAlignMesh();
 	};
 
@@ -191,8 +191,6 @@ export class STLLoader extends AppObject {
 		}
 
 		this.mesh.rotateY(Math.PI / 2);
-		this.updateMatrixWorld();
-
 		this.autoAlignMesh();
 	};
 }

@@ -47,7 +47,7 @@ export class Application {
 		this.renderer.setAnimationLoop(this.#animate);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 
-		this.camera.position.set(200, 100, 0);
+		this.camera.position.set(0, 100, 200);
 		this.controls.enableDamping = true;
 
 		this.addToScene(this.gridHelper);
@@ -60,28 +60,6 @@ export class Application {
 	}
 
 	addToScene = (object: Object3D) => this.scene.add(object);
-
-	removeAllMeshesFromScene = () => {
-		for (const object of this.scene.children) {
-			if (object.type === "Mesh") {
-				const obj = object as Mesh;
-
-				if (obj.geometry) obj.geometry.dispose();
-
-				if (obj.material) {
-					if (Array.isArray(obj.material)) {
-						for (const material of obj.material) {
-							material.dispose();
-						}
-					} else {
-						obj.material.dispose();
-					}
-				}
-
-				this.scene.remove(obj);
-			}
-		}
-	};
 
 	loadFont = () => {
 		const loader = new FontLoader();
@@ -97,8 +75,7 @@ export class Application {
 				new MeshBasicMaterial({ color: 0xffffff }),
 			);
 
-			textMesh.rotateY(Math.PI / 2);
-			textMesh.position.set(100, 0, 0);
+			textMesh.position.set(-20, 0, 100);
 
 			this.addToScene(textMesh);
 		});

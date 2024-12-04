@@ -1,61 +1,94 @@
-import type { BufferGeometry, Vector3 } from "three";
-
-// INFO: use this to troubleshoot the geometry
-export function geometryToGCode(geometry: BufferGeometry): string {
-	let gcode = "";
-
-	for (let i = 0; i < geometry.attributes.position.array.length; i += 3) {
-		gcode += `G1 X${geometry.attributes.position.array[i].toFixed(2)} Y${geometry.attributes.position.array[i + 1].toFixed(2)} Z${geometry.attributes.position.array[i + 2].toFixed(2)}\n`;
-	}
-
-	return gcode;
+import type { Vector3 } from "three";
+/**
+ * Options for G-code generation.
+ */
+interface GCodeOptions {
+	feedrate?: number; // Feedrate in mm/min
+	extrusionFactor?: number; // Factor for extrusion
+	layerHeight?: number; // Layer height in mm
+	estimatedTime?: string; // Estimated printing time
 }
-// Function to generate G-code from the slices
-export function generateGCode(slices: Vector3[][][], feedrate = 1500): string {
-	const layerWidth = window.provelPrintStore.layerHeight as number;
-	//https://docs.duet3d.com/en/User_manual/Reference/Gcodes
-	let gcode = `;customInfo material="${window.provelPrintStore.material}"
-;customInfo nozzleSize = "${window.provelPrintStore.nozzleSize}mm"
-;customInfo cupSize = "${window.provelPrintStore.cupSize}"
-;customInfo nozzleTemp = "${window.provelPrintStore.nozzleTemp}C"
-; estimated printing time (normal mode) = Xh YYm ZZs
-G10 P0 S195 R175
-T0
-M98 P"0:/sys/provel/start.g"
-G21 ; Set units to millimeters
-G90 ; Use absolute positioning
-G28 ; Home all axes
-G1 X0.3 F5000 ; Lift
-`;
 
-	// TODO: provide estimated print time above.
+/**
+ * Generate G-code from slices with custom headers.
+ *
+ * @param slices - The array of slices (output of `sliceGeometry`)
+ * @param options - Object containing printing parameters (e.g., feedrate, extrusion factor)
+ * @returns A string containing the G-code
+ */
+export function generateGCodeFromSlices(
+	slices: Vector3[][][],
+	options: GCodeOptions = {},
+): string {
+	const {
+		feedrate = 1500, // Default feedrate in mm/min
+		extrusionFactor = 0.05, // Factor for extrusion
+		layerHeight = window.provelPrintStore.layerHeight as number, // Layer height in mm
+		estimatedTime = "0h 0m 0s", // Default estimated time
+	} = options;
 
-	for (let i = 0; i < slices.length; i++) {
-		gcode += `; Layer ${i}\n`;
-		const y = i * layerWidth;
+	const material = window.provelPrintStore.material || "Unknown";
+	const nozzleSize = window.provelPrintStore.nozzleSize || "0.4";
+	const cupSize = window.provelPrintStore.cupSize || "Unknown";
+	const nozzleTemp = window.provelPrintStore.nozzleTemp || "195";
 
-		for (const contour of slices[i]) {
-			if (contour.length > 0) {
-				const startPoint = contour[0];
-				gcode += `G0 X${startPoint.x.toFixed(2)} Y${y.toFixed(2)} Z${startPoint.z.toFixed(2)} F${feedrate}\n`;
-				gcode += "G1 F1500 ; Start extrusion\n";
+	const gcode: string[] = [];
+	let e = 0; // Track extrusion distance
+	let currentZ = 0; // Track current Z height
 
-				for (let j = 0; j < contour.length; j++) {
-					if (j > 0) {
-						gcode += `G1 X${contour[j].x.toFixed(2)} Y${y.toFixed(2)} Z${contour[j].z.toFixed(2)} E1 ; Extrude\n`;
-					}
-				}
+	// Add custom headers
+	gcode.push(`;customInfo material="${material}"`);
+	gcode.push(`;customInfo nozzleSize="${nozzleSize}mm"`);
+	gcode.push(`;customInfo cupSize="${cupSize}"`);
+	gcode.push(`;customInfo nozzleTemp="${nozzleTemp}C"`);
+	gcode.push(`;estimated printing time (normal mode)=${estimatedTime}`);
+	gcode.push("G10 P0 S195 R175");
+	gcode.push("T0");
+	gcode.push('M98 P"0:/sys/provel/start.g"');
+	gcode.push("G21 ; Set units to millimeters");
+	gcode.push("G90 ; Use absolute positioning");
+	gcode.push("G28 ; Home all axes");
+	gcode.push("G1 X0.3 F5000 ; Lift");
 
-				gcode += "G0 F3000 ; Stop extrusion\n";
+	// Iterate through each slice
+	for (const contours of slices) {
+		currentZ += layerHeight;
+
+		gcode.push(`; Layer at Z=${currentZ.toFixed(2)}`);
+		gcode.push(`G1 Z${currentZ.toFixed(2)} F300 ; Move to layer height`);
+
+		// Iterate through each contour in the slice
+		for (const contour of contours) {
+			if (contour.length === 0) continue;
+
+			// Move to the starting point of the contour without extruding
+			const start = contour[0];
+			gcode.push(
+				`G0 X${start.x.toFixed(2)} Y${start.y.toFixed(2)} F${feedrate} ; Move to start of contour`,
+			);
+
+			// Extrude along the rest of the points in the contour
+			for (let i = 1; i < contour.length; i++) {
+				const point = contour[i];
+				const distance = start.distanceTo(point); // Distance to the next point
+				e += distance * extrusionFactor; // Calculate extrusion amount
+				gcode.push(
+					`G1 X${point.x.toFixed(2)} Y${point.y.toFixed(2)} E${e.toFixed(
+						5,
+					)} F${feedrate}`,
+				);
 			}
 		}
 	}
 
-	gcode += "G28 ; Home all axes\n";
-	gcode += "M84 ; Disable motors\n";
-	gcode += 'M98 P"0:/sys/provel/end.g"\n';
+	// Finish G-code
+	gcode.push("M104 S0 ; Turn off extruder");
+	gcode.push("M140 S0 ; Turn off bed");
+	gcode.push("G28 X0 Y0 ; Home X and Y axes");
+	gcode.push("M84 ; Disable motors");
+	gcode.push('M98 P"0:/sys/provel/end.g"');
 
-	return gcode;
+	return gcode.join("\n");
 }
 
 export function downloadGCodeFile(

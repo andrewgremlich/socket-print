@@ -33,6 +33,7 @@ export class Cylinder extends AppObject {
 
 		this.mesh = new Mesh(geometry, material);
 		this.mesh.position.set(0, this.height / 2, 0);
+
 		this.updateMatrixWorld();
 	}
 

@@ -1,7 +1,7 @@
 import { type BufferGeometry, Vector3 } from "three";
 
 /**
- * Slice a geometry along the Y-axis and return contours at each layer.
+ * Slice a geometry along the Z-axis and return contours at each layer.
  *
  * @param geometry - The geometry to be sliced (BufferGeometry)
  * @param layerWidth - The width between slices
@@ -9,7 +9,7 @@ import { type BufferGeometry, Vector3 } from "three";
  */
 export function sliceGeometry(
 	geometry: BufferGeometry,
-	{ minY, maxY }: { minY: number; maxY: number },
+	{ maxZ }: { maxZ: number },
 ): Vector3[][][] {
 	const layerWidth = window.provelPrintStore.layerHeight as number;
 
@@ -23,8 +23,11 @@ export function sliceGeometry(
 	// Get the position attribute (vertex positions)
 	const positionAttribute = geometry.attributes.position;
 
-	// Iterate over Y layers from the bottom (minY) to the top (maxY)
-	for (let y = minY; y <= maxY; y += layerWidth) {
+	console.log(maxZ, layerWidth);
+	console.log(positionAttribute);
+
+	// Iterate over Z layers from the bottom (minZ) to the top (maxZ)
+	for (let z = 0; z <= maxZ; z += layerWidth) {
 		const contours: Vector3[][] = []; // Array to hold the contours for this slice
 
 		const v1 = new Vector3();
@@ -38,11 +41,11 @@ export function sliceGeometry(
 			v2.fromBufferAttribute(positionAttribute, i + 1);
 			v3.fromBufferAttribute(positionAttribute, i + 2);
 
-			// Find the intersection of each edge of the triangle with the slice plane at Y = y
+			// Find the intersection of each edge of the triangle with the slice plane at Z = z
 			const intersections = [
-				intersectEdgeWithY(v1, v2, y),
-				intersectEdgeWithY(v2, v3, y),
-				intersectEdgeWithY(v3, v1, y),
+				intersectEdgeWithZ(v1, v2, z),
+				intersectEdgeWithZ(v2, v3, z),
+				intersectEdgeWithZ(v3, v1, z),
 			].filter(Boolean) as Vector3[][];
 
 			// If exactly two intersections are found, we have a valid contour segment
@@ -61,24 +64,24 @@ export function sliceGeometry(
 }
 
 /**
- * Intersect an edge with a horizontal plane at Y = y.
+ * Intersect an edge with a horizontal plane at Z = z.
  *
  * @param v1 - The first vertex of the edge
  * @param v2 - The second vertex of the edge
- * @param y - The Y-coordinate of the slicing plane
+ * @param z - The Z-coordinate of the slicing plane
  * @returns A Vector3 array containing the intersection point, or null if there is no intersection
  */
-function intersectEdgeWithY(
+function intersectEdgeWithZ(
 	v1: Vector3,
 	v2: Vector3,
-	y: number,
+	z: number,
 ): Vector3[] | null {
-	// Check if the edge crosses the plane at Y = y
-	if ((v1.y <= y && v2.y >= y) || (v2.y <= y && v1.y >= y)) {
+	// Check if the edge crosses the plane at Z = z
+	if ((v1.z <= z && v2.z >= z) || (v2.z <= z && v1.z >= z)) {
 		// Calculate the interpolation factor 't' to find the intersection point
-		const t = (y - v1.y) / (v2.y - v1.y);
+		const t = (z - v1.z) / (v2.z - v1.z);
 		// Return the intersection point
-		return [new Vector3(v1.x + t * (v2.x - v1.x), y, v1.z + t * (v2.z - v1.z))];
+		return [new Vector3(v1.x + t * (v2.x - v1.x), v1.y + t * (v2.y - v1.y), z)];
 	}
 
 	// No intersection found

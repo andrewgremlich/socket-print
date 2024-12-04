@@ -10,14 +10,16 @@ import { DebugPoint } from "@/classes/DebugPoint";
 import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
 import { STLLoader } from "@/classes/STLLoader";
-import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
+import {
+	downloadGCodeFile,
+	generateGCodeFromSlices,
+} from "@/utils/generateGCode";
 import {
 	loadingScreen,
 	mergeGeosButton,
 	toggleOpenCylinder,
 } from "@/utils/htmlElements";
 import { sliceGeometry } from "@/utils/sliceGeometry";
-import { prepForSlicing } from "./utils/prepForSlicing";
 
 const app = new Application();
 
@@ -42,7 +44,7 @@ const stlModel = new STLLoader({
 			throw new Error("Cylinder mesh not found");
 		}
 
-		app.camera.position.set(0, 0, maxDimension * 1.5);
+		app.camera.position.set(0, 100, maxDimension * 1.5);
 		app.camera.lookAt(new Vector3(center.x, center.y, center.z));
 		app.addToScene(mesh);
 
@@ -79,7 +81,8 @@ mergeGeosButton.addEventListener("click", () => {
 		cylinder.updateMatrixWorld();
 		stlModel.updateMatrixWorld();
 
-		app.removeAllMeshesFromScene();
+		cylinder.mesh.visible = false;
+		stlModel.mesh.visible = false;
 
 		const evaluateGeometries = new EvaluateGeometries(stlModel, cylinder);
 
@@ -89,12 +92,15 @@ mergeGeosButton.addEventListener("click", () => {
 
 		app.addToScene(evaluateGeometries.mesh);
 
-		const preppedMesh = prepForSlicing(evaluateGeometries.mesh);
-		const slicedGeometry = sliceGeometry(preppedMesh.geometry, {
-			minY: evaluateGeometries.boundingBox.min.y,
-			maxY: evaluateGeometries.boundingBox.max.y,
+		const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, {
+			maxZ: evaluateGeometries.boundingBox.max.z,
 		});
-		const gCode = generateGCode(slicedGeometry);
+		console.log(slicedGeometry);
+		const gcode = generateGCodeFromSlices(slicedGeometry, {
+			feedrate: 1200,
+			extrusionFactor: 0.04,
+			estimatedTime: "2h 15m 30s",
+		});
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
@@ -102,7 +108,7 @@ mergeGeosButton.addEventListener("click", () => {
 
 		loadingScreen.style.display = "none";
 
-		downloadGCodeFile(gCode);
+		downloadGCodeFile(gcode);
 	}, 1000);
 });
 

@@ -22,9 +22,10 @@ export class EvaluateGeometries extends AppObject {
 		const clonedCylinder = this.cloneCylinder(cylinder);
 		const subtraction = CSG.union(stlModel.mesh, clonedCylinder);
 
+		subtraction.geometry.rotateX(Math.PI / 2);
+
 		this.mesh = subtraction;
 		this.boundingBox = new Box3().setFromObject(subtraction);
-
 		this.updateMatrixWorld();
 	}
 

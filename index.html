@@ -18,7 +18,7 @@
       <div class="menuBarDropdown">
         <label style="display: block;" class="menuBarDropdownButton" for="stlFileInput" id="stlFileInputLabel">
           Open STL file
-          <input type="file" accept=".stl" id="stlFileInput">
+          <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput">
         </label>
 
         <input class="menuBarDropdownButton" type="button" value="Restore Defaults">
@@ -52,7 +52,7 @@
 
         <input type="text" id="ipAddress" name="ipAddress" value="http://">
 
-        <label for="lockPosition">Lock</label>
+        <p>Lock</p>
 
         <div style="display:flex;">
           <input style="width:100px;" type="button" value="Left">
@@ -108,11 +108,11 @@
 
         <input class="displayInput" type="number" value="1" name="outputFactor" id="outputFactor" disabled>
 
-        <label style="margin: 10px 0px;" for="printTime">Print Time <span id="printTimeOutput"></span></label>
+        <p style="margin: 10px 0px;">Print Time <span id="printTimeOutput"></span></p>
 
         <p>21 million hours</p>
 
-        <label>Test GCode</label>
+        <p>Test GCode</p>
 
         <input type="button" value="Generate" class="button" id="generateGCode" disabled>
 
