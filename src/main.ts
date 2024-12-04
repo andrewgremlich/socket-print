@@ -95,7 +95,6 @@ mergeGeosButton.addEventListener("click", () => {
 		const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, {
 			maxZ: evaluateGeometries.boundingBox.max.z,
 		});
-		console.log(slicedGeometry);
 		const gcode = generateGCodeFromSlices(slicedGeometry, {
 			feedrate: 1200,
 			extrusionFactor: 0.04,
