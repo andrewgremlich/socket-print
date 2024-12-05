@@ -1,17 +1,48 @@
 import type { ProvelPrintApp } from "@/global";
 import { appForm } from "./htmlElements";
 
-window.provelPrintStore = {
-	cupSize: "93x38",
-	cupTemp: 130,
-	layerHeight: 1,
-	material: "cp1",
-	nozzleSize: 5,
-	nozzleTemp: 200,
-	outputFactor: 1,
-	ipAddress: "http://",
-	shrinkFactor: 2.6,
-};
+function loadDataIntoDom() {
+	const data = window.provelPrintStore;
+	const formData = new FormData(appForm);
+
+	for (const [key, _value] of formData.entries()) {
+		const input = appForm.querySelector(`[name="${key}"]`) as HTMLInputElement;
+
+		console.log(key, data[key as keyof ProvelPrintApp]);
+
+		if (["printerFileInput"].includes(key)) {
+			continue;
+		}
+
+		if (input) {
+			input.value = data[key as keyof ProvelPrintApp] as string;
+		}
+	}
+
+	return formData;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+	if (localStorage.getItem("provelPrintStore")) {
+		window.provelPrintStore = JSON.parse(
+			localStorage.getItem("provelPrintStore") as string,
+		);
+
+		loadDataIntoDom();
+	}
+
+	window.provelPrintStore = {
+		cupSize: "93x38",
+		cupTemp: 130,
+		layerHeight: 1,
+		material: "cp1",
+		nozzleSize: 5,
+		nozzleTemp: 200,
+		outputFactor: 1,
+		ipAddress: "http://",
+		shrinkFactor: 2.6,
+	};
+});
 
 appForm.addEventListener("change", (event) => {
 	event.preventDefault();
@@ -50,11 +81,12 @@ appForm.addEventListener("change", (event) => {
 			shrinkFactor: 0,
 		},
 	);
-
-	console.log(convertNumValues);
-
-	window.provelPrintStore = {
+	const newState = {
 		...window.provelPrintStore,
 		...convertNumValues,
 	};
+
+	localStorage.setItem("provelPrintStore", JSON.stringify(newState));
+
+	window.provelPrintStore = newState;
 });

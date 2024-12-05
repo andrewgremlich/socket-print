@@ -54,7 +54,8 @@ export function sliceGeometry(
 		}
 
 		if (contours.length > 0) {
-			slices.push(contours);
+			const smoothedContours = contours.map(smoothContour);
+			slices.push(smoothedContours);
 		}
 	}
 
@@ -82,4 +83,35 @@ function intersectEdgeWithZ(
 		return target.clone();
 	}
 	return null;
+}
+
+/**
+ * Smooth a contour using Chaikin's corner-cutting algorithm.
+ *
+ * @param contour - The contour to be smoothed.
+ * @returns The smoothed contour.
+ */
+function smoothContour(contour: Vector3[]): Vector3[] {
+	const smoothed: Vector3[] = [];
+	const len = contour.length;
+
+	for (let i = 0; i < len; i++) {
+		const p0 = contour[i];
+		const p1 = contour[(i + 1) % len];
+
+		const Q = new Vector3(
+			0.75 * p0.x + 0.25 * p1.x,
+			0.75 * p0.y + 0.25 * p1.y,
+			p0.z,
+		);
+		const R = new Vector3(
+			0.25 * p0.x + 0.75 * p1.x,
+			0.25 * p0.y + 0.75 * p1.y,
+			p0.z,
+		);
+
+		smoothed.push(Q, R);
+	}
+
+	return smoothed;
 }

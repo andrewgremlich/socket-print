@@ -1,4 +1,5 @@
-import { menuBar, menuBarDropdowns } from "./htmlElements";
+import { menuBar, menuBarDropdowns, printerFileInput } from "./htmlElements";
+import { sendGCodeFile } from "./sendGCodeFile";
 
 menuBar.addEventListener("click", (evt) => {
 	const target = evt.target as HTMLElement;
@@ -21,4 +22,16 @@ window.addEventListener("click", (evt) => {
 			dropdown.classList.remove("show");
 		}
 	}
+});
+
+printerFileInput.addEventListener("change", async () => {
+	if (!printerFileInput.files) {
+		throw new Error("No files found in file input");
+	}
+
+	const file = printerFileInput.files[0];
+	const gcode = await file.text();
+
+	// Send the G-code to the printer
+	sendGCodeFile(new Blob([gcode]), file.name);
 });

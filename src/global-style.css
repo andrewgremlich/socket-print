@@ -221,10 +221,10 @@ input[type="range"] {
 	}
 }
 
-#stlFileInputLabel {
+.fileInputLabel {
 	white-space: nowrap;
 
-	& > #stlFileInput {
+	& > .fileInput {
 		display: none;
 	}
 }

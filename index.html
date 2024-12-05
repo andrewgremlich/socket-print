@@ -10,15 +10,16 @@
 
 <body>
   <nav id="menuBar">
-    <h1>ProvelPrint: Alpha-v2.0.2</h1>
+    <h1>ProvelPrint: Alpha-v2.1.0</h1>
 
     <div class="menuBarButtonContainer">
       <button class="menuBarButton">File</button>
 
       <div class="menuBarDropdown">
-        <label style="display: block;" class="menuBarDropdownButton" for="stlFileInput" id="stlFileInputLabel">
+        <label style="display: block;" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
+          id="stlFileInputLabel">
           Open STL file
-          <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput">
+          <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput">
         </label>
 
         <input class="menuBarDropdownButton" type="button" value="Restore Defaults">
@@ -112,12 +113,14 @@
 
         <p>21 million hours</p>
 
-        <p>Test GCode</p>
+        <input type="button" value="Generate GCode" class="button" id="generateGCode" disabled>
 
-        <input type="button" value="Generate" class="button" id="generateGCode" disabled>
 
-        <input type="button" id="sendToPrinter" value="Send" class="button" disabled>
-        <input type="button" id="stopSendToPrinter" value="Stop" class="button" disabled>
+        <label style="display: block;" class="fileInputLabel button" for="printerFileInput" id="printerFileInputLabel">
+          Send to Printer
+          <input type="file" accept=".gcode" id="printerFileInput" name="printerFileInput" class="fileInput">
+        </label>
+        <input type="button" id="stopSendToPrinter" value="Stop" class="button">
       </form>
 
       <!--

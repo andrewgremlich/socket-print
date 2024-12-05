@@ -37,3 +37,6 @@ export const menuBarButtonContainers = document.querySelectorAll(
 export const menuBarDropdowns = document.querySelectorAll(
 	".menuBarDropdown",
 ) as unknown as HTMLDivElement[];
+export const printerFileInput = document.getElementById(
+	"printerFileInput",
+) as HTMLInputElement;
