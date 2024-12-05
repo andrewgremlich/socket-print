@@ -40,3 +40,12 @@ export const menuBarDropdowns = document.querySelectorAll(
 export const printerFileInput = document.getElementById(
 	"printerFileInput",
 ) as HTMLInputElement;
+export const ipAddressInput = document.getElementById(
+	"ipAddressInput",
+) as HTMLInputElement;
+export const ipAddressSuccess = document.getElementById(
+	"ipAddressSuccess",
+) as HTMLDivElement;
+export const ipAddressFailure = document.getElementById(
+	"ipAddressFailure",
+) as HTMLDivElement;

@@ -8,8 +8,6 @@ function loadDataIntoDom() {
 	for (const [key, _value] of formData.entries()) {
 		const input = appForm.querySelector(`[name="${key}"]`) as HTMLInputElement;
 
-		console.log(key, data[key as keyof ProvelPrintApp]);
-
 		if (["printerFileInput"].includes(key)) {
 			continue;
 		}

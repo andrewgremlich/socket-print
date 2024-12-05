@@ -42,8 +42,16 @@ input[type="range"] {
 	margin: 10px;
 }
 
+svg {
+	color: #fff;
+}
+
 .show {
 	display: block !important;
+}
+
+.hide {
+	display: none !important;
 }
 
 .button {
@@ -218,6 +226,11 @@ input[type="range"] {
 		align-items: center;
 		justify-content: center;
 		grid-template-columns: 1fr 1fr;
+	}
+
+	& #ipAddress {
+		display: flex;
+		align-items: center;
 	}
 }
 

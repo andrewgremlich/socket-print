@@ -1,5 +1,12 @@
-import { menuBar, menuBarDropdowns, printerFileInput } from "./htmlElements";
-import { sendGCodeFile } from "./sendGCodeFile";
+import {
+	ipAddressFailure,
+	ipAddressInput,
+	ipAddressSuccess,
+	menuBar,
+	menuBarDropdowns,
+	printerFileInput,
+} from "./htmlElements";
+import { connectToPrinter, sendGCodeFile } from "./sendGCodeFile";
 
 menuBar.addEventListener("click", (evt) => {
 	const target = evt.target as HTMLElement;
@@ -34,4 +41,16 @@ printerFileInput.addEventListener("change", async () => {
 
 	// Send the G-code to the printer
 	sendGCodeFile(new Blob([gcode]), file.name);
+});
+
+ipAddressInput.addEventListener("change", () => {
+	connectToPrinter(ipAddressInput.value)
+		.then(() => {
+			console.log("successful connection");
+			ipAddressFailure.classList.toggle("hide");
+			ipAddressSuccess.classList.toggle("hide");
+		})
+		.catch((error) => {
+			console.error("CAUGHT:", error);
+		});
 });
