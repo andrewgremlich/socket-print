@@ -27,8 +27,7 @@ type StlLoadedCallback = (params: {
 }) => void;
 
 export class STLLoader extends AppObject {
-	layerHeight = 0.2; // TODO: let's stick with 1mm for now. customizable later? // look for centroid 40 mm above z0
-	extrusionWidth = 0.4; //TODO: is this nozzle offset?
+	adjustmentHeightForCup = 40;
 	stlLoadedCallback: StlLoadedCallback;
 	boundingBox?: Box3;
 	center?: Vector3;
@@ -104,7 +103,7 @@ export class STLLoader extends AppObject {
 
 			this.mesh = mesh;
 			this.boundingBox = boundingBox;
-			this.mesh.position.set(0, size.y / 2, 0);
+			this.mesh.position.set(0, size.y / 2 + this.adjustmentHeightForCup, 0);
 			this.center = boundingBox.getCenter(new Vector3());
 			this.size = size;
 
@@ -156,7 +155,7 @@ export class STLLoader extends AppObject {
 		this.mesh.position.z -= center.z;
 
 		if (minY < 0) {
-			this.mesh.position.y += Math.abs(minY);
+			this.mesh.position.y += Math.abs(minY) + this.adjustmentHeightForCup;
 		}
 
 		this.size = size;
