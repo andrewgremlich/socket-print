@@ -21,7 +21,7 @@ export default defineConfig(() => ({
 		tsconfigPaths(),
 		topLevelAwait(),
 		VitePWA({
-			registerType: "prompt",
+			registerType: "autoUpdate",
 			// includeAssets: ["/favicon.ico", "/robots.txt", "/safari-pinned-tab.svg"],
 			manifest: {
 				name: "Socket Print",
