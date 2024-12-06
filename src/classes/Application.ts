@@ -26,10 +26,6 @@ export class Application {
 			throw new Error("Provel Print View not found");
 		}
 
-		if (!provelPrintView) {
-			throw new Error("Provel Print View not found");
-		}
-
 		this.width = provelPrintView.clientWidth;
 		this.height = provelPrintView.clientHeight;
 		this.scene = new Scene();
@@ -39,7 +35,7 @@ export class Application {
 			0.1,
 			1000,
 		);
-		this.renderer = new WebGLRenderer({ antialias: true });
+		this.renderer = new WebGLRenderer();
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.gridHelper = new GridHelper(200, 50);
 

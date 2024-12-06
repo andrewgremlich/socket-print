@@ -1,3 +1,4 @@
+import { registerSW } from "virtual:pwa-register";
 import {
 	ipAddressFailure,
 	ipAddressInput,
@@ -7,6 +8,15 @@ import {
 	printerFileInput,
 } from "./htmlElements";
 import { connectToPrinter, sendGCodeFile } from "./sendGCodeFile";
+
+registerSW({
+	onNeedRefresh() {
+		console.log("needs refresh");
+	},
+	onOfflineReady() {
+		console.log("offline ready");
+	},
+});
 
 menuBar.addEventListener("click", (evt) => {
 	const target = evt.target as HTMLElement;

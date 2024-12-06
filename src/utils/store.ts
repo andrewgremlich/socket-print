@@ -1,5 +1,17 @@
 import type { ProvelPrintApp } from "@/global";
-import { appForm } from "./htmlElements";
+import { appForm, restoreDefaultsButton } from "./htmlElements";
+
+const defaultSetting = {
+	cupSize: "93x38",
+	cupTemp: 130,
+	layerHeight: 1,
+	material: "cp1",
+	nozzleSize: 5,
+	nozzleTemp: 200,
+	outputFactor: 1,
+	ipAddress: "http://",
+	shrinkFactor: 2.6,
+};
 
 function loadDataIntoDom() {
 	const data = window.provelPrintStore;
@@ -28,18 +40,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
 		loadDataIntoDom();
 	}
+});
 
-	window.provelPrintStore = {
-		cupSize: "93x38",
-		cupTemp: 130,
-		layerHeight: 1,
-		material: "cp1",
-		nozzleSize: 5,
-		nozzleTemp: 200,
-		outputFactor: 1,
-		ipAddress: "http://",
-		shrinkFactor: 2.6,
-	};
+restoreDefaultsButton.addEventListener("click", () => {
+	window.provelPrintStore = defaultSetting;
+	localStorage.setItem(
+		"provelPrintStore",
+		JSON.stringify(window.provelPrintStore),
+	);
+	loadDataIntoDom();
 });
 
 appForm.addEventListener("change", (event) => {

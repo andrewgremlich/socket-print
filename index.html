@@ -9,57 +9,59 @@
 </head>
 
 <body>
-  <nav id="menuBar">
-    <h1>ProvelPrint: Alpha-v2.2.0</h1>
-
-    <div class="menuBarButtonContainer">
-      <button class="menuBarButton">File</button>
-
-      <div class="menuBarDropdown">
-        <label style="display: block;" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
-          id="stlFileInputLabel">
-          Open STL file
-          <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput">
-        </label>
-
-        <input class="menuBarDropdownButton" type="button" value="Restore Defaults">
-      </div>
-    </div>
-
-    <div class="menuBarButtonContainer">
-      <button class="menuBarButton">Edit</button>
-
-      <div class="menuBarDropdown">
-        <input class="menuBarDropdownButton" id="editMaterialProfiles" type="button" value="Edit Material Profiles">
-        <input class="menuBarDropdownButton" id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
-        <input class="menuBarDropdownButton" type="button" value="Undo">
-      </div>
-    </div>
-
-    <div class="menuBarButtonContainer">
-      <button class="menuBarButton">Help</button>
-
-      <div class="menuBarDropdown">
-        <a class="menuBarButton" href="/ProvelPrint Help 61523.docx">Help Document</a>
-      </div>
-    </div>
-
-  </nav>
 
   <main>
+    <nav id="menuBar">
+      <h1>ProvelPrint: Alpha-v2.2.0</h1>
+
+      <div class="menuBarButtonContainer">
+        <button class="menuBarButton">File</button>
+
+        <div class="menuBarDropdown">
+          <label style="display: block;" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
+            id="stlFileInputLabel">
+            Open STL file
+            <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput">
+          </label>
+
+          <input class="menuBarDropdownButton" type="button" value="Restore Defaults" id="restoreDefaultsButton">
+        </div>
+      </div>
+
+      <div class="menuBarButtonContainer">
+        <button class="menuBarButton">Edit</button>
+
+        <div class="menuBarDropdown">
+          <input class="menuBarDropdownButton" id="editMaterialProfiles" type="button" value="Edit Material Profiles">
+          <input class="menuBarDropdownButton" id="toggleOpenCylinder" type="button" value="Toggle Open Cylinder ">
+          <!-- <input class="menuBarDropdownButton" type="button" value="Undo"> -->
+        </div>
+      </div>
+
+      <div class="menuBarButtonContainer">
+        <button class="menuBarButton">Help</button>
+
+        <div class="menuBarDropdown">
+          <a class="menuBarButton" href="/ProvelPrint Help 61523.docx">Help Document</a>
+        </div>
+      </div>
+
+    </nav>
+
     <div id="userInterface">
       <form id="customizations">
-        <label for="ipAddress">IP Address and Port</label>
+        <p>IP Address and Port</p>
 
         <div id="ipAddress">
           <input type="text" id="ipAddressInput" name="ipAddress" value="http://">
-          <svg class="hide" id="ipAddressSuccess" title="Successful connection to printer" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" class="feather feather-check">
+          <svg class="hide" id="ipAddressSuccess" title="Successful connection to printer"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="feather feather-check">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          <svg id="ipAddressFailure" title="Failed connection to printer" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          <svg id="ipAddressFailure" title="Failed connection to printer" xmlns="http://www.w3.org/2000/svg" width="24"
+            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round" class="feather feather-x">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -155,6 +157,16 @@
       </div>
     </div>
   </main>
+
+  <div id="updateApp" class="hide">
+    <div id="promptUpdate">
+      <p>Update Available</p>
+      <input type="button" value="Update" class="button" id="updateAppButton">
+    </div>
+    <div id="readyToGo">
+      <p>All updated!</p>
+    </div>
+  </div>
 
   <div id="loading">
     <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#fff"

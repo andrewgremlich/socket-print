@@ -49,3 +49,9 @@ export const ipAddressSuccess = document.getElementById(
 export const ipAddressFailure = document.getElementById(
 	"ipAddressFailure",
 ) as HTMLDivElement;
+export const updateAppButton = document.getElementById(
+	"updateAppButton",
+) as HTMLButtonElement;
+export const restoreDefaultsButton = document.getElementById(
+	"restoreDefaultsButton",
+) as HTMLButtonElement;

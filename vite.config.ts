@@ -24,9 +24,11 @@ export default defineConfig(() => ({
 			registerType: "autoUpdate",
 			// includeAssets: ["/favicon.ico", "/robots.txt", "/safari-pinned-tab.svg"],
 			manifest: {
-				name: "Socket Print",
-				short_name: "SP",
-				description: "A simple CAD software to design socket prosthesis.",
+				name: "Provel Print",
+				display: "standalone",
+				short_name: "PP",
+				description:
+					"A simple CAD software to join socket prosthesis with distal cups.",
 				theme_color: "#ffffff",
 				// icons: [
 				//   {
