@@ -90,7 +90,7 @@ mergeGeosButton.addEventListener("click", () => {
 			throw new Error("Geometry not found");
 		}
 
-		app.addToScene(evaluateGeometries.mesh);
+		app.addToScene(evaluateGeometries.unrotatedMesh);
 
 		const slicedGeometry = sliceGeometry(evaluateGeometries.mesh.geometry, {
 			maxZ: evaluateGeometries.boundingBox.max.z,

@@ -1,12 +1,19 @@
 import { CSG } from "three-csg-ts";
 
-import { Box3, CylinderGeometry, Mesh } from "three";
+import {
+	Box3,
+	CylinderGeometry,
+	DoubleSide,
+	Mesh,
+	MeshStandardMaterial,
+} from "three";
 import { AppObject } from "./AppObject";
 import type { Cylinder } from "./Cylinder";
 import type { STLLoader } from "./STLLoader";
 
 export class EvaluateGeometries extends AppObject {
 	boundingBox: Box3;
+	unrotatedMesh: Mesh;
 
 	constructor(stlModel: STLLoader, cylinder: Cylinder) {
 		super();
@@ -21,6 +28,14 @@ export class EvaluateGeometries extends AppObject {
 
 		const clonedCylinder = this.cloneCylinder(cylinder);
 		const subtraction = CSG.union(stlModel.mesh, clonedCylinder);
+
+		this.unrotatedMesh = new Mesh(
+			subtraction.geometry.clone(),
+			new MeshStandardMaterial({
+				color: 0xffffff,
+				side: DoubleSide,
+			}),
+		);
 
 		subtraction.geometry.rotateX(Math.PI / 2);
 
