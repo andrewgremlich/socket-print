@@ -8,8 +8,8 @@ import {
 	MeshStandardMaterial,
 } from "three";
 import { AppObject } from "./AppObject";
-import type { DistalCup } from "./Cylinder";
-import type { Socket } from "./STLLoader";
+import type { DistalCup } from "./DistalCup";
+import type { Socket } from "./Socket";
 
 export class EvaluateGeometries extends AppObject {
 	boundingBox: Box3;

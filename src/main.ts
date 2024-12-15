@@ -5,11 +5,11 @@ import "@/utils/events";
 import { Vector3 } from "three";
 
 import { Application } from "@/classes/Application";
-import { DistalCup } from "@/classes/Cylinder";
 import { DebugPoint } from "@/classes/DebugPoint";
+import { DistalCup } from "@/classes/DistalCup";
 import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
-import { Socket } from "@/classes/STLLoader";
+import { Socket } from "@/classes/Socket";
 import {
 	downloadGCodeFile,
 	generateGCodeFromSlices,

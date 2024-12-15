@@ -2,8 +2,8 @@ import { Mesh, MeshPhongMaterial } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
 import { AppObject } from "./AppObject";
-import type { DistalCup } from "./Cylinder";
-import type { Socket } from "./STLLoader";
+import type { DistalCup } from "./DistalCup";
+import type { Socket } from "./Socket";
 
 export class MergeGeometries extends AppObject {
 	constructor(stlModel: Socket, cylinder: DistalCup) {
