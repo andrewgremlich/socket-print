@@ -8,14 +8,14 @@ import {
 	MeshStandardMaterial,
 } from "three";
 import { AppObject } from "./AppObject";
-import type { Cylinder } from "./Cylinder";
-import type { STLLoader } from "./STLLoader";
+import type { DistalCup } from "./Cylinder";
+import type { Socket } from "./STLLoader";
 
 export class EvaluateGeometries extends AppObject {
 	boundingBox: Box3;
 	unrotatedMesh: Mesh;
 
-	constructor(stlModel: STLLoader, cylinder: Cylinder) {
+	constructor(stlModel: Socket, cylinder: DistalCup) {
 		super();
 
 		if (!cylinder.mesh) {
@@ -44,7 +44,7 @@ export class EvaluateGeometries extends AppObject {
 		this.updateMatrixWorld();
 	}
 
-	cloneCylinder = (cylinder: Cylinder) => {
+	cloneCylinder = (cylinder: DistalCup) => {
 		if (!cylinder.mesh) {
 			throw new Error("Cylinder mesh not found");
 		}

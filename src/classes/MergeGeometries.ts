@@ -2,11 +2,11 @@ import { Mesh, MeshPhongMaterial } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
 import { AppObject } from "./AppObject";
-import type { Cylinder } from "./Cylinder";
-import type { STLLoader } from "./STLLoader";
+import type { DistalCup } from "./Cylinder";
+import type { Socket } from "./STLLoader";
 
 export class MergeGeometries extends AppObject {
-	constructor(stlModel: STLLoader, cylinder: Cylinder) {
+	constructor(stlModel: Socket, cylinder: DistalCup) {
 		super();
 
 		if (!stlModel.mesh || !cylinder.mesh) {

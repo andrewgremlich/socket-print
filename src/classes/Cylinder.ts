@@ -8,7 +8,8 @@ import {
 
 import { AppObject } from "./AppObject";
 
-export class Cylinder extends AppObject {
+// Distal Cup configuration
+export class DistalCup extends AppObject {
 	#radialSegments = 128;
 	#radius = 78 / 2;
 	height: number;

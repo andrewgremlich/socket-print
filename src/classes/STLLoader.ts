@@ -19,16 +19,16 @@ import {
 } from "@/utils/htmlElements";
 import { AppObject } from "./AppObject";
 
-type StlLoadedCallback = (params: {
+type SocketCallback = (params: {
 	mesh: Mesh;
 	maxDimension: number;
 	center: Vector3;
 	boxHelper: BoxHelper;
 }) => void;
 
-export class STLLoader extends AppObject {
+export class Socket extends AppObject {
 	adjustmentHeightForCup = 40;
-	stlLoadedCallback: StlLoadedCallback;
+	socketCallback: SocketCallback;
 	boundingBox?: Box3;
 	center?: Vector3;
 	size?: Vector3;
@@ -36,13 +36,13 @@ export class STLLoader extends AppObject {
 	boxHelper?: BoxHelper;
 
 	constructor({
-		stlLoadedCallback,
+		socketCallback,
 	}: {
-		stlLoadedCallback: StlLoadedCallback;
+		socketCallback: SocketCallback;
 	}) {
 		super();
 
-		this.stlLoadedCallback = stlLoadedCallback;
+		this.socketCallback = socketCallback;
 
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
@@ -112,7 +112,7 @@ export class STLLoader extends AppObject {
 
 			this.updateMatrixWorld();
 
-			this.stlLoadedCallback({
+			this.socketCallback({
 				mesh,
 				maxDimension,
 				center: this.center,
