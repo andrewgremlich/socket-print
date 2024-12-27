@@ -1,7 +1,7 @@
 import crc32 from "crc-32";
 
 type UploadResponse = {
-	err: "0" | "1" | "2";
+	err: 0 | 1 | 2;
 	sessionTimeout: number;
 	boardType: string;
 	sessionKey: number;
@@ -18,7 +18,7 @@ export async function connectToPrinter(ipAddress: string) {
 
 	try {
 		const response = await fetch(
-			`${ipAddress}/rr_connect?password=${password}`,
+			`http://${ipAddress}/rr_connect?password=${password}`, //TODO: this is sending the full address with `socketprint`
 		);
 
 		if (!response.ok) {
@@ -27,11 +27,11 @@ export async function connectToPrinter(ipAddress: string) {
 
 		const data: UploadResponse = await response.json();
 
-		if (data.err === "1") {
+		if (data.err === 1) {
 			throw new Error("Password incorrect");
 		}
 
-		if (data.err === "2") {
+		if (data.err === 2) {
 			throw new Error("Too many user sessions");
 		}
 
@@ -95,7 +95,7 @@ export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 
 		const data: UploadResponse = await response.json();
 
-		if (data.err === "1") {
+		if (data.err === 1) {
 			throw new Error("Upload failed");
 		}
 	} catch (error) {

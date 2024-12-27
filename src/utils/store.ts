@@ -1,5 +1,5 @@
 import type { ProvelPrintApp } from "@/global";
-import { appForm, restoreDefaultsButton } from "./htmlElements";
+import { appForm, ipAddressInput, restoreDefaultsButton } from "./htmlElements";
 
 const defaultSetting = {
 	cupSize: "93x38",
@@ -9,9 +9,11 @@ const defaultSetting = {
 	nozzleSize: 5,
 	nozzleTemp: 200,
 	outputFactor: 1,
-	ipAddress: "http://",
+	ipAddress: "",
 	shrinkFactor: 2.6,
 };
+
+let ipAddressInputIsValid = false;
 
 function loadDataIntoDom() {
 	const data = window.provelPrintStore;
@@ -53,6 +55,27 @@ restoreDefaultsButton.addEventListener("click", () => {
 		JSON.stringify(window.provelPrintStore),
 	);
 	loadDataIntoDom();
+});
+
+ipAddressInput.addEventListener("keyup", (event) => {
+	const value = (event.target as HTMLInputElement).value;
+
+	if (value === "") {
+		ipAddressInput.classList.remove("error");
+		return;
+	}
+
+	const splitValue = value.split(".");
+	const validIpAddress =
+		splitValue.length === 4 &&
+		splitValue.every((v) => v !== "" && !Number.isNaN(Number(v)));
+
+	if (validIpAddress) {
+		ipAddressInput.classList.remove("error");
+		ipAddressInputIsValid = false;
+	} else {
+		ipAddressInput.classList.add("error");
+	}
 });
 
 appForm.addEventListener("change", (event) => {

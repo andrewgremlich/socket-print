@@ -47,6 +47,10 @@ svg {
 	color: #fff;
 }
 
+.error {
+	border: 5px solid red !important;
+}
+
 .show {
 	display: block !important;
 }
