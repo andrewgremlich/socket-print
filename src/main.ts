@@ -20,7 +20,7 @@ import {
 	toggleOpenCylinder,
 } from "@/utils/htmlElements";
 import sliceWorker from "@/utils/sliceWorker?worker";
-import { generateGCode } from "./utils/generateGCode";
+import { downloadGCodeFile, generateGCode } from "./utils/generateGCode";
 
 const app = new Application();
 
@@ -110,8 +110,6 @@ generateGCodeButton.addEventListener("click", () => {
 	generateGCodeButton.disabled = true;
 	progressBarDiv.style.display = "flex";
 
-	console.time("generateGCode");
-
 	setTimeout(() => {
 		if (!evaluateGeometries.mesh) {
 			throw new Error("Geometry not found");
@@ -135,8 +133,8 @@ generateGCodeButton.addEventListener("click", () => {
 				progressBar.value = progress;
 			} else if (type === "done") {
 				const points = data;
-				console.log("points", generateGCode(points));
-				console.timeEnd("generateGCode");
+
+				downloadGCodeFile(generateGCode(points), "file.gcode");
 
 				if (!loadingScreen) {
 					throw new Error("Loading screen not found");
