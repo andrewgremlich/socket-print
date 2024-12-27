@@ -12,6 +12,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { FontLoader, TextGeometry } from "three/examples/jsm/Addons.js";
 
 export class Application {
+	#provelPrintView: HTMLElement | null = document.getElementById("provelPrint");
+
 	scene: Scene;
 	camera: PerspectiveCamera;
 	renderer: WebGLRenderer;
@@ -21,14 +23,12 @@ export class Application {
 	height: number;
 
 	constructor() {
-		const provelPrintView = document.getElementById("provelPrint");
-
-		if (!provelPrintView) {
+		if (!this.#provelPrintView) {
 			throw new Error("Provel Print View not found");
 		}
 
-		this.width = provelPrintView.clientWidth;
-		this.height = provelPrintView.clientHeight;
+		this.width = this.#provelPrintView.clientWidth;
+		this.height = this.#provelPrintView.clientHeight;
 		this.scene = new Scene();
 		this.camera = new PerspectiveCamera(
 			75,
@@ -82,9 +82,14 @@ export class Application {
 	};
 
 	#onWindowResize = () => {
-		this.camera.aspect = this.width / this.height;
-		this.camera.updateProjectionMatrix();
-		this.renderer.setSize(this.width, this.height);
-		this.renderer.setPixelRatio(window.devicePixelRatio);
+		if (this.#provelPrintView) {
+			this.width = this.#provelPrintView.clientWidth;
+			this.height = this.#provelPrintView.clientHeight;
+
+			this.camera.aspect = this.width / this.height;
+			this.camera.updateProjectionMatrix();
+			this.renderer.setSize(this.width, this.height);
+			this.renderer.setPixelRatio(window.devicePixelRatio);
+		}
 	};
 }

@@ -40,6 +40,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
 		loadDataIntoDom();
 	}
+
+	if (!window.provelPrintStore) {
+		window.provelPrintStore = defaultSetting;
+	}
 });
 
 restoreDefaultsButton.addEventListener("click", () => {

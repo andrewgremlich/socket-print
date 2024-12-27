@@ -15,38 +15,17 @@ import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
 import { ensureUV } from "./ensureUV";
 
-self.onmessage = (event) => {
-	const { positions } = event.data;
-	const scene = new Scene();
-	const camera = new PerspectiveCamera(75, 1, 0.1, 1000);
-	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(500, 500) });
+type SliceWorker = {
+	positions: number[];
+	verticalAxis: "y" | "z";
+	layerHeight: number;
+	segments: number;
+	incrementHeight: boolean;
+};
 
-	renderer.render(scene, camera);
-
-	const rawgeometry = new BufferGeometry();
-	const positionAttr = new Float32Array(positions);
-	rawgeometry.setAttribute("position", new BufferAttribute(positionAttr, 3));
-
-	rawgeometry.computeBoundingBox();
-	rawgeometry.computeBoundingSphere();
-	rawgeometry.computeVertexNormals();
-	ensureUV(rawgeometry);
-
-	const geometry = BufferGeometryUtils.mergeVertices(rawgeometry);
-	const mesh = new Mesh(
-		geometry,
-		new MeshStandardMaterial({
-			color: 0x00ff00,
-			side: DoubleSide,
-		}),
-	);
-
-	scene.add(mesh);
-
-	const verticalAxis = "y";
-	const layerHeight = 1; //TODO: these might need to be customizable.
-	const segments = 50;
-	const incrementHeight = true;
+self.onmessage = (event: MessageEvent<SliceWorker>) => {
+	const { positions, verticalAxis, layerHeight, segments, incrementHeight } =
+		event.data;
 
 	if (layerHeight <= 0) {
 		throw new Error("Layer height must be greater than 0.");
@@ -60,23 +39,44 @@ self.onmessage = (event) => {
 		throw new Error("Vertical axis must be either 'y' or 'z'.");
 	}
 
-	const angleIncrement = (Math.PI * 2) / segments;
-	const pointGatherer: Vector3[][] = [];
+	const scene = new Scene();
+	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(500, 500) });
+	const rawgeometry = new BufferGeometry();
 
-	const raycaster = new Raycaster();
-	const ray = raycaster.ray;
+	renderer.render(scene, new PerspectiveCamera(75, 1, 0.1, 1000));
 
+	rawgeometry.setAttribute(
+		"position",
+		new BufferAttribute(new Float32Array(positions), 3),
+	);
+	rawgeometry.computeBoundingBox();
+	rawgeometry.computeBoundingSphere();
+	rawgeometry.computeVertexNormals();
+	ensureUV(rawgeometry);
+
+	const mesh = new Mesh(
+		BufferGeometryUtils.mergeVertices(rawgeometry),
+		new MeshStandardMaterial({
+			color: 0x00ff00,
+			side: DoubleSide,
+		}),
+	);
 	const boundingBox = new Box3().setFromObject(mesh);
 	const center = boundingBox.getCenter(new Vector3());
-	const minHeight = boundingBox.min[verticalAxis];
 	const maxHeight = boundingBox.max[verticalAxis];
-	const centerX = center.x;
-	const centerZ = center.z;
+
+	scene.add(mesh);
+
+	const angleIncrement = (Math.PI * 2) / segments;
+	const pointGatherer: Vector3[][] = [];
+	const raycaster = new Raycaster();
+	const direction = new Vector3();
+	const ray = raycaster.ray;
 
 	ray.direction.set(0, 0, -1);
 
 	for (
-		let heightPosition = minHeight;
+		let heightPosition = boundingBox.min[verticalAxis];
 		heightPosition < maxHeight;
 		heightPosition += layerHeight
 	) {
@@ -88,12 +88,15 @@ self.onmessage = (event) => {
 		});
 
 		for (let angle = 0; angle < Math.PI * 2; angle += angleIncrement) {
-			const direction = new Vector3(Math.cos(angle), 0, Math.sin(angle));
-			const adjustedHeight = incrementHeight
-				? heightPosition + (angle / (Math.PI * 2)) * layerHeight
-				: heightPosition;
+			direction.set(Math.cos(angle), 0, Math.sin(angle));
 
-			ray.origin.set(centerX, adjustedHeight, centerZ);
+			ray.origin.set(
+				center.x,
+				incrementHeight
+					? heightPosition + (angle / (Math.PI * 2)) * layerHeight
+					: heightPosition,
+				center.z,
+			);
 			ray.direction.copy(direction);
 
 			const intersects = raycaster.intersectObject(mesh);

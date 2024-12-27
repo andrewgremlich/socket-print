@@ -10,6 +10,7 @@ import { DistalCup } from "@/classes/DistalCup";
 import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
 import { Socket } from "@/classes/Socket";
+import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import {
 	generateGCodeButton,
 	loadingScreen,
@@ -17,10 +18,8 @@ import {
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
-	toggleOpenCylinder,
 } from "@/utils/htmlElements";
 import sliceWorker from "@/utils/sliceWorker?worker";
-import { downloadGCodeFile, generateGCode } from "./utils/generateGCode";
 
 const app = new Application();
 
@@ -122,6 +121,10 @@ generateGCodeButton.addEventListener("click", () => {
 		const worker = new sliceWorker();
 		worker.postMessage({
 			positions: evaluateGeometries.mesh.geometry.attributes.position.array,
+			verticalAxis: "y",
+			layerHeight: window.provelPrintStore.layerHeight as number,
+			segments: 50,
+			incrementHeight: true,
 		});
 
 		worker.onmessage = (event) => {
@@ -136,21 +139,9 @@ generateGCodeButton.addEventListener("click", () => {
 
 				downloadGCodeFile(generateGCode(points), "file.gcode");
 
-				if (!loadingScreen) {
-					throw new Error("Loading screen not found");
-				}
-
 				progressBarDiv.style.display = "none";
 				generateGCodeButton.disabled = false;
 			}
 		};
 	}, 1000);
-});
-
-toggleOpenCylinder?.addEventListener("click", (event) => {
-	if (!distalCup.mesh) {
-		throw new Error("Cylinder mesh not found");
-	}
-
-	console.log("toggleOpenCylinder", event);
 });

@@ -15,9 +15,6 @@ export const addFillerEllipsoid = document.getElementById(
 export const appForm = document.getElementById(
 	"customizations",
 ) as HTMLFormElement;
-export const toggleOpenCylinder = document.getElementById(
-	"toggleOpenCylinder",
-) as HTMLInputElement;
 export const transversalRotate = document.getElementById(
 	"transversalRotate",
 ) as HTMLInputElement;
