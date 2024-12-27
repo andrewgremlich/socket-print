@@ -13,8 +13,6 @@ const defaultSetting = {
 	shrinkFactor: 2.6,
 };
 
-let ipAddressInputIsValid = false;
-
 function loadDataIntoDom() {
 	const data = window.provelPrintStore;
 	const formData = new FormData(appForm);
@@ -72,7 +70,6 @@ ipAddressInput.addEventListener("keyup", (event) => {
 
 	if (validIpAddress) {
 		ipAddressInput.classList.remove("error");
-		ipAddressInputIsValid = false;
 	} else {
 		ipAddressInput.classList.add("error");
 	}
