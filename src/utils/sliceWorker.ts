@@ -44,7 +44,7 @@ self.onmessage = (event) => {
 	scene.add(mesh);
 
 	const verticalAxis = "y";
-	const layerHeight = 1;
+	const layerHeight = 1; //TODO: these might need to be customizable.
 	const segments = 50;
 	const incrementHeight = true;
 
