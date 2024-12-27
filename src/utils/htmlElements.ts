@@ -3,8 +3,8 @@ export const stlFileInput = document.getElementById(
 	"stlFileInput",
 ) as HTMLInputElement;
 export const loadingScreen = document.getElementById("loading");
-export const mergeGeosButton = document.getElementById(
-	"generateGCode",
+export const generateGCodeButton = document.getElementById(
+	"generateGCodeButton",
 ) as HTMLInputElement;
 export const changeDistalCupSize = document.getElementById(
 	"changeDistalCupSize",
@@ -27,9 +27,15 @@ export const sagittalRotate = document.getElementById(
 export const coronalRotate = document.getElementById(
 	"coronalRotate",
 ) as HTMLInputElement;
-// export const autoAlignSocket = document.getElementById(
-// 	"autoAlignSocket",
-// ) as HTMLInputElement;
+export const elevateVertical = document.getElementById(
+	"elecateVertical",
+) as HTMLInputElement;
+export const lowerVertical = document.getElementById(
+	"lowerVertical",
+) as HTMLInputElement;
+export const mergeMeshes = document.getElementById(
+	"mergeMeshes",
+) as HTMLInputElement;
 export const menuBar = document.getElementById("menuBar") as HTMLDivElement;
 export const menuBarButtonContainers = document.querySelectorAll(
 	".menuBarButtonContainer",
@@ -55,3 +61,15 @@ export const updateAppButton = document.getElementById(
 export const restoreDefaultsButton = document.getElementById(
 	"restoreDefaultsButton",
 ) as HTMLButtonElement;
+export const progressBarDiv = document.getElementById(
+	"progressBarDiv",
+) as HTMLDivElement;
+export const progressBar = document.getElementById(
+	"progressBar",
+) as HTMLProgressElement;
+export const progressBarLabel = document.getElementById(
+	"progressBarLabel",
+) as HTMLLabelElement;
+export const threeDViewer = document.getElementById(
+	"3dViewer",
+) as HTMLCanvasElement;

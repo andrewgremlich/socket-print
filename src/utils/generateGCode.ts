@@ -1,4 +1,9 @@
 import type { Vector3 } from "three";
+
+export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
+	return currentAxis === "y" ? "z" : "y";
+}
+
 /**
  * Options for G-code generation.
  */
@@ -7,6 +12,27 @@ interface GCodeOptions {
 	extrusionFactor?: number; // Factor for extrusion
 	layerHeight?: number; // Layer height in mm
 	estimatedTime?: string; // Estimated printing time
+}
+
+export function generateGCode(
+	pointGatherer: Vector3[][],
+	verticalAxis: "y" | "z" = "y",
+): string {
+	let gcode = "G21 ; Set units to millimeters\n";
+	gcode += "G90 ; Use absolute positioning\n";
+	gcode += "G1 Z5 F5000 ; Lift\n";
+
+	for (const pointLevel of pointGatherer) {
+		for (const point of pointLevel) {
+			const flipHeight = flipVerticalAxis(verticalAxis);
+			gcode += `G1 X${point.x.toFixed(2)} Y${point[flipHeight].toFixed(2)} Z${point[verticalAxis].toFixed(2)} F1500\n`;
+		}
+	}
+
+	gcode += "G1 Z5 F5000 ; Lift\n";
+	gcode += "M30 ; End of program\n";
+
+	return gcode;
 }
 
 /**

@@ -1,18 +1,21 @@
 import {
 	Box3,
-	BoxHelper,
 	type BufferGeometry,
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
 	Vector3,
 } from "three";
+import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
 import { ensureUV } from "@/utils/ensureUV";
 import {
 	coronalRotate,
+	elevateVertical,
 	loadingScreen,
+	lowerVertical,
+	mergeMeshes,
 	sagittalRotate,
 	stlFileInput,
 	transversalRotate,
@@ -23,7 +26,6 @@ type SocketCallback = (params: {
 	mesh: Mesh;
 	maxDimension: number;
 	center: Vector3;
-	boxHelper: BoxHelper;
 }) => void;
 
 export class Socket extends AppObject {
@@ -32,8 +34,6 @@ export class Socket extends AppObject {
 	boundingBox?: Box3;
 	center?: Vector3;
 	size?: Vector3;
-
-	boxHelper?: BoxHelper;
 
 	constructor({
 		socketCallback,
@@ -52,7 +52,8 @@ export class Socket extends AppObject {
 		transversalRotate?.addEventListener("click", this.transverseRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
 		coronalRotate?.addEventListener("click", this.coronalRotate90);
-		// autoAlignSocket?.addEventListener("click", this.autoAlignSocket);
+		elevateVertical?.addEventListener("click", this.elevateVertical);
+		lowerVertical?.addEventListener("click", this.lowerVertical);
 	}
 
 	updateMatrixWorld = () => {
@@ -83,11 +84,13 @@ export class Socket extends AppObject {
 		if (file) {
 			loadingScreen.style.display = "flex";
 
-			const geometry = await this.#readSTLFile(file);
+			const rawGeometry = await this.#readSTLFile(file);
+			const geometry = BufferGeometryUtils.mergeVertices(rawGeometry);
 
 			// convert Z - Y
 			geometry.rotateX(-Math.PI / 2);
 			geometry.computeBoundingBox();
+			geometry.computeBoundingSphere();
 			geometry.computeVertexNormals();
 			ensureUV(geometry);
 
@@ -107,22 +110,21 @@ export class Socket extends AppObject {
 			this.center = boundingBox.getCenter(new Vector3());
 			this.size = size;
 
-			const boxHelper = new BoxHelper(mesh, 0xffff00);
-			this.boxHelper = boxHelper;
-
 			this.updateMatrixWorld();
 
 			this.socketCallback({
 				mesh,
 				maxDimension,
 				center: this.center,
-				boxHelper,
 			});
 
 			transversalRotate.disabled = false;
 			sagittalRotate.disabled = false;
 			coronalRotate.disabled = false;
 			stlFileInput.disabled = true;
+			elevateVertical.disabled = false;
+			lowerVertical.disabled = false;
+			mergeMeshes.disabled = false;
 		}
 	};
 
@@ -163,7 +165,6 @@ export class Socket extends AppObject {
 		this.center = center;
 
 		this.updateMatrixWorld();
-		this.boxHelper?.update();
 	};
 
 	transverseRotate90 = () => {
@@ -190,6 +191,24 @@ export class Socket extends AppObject {
 		}
 
 		this.mesh.rotateY(Math.PI / 2);
+		this.autoAlignMesh();
+	};
+
+	elevateVertical = () => {
+		if (!this.mesh) {
+			return;
+		}
+
+		this.mesh.position.y += 1;
+		this.autoAlignMesh();
+	};
+
+	lowerVertical = () => {
+		if (!this.mesh) {
+			return;
+		}
+
+		this.mesh.position.y -= 1;
 		this.autoAlignMesh();
 	};
 }

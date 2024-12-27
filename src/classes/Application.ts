@@ -1,3 +1,4 @@
+import { threeDViewer } from "@/utils/htmlElements";
 import {
 	GridHelper,
 	Mesh,
@@ -35,7 +36,7 @@ export class Application {
 			0.1,
 			1000,
 		);
-		this.renderer = new WebGLRenderer();
+		this.renderer = new WebGLRenderer({ canvas: threeDViewer }); // TODO: this accepts offscreenCanvas
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.gridHelper = new GridHelper(200, 50);
 
@@ -48,8 +49,6 @@ export class Application {
 
 		this.addToScene(this.gridHelper);
 		this.loadFont();
-
-		provelPrintView?.appendChild(this.renderer.domElement);
 
 		// Add event listener for window resize
 		window.addEventListener("resize", this.#onWindowResize);

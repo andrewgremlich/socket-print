@@ -1,19 +1,14 @@
+import { Box3, CylinderGeometry, Mesh, Vector3 } from "three";
 import { CSG } from "three-csg-ts";
 
-import {
-	Box3,
-	CylinderGeometry,
-	DoubleSide,
-	Mesh,
-	MeshStandardMaterial,
-} from "three";
 import { AppObject } from "./AppObject";
 import type { DistalCup } from "./DistalCup";
 import type { Socket } from "./Socket";
 
 export class EvaluateGeometries extends AppObject {
 	boundingBox: Box3;
-	unrotatedMesh: Mesh;
+	size: Vector3;
+	center: Vector3;
 
 	constructor(stlModel: Socket, cylinder: DistalCup) {
 		super();
@@ -29,18 +24,10 @@ export class EvaluateGeometries extends AppObject {
 		const clonedCylinder = this.cloneCylinder(cylinder);
 		const subtraction = CSG.union(stlModel.mesh, clonedCylinder);
 
-		this.unrotatedMesh = new Mesh(
-			subtraction.geometry.clone(),
-			new MeshStandardMaterial({
-				color: 0xffffff,
-				side: DoubleSide,
-			}),
-		);
-
-		subtraction.geometry.rotateX(Math.PI / 2);
-
-		this.mesh = subtraction;
 		this.boundingBox = new Box3().setFromObject(subtraction);
+		this.size = this.boundingBox.getSize(new Vector3());
+		this.center = this.boundingBox.getCenter(new Vector3());
+		this.mesh = subtraction;
 		this.updateMatrixWorld();
 	}
 
