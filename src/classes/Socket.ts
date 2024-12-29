@@ -20,6 +20,7 @@ import {
 	stlFileInput,
 	transversalRotate,
 } from "@/utils/htmlElements";
+import { removeDuplicateVertices } from "@/utils/removeDups";
 import { AppObject } from "./AppObject";
 
 type SocketCallback = (params: {
@@ -35,11 +36,7 @@ export class Socket extends AppObject {
 	center?: Vector3;
 	size?: Vector3;
 
-	constructor({
-		socketCallback,
-	}: {
-		socketCallback: SocketCallback;
-	}) {
+	constructor({ socketCallback }: { socketCallback: SocketCallback }) {
 		super();
 
 		this.socketCallback = socketCallback;
@@ -85,7 +82,8 @@ export class Socket extends AppObject {
 			loadingScreen.style.display = "flex";
 
 			const rawGeometry = await this.#readSTLFile(file);
-			const geometry = BufferGeometryUtils.mergeVertices(rawGeometry);
+			const removeDups = removeDuplicateVertices(rawGeometry);
+			const geometry = BufferGeometryUtils.mergeVertices(removeDups);
 
 			// convert Z - Y
 			geometry.rotateX(-Math.PI / 2);

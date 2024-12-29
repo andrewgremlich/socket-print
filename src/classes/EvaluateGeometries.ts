@@ -28,6 +28,11 @@ export class EvaluateGeometries extends AppObject {
 		this.size = this.boundingBox.getSize(new Vector3());
 		this.center = this.boundingBox.getCenter(new Vector3());
 		this.mesh = subtraction;
+
+		this.mesh.geometry.computeBoundingBox();
+		this.mesh.geometry.computeBoundingSphere();
+		this.mesh.geometry.computeVertexNormals();
+
 		this.updateMatrixWorld();
 	}
 
