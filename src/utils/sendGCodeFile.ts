@@ -43,7 +43,7 @@ export async function connectToPrinter(ipAddress: string) {
 
 export async function getModelInformation(ipAddress: string) {
 	try {
-		const response = await fetch(`${ipAddress}/rr_model?key=boards[0]`);
+		const response = await fetch(`http://${ipAddress}/rr_model?key=boards[0]`);
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
@@ -79,7 +79,7 @@ export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 		console.log(`CRC32 Checksum: ${crc}`);
 
 		const response = await fetch(
-			`${window.provelPrintStore.ipAddress}/rr_upload?name=/gcodes/${fileName}&crc32=${crc}`,
+			`http://${window.provelPrintStore.ipAddress}/rr_upload?name=/gcodes/${fileName}&crc32=${crc}`,
 			{
 				method: "POST",
 				headers: {
