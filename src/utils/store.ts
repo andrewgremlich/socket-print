@@ -1,5 +1,12 @@
 import type { ProvelPrintApp } from "@/global";
-import { appForm, ipAddressInput, restoreDefaultsButton } from "./htmlElements";
+import {
+	appForm,
+	ipAddressFailure,
+	ipAddressInput,
+	ipAddressSuccess,
+	restoreDefaultsButton,
+} from "./htmlElements";
+import { connectToPrinter } from "./sendGCodeFile";
 
 const defaultSetting = {
 	cupSize: "93x38",
@@ -12,6 +19,14 @@ const defaultSetting = {
 	ipAddress: "",
 	shrinkFactor: 2.6,
 };
+
+function isValidIpAddress(ipAddress: string) {
+	const splitValue = ipAddress.split(".");
+	return (
+		splitValue.length === 4 &&
+		splitValue.every((v) => v !== "" && !Number.isNaN(Number(v)))
+	);
+}
 
 function loadDataIntoDom() {
 	const data = window.provelPrintStore;
@@ -39,6 +54,22 @@ window.addEventListener("DOMContentLoaded", () => {
 		);
 
 		loadDataIntoDom();
+
+		const validIpAddress = isValidIpAddress(
+			window.provelPrintStore.ipAddress as string,
+		);
+
+		if (validIpAddress && import.meta.env.MODE !== "development") {
+			connectToPrinter(window.provelPrintStore.ipAddress as string)
+				.then(() => {
+					console.log("successful connection");
+					ipAddressFailure.classList.toggle("hide");
+					ipAddressSuccess.classList.toggle("hide");
+				})
+				.catch((error) => {
+					console.error("CAUGHT:", error);
+				});
+		}
 	}
 
 	if (!window.provelPrintStore) {
@@ -63,10 +94,7 @@ ipAddressInput.addEventListener("keyup", (event) => {
 		return;
 	}
 
-	const splitValue = value.split(".");
-	const validIpAddress =
-		splitValue.length === 4 &&
-		splitValue.every((v) => v !== "" && !Number.isNaN(Number(v)));
+	const validIpAddress = isValidIpAddress(value);
 
 	if (validIpAddress) {
 		ipAddressInput.classList.remove("error");

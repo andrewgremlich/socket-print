@@ -79,7 +79,9 @@ export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 		console.log(`CRC32 Checksum: ${crc}`);
 
 		const response = await fetch(
-			`http://${window.provelPrintStore.ipAddress}/rr_upload?name=/gcodes/${fileName}&crc32=${crc}`,
+			`http://${
+				window.provelPrintStore.ipAddress
+			}/rr_upload?name=/gcodes/${encodeURIComponent(fileName)}&crc32=${crc}`,
 			{
 				method: "POST",
 				headers: {
@@ -99,6 +101,6 @@ export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 			throw new Error("Upload failed");
 		}
 	} catch (error) {
-		console.error("There was a problem with the fetch operation:", error);
+		console.error(error);
 	}
 }
