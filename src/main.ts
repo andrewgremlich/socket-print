@@ -119,6 +119,7 @@ generateGCodeButton.addEventListener("click", () => {
 		}
 
 		const worker = new sliceWorker();
+		console.time("generateGCode");
 		worker.postMessage({
 			positions: evaluateGeometries.mesh.geometry.attributes.position.array,
 			verticalAxis: "y",
@@ -136,7 +137,7 @@ generateGCodeButton.addEventListener("click", () => {
 				progressBar.value = progress;
 			} else if (type === "done") {
 				const points = data;
-
+				console.timeEnd("generateGCode");
 				downloadGCodeFile(generateGCode(points), "file.gcode");
 
 				progressBarDiv.style.display = "none";

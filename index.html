@@ -12,7 +12,7 @@
 
   <main>
     <nav id="menuBar">
-      <h1>ProvelPrint: Alpha-v2.5.2</h1>
+      <h1>ProvelPrint: Alpha-v2.5.3</h1>
 
       <div class="menuBarButtonContainer">
         <button class="menuBarButton">File</button>
@@ -104,7 +104,6 @@
 
         <select name="material" id="material" name="material">
           <option value="cp1">CP 1</option>
-          <option value="edit">Edit</option>
         </select>
 
         <label for="nozzleTemp">Nozzle Temp in C</label>
@@ -169,6 +168,27 @@
     <div id="readyToGo">
       <p>All updated!</p>
     </div>
+  </div>
+
+  <div id="makeNewMaterialProfile">
+    <form>
+      <label for="materialProfileName">Material Profile Name</label>
+      <input type="text" id="materialProfileName" name="materialProfileName" required>
+
+      <label for="newNozzleTemp">Nozzle Temp in C</label>
+      <input type="number" value="200" name="newNozzleTemp" id="newNozzleTemp" required>
+
+      <label for="newCupTemp">Cup Temp in C</label>
+      <input type="number" value="130" name="newCupTemp" id="newCupTemp" required>
+
+      <label for="newShrinkFactor">Shrink Factor %</label>
+      <input type="number" step="0.1" value="2.6" name="newShrinkFactor" id="newShrinkFactor" required>
+
+      <label for="newOutputFactor">Output Factor</label>
+      <input type="number" value="1" name="newOutputFactor" id="newOutputFactor" required>
+
+      <input type="submit" value="Save" class="button" id="saveMaterialProfile">
+    </form>
   </div>
 
   <div id="progressBarDiv">

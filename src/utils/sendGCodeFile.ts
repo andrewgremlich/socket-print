@@ -73,15 +73,24 @@ function calculateCRC32(binaryData: Blob): Promise<number> {
 	});
 }
 
+function stringToHex(str: string) {
+	return Array.from(str)
+		.map((char) => char.charCodeAt(0).toString(16).padStart(2, "0"))
+		.join("");
+}
+
 export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 	try {
 		const crc = await calculateCRC32(binaryData);
 		console.log(`CRC32 Checksum: ${crc}`);
 
+		const crcHex = stringToHex(crc.toString());
+		console.log(`CRC32 Checksum (Hex): ${crcHex}`);
+
 		const response = await fetch(
 			`http://${
 				window.provelPrintStore.ipAddress
-			}/rr_upload?name=/gcodes/${encodeURIComponent(fileName)}&crc32=${crc}`,
+			}/rr_upload?name=/gcodes/${encodeURIComponent(fileName)}&crc32=${crcHex}`,
 			{
 				method: "POST",
 				headers: {
