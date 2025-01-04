@@ -13,6 +13,8 @@ type ModelInformation = {
 	result: number;
 };
 
+// DOCS: https://github.com/Duet3D/RepRapFirmware/wiki/HTTP-requests
+
 export async function connectToPrinter(ipAddress: string) {
 	const password = "";
 
@@ -73,10 +75,12 @@ function calculateCRC32(binaryData: Blob): Promise<number> {
 	});
 }
 
-function stringToHex(str: string) {
-	return Array.from(str)
-		.map((char) => char.charCodeAt(0).toString(16).padStart(2, "0"))
-		.join("");
+function decimalToHex(decimal: number) {
+	if (!Number.isInteger(decimal) || decimal < 0) {
+		throw new Error("Input must be a non-negative integer.");
+	}
+
+	return decimal.toString(16).toUpperCase();
 }
 
 export async function sendGCodeFile(binaryData: Blob, fileName: string) {
@@ -84,7 +88,7 @@ export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 		const crc = await calculateCRC32(binaryData);
 		console.log(`CRC32 Checksum: ${crc}`);
 
-		const crcHex = stringToHex(crc.toString());
+		const crcHex = decimalToHex(crc);
 		console.log(`CRC32 Checksum (Hex): ${crcHex}`);
 
 		const response = await fetch(
