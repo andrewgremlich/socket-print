@@ -14,7 +14,6 @@ type ModelInformation = {
 };
 
 // DOCS: https://github.com/Duet3D/RepRapFirmware/wiki/HTTP-requests
-
 export async function connectToPrinter(ipAddress: string) {
 	const password = "";
 
@@ -85,6 +84,8 @@ function decimalToHex(decimal: number) {
 
 export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 	try {
+		await connectToPrinter(window.provelPrintStore.ipAddress as string);
+
 		const crc = await calculateCRC32(binaryData);
 		console.log(`CRC32 Checksum: ${crc}`);
 
