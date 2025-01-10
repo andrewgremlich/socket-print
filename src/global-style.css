@@ -263,7 +263,7 @@ svg {
 }
 
 #makeNewMaterialProfile {
-	display: none;
+	display: flex;
 	position: absolute;
 	z-index: 9999;
 	bottom: 10px;

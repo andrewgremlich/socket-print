@@ -70,3 +70,18 @@ export const progressBarLabel = document.getElementById(
 export const threeDViewer = document.getElementById(
 	"3dViewer",
 ) as HTMLCanvasElement;
+export const editMaterialProfiles = document.getElementById(
+	"editMaterialProfiles",
+) as HTMLDivElement;
+export const newMaterialProfile = document.getElementById(
+	"makeNewMaterialProfile",
+) as HTMLDivElement;
+export const newMaterialProfileForm = newMaterialProfile.querySelector(
+	"form",
+) as HTMLFormElement;
+export const saveMaterialProfileButton = document.getElementById(
+	"saveMaterialProfile",
+) as HTMLButtonElement;
+export const cancelMaterialProfileButton = document.getElementById(
+	"cancelMaterialProfile",
+) as HTMLButtonElement;

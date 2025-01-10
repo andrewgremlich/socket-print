@@ -7,6 +7,24 @@ import {
 	restoreDefaultsButton,
 } from "./htmlElements";
 import { connectToPrinter } from "./sendGCodeFile";
+//TODO: refactor the store so that profiles are in an array. This will allow for multiple profiles to be saved.
+
+const store = {
+	activeProfile: "default",
+	profiles: {
+		default: {
+			cupSize: "93x38",
+			cupTemp: 130,
+			layerHeight: 1,
+			material: "cp1",
+			nozzleSize: 5,
+			nozzleTemp: 200,
+			outputFactor: 1,
+			ipAddress: "",
+			shrinkFactor: 2.6,
+		},
+	},
+};
 
 const defaultSetting = {
 	cupSize: "93x38",

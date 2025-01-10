@@ -64,7 +64,7 @@ function calculateCRC32(binaryData: Blob): Promise<number> {
 		reader.onload = () => {
 			const arrayBuffer = reader.result as ArrayBuffer;
 			const uint8Array = new Uint8Array(arrayBuffer);
-			const crc = crc32.buf(uint8Array);
+			const crc = crc32.buf(uint8Array, 0) >>> 0;
 			resolve(crc);
 		};
 		reader.onerror = () => {

@@ -1,10 +1,14 @@
 import { registerSW } from "virtual:pwa-register";
 import {
+	cancelMaterialProfileButton,
+	editMaterialProfiles,
 	ipAddressFailure,
 	ipAddressInput,
 	ipAddressSuccess,
 	menuBar,
 	menuBarDropdowns,
+	newMaterialProfile,
+	newMaterialProfileForm,
 	printerFileInput,
 } from "./htmlElements";
 import { connectToPrinter, sendGCodeFile } from "./sendGCodeFile";
@@ -63,4 +67,20 @@ ipAddressInput.addEventListener("change", () => {
 		.catch((error) => {
 			console.error("CAUGHT:", error);
 		});
+});
+
+newMaterialProfileForm.addEventListener("submit", (evt) => {
+	evt.preventDefault();
+	const formData = new FormData(newMaterialProfileForm);
+	const data = Object.fromEntries(formData.entries());
+	console.log(data);
+});
+
+editMaterialProfiles.addEventListener("click", () => {
+	newMaterialProfile.classList.toggle("hide");
+});
+
+cancelMaterialProfileButton.addEventListener("click", () => {
+	newMaterialProfileForm.reset();
+	newMaterialProfile.classList.toggle("hide");
 });
