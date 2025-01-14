@@ -1,16 +1,16 @@
 * {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-	height: 100%;
+  height: 100%;
 }
 
 body {
-	background-color: #333;
-	height: 100%;
+  background-color: #333;
+  height: 100%;
 }
 
 h1,
@@ -22,311 +22,312 @@ h6,
 label,
 p,
 a {
-	color: #fff;
-	font-family: "Roboto", sans-serif;
+  color: #fff;
+  font-family: "Roboto", sans-serif;
 }
 
 h1 {
-	margin-left: 50px;
-	margin-right: 50px;
+  margin-left: 50px;
+  margin-right: 50px;
 }
 
 main {
-	width: 100%;
-	height: 100%;
-	display: grid;
-	grid-template-columns: repeat(12, 1fr);
-	grid-template-rows: repeat(12, 1fr);
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
 }
 
 input[type="range"] {
-	margin: 10px;
+  margin: 10px;
+}
+
+input {
+  background-color: #f0f0f0;
+  color: #000;
+  border: 3px solid #ccc;
+  border-radius: 8px;
+  padding: 4px 12px;
+  margin: 10px 10px;
+  width: 150px;
+  cursor: pointer;
+
+  &:has(:disabled),
+  &[disabled] {
+    background-color: #ccc;
+    border-color: #999;
+    color: #666;
+    cursor: not-allowed;
+  }
+
+  &.displayInput {
+    border: none;
+    background-color: #333;
+    color: #fff;
+    cursor: initial;
+  }
+}
+
+label {
+  display: block;
+  width: 100%;
+}
+
+select {
+  background-color: #f0f0f0;
+  color: #000;
+  border: 3px solid #ccc;
+  border-radius: 8px;
+  padding: 4px 12px;
+  margin: 10px 10px;
+  width: 150px;
+  cursor: pointer;
+
+  &:has(:disabled),
+  &[disabled] {
+    background-color: #ccc;
+    border-color: #999;
+    color: #666;
+    cursor: not-allowed;
+  }
 }
 
 svg {
-	color: #fff;
+  color: #fff;
 }
 
 .error {
-	border: 5px solid red !important;
+  border: 5px solid red !important;
 }
 
 .show {
-	display: block !important;
+  display: block !important;
 }
 
 .hide {
-	display: none !important;
+  display: none !important;
 }
 
 .button {
-	white-space: normal;
-	font-size: 16px;
-	background-color: #f0f0f0;
-	color: #000;
-	text-align: center;
-	border: 3px solid #ccc;
-	border-radius: 8px;
-	cursor: pointer;
-	padding: 4px 12px;
-	margin: 10px 10px;
-	width: 150px;
+  white-space: normal;
+  font-size: 16px;
+  background-color: #f0f0f0;
+  color: #000;
+  text-align: center;
+  border: 3px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 12px;
+  margin: 10px 10px;
+  width: 150px;
 
-	&:has(input[disabled]),
-	&[disabled] {
-		background-color: #ccc;
-		border-color: #999;
-		color: #666;
-		cursor: not-allowed;
-	}
+  &:has(input[disabled]),
+  &[disabled] {
+    background-color: #ccc;
+    border-color: #999;
+    color: #666;
+    cursor: not-allowed;
+  }
 }
 
 .menuBarButton {
-	font-size: 17px;
-	margin: 0 10px;
-	padding: 10px 0;
-	display: block;
-	color: #fff;
-	border-radius: 5px;
-	border: none;
-	background-color: transparent;
-	cursor: pointer;
-	text-decoration: none;
+  font-size: 17px;
+  margin: 0 10px;
+  padding: 10px 0;
+  display: block;
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  text-decoration: none;
 
-	&:hover {
-		text-decoration: underline;
-		text-underline-offset: 5px;
-	}
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
 }
 
 .menuBarButtonContainer {
-	position: relative;
+  position: relative;
 
-	& .menuBarDropdown {
-		display: none;
-		z-index: 9999;
-		background-color: #444;
+  & .menuBarDropdown {
+    display: none;
+    z-index: 9999;
+    background-color: #444;
 
-		padding: 10px 10px 0 10px;
-		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-		border-radius: 5px;
-		position: absolute;
-		left: 0;
-		top: 50px;
-	}
+    padding: 10px 10px 0 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    position: absolute;
+    left: 0;
+    top: 50px;
+  }
 }
 
 .menuBarDropdownButton {
-	background: none;
-	border: none;
-	color: #fff;
-	font-size: 16px;
-	padding: 5px 10px;
-	margin-bottom: 5px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  padding: 5px 10px;
+  margin-bottom: 5px;
 
-	&:hover {
-		text-decoration: underline;
-		text-underline-offset: 5px;
-		cursor: pointer;
-	}
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    cursor: pointer;
+  }
 }
 
 .fileInputLabel {
-	white-space: nowrap;
+  white-space: nowrap;
 
-	& > .fileInput {
-		display: none;
-	}
+  & > .fileInput {
+    display: none;
+  }
 }
 
 #menuBar {
-	grid-column: 1 / 13;
-	grid-row: 1 / 2;
-	width: 100%;
-	height: 50px;
-	background-color: #444;
-	z-index: 9999;
-	display: flex;
-	align-items: center;
+  grid-column: 1 / 13;
+  grid-row: 1 / 2;
+  width: 100%;
+  height: 50px;
+  background-color: #444;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
 }
 
 #userInterface {
-	grid-column: 1 / 6;
-	grid-row: 2 / 13;
-	width: 500px;
-	background-color: #333;
-	padding: 10px;
-	display: flex;
-	align-items: center;
-	flex-direction: column;
+  grid-column: 1 / 6;
+  grid-row: 2 / 13;
+  width: 500px;
+  background-color: #333;
+  padding-left: 50px;
+  display: flex;
+  flex-direction: column;
 
-	& label {
-		display: block;
-		width: 100%;
-	}
+  & #customizations,
+  & #printActions,
+  & #materialProfileForm {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: 1fr 1fr;
+  }
 
-	& input {
-		background-color: #f0f0f0;
-		color: #000;
-		border: 3px solid #ccc;
-		border-radius: 8px;
-		padding: 4px 12px;
-		margin: 10px 10px;
-		width: 150px;
-		cursor: pointer;
-
-		&:has(:disabled),
-		&[disabled] {
-			background-color: #ccc;
-			border-color: #999;
-			color: #666;
-			cursor: not-allowed;
-		}
-
-		&.displayInput {
-			border: none;
-			background-color: #333;
-			color: #fff;
-			cursor: initial;
-		}
-	}
-
-	& select {
-		background-color: #f0f0f0;
-		color: #000;
-		border: 3px solid #ccc;
-		border-radius: 8px;
-		padding: 4px 12px;
-		margin: 10px 10px;
-		width: 150px;
-		cursor: pointer;
-
-		&:has(:disabled),
-		&[disabled] {
-			background-color: #ccc;
-			border-color: #999;
-			color: #666;
-			cursor: not-allowed;
-		}
-	}
-
-	& #customizations {
-		width: 400px;
-		display: grid;
-		align-items: center;
-		justify-content: center;
-		grid-template-columns: 1fr 1fr;
-	}
-
-	& #ipAddress {
-		display: flex;
-		align-items: center;
-	}
+  & #ipAddress {
+    display: flex;
+    align-items: center;
+  }
 }
 
 #provelPrint {
-	grid-column: 6 / 13;
-	grid-row: 2 / 11;
-	width: 100%;
-	height: 100%;
+  grid-column: 6 / 13;
+  grid-row: 2 / 11;
+  width: 100%;
+  height: 100%;
 }
 
 #editSocket {
-	grid-column: 6 / 13;
-	grid-row: 11 / 13;
-	width: 100%;
-	height: 100%;
-	background-color: #333;
-	padding: 0px 10px;
+  grid-column: 6 / 13;
+  grid-row: 11 / 13;
+  width: 100%;
+  height: 100%;
+  background-color: #333;
+  padding: 0px 10px;
 
-	& > div {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		margin-bottom: 10px;
+  & > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 10px;
 
-		& > p {
-			margin-right: 10px;
-		}
-	}
+    & > p {
+      margin-right: 10px;
+    }
+  }
 }
 
 #updateApp {
-	position: absolute;
-	z-index: 9999;
-	bottom: 10px;
-	right: 10px;
-	background-color: #444;
-	padding: 10px 30px 10px;
-	border-radius: 15px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  z-index: 9999;
+  bottom: 10px;
+  right: 10px;
+  background-color: #444;
+  padding: 10px 30px 10px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 #makeNewMaterialProfile {
-	display: flex;
-	position: absolute;
-	z-index: 9999;
-	bottom: 10px;
-	right: 10px;
-	background-color: #444;
-	padding: 10px 30px 10px;
-	border-radius: 15px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  position: absolute;
+  z-index: 9999;
+  bottom: 10px;
+  right: 10px;
+  background-color: #444;
+  padding: 10px 30px 10px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 
-	& > form {
-		display: grid;
-		grid-gap: 10px;
-		grid-template-columns: 1fr 1fr;
+  & > form {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
 
-		& > * {
-			grid-column-start: span 1;
-		}
-	}
+    & > * {
+      grid-column-start: span 1;
+    }
+  }
 }
 
 #progressBarDiv {
-	position: fixed;
-	z-index: 9999;
-	bottom: 10px;
-	left: 10px;
-	background-color: #444;
-	padding: 10px 30px 10px;
-	border-radius: 15px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-	/* display: flex; */
-	display: none;
-	align-items: center;
+  position: fixed;
+  z-index: 9999;
+  bottom: 10px;
+  left: 10px;
+  background-color: #444;
+  padding: 10px 30px 10px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  /* display: flex; */
+  display: none;
+  align-items: center;
 
-	& > * {
-		margin-right: 10px;
-	}
+  & > * {
+    margin-right: 10px;
+  }
 
-	svg {
-		animation: loading 3s linear infinite;
-	}
+  svg {
+    animation: loading 3s linear infinite;
+  }
 }
 
 #loading {
-	position: absolute;
-	top: 0;
-	z-index: 9999;
-	width: 100%;
-	height: 100%;
-	display: none; /* switch to flex to show loading */
-	justify-content: center;
-	align-items: center;
-	background-color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  top: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  display: none; /* switch to flex to show loading */
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
 
-	svg {
-		animation: loading 3s linear infinite;
-	}
+  svg {
+    animation: loading 3s linear infinite;
+  }
 }
 
 @keyframes loading {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
