@@ -1,11 +1,10 @@
-import type { MaterialProfile, ProvelPrintApp } from "@/global";
+import type { ProvelPrintApp } from "@/global";
 
 import {
 	appForm,
 	ipAddressFailure,
 	ipAddressInput,
 	ipAddressSuccess,
-	materialProfileForm,
 	restoreDefaultsButton,
 } from "./htmlElements";
 import { connectToPrinter } from "./sendGCodeFile";

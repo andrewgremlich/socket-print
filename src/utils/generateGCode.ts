@@ -25,7 +25,9 @@ export function generateGCode(
 	for (const pointLevel of pointGatherer) {
 		for (const point of pointLevel) {
 			const flipHeight = flipVerticalAxis(verticalAxis);
-			gcode += `G1 X${point.x.toFixed(2)} Y${point[flipHeight].toFixed(2)} Z${point[verticalAxis].toFixed(2)} F1500\n`;
+			gcode += `G1 X${point.x.toFixed(2)} Y${point[flipHeight].toFixed(
+				2,
+			)} Z${point[verticalAxis].toFixed(2)} F1500\n`;
 		}
 	}
 
@@ -53,17 +55,20 @@ export function generateGCodeFromSlices(
 		estimatedTime = "0h 0m 0s", // Default estimated time
 	} = options;
 
-	const material = window.provelPrintStore.material || "Unknown";
-	const nozzleSize = window.provelPrintStore.nozzleSize || "0.4";
-	const cupSize = window.provelPrintStore.cupSize || "Unknown";
-	const nozzleTemp = window.provelPrintStore.nozzleTemp || "195";
+	const {
+		activeMaterialProfile = "Unknown",
+		nozzleSize = "0.4",
+		cupSize = "Unknown",
+	} = window.provelPrintStore;
+	const nozzleTemp =
+		window.materialProfiles[activeMaterialProfile].nozzleTemp ?? "195";
 
 	const gcode: string[] = [];
 	let e = 0; // Track extrusion distance
 	let currentZ = 0; // Track current Z height
 
 	// Add custom headers
-	gcode.push(`;customInfo material="${material}"`);
+	gcode.push(`;customInfo material="${activeMaterialProfile}"`);
 	gcode.push(`;customInfo nozzleSize="${nozzleSize}mm"`);
 	gcode.push(`;customInfo cupSize="${cupSize}"`);
 	gcode.push(`;customInfo nozzleTemp="${nozzleTemp}C"`);
@@ -90,7 +95,9 @@ export function generateGCodeFromSlices(
 			// Move to the starting point of the contour without extruding
 			const start = contour[0];
 			gcode.push(
-				`G0 X${start.x.toFixed(2)} Y${start.y.toFixed(2)} F${feedrate} ; Move to start of contour`,
+				`G0 X${start.x.toFixed(2)} Y${start.y.toFixed(
+					2,
+				)} F${feedrate} ; Move to start of contour`,
 			);
 
 			// Extrude along the rest of the points in the contour
