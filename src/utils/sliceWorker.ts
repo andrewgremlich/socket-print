@@ -103,11 +103,20 @@ self.onmessage = (event: MessageEvent<SliceWorker>) => {
 
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
+
+				// if (pointGatherer.length > 2) {
+				// 	const oneLayerDown = pointGatherer[pointGatherer.length - 1];
+				// 	const lastPoint = oneLayerDown[oneLayerDown.length - 1];
+
+				// 	console.log(lastPoint, intersection);
+				// }
+
 				pointLevel.push(intersection);
 			} else {
 				console.error("No intersection found for this ray.");
 			}
 		}
+
 		pointGatherer.push(pointLevel);
 	}
 
