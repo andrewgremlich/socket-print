@@ -31,7 +31,7 @@ const materialProfiles = {
 
 window.addEventListener("DOMContentLoaded", () => {
 	if (localStorage.provelPrintStore) {
-		window.provelPrintStore = JSON.parse(localStorage.provelPrintStore);
+		window.provelPrintStore = JSON.parse(localStorage.provelPrintStore); //TODO: these come in as strings and not numbers
 		window.materialProfiles = JSON.parse(localStorage.materialProfiles);
 
 		loadMainDataForm();

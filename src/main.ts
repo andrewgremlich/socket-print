@@ -123,7 +123,7 @@ generateGCodeButton.addEventListener("click", () => {
 		worker.postMessage({
 			positions: evaluateGeometries.mesh.geometry.attributes.position.array,
 			verticalAxis: "y",
-			layerHeight: window.provelPrintStore.layerHeight as number,
+			layerHeight: Number(window.provelPrintStore.layerHeight),
 			segments: 100,
 			incrementHeight: true,
 		});

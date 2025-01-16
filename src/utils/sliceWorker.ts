@@ -27,6 +27,8 @@ self.onmessage = (event: MessageEvent<SliceWorker>) => {
 	const { positions, verticalAxis, layerHeight, segments, incrementHeight } =
 		event.data;
 
+	console.log("event data", event.data);
+
 	if (layerHeight <= 0) {
 		throw new Error("Layer height must be greater than 0.");
 	}
