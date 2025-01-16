@@ -49,7 +49,6 @@ input {
 	border: 3px solid #ccc;
 	border-radius: 8px;
 	padding: 4px 0px;
-	margin: 10px 0px;
 	cursor: pointer;
 
 	&:has(:disabled),
@@ -155,7 +154,7 @@ svg {
 		z-index: 9999;
 		background-color: #444;
 
-		padding: 10px 10px 0 10px;
+		padding: 10px;
 		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 		border-radius: 5px;
 		position: absolute;
@@ -170,7 +169,6 @@ svg {
 	color: #fff;
 	font-size: 16px;
 	padding: 5px 10px;
-	margin-bottom: 5px;
 
 	&:hover {
 		text-decoration: underline;
