@@ -12,7 +12,7 @@
 
   <main>
     <nav id="menuBar">
-      <h1>ProvelPrint: Alpha-v2.5.6</h1>
+      <h1>ProvelPrint: Alpha-v2.6.0</h1>
 
       <div class="menuBarButtonContainer">
         <button class="menuBarButton">File</button>
@@ -52,7 +52,8 @@
         <p>IP Address and Port</p>
 
         <div id="ipAddress">
-          <input type="text" id="ipAddressInput" name="ipAddress" value="" placeholder="192.168.X.XXX">
+          <input style="padding-left: 5px; margin: 10px;" type="text" id="ipAddressInput" name="ipAddress" value=""
+            placeholder="192.168.X.XXX">
           <svg class="hide" id="ipAddressSuccess" title="Successful connection to printer"
             xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -103,28 +104,18 @@
         <label for="activeMaterialProfile">Material</label>
 
         <select name="activeMaterialProfile" id="activeMaterialProfile" name="activeMaterialProfile">
-          <option value="cp1">CP 1</option>
         </select>
       </form>
 
-      <form id="materialProfileForm">
-        <label>Nozzle Temp in C</label>
+      <div id="materialProfileDisplay">
+        <label>Nozzle Temp in C: </label><label id="nozzleTempDisplay">200</label>
 
-        <input class="displayInput" type="number" value="200" name="nozzleTemp" id="nozzleTemp">
+        <label>Cup Temp in C: </label><label id="cupTempDisplay">130</label>
 
-        <label>Cup Temp in C</label>
+        <label>Shrink Factor %: </label><label id="shrinkFactorDisplay">2.6</label>
 
-        <input class="displayInput" type="number" value="130" name="cupTemp" id="cupTemp">
-
-        <label>Shrink Factor %</label>
-
-        <input class="displayInput" type="number" step="0.1" value="2.6" name="shrinkFactor"
-          id="shrinkFactor">
-
-        <label>Output Factor</label>
-
-        <input class="displayInput" type="number" value="1" name="outputFactor" id="outputFactor">
-      </form>
+        <label>Output Factor: </label><label id="outputFactorDisplay">1</label>
+      </div>
 
       <div id="printActions">
         <p style="margin: 10px 0px;">Print Time <span id="printTimeOutput"></span></p>
@@ -172,23 +163,22 @@
     </div>
   </div>
 
-  <div id="makeNewMaterialProfile">
-    <!-- <div id="makeNewMaterialProfile" class="hide"> -->
+  <div id="makeNewMaterialProfile" class="hide">
     <form>
       <label for="materialProfileName">Material Profile Name</label>
       <input type="text" id="materialProfileName" name="materialProfileName" required>
 
       <label for="newNozzleTemp">Nozzle Temp in C</label>
-      <input type="number" value="200" name="newNozzleTemp" id="newNozzleTemp" required>
+      <input type="number" value="200" name="nozzleTemp" id="nozzleTemp" required>
 
       <label for="newCupTemp">Cup Temp in C</label>
-      <input type="number" value="130" name="newCupTemp" id="newCupTemp" required>
+      <input type="number" value="130" name="cupTemp" id="cupTemp" required>
 
       <label for="newShrinkFactor">Shrink Factor %</label>
-      <input type="number" step="0.1" value="2.6" name="newShrinkFactor" id="newShrinkFactor" required>
+      <input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required>
 
       <label for="newOutputFactor">Output Factor</label>
-      <input type="number" value="1" name="newOutputFactor" id="newOutputFactor" required>
+      <input type="number" value="1" name="outputFactor" id="outputFactor" required>
 
       <input type="submit" value="Save" class="button" id="saveMaterialProfile">
       <input type="button" value="Cancel" class="button" id="cancelMaterialProfile">

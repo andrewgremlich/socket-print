@@ -1,5 +1,8 @@
 import { registerSW } from "virtual:pwa-register";
+import type { MaterialProfile } from "@/global";
+
 import {
+	activeMaterialProfileSelect,
 	cancelMaterialProfileButton,
 	editMaterialProfiles,
 	ipAddressFailure,
@@ -11,6 +14,7 @@ import {
 	newMaterialProfileForm,
 	printerFileInput,
 } from "./htmlElements";
+import { appendMaterialProfiles } from "./materialProfiles";
 import { connectToPrinter, sendGCodeFile } from "./sendGCodeFile";
 
 registerSW({
@@ -69,11 +73,29 @@ ipAddressInput.addEventListener("change", () => {
 		});
 });
 
-newMaterialProfileForm.addEventListener("submit", (evt) => {
-	evt.preventDefault();
-	const formData = new FormData(newMaterialProfileForm);
-	const data = Object.fromEntries(formData.entries());
-	console.log(data);
+newMaterialProfileForm.addEventListener("submit", (event) => {
+	event.preventDefault();
+
+	const materialProfileDisplay = new FormData(newMaterialProfileForm);
+	const { materialProfileName, ...rest } = Object.fromEntries(
+		materialProfileDisplay.entries(),
+	) as unknown as MaterialProfile & { materialProfileName: string };
+
+	const numericRest = Object.fromEntries(
+		Object.entries(rest).map(([key, value]) => [key, Number(value)]),
+	) as unknown as MaterialProfile;
+
+	window.materialProfiles = {
+		...window.materialProfiles,
+		[materialProfileName]: numericRest,
+	};
+
+	localStorage.materialProfiles = JSON.stringify(window.materialProfiles);
+
+	appendMaterialProfiles();
+
+	newMaterialProfileForm.reset();
+	newMaterialProfile.classList.toggle("hide");
 });
 
 editMaterialProfiles.addEventListener("click", () => {
@@ -83,4 +105,21 @@ editMaterialProfiles.addEventListener("click", () => {
 cancelMaterialProfileButton.addEventListener("click", () => {
 	newMaterialProfileForm.reset();
 	newMaterialProfile.classList.toggle("hide");
+});
+
+activeMaterialProfileSelect.addEventListener("change", (event) => {
+	const selectedProfile =
+		window.materialProfiles[(event.target as HTMLSelectElement).value];
+
+	console.log(selectedProfile);
+
+	for (const [key, value] of Object.entries(selectedProfile)) {
+		const display = document.querySelector(`#${key}Display`);
+
+		if (!display) {
+			throw new Error(`No display found for ${key}`);
+		}
+
+		display.innerHTML = String(value);
+	}
 });

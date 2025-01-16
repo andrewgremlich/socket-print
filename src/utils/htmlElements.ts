@@ -38,6 +38,10 @@ export const ipAddressInput = document.getElementById(
 	"ipAddressInput",
 ) as HTMLInputElement;
 
+export const activeMaterialProfileSelect = document.getElementById(
+	"activeMaterialProfile",
+) as HTMLSelectElement;
+
 export const progressBar = document.getElementById(
 	"progressBar",
 ) as HTMLProgressElement;
@@ -90,6 +94,6 @@ export const appForm = document.getElementById(
 export const newMaterialProfileForm = newMaterialProfile.querySelector(
 	"form",
 ) as HTMLFormElement;
-export const materialProfileForm = document.getElementById(
-	"materialProfileForm",
+export const materialProfileDisplay = document.getElementById(
+	"materialProfileDisplay",
 ) as HTMLFormElement;

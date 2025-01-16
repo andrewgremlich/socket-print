@@ -48,9 +48,8 @@ input {
 	color: #000;
 	border: 3px solid #ccc;
 	border-radius: 8px;
-	padding: 4px 12px;
-	margin: 10px 10px;
-	width: 150px;
+	padding: 4px 0px;
+	margin: 10px 0px;
 	cursor: pointer;
 
 	&:has(:disabled),
@@ -80,7 +79,6 @@ select {
 	border: 3px solid #ccc;
 	border-radius: 8px;
 	padding: 4px 12px;
-	margin: 10px 10px;
 	width: 150px;
 	cursor: pointer;
 
@@ -119,7 +117,7 @@ svg {
 	border-radius: 8px;
 	cursor: pointer;
 	padding: 4px 12px;
-	margin: 10px 10px;
+	margin: 10px 0px;
 	width: 150px;
 
 	&:has(input[disabled]),
@@ -211,11 +209,13 @@ svg {
 
 	& #customizations,
 	& #printActions,
-	& #materialProfileForm {
+	& #materialProfileDisplay {
 		display: grid;
+		row-gap: 20px;
 		align-items: center;
 		justify-content: center;
 		grid-template-columns: 1fr 1fr;
+		margin-bottom: 20px;
 	}
 
 	& #ipAddress {
@@ -263,7 +263,6 @@ svg {
 }
 
 #makeNewMaterialProfile {
-	display: flex;
 	position: absolute;
 	z-index: 9999;
 	bottom: 10px;
@@ -275,13 +274,20 @@ svg {
 
 	& > form {
 		display: grid;
-		grid-gap: 10px;
+		row-gap: 5px;
+		column-gap: 50px;
 		grid-template-columns: 1fr 1fr;
 		align-items: center;
 
 		& > * {
 			grid-column-start: span 1;
 		}
+	}
+}
+
+#editSocket {
+	& input[type="button"] {
+		margin-right: 10px;
 	}
 }
 

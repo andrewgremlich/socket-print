@@ -7,8 +7,9 @@ import {
 	ipAddressSuccess,
 	restoreDefaultsButton,
 } from "./htmlElements";
+import { appendMaterialProfiles } from "./materialProfiles";
 import { connectToPrinter } from "./sendGCodeFile";
-import { isValidIpAddress, loadDataIntoDom } from "./storeFunctions";
+import { isValidIpAddress, loadMainDataForm } from "./storeFunctions";
 
 const defaultStore: ProvelPrintApp = {
 	ipAddress: "",
@@ -33,7 +34,7 @@ window.addEventListener("DOMContentLoaded", () => {
 		window.provelPrintStore = JSON.parse(localStorage.provelPrintStore);
 		window.materialProfiles = JSON.parse(localStorage.materialProfiles);
 
-		loadDataIntoDom();
+		loadMainDataForm();
 
 		const validIpAddress = isValidIpAddress(
 			window.provelPrintStore.ipAddress as string,
@@ -51,21 +52,30 @@ window.addEventListener("DOMContentLoaded", () => {
 				});
 		}
 	}
-
 	if (!window.provelPrintStore) {
 		window.provelPrintStore = defaultStore;
+	}
+
+	if (localStorage.materialProfiles) {
+		window.materialProfiles = JSON.parse(localStorage.materialProfiles);
+	}
+
+	if (!window.materialProfiles) {
 		window.materialProfiles = materialProfiles;
 	}
+
+	appendMaterialProfiles();
 });
 
 restoreDefaultsButton.addEventListener("click", () => {
 	window.provelPrintStore = defaultStore;
-	window.materialProfiles = materialProfiles;
-
 	localStorage.provelPrintStore = JSON.stringify(window.provelPrintStore);
-	localStorage.materialProfiles = JSON.stringify(window.materialProfiles);
 
-	loadDataIntoDom();
+	window.materialProfiles = materialProfiles;
+	localStorage.materialProfiles = JSON.stringify(window.materialProfiles);
+	appendMaterialProfiles();
+
+	loadMainDataForm();
 });
 
 ipAddressInput.addEventListener("keyup", (event) => {

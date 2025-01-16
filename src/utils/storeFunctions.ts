@@ -1,5 +1,5 @@
 import type { ProvelPrintApp } from "@/global";
-import { appForm, materialProfileForm } from "./htmlElements";
+import { appForm } from "./htmlElements";
 
 export function isValidIpAddress(ipAddress: string) {
 	const splitValue = ipAddress.split(".");
@@ -9,11 +9,9 @@ export function isValidIpAddress(ipAddress: string) {
 	);
 }
 
-export function loadDataIntoDom() {
+export function loadMainDataForm() {
 	const store = window.provelPrintStore;
-	const profiles = window.materialProfiles;
 	const storeForm = new FormData(appForm);
-	const materialProfilesForm = new FormData(materialProfileForm);
 
 	for (const [key, _value] of storeForm.entries()) {
 		const input = appForm.querySelector(
@@ -22,16 +20,6 @@ export function loadDataIntoDom() {
 
 		if (input) {
 			input.value = `${store[key as keyof ProvelPrintApp]}`;
-		}
-	}
-
-	for (const [key, _value] of materialProfilesForm.entries()) {
-		const input = materialProfileForm.querySelector(
-			`[name="${key}"]`,
-		) as HTMLInputElement | null;
-
-		if (input) {
-			input.value = `${profiles[key]}`;
 		}
 	}
 }
