@@ -1,4 +1,3 @@
-import type { Application } from "@/classes/Application";
 import { Vector3 } from "three";
 
 export type RawPoint = { x: number; y: number; z: number };
@@ -6,7 +5,6 @@ export type RawPoint = { x: number; y: number; z: number };
 //TODO: I might need to double check what the direction of the vector is...
 export function blendMerge(
 	points: RawPoint[][],
-	app: Application,
 	center: Vector3,
 	overlapTolerance = 0.5,
 ): RawPoint[][] {
@@ -46,6 +44,8 @@ export function blendMerge(
 				const adjustmentFactor =
 					(distanceToCenterFromLowerPoint - overlapTolerance) /
 					distanceToCenterFromCurrentPoint;
+				// reference https://chatgpt.com/share/678c4b5b-eacc-800d-91e5-f4236fe08c33
+				// parametric equation of a line
 				const newPointWithScalar = {
 					x: center.x + lowerPoint.x * adjustmentFactor,
 					y: lowerPoint.y,
