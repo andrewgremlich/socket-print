@@ -23,11 +23,10 @@ type SliceWorker = {
 	incrementHeight: boolean;
 };
 
+// TODO: this does from bottom to top. perhaps look at doing it from top to bottom?
 self.onmessage = (event: MessageEvent<SliceWorker>) => {
 	const { positions, verticalAxis, layerHeight, segments, incrementHeight } =
 		event.data;
-
-	console.log("event data", event.data);
 
 	if (layerHeight <= 0) {
 		throw new Error("Layer height must be greater than 0.");
@@ -105,13 +104,6 @@ self.onmessage = (event: MessageEvent<SliceWorker>) => {
 
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
-
-				// if (pointGatherer.length > 2) {
-				// 	const oneLayerDown = pointGatherer[pointGatherer.length - 1];
-				// 	const lastPoint = oneLayerDown[oneLayerDown.length - 1];
-
-				// 	console.log(lastPoint, intersection);
-				// }
 
 				pointLevel.push(intersection);
 			} else {

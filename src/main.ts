@@ -20,6 +20,7 @@ import {
 	progressBarLabel,
 } from "@/utils/htmlElements";
 import sliceWorker from "@/utils/sliceWorker?worker";
+import { blendMerge } from "./utils/blendMerge";
 
 const app = new Application();
 
@@ -133,12 +134,19 @@ generateGCodeButton.addEventListener("click", () => {
 
 			if (type === "progress") {
 				const progress = Math.ceil(data * 100);
+
 				progressBarLabel.textContent = `${progress}%`;
 				progressBar.value = progress;
 			} else if (type === "done") {
-				const points = data;
+				const blendedMerge = blendMerge(
+					data,
+					app,
+					evaluateGeometries.center,
+					0.125,
+				);
+				const gcode = generateGCode(blendedMerge);
 
-				downloadGCodeFile(generateGCode(points), "file.gcode");
+				downloadGCodeFile(gcode, "file.gcode");
 
 				progressBarDiv.style.display = "none";
 				generateGCodeButton.disabled = false;

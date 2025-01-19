@@ -1,4 +1,5 @@
 import type { Vector3 } from "three";
+import type { RawPoint } from "./blendMerge";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
@@ -15,7 +16,7 @@ interface GCodeOptions {
 }
 
 export function generateGCode(
-	pointGatherer: Vector3[][],
+	pointGatherer: RawPoint[][],
 	verticalAxis: "y" | "z" = "y",
 ): string {
 	let gcode = "G21 ; Set units to millimeters\n";

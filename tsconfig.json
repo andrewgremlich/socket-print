@@ -22,9 +22,8 @@
     "typeRoots": ["./src/types/", "./point-control/pkg"],
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"],
-      "@pointControl/*": ["./point-control/pkg/*"],
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src"]
 }
