@@ -102,6 +102,8 @@ self.onmessage = (event: MessageEvent<SliceWorker>) => {
 
 			const intersects = raycaster.intersectObject(mesh);
 
+			//TODO: I'll need to augment the intersection to accomodate for shrink.
+
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
 

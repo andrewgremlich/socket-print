@@ -1,6 +1,8 @@
+import { Vector3 } from "three";
 import { expect, test } from "vitest";
 
-import { Vector3 } from "three";
+import type { Application } from "@/classes/Application";
+
 import { blendMerge } from "./blendMerge";
 
 test("blendMerge adjusts points correctly based on overlapTolerance", () => {
@@ -16,7 +18,12 @@ test("blendMerge adjusts points correctly based on overlapTolerance", () => {
 	];
 	const overlapTolerance = 0.125;
 
-	const result = blendMerge(points, new Vector3(0, 0, 0), overlapTolerance);
+	const result = blendMerge(
+		points,
+		new Vector3(0, 0, 0),
+		{} as Application,
+		overlapTolerance,
+	);
 
 	console.log(result);
 

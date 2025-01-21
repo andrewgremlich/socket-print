@@ -138,7 +138,12 @@ generateGCodeButton.addEventListener("click", () => {
 				progressBarLabel.textContent = `${progress}%`;
 				progressBar.value = progress;
 			} else if (type === "done") {
-				const blendedMerge = blendMerge(data, evaluateGeometries.center, 0.025);
+				const blendedMerge = blendMerge(
+					data,
+					evaluateGeometries.center,
+					app,
+					1,
+				);
 				const gcode = generateGCode(blendedMerge);
 
 				downloadGCodeFile(gcode, "file.gcode");

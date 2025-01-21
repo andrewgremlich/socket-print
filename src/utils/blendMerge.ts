@@ -1,11 +1,15 @@
 import { Vector3 } from "three";
 
+import type { Application } from "@/classes/Application";
+import { DebugPoint } from "@/classes/DebugPoint";
+
 export type RawPoint = { x: number; y: number; z: number };
 
 //TODO: I might need to double check what the direction of the vector is...
 export function blendMerge(
 	points: RawPoint[][],
 	center: Vector3,
+	app: Application,
 	overlapTolerance = 0.5,
 ): RawPoint[][] {
 	const allLevels: RawPoint[][] = [...points];
@@ -41,9 +45,7 @@ export function blendMerge(
 				distanceToCenterFromCurrentPoint - distanceToCenterFromLowerPoint >
 				overlapTolerance
 			) {
-				const adjustmentFactor =
-					(distanceToCenterFromLowerPoint - overlapTolerance) /
-					distanceToCenterFromCurrentPoint;
+				const adjustmentFactor = 0.99;
 				// reference https://chatgpt.com/share/678c4b5b-eacc-800d-91e5-f4236fe08c33
 				// parametric equation of a line
 				const newPointWithScalar = {
@@ -54,10 +56,24 @@ export function blendMerge(
 
 				lowerLevel[j] = newPointWithScalar;
 
-				console.log({
-					lowerPoint,
-					newPointWithScalar,
-				});
+				if (import.meta.env.MODE === "development") {
+					console.log({
+						distanceToCenterFromCurrentPoint,
+						distanceToCenterFromLowerPoint,
+						lowerPoint,
+						newPointWithScalar,
+						currentPoint,
+					});
+
+					const debugPoint = new DebugPoint(
+						new Vector3(
+							newPointWithScalar.x,
+							newPointWithScalar.y,
+							newPointWithScalar.z,
+						),
+					);
+					app.addToScene(debugPoint.mesh);
+				}
 			}
 		}
 	}
