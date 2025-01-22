@@ -5,6 +5,11 @@ import { DebugPoint } from "@/classes/DebugPoint";
 
 export type RawPoint = { x: number; y: number; z: number };
 
+// Utility to calculate distance along the X-Z plane
+function calculateHorizontalDistance(point: Vector3): number {
+	return point.distanceTo(new Vector3(0, point.y, 0));
+}
+
 //TODO: I might need to double check what the direction of the vector is...
 export function blendMerge(
 	points: RawPoint[][],
@@ -34,10 +39,10 @@ export function blendMerge(
 				lowerLevel[j].z,
 			);
 
-			const distanceToCenterFromCurrentPoint = currentPoint.distanceTo(
+			const distanceToCenterFromCurrentPoint = calculateHorizontalDistance(
 				new Vector3(0, currentPoint.y, 0),
 			);
-			const distanceToCenterFromLowerPoint = lowerPoint.distanceTo(
+			const distanceToCenterFromLowerPoint = calculateHorizontalDistance(
 				new Vector3(0, lowerPoint.y, 0),
 			);
 
@@ -45,13 +50,13 @@ export function blendMerge(
 				distanceToCenterFromCurrentPoint - distanceToCenterFromLowerPoint >
 				overlapTolerance
 			) {
-				const adjustmentFactor = 0.99;
+				const adjustmentFactor = 0.925;
 				// reference https://chatgpt.com/share/678c4b5b-eacc-800d-91e5-f4236fe08c33
 				// parametric equation of a line
 				const newPointWithScalar = {
-					x: center.x + lowerPoint.x * adjustmentFactor,
+					x: center.x + currentPoint.x * adjustmentFactor, // TODO: Try just currentPoint.x * adjustmentFactor => This should come out lower than the currentPoint
 					y: lowerPoint.y,
-					z: center.z + lowerPoint.z * adjustmentFactor,
+					z: center.z + currentPoint.z * adjustmentFactor,
 				};
 
 				lowerLevel[j] = newPointWithScalar;
@@ -62,7 +67,11 @@ export function blendMerge(
 						distanceToCenterFromLowerPoint,
 						lowerPoint,
 						newPointWithScalar,
-						currentPoint,
+						newLowerPointDistanceFromCenter: new Vector3(
+							newPointWithScalar.x,
+							newPointWithScalar.y,
+							newPointWithScalar.z,
+						).distanceTo(new Vector3(0, lowerPoint.y, 0)),
 					});
 
 					const debugPoint = new DebugPoint(
