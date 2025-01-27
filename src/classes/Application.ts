@@ -6,6 +6,7 @@ import {
 	type Object3D,
 	PerspectiveCamera,
 	Scene,
+	Vector3,
 	WebGLRenderer,
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";

@@ -26,11 +26,11 @@ import { AppObject } from "./AppObject";
 type SocketCallback = (params: {
 	mesh: Mesh;
 	maxDimension: number;
-	center: Vector3;
+	boundingBox: Box3;
 }) => void;
 
 export class Socket extends AppObject {
-	adjustmentHeightForCup = 40;
+	adjustmentHeightForCup = 10;
 	socketCallback: SocketCallback;
 	boundingBox?: Box3;
 	center?: Vector3;
@@ -113,7 +113,7 @@ export class Socket extends AppObject {
 			this.socketCallback({
 				mesh,
 				maxDimension,
-				center: this.center,
+				boundingBox,
 			});
 
 			transversalRotate.disabled = false;

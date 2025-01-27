@@ -62,18 +62,6 @@ export function blendMerge(
 				lowerLevel[j] = newPointWithScalar;
 
 				if (import.meta.env.MODE === "development") {
-					console.log({
-						distanceToCenterFromCurrentPoint,
-						distanceToCenterFromLowerPoint,
-						lowerPoint,
-						newPointWithScalar,
-						newLowerPointDistanceFromCenter: new Vector3(
-							newPointWithScalar.x,
-							newPointWithScalar.y,
-							newPointWithScalar.z,
-						).distanceTo(new Vector3(0, lowerPoint.y, 0)),
-					});
-
 					const debugPoint = new DebugPoint(
 						new Vector3(
 							newPointWithScalar.x,

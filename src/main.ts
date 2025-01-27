@@ -40,13 +40,13 @@ if (import.meta.env.MODE === "development") {
 }
 
 const stlModel = new Socket({
-	socketCallback: ({ mesh, maxDimension, center }) => {
+	socketCallback: ({ mesh, maxDimension, boundingBox }) => {
 		if (!distalCup.mesh) {
 			throw new Error("Distal Cup mesh not found");
 		}
 
-		app.camera.position.set(0, 100, maxDimension * 1.5);
-		app.camera.lookAt(new Vector3(center.x, center.y, center.z));
+		app.camera.position.set(0, 200, maxDimension * 1.5);
+		app.controls.target.set(0, 100, 0);
 		app.addToScene(mesh);
 
 		if (!loadingScreen) {
