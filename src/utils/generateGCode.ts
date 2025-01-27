@@ -80,7 +80,7 @@ export function generateGCode(
 		"#End of start gcode sequence for cup print#",
 		"##Spiral vase mode socket print to start immediately following this.",
 		
-		"--------print file in here--------"
+		"--------print file in here--------",
 		
 		"G1 Z5 F5000 ; Lift",
 		"G10 P0 S195 R175",
