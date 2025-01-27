@@ -9,7 +9,7 @@ import {
 } from "./htmlElements";
 import { appendMaterialProfiles } from "./materialProfiles";
 import { connectToPrinter } from "./sendGCodeFile";
-import { isValidIpAddress, loadMainDataForm } from "./storeFunctions";
+import { loadMainDataForm } from "./storeFunctions";
 
 const defaultStore: ProvelPrintApp = {
 	ipAddress: "",
@@ -36,11 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 		loadMainDataForm();
 
-		const validIpAddress = isValidIpAddress(
-			window.provelPrintStore.ipAddress as string,
-		);
-
-		if (validIpAddress && import.meta.env.MODE !== "development") {
+		if (window.provelPrintStore.ipAddress && import.meta.env.MODE !== "development") {
 			connectToPrinter(window.provelPrintStore.ipAddress as string)
 				.then(() => {
 					console.log("successful connection");
@@ -86,9 +82,7 @@ ipAddressInput.addEventListener("keyup", (event) => {
 		return;
 	}
 
-	const validIpAddress = isValidIpAddress(value);
-
-	if (validIpAddress) {
+	if (value) {
 		ipAddressInput.classList.remove("error");
 	} else {
 		ipAddressInput.classList.add("error");
