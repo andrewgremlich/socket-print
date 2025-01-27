@@ -40,7 +40,7 @@ if (import.meta.env.MODE === "development") {
 }
 
 const stlModel = new Socket({
-	socketCallback: ({ mesh, maxDimension, boundingBox }) => {
+	socketCallback: ({ mesh, maxDimension }) => {
 		if (!distalCup.mesh) {
 			throw new Error("Distal Cup mesh not found");
 		}
