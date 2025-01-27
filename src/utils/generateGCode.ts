@@ -26,7 +26,7 @@ export function generateGCode(
 		estimatedTime = "0h 0m 0s", // Default estimated time
 	} = options;
 	const {
-		activeMaterialProfile = "Unknown",
+		activeMaterialProfile = "cp1",
 		nozzleSize = "0.4",
 		cupSize = "Unknown",
 	} = window.provelPrintStore;
