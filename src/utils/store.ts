@@ -36,7 +36,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
 		loadMainDataForm();
 
-		if (window.provelPrintStore.ipAddress && import.meta.env.MODE !== "development") {
+		if (
+			window.provelPrintStore.ipAddress &&
+			import.meta.env.MODE !== "development"
+		) {
 			connectToPrinter(window.provelPrintStore.ipAddress as string)
 				.then(() => {
 					console.log("successful connection");

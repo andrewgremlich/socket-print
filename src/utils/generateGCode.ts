@@ -60,7 +60,7 @@ export function generateGCode(
 		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
 		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
-		
+
 		"##cup heater removal sequence##",
 		"M140 P1 S0 ;cup heater off",
 		"G1 Z70 F1500; Z moves up to pick up cup heater",
@@ -68,7 +68,7 @@ export function generateGCode(
 		"G1 Z17 F1500; Z down to place cup heater on bed",
 		"G1 X90 F1500; X left to disengage cup heater",
 		"G1 Z43 F1500; Z up to CH + 5 for groove fill",
-		
+
 		"##Groove fill",
 		"G1 X50 Y0 F1500 ; Move to start of pre groove fill extrusion",
 		"G1 E15 E300 ; extrude a bit to make up for any ooze",
@@ -76,12 +76,12 @@ export function generateGCode(
 		"G1 E20 E300 ;extruder a bit to prevent a small gap at the start/end.",
 		" ;Extrude in a circle A",
 		"G3 X39 Y0 I-39 J0 E1030 F600 ; Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
-		
+
 		"#End of start gcode sequence for cup print#",
 		"##Spiral vase mode socket print to start immediately following this.",
-		
+
 		"--------print file in here--------",
-		
+
 		"G1 Z5 F5000 ; Lift",
 		"G10 P0 S195 R175",
 		"T0",
