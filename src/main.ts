@@ -21,6 +21,7 @@ import {
 } from "@/utils/htmlElements";
 import sliceWorker from "@/utils/sliceWorker?worker";
 import { blendMerge } from "./utils/blendMerge";
+import { calculatePrintTime } from "./utils/calculatePrintTime";
 
 const app = new Application();
 
@@ -144,7 +145,10 @@ generateGCodeButton.addEventListener("click", () => {
 					app,
 					1,
 				);
-				const gcode = generateGCode(blendedMerge);
+				const printTime = calculatePrintTime(blendedMerge);
+				const gcode = generateGCode(blendedMerge, "y", {
+					estimatedTime: printTime,
+				});
 
 				downloadGCodeFile(gcode, "file.gcode");
 

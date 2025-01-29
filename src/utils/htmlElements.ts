@@ -74,6 +74,9 @@ export const editMaterialProfiles = document.getElementById(
 export const newMaterialProfile = document.getElementById(
 	"makeNewMaterialProfile",
 ) as HTMLDivElement;
+export const estimatedPrintTime = document.getElementById(
+	"estimatedPrintTime",
+) as HTMLParagraphElement;
 
 export const saveMaterialProfileButton = document.getElementById(
 	"saveMaterialProfile",
