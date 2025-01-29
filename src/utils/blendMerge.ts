@@ -10,7 +10,6 @@ function calculateHorizontalDistance(point: Vector3): number {
 	return point.distanceTo(new Vector3(0, point.y, 0));
 }
 
-//TODO: I might need to double check what the direction of the vector is...
 export function blendMerge(
 	points: RawPoint[][],
 	center: Vector3,
@@ -39,22 +38,18 @@ export function blendMerge(
 				lowerLevel[j].z,
 			);
 
-			const distanceToCenterFromCurrentPoint = calculateHorizontalDistance(
-				new Vector3(0, currentPoint.y, 0),
-			);
-			const distanceToCenterFromLowerPoint = calculateHorizontalDistance(
-				new Vector3(0, lowerPoint.y, 0),
-			);
+			const distanceToCenterFromCurrentPoint =
+				calculateHorizontalDistance(currentPoint);
+			const distanceToCenterFromLowerPoint =
+				calculateHorizontalDistance(lowerPoint);
 
 			if (
 				distanceToCenterFromCurrentPoint - distanceToCenterFromLowerPoint >
 				overlapTolerance
 			) {
 				const adjustmentFactor = 0.925;
-				// reference https://chatgpt.com/share/678c4b5b-eacc-800d-91e5-f4236fe08c33
-				// parametric equation of a line
 				const newPointWithScalar = {
-					x: center.x + currentPoint.x * adjustmentFactor, // TODO: Try just currentPoint.x * adjustmentFactor => This should come out lower than the currentPoint
+					x: center.x + currentPoint.x * adjustmentFactor,
 					y: lowerPoint.y,
 					z: center.z + currentPoint.z * adjustmentFactor,
 				};
