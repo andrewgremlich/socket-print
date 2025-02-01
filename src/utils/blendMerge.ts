@@ -1,8 +1,5 @@
 import { Vector3 } from "three";
 
-import type { Application } from "@/classes/Application";
-import { DebugPoint } from "@/classes/DebugPoint";
-
 export type RawPoint = { x: number; y: number; z: number };
 
 // Utility to calculate distance along the X-Z plane
@@ -13,7 +10,6 @@ function calculateHorizontalDistance(point: Vector3): number {
 export function blendMerge(
 	points: RawPoint[][],
 	center: Vector3,
-	app: Application,
 	overlapTolerance = 0.5,
 ): RawPoint[][] {
 	const allLevels: RawPoint[][] = [...points];
@@ -55,17 +51,6 @@ export function blendMerge(
 				};
 
 				lowerLevel[j] = newPointWithScalar;
-
-				if (import.meta.env.MODE === "development") {
-					const debugPoint = new DebugPoint(
-						new Vector3(
-							newPointWithScalar.x,
-							newPointWithScalar.y,
-							newPointWithScalar.z,
-						),
-					);
-					app.addToScene(debugPoint.mesh);
-				}
 			}
 		}
 	}

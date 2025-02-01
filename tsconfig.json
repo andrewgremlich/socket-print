@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
     "useDefineForClassFields": true,
-    "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+    "outDir": "dist",
+    "target": "ESNext",
+    "module": "commonjs",
+    "allowJs": true,
     "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -19,7 +25,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "typeRoots": ["./src/types/", "./point-control/pkg"],
+    "typeRoots": ["./src/"],
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"]

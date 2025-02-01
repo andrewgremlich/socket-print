@@ -1,9 +1,19 @@
 {
   "name": "socket-print",
-  "private": true,
+  "productName": "socket-print",
+  "description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
   "version": "alpha-v2.8.1",
-  "type": "module",
+  "main": ".vite/build/main.js",
+  "author": {
+    "name": "andrewgremlich",
+    "email": "engineering@gremlich.xyz"
+  },
+  "license": "MIT",
   "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
@@ -19,10 +29,22 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@electron-forge/cli": "^7.6.1",
+    "@electron-forge/maker-deb": "^7.6.1",
+    "@electron-forge/maker-rpm": "^7.6.1",
+    "@electron-forge/maker-squirrel": "^7.6.1",
+    "@electron-forge/maker-zip": "^7.6.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.6.1",
+    "@electron-forge/plugin-fuses": "^7.6.1",
+    "@electron-forge/plugin-vite": "^7.6.1",
+    "@electron/fuses": "^1.8.0",
+    "@types/electron-squirrel-startup": "^1.0.2",
     "@types/node": "^22.10.2",
     "@types/three": "^0.171.0",
+    "electron": "34.0.2",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.11",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "vite": "^6.0.6",
     "vite-plugin-pwa": "^0.21.1",
@@ -32,6 +54,7 @@
   },
   "dependencies": {
     "crc-32": "^1.2.2",
+    "electron-squirrel-startup": "^1.0.1",
     "three": "^0.171.0",
     "three-csg-ts": "^3.2.0",
     "three-mesh-bvh": "^0.8.3"

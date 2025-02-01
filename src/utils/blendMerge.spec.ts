@@ -18,12 +18,7 @@ test("blendMerge adjusts points correctly based on overlapTolerance", () => {
 	];
 	const overlapTolerance = 0.125;
 
-	const result = blendMerge(
-		points,
-		new Vector3(0, 0, 0),
-		{} as Application,
-		overlapTolerance,
-	);
+	const result = blendMerge(points, new Vector3(0, 0, 0), overlapTolerance);
 
 	console.log(result);
 
