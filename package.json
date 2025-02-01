@@ -2,7 +2,7 @@
   "name": "socket-print",
   "productName": "socket-print",
   "description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
-  "version": "alpha-v2.8.1",
+  "version": "alpha-v3.0.0",
   "main": ".vite/build/main.js",
   "author": {
     "name": "andrewgremlich",
@@ -37,6 +37,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.6.1",
     "@electron-forge/plugin-fuses": "^7.6.1",
     "@electron-forge/plugin-vite": "^7.6.1",
+    "@electron-forge/publisher-github": "^7.6.1",
     "@electron/fuses": "^1.8.0",
     "@types/electron-squirrel-startup": "^1.0.2",
     "@types/node": "^22.10.2",
@@ -57,6 +58,7 @@
     "electron-squirrel-startup": "^1.0.1",
     "three": "^0.171.0",
     "three-csg-ts": "^3.2.0",
-    "three-mesh-bvh": "^0.8.3"
+    "three-mesh-bvh": "^0.8.3",
+    "update-electron-app": "^3.1.1"
   }
 }
