@@ -1,8 +1,6 @@
 import { Vector3 } from "three";
 import { expect, test } from "vitest";
 
-import type { Application } from "@/classes/Application";
-
 import { blendMerge } from "./blendMerge";
 
 test("blendMerge adjusts points correctly based on overlapTolerance", () => {

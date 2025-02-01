@@ -1,4 +1,3 @@
-import { registerSW } from "virtual:pwa-register";
 import type { MaterialProfile } from "@/global";
 
 import {
@@ -16,15 +15,6 @@ import {
 } from "./htmlElements";
 import { appendMaterialProfiles } from "./materialProfiles";
 import { connectToPrinter, sendGCodeFile } from "./sendGCodeFile";
-
-registerSW({
-	onNeedRefresh() {
-		console.log("needs refresh");
-	},
-	onOfflineReady() {
-		console.log("offline ready");
-	},
-});
 
 menuBar.addEventListener("click", (evt) => {
 	const target = evt.target as HTMLElement;
