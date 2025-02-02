@@ -18,6 +18,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "dev": "vite",
+    "dev:web": "vite --config vite.renderer.config.ts",
     "build": "vite build --config vite.renderer.config.ts",
     "preview": "vite preview",
     "prepare": "husky",
@@ -31,8 +32,7 @@
       "npm run check"
     ]
   },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+  "optionalDependencies": {
     "@electron-forge/cli": "^7.6.1",
     "@electron-forge/maker-deb": "^7.6.1",
     "@electron-forge/maker-rpm": "^7.6.1",
@@ -43,10 +43,15 @@
     "@electron-forge/plugin-vite": "^7.6.1",
     "@electron-forge/publisher-github": "^7.6.1",
     "@electron/fuses": "^1.8.0",
-    "@types/electron-squirrel-startup": "^1.0.2",
+    "electron": "34.0.2",
+    "electron-squirrel-startup": "^1.0.1",
+    "update-electron-app": "^3.1.1",
+    "@types/electron-squirrel-startup": "^1.0.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.10.2",
     "@types/three": "^0.171.0",
-    "electron": "34.0.2",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.11",
     "rimraf": "^6.0.1",
@@ -59,10 +64,8 @@
   },
   "dependencies": {
     "crc-32": "^1.2.2",
-    "electron-squirrel-startup": "^1.0.1",
     "three": "^0.171.0",
     "three-csg-ts": "^3.2.0",
-    "three-mesh-bvh": "^0.8.3",
-    "update-electron-app": "^3.1.1"
+    "three-mesh-bvh": "^0.8.3"
   }
 }
