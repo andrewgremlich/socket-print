@@ -18,8 +18,6 @@ test("blendMerge adjusts points correctly based on overlapTolerance", () => {
 
 	const result = blendMerge(points, new Vector3(0, 0, 0), overlapTolerance);
 
-	console.log(result);
-
 	// Check lower is not higher than upper
 	expect(result[0][0].x).toBeLessThanOrEqual(result[1][0].x);
 	expect(result[0][0].z).toBeLessThanOrEqual(result[1][0].z);

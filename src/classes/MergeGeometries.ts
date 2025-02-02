@@ -15,8 +15,6 @@ export class MergeGeometries extends AppObject {
 
 		const mergeableCylinder = cylinder.toMergeCompatible();
 
-		console.log(mergeableCylinder, stlModel.mesh.geometry);
-
 		const mergedGeometry = BufferGeometryUtils.mergeGeometries([
 			mergeableCylinder,
 			stlModel.mesh.geometry,

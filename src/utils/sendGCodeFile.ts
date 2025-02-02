@@ -87,10 +87,7 @@ export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 		await connectToPrinter(window.provelPrintStore.ipAddress as string);
 
 		const crc = await calculateCRC32(binaryData);
-		console.log(`CRC32 Checksum: ${crc}`);
-
 		const crcHex = decimalToHex(crc);
-		console.log(`CRC32 Checksum (Hex): ${crcHex}`);
 
 		const response = await fetch(
 			`http://${

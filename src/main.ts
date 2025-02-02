@@ -13,8 +13,8 @@ updateElectronApp();
 const createWindow = () => {
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
-		width: 1800,
-		height: 1000,
+		width: 1200,
+		height: 1800,
 		webPreferences: {
 			preload: path.join(__dirname, "preload.js"),
 		},
@@ -23,14 +23,16 @@ const createWindow = () => {
 	// and load the index.html of the app.
 	if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
 		mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+
+		// Open the DevTools.
+		mainWindow.webContents.openDevTools({
+			mode: "bottom",
+		});
 	} else {
 		mainWindow.loadFile(
 			path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
 		);
 	}
-
-	// Open the DevTools.
-	mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished

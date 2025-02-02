@@ -54,7 +54,6 @@ printerFileInput.addEventListener("change", async () => {
 ipAddressInput.addEventListener("change", () => {
 	connectToPrinter(ipAddressInput.value)
 		.then(() => {
-			console.log("successful connection");
 			ipAddressFailure.classList.toggle("hide");
 			ipAddressSuccess.classList.toggle("hide");
 		})
@@ -100,8 +99,6 @@ cancelMaterialProfileButton.addEventListener("click", () => {
 activeMaterialProfileSelect.addEventListener("change", (event) => {
 	const selectedProfile =
 		window.materialProfiles[(event.target as HTMLSelectElement).value];
-
-	console.log(selectedProfile);
 
 	for (const [key, value] of Object.entries(selectedProfile)) {
 		const display = document.querySelector(`#${key}Display`);

@@ -1,6 +1,6 @@
 {
   "name": "socket-print",
-  "productName": "socket-print",
+  "productName": "Provel Print",
   "description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
   "version": "alpha-v3.0.0",
   "main": ".vite/build/main.js",
@@ -9,6 +9,9 @@
     "email": "engineering@gremlich.xyz"
   },
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/andrewgremlich/socket-print"
+  },
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -20,7 +23,8 @@
     "prepare": "husky",
     "test": "vitest src/ --config ./vite.config.ts",
     "type-check": "tsc --noEmit",
-    "check": "biome check --write ./src"
+    "check": "biome check --write ./src",
+    "clean": "rimraf ./dist ./.vite ./out"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
@@ -45,10 +49,10 @@
     "electron": "34.0.2",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.11",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "vite": "^6.0.6",
-    "vite-plugin-pwa": "^0.21.1",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.2"

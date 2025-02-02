@@ -12,13 +12,14 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 import { ensureUV } from "@/utils/ensureUV";
 import {
 	coronalRotate,
-	elevateVertical,
+	depthTranslate,
+	horizontalTranslate,
 	loadingScreen,
-	lowerVertical,
 	mergeMeshes,
 	sagittalRotate,
 	stlFileInput,
 	transversalRotate,
+	verticalTranslate,
 } from "@/utils/htmlElements";
 import { removeDuplicateVertices } from "@/utils/removeDups";
 import { AppObject } from "./AppObject";
@@ -49,8 +50,9 @@ export class Socket extends AppObject {
 		transversalRotate?.addEventListener("click", this.transverseRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
 		coronalRotate?.addEventListener("click", this.coronalRotate90);
-		elevateVertical?.addEventListener("click", this.elevateVertical);
-		lowerVertical?.addEventListener("click", this.lowerVertical);
+		verticalTranslate?.addEventListener("input", this.verticalChange);
+		horizontalTranslate?.addEventListener("input", this.horizontalChange);
+		depthTranslate?.addEventListener("input", this.depthChange);
 	}
 
 	updateMatrixWorld = () => {
@@ -64,6 +66,7 @@ export class Socket extends AppObject {
 
 			this.mesh.geometry.computeVertexNormals();
 			this.mesh.geometry.computeBoundingBox();
+			this.mesh.geometry.computeBoundingSphere();
 		}
 	};
 
@@ -87,9 +90,6 @@ export class Socket extends AppObject {
 
 			// convert Z - Y
 			geometry.rotateX(-Math.PI / 2);
-			geometry.computeBoundingBox();
-			geometry.computeBoundingSphere();
-			geometry.computeVertexNormals();
 			ensureUV(geometry);
 
 			const material = new MeshStandardMaterial({
@@ -98,31 +98,29 @@ export class Socket extends AppObject {
 			});
 			const mesh = new Mesh(geometry, material);
 
-			const boundingBox = new Box3().setFromObject(mesh);
-			const size = boundingBox.getSize(new Vector3());
-			const maxDimension = Math.max(size.x, size.y, size.z);
-
 			this.mesh = mesh;
-			this.boundingBox = boundingBox;
-			this.mesh.position.set(0, size.y / 2 + this.adjustmentHeightForCup, 0);
-			this.center = boundingBox.getCenter(new Vector3());
-			this.size = size;
+			this.computeBoundingBox();
+			this.mesh.position.set(
+				0,
+				this.size.y / 2 + this.adjustmentHeightForCup,
+				0,
+			);
 
 			this.updateMatrixWorld();
-
 			this.socketCallback({
 				mesh,
-				maxDimension,
-				boundingBox,
+				maxDimension: Math.max(this.size.x, this.size.y, this.size.z),
+				boundingBox: this.boundingBox,
 			});
 
 			transversalRotate.disabled = false;
 			sagittalRotate.disabled = false;
 			coronalRotate.disabled = false;
 			stlFileInput.disabled = true;
-			elevateVertical.disabled = false;
-			lowerVertical.disabled = false;
 			mergeMeshes.disabled = false;
+			verticalTranslate.disabled = false;
+			horizontalTranslate.disabled = false;
+			depthTranslate.disabled = false;
 		}
 	};
 
@@ -141,72 +139,59 @@ export class Socket extends AppObject {
 		});
 	};
 
-	autoAlignMesh = () => {
+	computeBoundingBox = () => {
 		if (!this.mesh) {
-			return;
+			throw new Error("Mesh not found");
 		}
 
 		const boundingBox = new Box3().setFromObject(this.mesh);
-		const size = boundingBox.getSize(new Vector3());
-		const center = boundingBox.getCenter(new Vector3());
-		const minY = boundingBox.min.y;
 
-		this.mesh.position.x -= center.x;
-		this.mesh.position.z -= center.z;
+		this.boundingBox = boundingBox;
+		this.size = boundingBox.getSize(new Vector3());
+		this.center = boundingBox.getCenter(new Vector3());
+	};
+
+	autoAlignMesh = () => {
+		this.computeBoundingBox();
+		const minY = this.boundingBox.min.y;
+
+		this.mesh.position.x -= this.center.x;
+		this.mesh.position.z -= this.center.z;
 
 		if (minY < 0) {
 			this.mesh.position.y += Math.abs(minY) + this.adjustmentHeightForCup;
 		}
 
-		this.size = size;
-		this.boundingBox = boundingBox;
-		this.center = center;
-
 		this.updateMatrixWorld();
 	};
 
 	transverseRotate90 = () => {
-		if (!this.mesh) {
-			return;
-		}
-
 		this.mesh.rotateX(Math.PI / 2);
 		this.autoAlignMesh();
 	};
 
 	sagittalRotate90 = () => {
-		if (!this.mesh) {
-			return;
-		}
-
 		this.mesh.rotateZ(Math.PI / 2);
 		this.autoAlignMesh();
 	};
 
 	coronalRotate90 = () => {
-		if (!this.mesh) {
-			return;
-		}
-
 		this.mesh.rotateY(Math.PI / 2);
 		this.autoAlignMesh();
 	};
 
-	elevateVertical = () => {
-		if (!this.mesh) {
-			return;
-		}
-
-		this.mesh.position.y += 1;
-		this.autoAlignMesh();
+	horizontalChange = (evt: Event) => {
+		const targetValue = (evt.target as HTMLInputElement).value;
+		this.mesh.position.x = Number.parseInt(targetValue);
 	};
 
-	lowerVertical = () => {
-		if (!this.mesh) {
-			return;
-		}
+	verticalChange = (evt: Event) => {
+		const targetValue = (evt.target as HTMLInputElement).value;
+		this.mesh.position.y = Number.parseInt(targetValue);
+	};
 
-		this.mesh.position.y -= 1;
-		this.autoAlignMesh();
+	depthChange = (evt: Event) => {
+		const targetValue = (evt.target as HTMLInputElement).value;
+		this.mesh.position.z = Number.parseInt(targetValue);
 	};
 }

@@ -38,7 +38,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
 		connectToPrinter(window.provelPrintStore.ipAddress as string)
 			.then(() => {
-				console.log("successful connection");
 				ipAddressFailure.classList.toggle("hide");
 				ipAddressSuccess.classList.toggle("hide");
 			})

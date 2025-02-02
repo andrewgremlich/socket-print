@@ -22,11 +22,14 @@ export const sagittalRotate = document.getElementById(
 export const coronalRotate = document.getElementById(
 	"coronalRotate",
 ) as HTMLInputElement;
-export const elevateVertical = document.getElementById(
-	"elecateVertical",
+export const horizontalTranslate = document.getElementById(
+	"horizontalTranslate",
 ) as HTMLInputElement;
-export const lowerVertical = document.getElementById(
-	"lowerVertical",
+export const depthTranslate = document.getElementById(
+	"depthTranslate",
+) as HTMLInputElement;
+export const verticalTranslate = document.getElementById(
+	"verticalTranslate",
 ) as HTMLInputElement;
 export const mergeMeshes = document.getElementById(
 	"mergeMeshes",
