@@ -17,6 +17,7 @@ const config: ForgeConfig = {
 					name: "socket-print",
 				},
 				prerelease: true,
+				authToken: process.env.GH_TOKEN,
 			},
 		},
 	],
@@ -31,6 +32,10 @@ const config: ForgeConfig = {
 		new MakerDeb({}),
 	],
 	plugins: [
+		{
+			name: "@electron-forge/plugin-auto-unpack-natives",
+			config: {},
+		},
 		new VitePlugin({
 			// `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
 			// If you are familiar with Vite configuration, it will look really familiar.
