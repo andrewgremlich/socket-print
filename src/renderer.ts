@@ -9,6 +9,7 @@ import { Lighting } from "@/classes/Lighting";
 import { Socket } from "@/classes/Socket";
 import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import {
+	estimatedPrintTime,
 	generateGCodeButton,
 	loadingScreen,
 	mergeMeshes,
@@ -133,6 +134,9 @@ generateGCodeButton.addEventListener("click", () => {
 			} else if (type === "done") {
 				const blendedMerge = blendMerge(data, evaluateGeometries.center, 1);
 				const printTime = calculatePrintTime(blendedMerge);
+
+				estimatedPrintTime.textContent = printTime;
+
 				const gcode = generateGCode(blendedMerge, "y", {
 					estimatedTime: printTime,
 				});

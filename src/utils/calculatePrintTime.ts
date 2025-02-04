@@ -1,5 +1,4 @@
 import type { RawPoint } from "./blendMerge";
-import { estimatedPrintTime } from "./htmlElements";
 
 export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
 	if (levelsOfPoints.length < 2) {
@@ -28,8 +27,6 @@ export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
 	const hours = roundedPrintTime / 60;
 	const minutes = roundedPrintTime % 60;
 	const estimatedPrintTimeString = `${Math.floor(hours)}h ${Math.floor(minutes)}m`;
-
-	estimatedPrintTime.textContent = estimatedPrintTimeString;
 
 	return estimatedPrintTimeString;
 }

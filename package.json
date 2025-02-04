@@ -22,7 +22,7 @@
     "build": "vite build --config vite.renderer.config.ts",
     "preview": "vite preview",
     "prepare": "husky",
-    "test": "vitest src/ --config ./vite.config.ts",
+    "test": "vitest src/ --config ./vite.renderer.config.ts",
     "type-check": "tsc --noEmit",
     "check": "biome check --write ./src",
     "clean": "rimraf ./dist ./.vite ./out"
@@ -34,9 +34,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@types/jsdom": "^21.1.7",
     "@types/node": "^22.10.2",
     "@types/three": "^0.171.0",
     "husky": "^9.1.7",
+    "jsdom": "^26.0.0",
     "lint-staged": "^15.2.11",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",

@@ -1,4 +1,3 @@
-export const userInterface = document.getElementById("userInterface");
 export const loadingScreen = document.getElementById("loading");
 
 export const stlFileInput = document.getElementById(
