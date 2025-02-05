@@ -18,6 +18,7 @@ import {
 	progressBarLabel,
 } from "@/utils/htmlElements";
 import sliceWorker from "@/utils/sliceWorker?worker";
+import { adjustForShrinkAndOffset } from "./utils/adjustForShrinkandOffset";
 import { blendMerge } from "./utils/blendMerge";
 import { calculatePrintTime } from "./utils/calculatePrintTime";
 
@@ -133,11 +134,12 @@ generateGCodeButton.addEventListener("click", () => {
 				progressBar.value = progress;
 			} else if (type === "done") {
 				const blendedMerge = blendMerge(data, evaluateGeometries.center, 1);
-				const printTime = calculatePrintTime(blendedMerge);
+				const adjustedForShrink = adjustForShrinkAndOffset(blendedMerge);
+				const printTime = calculatePrintTime(adjustedForShrink);
 
 				estimatedPrintTime.textContent = printTime;
 
-				const gcode = generateGCode(blendedMerge, "y", {
+				const gcode = generateGCode(adjustedForShrink, "y", {
 					estimatedTime: printTime,
 				});
 

@@ -7,7 +7,7 @@ export interface MaterialProfile {
 
 export interface ProvelPrintApp {
 	ipAddress: string;
-	lockPosition: string;
+	lockPosition: "left" | "right";
 	cupSize: string;
 	nozzleSize: number;
 	layerHeight: number;
