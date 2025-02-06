@@ -23,7 +23,6 @@ type SliceWorker = {
 	incrementHeight: boolean;
 };
 
-// TODO: this does from bottom to top. perhaps look at doing it from top to bottom?
 self.onmessage = (event: MessageEvent<SliceWorker>) => {
 	const { positions, verticalAxis, layerHeight, segments, incrementHeight } =
 		event.data;
@@ -76,6 +75,8 @@ self.onmessage = (event: MessageEvent<SliceWorker>) => {
 
 	ray.direction.set(0, 0, -1);
 
+	const socketHeight = 40;
+
 	for (
 		let heightPosition = boundingBox.min[verticalAxis];
 		heightPosition < maxHeight;
@@ -89,23 +90,22 @@ self.onmessage = (event: MessageEvent<SliceWorker>) => {
 		});
 
 		for (let angle = 0; angle < Math.PI * 2; angle += angleIncrement) {
+			const height = incrementHeight
+				? heightPosition + (angle / (Math.PI * 2)) * layerHeight
+				: heightPosition;
+
 			direction.set(Math.cos(angle), 0, Math.sin(angle));
 
-			ray.origin.set(
-				center.x,
-				incrementHeight
-					? heightPosition + (angle / (Math.PI * 2)) * layerHeight
-					: heightPosition,
-				center.z,
-			);
+			// Added socketHeight to the vertical coordinate
+			ray.origin.set(center.x, height, center.z);
 			ray.direction.copy(direction);
 
 			const intersects = raycaster.intersectObject(mesh);
 
-			//TODO: I'll need to augment the intersection to accomodate for shrink.
-
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
+
+				intersection.add(new Vector3(0, socketHeight, 0));
 
 				pointLevel.push(intersection);
 			} else {

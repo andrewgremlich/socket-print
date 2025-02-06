@@ -92,6 +92,9 @@ export const updateAppButton = document.getElementById(
 export const restoreDefaultsButton = document.getElementById(
 	"restoreDefaultsButton",
 ) as HTMLButtonElement;
+export const clearModelButton = document.getElementById(
+	"clearModelButton",
+) as HTMLButtonElement;
 
 export const appForm = document.getElementById(
 	"customizations",

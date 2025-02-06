@@ -55,6 +55,20 @@ export class Socket extends AppObject {
 		depthTranslate?.addEventListener("input", this.depthChange);
 	}
 
+	clearData = () => {
+		if (this.mesh) {
+			this.mesh.geometry.dispose();
+			this.mesh = undefined;
+		}
+
+		stlFileInput.value = "";
+		this.boundingBox = undefined;
+		this.center = undefined;
+		this.size = undefined;
+
+		this.toggleInput(true);
+	};
+
 	updateMatrixWorld = () => {
 		if (this.mesh) {
 			this.mesh.updateMatrixWorld(true);
@@ -99,6 +113,7 @@ export class Socket extends AppObject {
 			const mesh = new Mesh(geometry, material);
 
 			this.mesh = mesh;
+			this.mesh.name = file.name;
 			this.computeBoundingBox();
 			this.mesh.position.set(
 				0,
@@ -113,15 +128,18 @@ export class Socket extends AppObject {
 				boundingBox: this.boundingBox,
 			});
 
-			transversalRotate.disabled = false;
-			sagittalRotate.disabled = false;
-			coronalRotate.disabled = false;
-			stlFileInput.disabled = true;
-			mergeMeshes.disabled = false;
-			verticalTranslate.disabled = false;
-			horizontalTranslate.disabled = false;
-			depthTranslate.disabled = false;
+			this.toggleInput(false);
 		}
+	};
+
+	toggleInput = (isDisabled: boolean) => {
+		transversalRotate.disabled = isDisabled;
+		sagittalRotate.disabled = isDisabled;
+		coronalRotate.disabled = isDisabled;
+		mergeMeshes.disabled = isDisabled;
+		verticalTranslate.disabled = isDisabled;
+		horizontalTranslate.disabled = isDisabled;
+		depthTranslate.disabled = isDisabled;
 	};
 
 	#readSTLFile = async (file: File): Promise<BufferGeometry> => {

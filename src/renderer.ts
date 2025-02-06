@@ -9,6 +9,7 @@ import { Lighting } from "@/classes/Lighting";
 import { Socket } from "@/classes/Socket";
 import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
 import {
+	clearModelButton,
 	estimatedPrintTime,
 	generateGCodeButton,
 	loadingScreen,
@@ -50,6 +51,11 @@ const stlModel = new Socket({
 
 		loadingScreen.style.display = "none";
 	},
+});
+
+clearModelButton.addEventListener("click", () => {
+	app.removeMeshFromScene(stlModel.mesh);
+	stlModel.clearData();
 });
 
 let evaluateGeometries: EvaluateGeometries;
@@ -133,8 +139,13 @@ generateGCodeButton.addEventListener("click", () => {
 				progressBarLabel.textContent = `${progress}%`;
 				progressBar.value = progress;
 			} else if (type === "done") {
-				const blendedMerge = blendMerge(data, evaluateGeometries.center, 1);
-				const adjustedForShrink = adjustForShrinkAndOffset(blendedMerge);
+				const { center } = evaluateGeometries;
+				const blendedMerge = blendMerge(data, center, 1);
+				const adjustedForShrink = adjustForShrinkAndOffset(blendedMerge, {
+					x: center.x,
+					y: center.y,
+					z: center.z,
+				});
 				const printTime = calculatePrintTime(adjustedForShrink);
 
 				estimatedPrintTime.textContent = printTime;
@@ -143,7 +154,7 @@ generateGCodeButton.addEventListener("click", () => {
 					estimatedTime: printTime,
 				});
 
-				downloadGCodeFile(gcode, "file.gcode");
+				downloadGCodeFile(gcode, `${stlModel.mesh?.name}.gcode`);
 
 				progressBarDiv.style.display = "none";
 				generateGCodeButton.disabled = false;

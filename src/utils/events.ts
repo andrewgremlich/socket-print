@@ -3,6 +3,7 @@ import type { MaterialProfile } from "@/global";
 import {
 	activeMaterialProfileSelect,
 	cancelMaterialProfileButton,
+	clearModelButton,
 	editMaterialProfiles,
 	ipAddressFailure,
 	ipAddressInput,
