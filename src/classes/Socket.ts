@@ -121,6 +121,14 @@ export class Socket extends AppObject {
 				0,
 			);
 
+			const { activeMaterialProfile, nozzleSize } = window.provelPrintStore;
+			const currentWidth = this.size.x;
+			const nozzleScale = (Number(nozzleSize) + currentWidth) / currentWidth;
+			const shrinkScale =
+				window.materialProfiles[activeMaterialProfile].shrinkFactor;
+
+			this.mesh.scale.set(nozzleScale + shrinkScale / 100, 1, 1);
+
 			this.updateMatrixWorld();
 			this.socketCallback({
 				mesh,

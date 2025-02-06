@@ -2,7 +2,7 @@
   "name": "socket-print",
   "productName": "Provel Print",
   "description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
-  "version": "alpha-v3.2.0",
+  "version": "alpha-v3.3.0",
   "main": ".vite/build/main.js",
   "author": {
     "name": "andrewgremlich",
@@ -17,7 +17,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "dev": "vite",
+    "dev": "npm run dev:web",
     "dev:web": "vite --config vite.renderer.config.ts",
     "build": "vite build --config vite.renderer.config.ts",
     "preview": "vite preview",

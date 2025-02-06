@@ -141,16 +141,11 @@ generateGCodeButton.addEventListener("click", () => {
 			} else if (type === "done") {
 				const { center } = evaluateGeometries;
 				const blendedMerge = blendMerge(data, center, 1);
-				const adjustedForShrink = adjustForShrinkAndOffset(blendedMerge, {
-					x: center.x,
-					y: center.y,
-					z: center.z,
-				});
-				const printTime = calculatePrintTime(adjustedForShrink);
+				const printTime = calculatePrintTime(blendedMerge);
 
 				estimatedPrintTime.textContent = printTime;
 
-				const gcode = generateGCode(adjustedForShrink, "y", {
+				const gcode = generateGCode(blendedMerge, "y", {
 					estimatedTime: printTime,
 				});
 
