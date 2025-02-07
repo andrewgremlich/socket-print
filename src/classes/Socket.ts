@@ -128,7 +128,7 @@ export class Socket extends AppObject {
 				window.materialProfiles[activeMaterialProfile].shrinkFactor;
 			const scaleAdjustment = nozzleScale + shrinkScale / 100;
 
-			this.mesh.scale.set(scaleAdjustment, scaleAdjustment, 1);
+			this.mesh.scale.set(scaleAdjustment, 1, scaleAdjustment);
 
 			this.updateMatrixWorld();
 			this.socketCallback({

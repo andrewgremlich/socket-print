@@ -1,6 +1,7 @@
 import "@/global-style.css";
 import "@/utils/store";
 import "@/utils/events";
+import "@/utils/pwa";
 
 import { Application } from "@/classes/Application";
 import { DistalCup } from "@/classes/DistalCup";
