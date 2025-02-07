@@ -1,9 +1,9 @@
+import { registerSW } from "virtual:pwa-register";
 import type { MaterialProfile } from "@/global";
 
 import {
 	activeMaterialProfileSelect,
 	cancelMaterialProfileButton,
-	clearModelButton,
 	editMaterialProfiles,
 	ipAddressFailure,
 	ipAddressInput,
@@ -16,6 +16,21 @@ import {
 } from "./htmlElements";
 import { appendMaterialProfiles } from "./materialProfiles";
 import { connectToPrinter, sendGCodeFile } from "./sendGCodeFile";
+
+const updateSW = registerSW({
+	onNeedRefresh() {
+		console.log("refresh");
+		// Clear some localStorage keys here
+		// localStorage.removeItem("provelPrintStore");
+		// localStorage.removeItem("materialProfiles");
+
+		// Trigger the service worker update
+		updateSW(true);
+	},
+	onOfflineReady() {
+		// ...
+	},
+});
 
 menuBar.addEventListener("click", (evt) => {
 	const target = evt.target as HTMLElement;

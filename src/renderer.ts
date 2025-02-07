@@ -19,7 +19,6 @@ import {
 	progressBarLabel,
 } from "@/utils/htmlElements";
 import sliceWorker from "@/utils/sliceWorker?worker";
-import { adjustForShrinkAndOffset } from "./utils/adjustForShrinkandOffset";
 import { blendMerge } from "./utils/blendMerge";
 import { calculatePrintTime } from "./utils/calculatePrintTime";
 
