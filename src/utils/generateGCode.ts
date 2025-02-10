@@ -41,6 +41,7 @@ export function generateGCode(
 		`;customInfo nozzleSize="${nozzleSize}mm"`,
 		`;customInfo cupSize="${cupSize}"`,
 		`;customInfo nozzleTemp="${nozzleTemp}C"`,
+		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 		";# START GCODE SEQUENCE FOR CUP PRINT#;",
 
 		"G21 ; Set units to millimeters",
@@ -51,7 +52,7 @@ export function generateGCode(
 		"M568 P0 S200 ; set temperature for barrel to 200;",
 		"M140 P1 S160  ; set cup heater temperature to 160 and continue",
 
-		";## Home ##",
+		"## Home ##",
 		";G28",
 
 		"## move to prime position/ pickup cup heater start position ##",
@@ -59,9 +60,8 @@ export function generateGCode(
 		"G1 X-95 ; only once at correct Z height move in to register with cup heater for pickup",
 		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
-		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 
-		"##cup heater removal sequence##",
+		";##cup heater removal sequence##",
 		"M140 P1 S0 ;cup heater off",
 		"G1 Z70 F1500; Z moves up to pick up cup heater",
 		"G1 X120 F1500; X right to park cup heater",
@@ -69,7 +69,7 @@ export function generateGCode(
 		"G1 X90 F1500; X left to disengage cup heater",
 		"G1 Z43 F1500; Z up to CH + 5 for groove fill",
 
-		"##Groove fill",
+		";##Groove fill",
 		"G1 X50 Y0 F1500 ; Move to start of pre groove fill extrusion",
 		"G1 E15 E300 ; extrude a bit to make up for any ooze",
 		"G1 X39 Y0 E10 F1500 ; Move to start of circle at the edge, continue slight extrusion",
@@ -77,19 +77,10 @@ export function generateGCode(
 		" ;Extrude in a circle A",
 		"G3 X39 Y0 I-39 J0 E1030 F600 ; Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
 
-		"#End of start gcode sequence for cup print#",
-		"##Spiral vase mode socket print to start immediately following this.",
+		";#End of start gcode sequence for cup print#",
+		";##Spiral vase mode socket print to start immediately following this.",
 
-		"--------print file in here--------",
-
-		"G1 Z5 F5000 ; Lift",
-		"G10 P0 S195 R175",
-		"T0",
-		'M98 P"0:/sys/provel/start.g"',
-		"G21 ; Set units to millimeters",
-		"G90 ; Use absolute positioning",
-		"G28 ; Home all axes",
-		"G1 X0.3 F5000 ; Lift",
+		";--------print file in here--------",
 	];
 
 	for (const pointLevel of pointGatherer) {
