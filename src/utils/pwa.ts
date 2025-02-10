@@ -17,6 +17,6 @@ const updateSW = registerSW({
 		updateSW(true);
 	},
 	onOfflineReady() {
-		// ...
+		console.log("offline ready");
 	},
 });
