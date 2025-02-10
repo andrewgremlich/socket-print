@@ -36,14 +36,20 @@ window.addEventListener("DOMContentLoaded", () => {
 
 		loadMainDataForm();
 
-		connectToPrinter(window.provelPrintStore.ipAddress as string)
-			.then(() => {
-				ipAddressFailure.classList.toggle("hide");
-				ipAddressSuccess.classList.toggle("hide");
-			})
-			.catch((error) => {
-				console.error("CAUGHT:", error);
-			});
+		if (
+			window.provelPrintStore.ipAddress &&
+			import.meta.env.MODE !== "development"
+		) {
+			connectToPrinter(window.provelPrintStore.ipAddress as string)
+				.then(() => {
+					console.log("successful connection");
+					ipAddressFailure.classList.toggle("hide");
+					ipAddressSuccess.classList.toggle("hide");
+				})
+				.catch((error) => {
+					console.error("CAUGHT:", error);
+				});
+		}
 	}
 	if (!window.provelPrintStore) {
 		window.provelPrintStore = defaultStore;
