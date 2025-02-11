@@ -9,7 +9,10 @@ import {
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
-import { ensureUV } from "@/utils/ensureUV";
+import { ensureUV } from "@/3d/ensureUV";
+import { removeDuplicateVertices } from "@/3d/removeDups";
+import { getNozzleSize } from "@/db/appSettings";
+import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfiles";
 import {
 	coronalRotate,
 	depthTranslate,
@@ -21,7 +24,7 @@ import {
 	transversalRotate,
 	verticalTranslate,
 } from "@/utils/htmlElements";
-import { removeDuplicateVertices } from "@/utils/removeDups";
+
 import { AppObject } from "./AppObject";
 
 type SocketCallback = (params: {
@@ -31,7 +34,7 @@ type SocketCallback = (params: {
 }) => void;
 
 export class Socket extends AppObject {
-	adjustmentHeightForCup = 10;
+	adjustmentHeightForCup = 0;
 	socketCallback: SocketCallback;
 	boundingBox?: Box3;
 	center?: Vector3;
@@ -121,11 +124,10 @@ export class Socket extends AppObject {
 				0,
 			);
 
-			const { activeMaterialProfile, nozzleSize } = window.provelPrintStore;
+			const nozzleSize = await getNozzleSize();
 			const currentWidth = this.size.x;
 			const nozzleScale = (Number(nozzleSize) + currentWidth) / currentWidth;
-			const shrinkScale =
-				window.materialProfiles[activeMaterialProfile].shrinkFactor;
+			const shrinkScale = await getActiveMaterialProfileShrinkFactor();
 			const scaleAdjustment = nozzleScale + shrinkScale / 100;
 
 			this.mesh.scale.set(scaleAdjustment, 1, scaleAdjustment);

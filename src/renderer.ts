@@ -1,5 +1,5 @@
 import "@/global-style.css";
-import "@/utils/store";
+import "@/db/store";
 import "@/utils/events";
 import "@/utils/pwa";
 
@@ -8,7 +8,12 @@ import { DistalCup } from "@/classes/DistalCup";
 import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
 import { Socket } from "@/classes/Socket";
-import { downloadGCodeFile, generateGCode } from "@/utils/generateGCode";
+
+import { blendMerge } from "@/3d/blendMerge";
+import { calculatePrintTime } from "@/3d/calculatePrintTime";
+import { downloadGCodeFile, generateGCode } from "@/3d/generateGCode";
+import sliceWorker from "@/3d/sliceWorker?worker";
+import { getLayerHeight } from "@/db/appSettings";
 import {
 	clearModelButton,
 	estimatedPrintTime,
@@ -19,9 +24,6 @@ import {
 	progressBarDiv,
 	progressBarLabel,
 } from "@/utils/htmlElements";
-import sliceWorker from "@/utils/sliceWorker?worker";
-import { blendMerge } from "./utils/blendMerge";
-import { calculatePrintTime } from "./utils/calculatePrintTime";
 
 const app = new Application();
 
@@ -35,7 +37,7 @@ if (!distalCup.mesh) {
 }
 app.addToScene(distalCup.mesh);
 
-const stlModel = new Socket({
+const socket = new Socket({
 	socketCallback: ({ mesh, maxDimension }) => {
 		if (!distalCup.mesh) {
 			throw new Error("Distal Cup mesh not found");
@@ -54,8 +56,8 @@ const stlModel = new Socket({
 });
 
 clearModelButton.addEventListener("click", () => {
-	app.removeMeshFromScene(stlModel.mesh);
-	stlModel.clearData();
+	app.removeMeshFromScene(socket.mesh);
+	socket.clearData();
 });
 
 let evaluateGeometries: EvaluateGeometries;
@@ -68,7 +70,7 @@ mergeMeshes?.addEventListener("click", () => {
 	loadingScreen.style.display = "flex";
 
 	setTimeout(() => {
-		if (!stlModel.mesh) {
+		if (!socket.mesh) {
 			throw new Error("STL data has not been loaded!");
 		}
 
@@ -77,16 +79,16 @@ mergeMeshes?.addEventListener("click", () => {
 		}
 
 		distalCup.updateMatrixWorld();
-		stlModel.updateMatrixWorld();
+		socket.updateMatrixWorld();
 
-		evaluateGeometries = new EvaluateGeometries(stlModel, distalCup);
+		evaluateGeometries = new EvaluateGeometries(socket, distalCup);
 
 		if (!evaluateGeometries.mesh) {
 			throw new Error("Geometry not found");
 		}
 
 		distalCup.mesh.visible = false;
-		stlModel.mesh.visible = false;
+		socket.mesh.visible = false;
 		app.addToScene(evaluateGeometries.mesh);
 
 		if (!loadingScreen) {
@@ -111,7 +113,8 @@ generateGCodeButton.addEventListener("click", () => {
 	generateGCodeButton.disabled = true;
 	progressBarDiv.style.display = "flex";
 
-	setTimeout(() => {
+	setTimeout(async () => {
+		// TODO: I don't know of setTimeout supports this.
 		if (!evaluateGeometries.mesh) {
 			throw new Error("Geometry not found");
 		}
@@ -121,16 +124,17 @@ generateGCodeButton.addEventListener("click", () => {
 		}
 
 		const worker = new sliceWorker();
+		const layerHeight = await getLayerHeight();
 
 		worker.postMessage({
 			positions: evaluateGeometries.mesh.geometry.attributes.position.array,
 			verticalAxis: "y",
-			layerHeight: Number(window.provelPrintStore.layerHeight),
+			layerHeight: layerHeight,
 			segments: 100,
 			incrementHeight: true,
 		});
 
-		worker.onmessage = (event) => {
+		worker.onmessage = async (event) => {
 			const { type, data } = event.data;
 
 			if (type === "progress") {
@@ -145,11 +149,11 @@ generateGCodeButton.addEventListener("click", () => {
 
 				estimatedPrintTime.textContent = printTime;
 
-				const gcode = generateGCode(blendedMerge, "y", {
+				const gcode = await generateGCode(blendedMerge, "y", {
 					estimatedTime: printTime,
 				});
 
-				downloadGCodeFile(gcode, `${stlModel.mesh?.name}.gcode`);
+				downloadGCodeFile(gcode, `${socket.mesh?.name}.gcode`);
 
 				progressBarDiv.style.display = "none";
 				generateGCodeButton.disabled = false;

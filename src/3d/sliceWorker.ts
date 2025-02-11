@@ -75,7 +75,7 @@ self.onmessage = (event: MessageEvent<SliceWorker>) => {
 
 	ray.direction.set(0, 0, -1);
 
-	const socketHeight = 40;
+	const socketHeight = 38;
 
 	for (
 		let heightPosition = boundingBox.min[verticalAxis];

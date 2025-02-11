@@ -9,11 +9,6 @@ const updateSW = registerSW({
 	},
 	onNeedRefresh() {
 		console.log("refresh");
-		// Clear some localStorage keys here
-		// localStorage.removeItem("provelPrintStore");
-		// localStorage.removeItem("materialProfiles");
-
-		// Trigger the service worker update
 		updateSW(true);
 	},
 	onOfflineReady() {

@@ -2,7 +2,7 @@
   "name": "socket-print",
   "productName": "Provel Print",
   "description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
-  "version": "alpha-v3.3.0",
+  "version": "alpha-v4.0.0",
   "main": ".vite/build/main.js",
   "author": {
     "name": "andrewgremlich",
@@ -48,10 +48,12 @@
   },
   "dependencies": {
     "crc-32": "^1.2.2",
+    "dexie": "^4.0.11",
     "mathjs": "^14.2.0",
-    "three": "^0.171.0",
+    "p-throttle": "^7.0.0",
+    "three": "^0.173.0",
     "three-csg-ts": "^3.2.0",
-    "three-mesh-bvh": "^0.8.3",
+    "three-mesh-bvh": "^0.9.0",
     "vite-plugin-pwa": "^0.21.1"
   }
 }

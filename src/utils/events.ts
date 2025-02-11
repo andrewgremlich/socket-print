@@ -1,7 +1,10 @@
-import type { MaterialProfile } from "@/global";
+import pThrottle from "p-throttle";
+
+import { connectToPrinter, sendGCodeFile } from "@/3d/sendGCodeFile";
+import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
+import { addNewMaterialProfile } from "@/db/materialProfiles";
 
 import {
-	activeMaterialProfileSelect,
 	cancelMaterialProfileButton,
 	editMaterialProfiles,
 	ipAddressFailure,
@@ -13,8 +16,6 @@ import {
 	newMaterialProfileForm,
 	printerFileInput,
 } from "./htmlElements";
-import { appendMaterialProfiles } from "./materialProfiles";
-import { connectToPrinter, sendGCodeFile } from "./sendGCodeFile";
 
 menuBar.addEventListener("click", (evt) => {
 	const target = evt.target as HTMLElement;
@@ -51,16 +52,24 @@ printerFileInput.addEventListener("change", async () => {
 	sendGCodeFile(new Blob([gcode]), file.name);
 });
 
-ipAddressInput.addEventListener("change", () => {
-	connectToPrinter(ipAddressInput.value)
-		.then(() => {
-			ipAddressFailure.classList.toggle("hide");
-			ipAddressSuccess.classList.toggle("hide");
-		})
-		.catch((error) => {
-			console.error("CAUGHT:", error);
-		});
+const throttle = pThrottle({
+	limit: 1,
+	interval: 1000,
 });
+
+ipAddressInput.addEventListener(
+	"change",
+	throttle(() => {
+		connectToPrinter(ipAddressInput.value)
+			.then(() => {
+				ipAddressFailure.classList.toggle("hide");
+				ipAddressSuccess.classList.toggle("hide");
+			})
+			.catch((error) => {
+				console.error("CAUGHT:", error);
+			});
+	}),
+);
 
 newMaterialProfileForm.addEventListener("submit", (event) => {
 	event.preventDefault();
@@ -68,18 +77,15 @@ newMaterialProfileForm.addEventListener("submit", (event) => {
 	const materialProfileDisplay = new FormData(newMaterialProfileForm);
 	const { materialProfileName, ...rest } = Object.fromEntries(
 		materialProfileDisplay.entries(),
-	) as unknown as MaterialProfile & { materialProfileName: string };
+	);
 
-	const numericRest = Object.fromEntries(
-		Object.entries(rest).map(([key, value]) => [key, Number(value)]),
-	) as unknown as MaterialProfile;
-
-	window.materialProfiles = {
-		...window.materialProfiles,
-		[materialProfileName]: numericRest,
-	};
-
-	localStorage.materialProfiles = JSON.stringify(window.materialProfiles);
+	addNewMaterialProfile({
+		name: materialProfileName as string,
+		nozzleTemp: Number(rest.nozzleTemp),
+		cupTemp: Number(rest.cupTemp),
+		shrinkFactor: Number(rest.shrinkFactor),
+		outputFactor: Number(rest.outputFactor),
+	});
 
 	appendMaterialProfiles();
 
@@ -94,19 +100,4 @@ editMaterialProfiles.addEventListener("click", () => {
 cancelMaterialProfileButton.addEventListener("click", () => {
 	newMaterialProfileForm.reset();
 	newMaterialProfile.classList.toggle("hide");
-});
-
-activeMaterialProfileSelect.addEventListener("change", (event) => {
-	const selectedProfile =
-		window.materialProfiles[(event.target as HTMLSelectElement).value];
-
-	for (const [key, value] of Object.entries(selectedProfile)) {
-		const display = document.querySelector(`#${key}Display`);
-
-		if (!display) {
-			throw new Error(`No display found for ${key}`);
-		}
-
-		display.innerHTML = String(value);
-	}
 });

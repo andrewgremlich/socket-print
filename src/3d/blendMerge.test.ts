@@ -1,7 +1,7 @@
 import { Vector3 } from "three";
 import { expect, test } from "vitest";
 
-import { blendMerge } from "./blendMerge";
+import { blendMerge } from "../blendMerge";
 
 test("blendMerge adjusts points correctly based on overlapTolerance", () => {
 	const points = [

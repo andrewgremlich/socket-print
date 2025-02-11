@@ -6,6 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(() => ({
 	build: {
+		target: "esnext",
 		rollupOptions: {
 			input: {
 				main: resolve(__dirname, "index.html"),

@@ -1,3 +1,4 @@
+import { getIpAddress } from "@/db/appSettings";
 import crc32 from "crc-32";
 
 type UploadResponse = {
@@ -84,15 +85,14 @@ function decimalToHex(decimal: number) {
 
 export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 	try {
-		await connectToPrinter(window.provelPrintStore.ipAddress as string);
+		const ipAddress = await getIpAddress();
+		await connectToPrinter(ipAddress);
 
 		const crc = await calculateCRC32(binaryData);
 		const crcHex = decimalToHex(crc);
 
 		const response = await fetch(
-			`http://${
-				window.provelPrintStore.ipAddress
-			}/rr_upload?name=/gcodes/${encodeURIComponent(fileName)}&crc32=${crcHex}`,
+			`http://${ipAddress}/rr_upload?name=/gcodes/${encodeURIComponent(fileName)}&crc32=${crcHex}`,
 			{
 				method: "POST",
 				headers: {

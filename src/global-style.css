@@ -71,6 +71,15 @@ input {
 
 label {
 	display: block;
+
+	&:has(input[type="checkbox"]) {
+		display: flex;
+		align-items: center;
+
+		& > input {
+			margin-right: 10px;
+		}
+	}
 }
 
 select {

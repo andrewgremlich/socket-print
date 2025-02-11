@@ -1,435 +1,233 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-            description="A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb."
-        />
-        <title>Provel Print</title>
-    </head>
 
-    <body>
-        <main>
-            <nav id="menuBar">
-                <h1>ProvelPrint: Alpha-v3.3.0</h1>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+        description="A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb." />
+    <title>Provel Print</title>
+</head>
 
-                <div class="menuBarButtonContainer">
-                    <button class="menuBarButton">File</button>
+<body>
+    <main>
+        <nav id="menuBar">
+            <h1>ProvelPrint: Alpha-v4.0.0</h1>
 
-                    <div class="menuBarDropdown">
-                        <label
-                            style="display: block"
-                            class="menuBarDropdownButton fileInputLabel"
-                            for="stlFileInput"
-                            id="stlFileInputLabel"
-                        >
-                            Open STL file
-                            <input
-                                type="file"
-                                accept=".stl"
-                                id="stlFileInput"
-                                name="stlFileInput"
-                                class="fileInput"
-                            />
-                        </label>
+            <div class="menuBarButtonContainer">
+                <button class="menuBarButton">File</button>
 
-                        <input
-                            class="menuBarDropdownButton"
-                            type="button"
-                            value="Restore Defaults"
-                            id="restoreDefaultsButton"
-                        />
-
-                        <input
-                            class="menuBarDropdownButton"
-                            type="button"
-                            value="Clear model"
-                            id="clearModelButton"
-                        />
-                    </div>
-                </div>
-
-                <div class="menuBarButtonContainer">
-                    <button class="menuBarButton">Edit</button>
-
-                    <div class="menuBarDropdown">
-                        <input
-                            class="menuBarDropdownButton"
-                            id="editMaterialProfiles"
-                            type="button"
-                            value="Edit Material Profiles"
-                        />
-                        <!-- <input class="menuBarDropdownButton" type="button" value="Undo"> -->
-                    </div>
-                </div>
-
-                <div class="menuBarButtonContainer">
-                    <button class="menuBarButton">Help</button>
-
-                    <div class="menuBarDropdown">
-                        <a
-                            class="menuBarButton"
-                            href="/provel_print_help.docx"
-                            download
-                            >Help Document</a
-                        >
-                    </div>
-                </div>
-            </nav>
-
-            <div id="userInterface">
-                <form id="customizations">
-                    <p>IP Address and Port</p>
-
-                    <div id="ipAddress">
-                        <input
-                            style="padding-left: 5px; margin-right: 5px"
-                            type="text"
-                            id="ipAddressInput"
-                            name="ipAddress"
-                            value=""
-                            placeholder="192.168.X.XXX"
-                        />
-                        <svg
-                            class="hide"
-                            id="ipAddressSuccess"
-                            title="Successful connection to printer"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="feather feather-check"
-                        >
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        <svg
-                            id="ipAddressFailure"
-                            title="Failed connection to printer"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="feather feather-x"
-                        >
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </div>
-
-                    <p>Lock Position</p>
-
-                    <select
-                        name="lockPosition"
-                        id="lockPosition"
-                        name="lockPosition"
-                    >
-                        <option value="left" selected>Left</option>
-                        <option value="right">Right</option>
-                    </select>
-
-                    <label for="cupSize">Cup Size</label>
-
-                    <select name="cupSize" id="cupSize" name="cupSize">
-                        <option value="93x38" selected>93 x 38</option>
-                        <!-- Place 30 mm above printer --->
-                        <option value="93x28">93 x 25</option>
-                        <!-- Place 17 mm above printer --->
-                    </select>
-
-                    <label for="nozzleSize">Nozzle Size</label>
-
-                    <select name="nozzleSize" id="nozzleSize" name="nozzleSize">
-                        <option value="3">3mm</option>
-                        <option value="4">4mm</option>
-                        <option value="5" selected>5mm</option>
-                        <option value="6">6mm</option>
-                        <option value="7">7mm</option>
-                    </select>
-
-                    <label for="layerHeight">Layer Height</label>
-
-                    <select
-                        name="layerHeight"
-                        id="layerHeight"
-                        name="layerHeight"
-                    >
-                        <option value="0.5">0.5mm</option>
-                        <option value="1" selected>1mm</option>
-                        <option value="1.5">1.5mm</option>
-                        <option value="2">2mm</option>
-                    </select>
-
-                    <label for="activeMaterialProfile">Material</label>
-
-                    <select
-                        name="activeMaterialProfile"
-                        id="activeMaterialProfile"
-                        name="activeMaterialProfile"
-                    ></select>
-                </form>
-
-                <div id="materialProfileDisplay">
-                    <label>Nozzle Temp in C: </label
-                    ><label id="nozzleTempDisplay">200</label>
-
-                    <label>Cup Temp in C: </label
-                    ><label id="cupTempDisplay">130</label>
-
-                    <label>Shrink Factor %: </label
-                    ><label id="shrinkFactorDisplay">2.6</label>
-
-                    <label>Output Factor: </label
-                    ><label id="outputFactorDisplay">1</label>
-                </div>
-
-                <div id="printActions">
-                    <p style="margin: 10px 0px">Estimated Print Time:</p>
-
-                    <p id="estimatedPrintTime"></p>
-
-                    <input
-                        type="button"
-                        value="Blend to Cup"
-                        class="button"
-                        id="mergeMeshes"
-                        disabled
-                    />
-
-                    <input
-                        type="button"
-                        value="Generate GCode"
-                        class="button"
-                        id="generateGCodeButton"
-                        disabled
-                    />
-
-                    <label
-                        style="display: block"
-                        class="fileInputLabel button"
-                        for="printerFileInput"
-                        id="printerFileInputLabel"
-                    >
-                        Send to File
-                        <input
-                            type="file"
-                            accept=".gcode"
-                            id="printerFileInput"
-                            name="printerFileInput"
-                            class="fileInput"
-                        />
+                <div class="menuBarDropdown">
+                    <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
+                        id="stlFileInputLabel">
+                        Open STL file
+                        <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput" />
                     </label>
+
+                    <input class="menuBarDropdownButton" type="button" value="Restore Defaults"
+                        id="restoreDefaultsButton" />
+
+                    <input class="menuBarDropdownButton" type="button" value="Clear model" id="clearModelButton" />
                 </div>
             </div>
 
-            <div id="provelPrint">
-                <canvas id="3dViewer"></canvas>
-            </div>
+            <div class="menuBarButtonContainer">
+                <button class="menuBarButton">Edit</button>
 
-            <div id="editSocket">
-                <div id="rotateSocket">
-                    <p>Rotate 45</p>
-                    <input
-                        disabled
-                        id="transversalRotate"
-                        class="button"
-                        type="button"
-                        value="Transverse"
-                    />
-                    <input
-                        disabled
-                        id="sagittalRotate"
-                        class="button"
-                        type="button"
-                        value="Sagittal"
-                    />
-                    <input
-                        disabled
-                        id="coronalRotate"
-                        class="button"
-                        type="button"
-                        value="Coronal"
-                    />
-                </div>
-                <div id="changePosition">
-                    <p>Translate</p>
-                    <label for="horizontalTranslate"
-                        >X
-                        <input
-                            disabled
-                            id="horizontalTranslate"
-                            type="range"
-                            value="0"
-                            step="1"
-                            min="-100"
-                            max="100"
-                        />
-                    </label>
-                    <label for="depthTranslate"
-                        >Y
-                        <input
-                            disabled
-                            id="depthTranslate"
-                            type="range"
-                            value="0"
-                            step="1"
-                            min="-100"
-                            max="100"
-                        />
-                    </label>
-                    <label for="verticalTranslate"
-                        >Z
-                        <input
-                            disabled
-                            id="verticalTranslate"
-                            type="range"
-                            value="0"
-                            step="1"
-                            min="-100"
-                            max="100"
-                        />
-                    </label>
+                <div class="menuBarDropdown">
+                    <input class="menuBarDropdownButton" id="editMaterialProfiles" type="button"
+                        value="Edit Material Profiles" />
+                    <!-- <input class="menuBarDropdownButton" type="button" value="Undo"> -->
                 </div>
             </div>
-        </main>
 
-        <div id="updateApp" class="hide">
-            <div id="promptUpdate">
-                <p>Update Available</p>
-                <input
-                    type="button"
-                    value="Update"
-                    class="button"
-                    id="updateAppButton"
-                />
+            <div class="menuBarButtonContainer">
+                <button class="menuBarButton">Help</button>
+
+                <div class="menuBarDropdown">
+                    <a class="menuBarButton" href="/provel_print_help.docx" download>Help Document</a>
+                </div>
             </div>
-            <div id="readyToGo">
-                <p>All updated!</p>
-            </div>
-        </div>
+        </nav>
 
-        <div id="makeNewMaterialProfile" class="hide">
-            <form>
-                <label for="materialProfileName">Material Profile Name</label>
-                <input
-                    type="text"
-                    id="materialProfileName"
-                    name="materialProfileName"
-                    required
-                />
+        <div id="userInterface">
+            <form id="customizations">
+                <p>IP Address and Port</p>
 
-                <label for="newNozzleTemp">Nozzle Temp in C</label>
-                <input
-                    type="number"
-                    value="200"
-                    name="nozzleTemp"
-                    id="nozzleTemp"
-                    required
-                />
+                <div id="ipAddress">
+                    <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress"
+                        value="" placeholder="192.168.X.XXX" />
+                    <svg class="hide" id="ipAddressSuccess" title="Successful connection to printer"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-check">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <svg id="ipAddressFailure" title="Failed connection to printer" xmlns="http://www.w3.org/2000/svg"
+                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
 
-                <label for="newCupTemp">Cup Temp in C</label>
-                <input
-                    type="number"
-                    value="130"
-                    name="cupTemp"
-                    id="cupTemp"
-                    required
-                />
+                <p>Lock Position</p>
 
-                <label for="newShrinkFactor">Shrink Factor %</label>
-                <input
-                    type="number"
-                    step="0.1"
-                    value="2.6"
-                    name="shrinkFactor"
-                    id="shrinkFactor"
-                    required
-                />
+                <select name="lockPosition" id="lockPosition" name="lockPosition">
+                    <option value="left" selected>Left</option>
+                    <option value="right">Right</option>
+                </select>
 
-                <label for="newOutputFactor">Output Factor</label>
-                <input
-                    type="number"
-                    value="1"
-                    name="outputFactor"
-                    id="outputFactor"
-                    required
-                />
+                <label for="cupSize">Cup Size</label>
 
-                <input
-                    type="submit"
-                    value="Save"
-                    class="button"
-                    id="saveMaterialProfile"
-                />
-                <input
-                    type="button"
-                    value="Cancel"
-                    class="button"
-                    id="cancelMaterialProfile"
-                />
+                <select name="cupSize" id="cupSize" name="cupSize">
+                    <option value="93x38" selected>93 x 38</option>
+                    <!-- Place 30 mm above printer --->
+                    <option value="93x28">93 x 25</option>
+                    <!-- Place 17 mm above printer --->
+                </select>
+
+                <label for="nozzleSize">Nozzle Size</label>
+
+                <select name="nozzleSize" id="nozzleSize" name="nozzleSize">
+                    <option value="3">3mm</option>
+                    <option value="4">4mm</option>
+                    <option value="5" selected>5mm</option>
+                    <option value="6">6mm</option>
+                    <option value="7">7mm</option>
+                </select>
+
+                <label for="layerHeight">Layer Height</label>
+
+                <select name="layerHeight" id="layerHeight" name="layerHeight">
+                    <option value="0.5">0.5mm</option>
+                    <option value="1" selected>1mm</option>
+                    <option value="1.5">1.5mm</option>
+                    <option value="2">2mm</option>
+                </select>
+
+                <label for="activeMaterialProfile">Material</label>
+
+                <select name="activeMaterialProfile" id="activeMaterialProfile" name="activeMaterialProfile"></select>
             </form>
+
+            <div id="materialProfileDisplay">
+                <label>Nozzle Temp in C: </label><label id="nozzleTempDisplay">200</label>
+
+                <label>Cup Temp in C: </label><label id="cupTempDisplay">130</label>
+
+                <label>Shrink Factor %: </label><label id="shrinkFactorDisplay">2.6</label>
+
+                <label>Output Factor: </label><label id="outputFactorDisplay">1</label>
+            </div>
+
+            <div id="printActions">
+                <p style="margin: 10px 0px">Estimated Print Time:</p>
+
+                <p id="estimatedPrintTime"></p>
+
+                <input type="button" value="Blend to Cup" class="button" id="mergeMeshes" disabled />
+
+                <input type="button" value="Generate GCode" class="button" id="generateGCodeButton" disabled />
+
+                <label class="fileInputLabel button" for="printerFileInput"
+                    id="printerFileInputLabel">
+                    Send to File
+                    <input type="file" accept=".gcode" id="printerFileInput" name="printerFileInput"
+                        class="fileInput" />
+                </label>
+            </div>
         </div>
 
-        <div id="progressBarDiv">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-loader"
-            >
-                <line x1="12" y1="2" x2="12" y2="6"></line>
-                <line x1="12" y1="18" x2="12" y2="22"></line>
-                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-                <line x1="2" y1="12" x2="6" y2="12"></line>
-                <line x1="18" y1="12" x2="22" y2="12"></line>
-                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-            </svg>
-            <label for="progressBar" id="progressBarLabel">0%</label>
-            <progress id="progressBar" value="0" max="100"></progress>
+        <div id="provelPrint">
+            <canvas id="3dViewer"></canvas>
         </div>
 
-        <div id="loading">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="100"
-                height="100"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-loader"
-            >
-                <line x1="12" y1="2" x2="12" y2="6"></line>
-                <line x1="12" y1="18" x2="12" y2="22"></line>
-                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-                <line x1="2" y1="12" x2="6" y2="12"></line>
-                <line x1="18" y1="12" x2="22" y2="12"></line>
-                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-            </svg>
+        <div id="editSocket">
+            <div id="rotateSocket">
+                <p>Rotate 45</p>
+                <input disabled id="transversalRotate" class="button" type="button" value="Transverse" />
+                <input disabled id="sagittalRotate" class="button" type="button" value="Sagittal" />
+                <input disabled id="coronalRotate" class="button" type="button" value="Coronal" />
+            </div>
+            <div id="changePosition">
+                <p>Translate</p>
+                <label for="horizontalTranslate">X
+                    <input disabled id="horizontalTranslate" type="range" value="0" step="1" min="-100" max="100" />
+                </label>
+                <label for="depthTranslate">Y
+                    <input disabled id="depthTranslate" type="range" value="0" step="1" min="-100" max="100" />
+                </label>
+                <label for="verticalTranslate">Z
+                    <input disabled id="verticalTranslate" type="range" value="0" step="1" min="-100" max="100" />
+                </label>
+            </div>
         </div>
+    </main>
 
-        <script type="module" src="./src/renderer.ts"></script>
-    </body>
+    <div id="updateApp" class="hide">
+        <div id="promptUpdate">
+            <p>Update Available</p>
+            <input type="button" value="Update" class="button" id="updateAppButton" />
+        </div>
+        <div id="readyToGo">
+            <p>All updated!</p>
+        </div>
+    </div>
+
+    <div id="makeNewMaterialProfile" class="hide">
+        <form>
+            <label for="materialProfileName">Material Profile Name</label>
+            <input type="text" id="materialProfileName" name="materialProfileName" required />
+
+            <label for="newNozzleTemp">Nozzle Temp in C</label>
+            <input type="number" value="200" name="nozzleTemp" id="nozzleTemp" required />
+
+            <label for="newCupTemp">Cup Temp in C</label>
+            <input type="number" value="130" name="cupTemp" id="cupTemp" required />
+
+            <label for="newShrinkFactor">Shrink Factor %</label>
+            <input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
+
+            <label for="newOutputFactor">Output Factor</label>
+            <input type="number" value="1" name="outputFactor" id="outputFactor" required />
+
+            <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
+            <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
+        </form>
+    </div>
+
+    <div id="progressBarDiv">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-loader">
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+        </svg>
+        <label for="progressBar" id="progressBarLabel">0%</label>
+        <progress id="progressBar" value="0" max="100"></progress>
+    </div>
+
+    <div id="loading">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#fff"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-loader">
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+        </svg>
+    </div>
+
+    <script type="module" src="./src/renderer.ts"></script>
+</body>
+
 </html>
