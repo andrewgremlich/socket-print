@@ -60,6 +60,13 @@ export const getCupSize = async () => {
 	return await db.appSettings.where("name").equals("cupSize").first();
 };
 
+export const getCupSizeHeight = async () => {
+	const cupSize = await getCupSize();
+	const splitWidthAndHeight = (cupSize.value as string).split("x");
+
+	return Number(splitWidthAndHeight[1]);
+};
+
 export const saveCupSize = async (cupSize: string) => {
 	const db = await getDb();
 

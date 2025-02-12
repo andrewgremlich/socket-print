@@ -1,10 +1,9 @@
 import {
-	Box3,
+	type Box3,
 	type BufferGeometry,
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
-	Vector3,
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -34,11 +33,8 @@ type SocketCallback = (params: {
 }) => void;
 
 export class Socket extends AppObject {
-	adjustmentHeightForCup = 0;
+	adjustmentHeightForCup = 10;
 	socketCallback: SocketCallback;
-	boundingBox?: Box3;
-	center?: Vector3;
-	size?: Vector3;
 
 	constructor({ socketCallback }: { socketCallback: SocketCallback }) {
 		super();
@@ -57,35 +53,6 @@ export class Socket extends AppObject {
 		horizontalTranslate?.addEventListener("input", this.horizontalChange);
 		depthTranslate?.addEventListener("input", this.depthChange);
 	}
-
-	clearData = () => {
-		if (this.mesh) {
-			this.mesh.geometry.dispose();
-			this.mesh = undefined;
-		}
-
-		stlFileInput.value = "";
-		this.boundingBox = undefined;
-		this.center = undefined;
-		this.size = undefined;
-
-		this.toggleInput(true);
-	};
-
-	updateMatrixWorld = () => {
-		if (this.mesh) {
-			this.mesh.updateMatrixWorld(true);
-
-			this.mesh.geometry.applyMatrix4(this.mesh.matrixWorld);
-
-			this.mesh.rotation.set(0, 0, 0);
-			this.mesh.position.set(0, 0, 0);
-
-			this.mesh.geometry.computeVertexNormals();
-			this.mesh.geometry.computeBoundingBox();
-			this.mesh.geometry.computeBoundingSphere();
-		}
-	};
 
 	#onStlFileChange = async ({ target: inputFiles }: Event) => {
 		const file = (inputFiles as HTMLInputElement).files?.[0];
@@ -131,8 +98,8 @@ export class Socket extends AppObject {
 			const scaleAdjustment = nozzleScale + shrinkScale / 100;
 
 			this.mesh.scale.set(scaleAdjustment, 1, scaleAdjustment);
+			this.mesh.matrixWorldAutoUpdate = true;
 
-			this.updateMatrixWorld();
 			this.socketCallback({
 				mesh,
 				maxDimension: Math.max(this.size.x, this.size.y, this.size.z),
@@ -141,6 +108,20 @@ export class Socket extends AppObject {
 
 			this.toggleInput(false);
 		}
+	};
+
+	clearData = () => {
+		if (this.mesh) {
+			this.mesh.geometry.dispose();
+			this.mesh = undefined;
+		}
+
+		stlFileInput.value = "";
+		this.boundingBox = undefined;
+		this.center = undefined;
+		this.size = undefined;
+
+		this.toggleInput(true);
 	};
 
 	toggleInput = (isDisabled: boolean) => {
@@ -168,18 +149,6 @@ export class Socket extends AppObject {
 		});
 	};
 
-	computeBoundingBox = () => {
-		if (!this.mesh) {
-			throw new Error("Mesh not found");
-		}
-
-		const boundingBox = new Box3().setFromObject(this.mesh);
-
-		this.boundingBox = boundingBox;
-		this.size = boundingBox.getSize(new Vector3());
-		this.center = boundingBox.getCenter(new Vector3());
-	};
-
 	autoAlignMesh = () => {
 		this.computeBoundingBox();
 		const minY = this.boundingBox.min.y;
@@ -190,8 +159,6 @@ export class Socket extends AppObject {
 		if (minY < 0) {
 			this.mesh.position.y += Math.abs(minY) + this.adjustmentHeightForCup;
 		}
-
-		this.updateMatrixWorld();
 	};
 
 	transverseRotate90 = () => {

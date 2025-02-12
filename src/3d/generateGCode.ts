@@ -90,7 +90,7 @@ export async function generateGCode(
 			gcode.push(
 				`G1 X${point.x.toFixed(2)} Y${point[flipHeight].toFixed(
 					2,
-				)} Z${point[verticalAxis].toFixed(2)} +5mm E1.2345 F${feedrate}`,
+				)} Z${point[verticalAxis].toFixed(2)} E1.2345 F${feedrate}`,
 			);
 		}
 	}

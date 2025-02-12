@@ -34,23 +34,7 @@ export class DistalCup extends AppObject {
 
 		this.mesh = new Mesh(geometry, material);
 		this.mesh.position.set(0, this.height / 2, 0);
-
-		this.updateMatrixWorld();
 	}
-
-	updateMatrixWorld = () => {
-		if (this.mesh) {
-			this.mesh.updateMatrixWorld(true);
-
-			this.mesh.geometry.applyMatrix4(this.mesh.matrixWorld);
-
-			this.mesh.rotation.set(0, 0, 0);
-			this.mesh.position.set(0, 0, 0);
-
-			this.mesh.geometry.computeVertexNormals();
-			this.mesh.geometry.computeBoundingBox();
-		}
-	};
 
 	toMergeCompatible = () => {
 		if (!this.mesh) {

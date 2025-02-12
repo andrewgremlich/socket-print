@@ -13,6 +13,8 @@ import {
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
+import { getCupSizeHeight } from "@/db/appSettings";
+
 import { ensureUV } from "./ensureUV";
 
 type SliceWorker = {
@@ -23,7 +25,7 @@ type SliceWorker = {
 	incrementHeight: boolean;
 };
 
-self.onmessage = (event: MessageEvent<SliceWorker>) => {
+self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const { positions, verticalAxis, layerHeight, segments, incrementHeight } =
 		event.data;
 
@@ -75,7 +77,9 @@ self.onmessage = (event: MessageEvent<SliceWorker>) => {
 
 	ray.direction.set(0, 0, -1);
 
-	const socketHeight = 38;
+	const socketHeight = (await getCupSizeHeight()) + 5;
+
+	console.log(socketHeight);
 
 	for (
 		let heightPosition = boundingBox.min[verticalAxis];

@@ -32,18 +32,11 @@ app.addToScene(lighting.directionalLight);
 app.addToScene(lighting.ambientLight);
 
 const distalCup = new DistalCup();
-if (!distalCup.mesh) {
-	throw new Error("Distal Cup mesh not found");
-}
 app.addToScene(distalCup.mesh);
 
 const socket = new Socket({
 	socketCallback: ({ mesh, maxDimension }) => {
-		if (!distalCup.mesh) {
-			throw new Error("Distal Cup mesh not found");
-		}
-
-		app.camera.position.set(0, 200, maxDimension * 1.5);
+		app.camera.position.set(0, 200, maxDimension);
 		app.controls.target.set(0, 100, 0);
 		app.addToScene(mesh);
 
@@ -78,9 +71,6 @@ mergeMeshes?.addEventListener("click", () => {
 			throw new Error("Cylinder mesh not found");
 		}
 
-		distalCup.updateMatrixWorld();
-		socket.updateMatrixWorld();
-
 		evaluateGeometries = new EvaluateGeometries(socket, distalCup);
 
 		if (!evaluateGeometries.mesh) {
@@ -89,6 +79,7 @@ mergeMeshes?.addEventListener("click", () => {
 
 		distalCup.mesh.visible = false;
 		socket.mesh.visible = false;
+
 		app.addToScene(evaluateGeometries.mesh);
 
 		if (!loadingScreen) {
@@ -109,6 +100,9 @@ generateGCodeButton.addEventListener("click", () => {
 	if (!loadingScreen) {
 		throw new Error("Loading screen not found");
 	}
+
+	socket.updateMatrixWorld();
+	distalCup.updateMatrixWorld();
 
 	generateGCodeButton.disabled = true;
 	progressBarDiv.style.display = "flex";
@@ -143,8 +137,7 @@ generateGCodeButton.addEventListener("click", () => {
 				progressBarLabel.textContent = `${progress}%`;
 				progressBar.value = progress;
 			} else if (type === "done") {
-				const { center } = evaluateGeometries;
-				const blendedMerge = blendMerge(data, center, 1);
+				const blendedMerge = blendMerge(data, evaluateGeometries.center, 1);
 				const printTime = calculatePrintTime(blendedMerge);
 
 				estimatedPrintTime.textContent = printTime;
