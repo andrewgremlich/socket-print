@@ -98,7 +98,7 @@ export async function generateGCode(
 	gcode.push(";# END GCODE SEQUENCE FOR CUP PRINT#;");
 	gcode.push("M107");
 	gcode.push("set global.pelletFeedOn = false");
-	gcode.push('M98 P"0:/sys/provel/purge.g');
+	gcode.push('M98 P"0:/sys/provel/purge.g"');
 	gcode.push("M106 S0; turn the blowers and fan off");
 	gcode.push("M140 S0 ; set bed temperature");
 	gcode.push('M98 P"0:/sys/provel/end.g"');
