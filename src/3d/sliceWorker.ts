@@ -13,8 +13,7 @@ import {
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
-import { getCupSizeHeight } from "@/db/appSettings";
-
+import { getCupSizeHeight } from "../db/appSettings";
 import { ensureUV } from "./ensureUV";
 
 type SliceWorker = {
@@ -79,8 +78,6 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 
 	const socketHeight = (await getCupSizeHeight()) + 5;
 
-	console.log(socketHeight);
-
 	for (
 		let heightPosition = boundingBox.min[verticalAxis];
 		heightPosition < maxHeight;
@@ -99,18 +96,13 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 				: heightPosition;
 
 			direction.set(Math.cos(angle), 0, Math.sin(angle));
-
-			// Added socketHeight to the vertical coordinate
-			ray.origin.set(center.x, height, center.z);
-			ray.direction.copy(direction);
+			raycaster.set(new Vector3(center.x, height, center.z), direction);
 
 			const intersects = raycaster.intersectObject(mesh);
 
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
-
 				intersection.add(new Vector3(0, socketHeight, 0));
-
 				pointLevel.push(intersection);
 			} else {
 				console.error("No intersection found for this ray.");

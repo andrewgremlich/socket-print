@@ -101,9 +101,7 @@ generateGCodeButton.addEventListener("click", () => {
 		throw new Error("Loading screen not found");
 	}
 
-	socket.updateMatrixWorld();
-	distalCup.updateMatrixWorld();
-
+	evaluateGeometries.updateMatrixWorld();
 	generateGCodeButton.disabled = true;
 	progressBarDiv.style.display = "flex";
 
@@ -123,7 +121,7 @@ generateGCodeButton.addEventListener("click", () => {
 		worker.postMessage({
 			positions: evaluateGeometries.mesh.geometry.attributes.position.array,
 			verticalAxis: "y",
-			layerHeight: layerHeight,
+			layerHeight,
 			segments: 100,
 			incrementHeight: true,
 		});

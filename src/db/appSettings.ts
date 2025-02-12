@@ -82,7 +82,7 @@ export const getNozzleSize = async () => {
 		.where("name")
 		.equals("nozzleSize")
 		.first();
-	return nozzleSize.value as number;
+	return Number(nozzleSize.value);
 };
 
 export const saveNozzleSize = async (nozzleSize: number) => {
@@ -100,7 +100,8 @@ export const getLayerHeight = async () => {
 		.where("name")
 		.equals("layerHeight")
 		.first();
-	return layerHeight.value as number;
+
+	return Number(layerHeight.value);
 };
 
 export const saveLayerHeight = async (layerHeight: number) => {

@@ -22,9 +22,6 @@ export default defineConfig(() => ({
 		tsconfigPaths(),
 		topLevelAwait(),
 		VitePWA({
-			devOptions: {
-				enabled: true,
-			},
 			registerType: "autoUpdate",
 			// includeAssets: ["/favicon.ico", "/robots.txt", "/safari-pinned-tab.svg"],
 			manifest: {
