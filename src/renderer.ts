@@ -5,8 +5,8 @@ import "@/utils/pwa";
 
 import { Application } from "@/classes/Application";
 import { DistalCup } from "@/classes/DistalCup";
-import { EvaluateGeometries } from "@/classes/EvaluateGeometries";
 import { Lighting } from "@/classes/Lighting";
+import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
 
 import { blendMerge } from "@/3d/blendMerge";
@@ -53,7 +53,7 @@ clearModelButton.addEventListener("click", () => {
 	socket.clearData();
 });
 
-let evaluateGeometries: EvaluateGeometries;
+let mergeGeometries: MergeGeometries;
 
 mergeMeshes?.addEventListener("click", () => {
 	if (!loadingScreen) {
@@ -71,16 +71,16 @@ mergeMeshes?.addEventListener("click", () => {
 			throw new Error("Cylinder mesh not found");
 		}
 
-		evaluateGeometries = new EvaluateGeometries(socket, distalCup);
+		mergeGeometries = new MergeGeometries(socket, distalCup);
 
-		if (!evaluateGeometries.mesh) {
+		if (!mergeGeometries.mesh) {
 			throw new Error("Geometry not found");
 		}
 
 		distalCup.mesh.visible = false;
 		socket.mesh.visible = false;
 
-		app.addToScene(evaluateGeometries.mesh);
+		app.addToScene(mergeGeometries.mesh);
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
@@ -101,13 +101,13 @@ generateGCodeButton.addEventListener("click", () => {
 		throw new Error("Loading screen not found");
 	}
 
-	evaluateGeometries.updateMatrixWorld();
+	mergeGeometries.updateMatrixWorld();
 	generateGCodeButton.disabled = true;
 	progressBarDiv.style.display = "flex";
 
 	setTimeout(async () => {
 		// TODO: I don't know of setTimeout supports this.
-		if (!evaluateGeometries.mesh) {
+		if (!mergeGeometries.mesh) {
 			throw new Error("Geometry not found");
 		}
 
@@ -119,7 +119,7 @@ generateGCodeButton.addEventListener("click", () => {
 		const layerHeight = await getLayerHeight();
 
 		worker.postMessage({
-			positions: evaluateGeometries.mesh.geometry.attributes.position.array,
+			positions: mergeGeometries.mesh.geometry.attributes.position.array,
 			verticalAxis: "y",
 			layerHeight,
 			segments: 100,
@@ -135,7 +135,7 @@ generateGCodeButton.addEventListener("click", () => {
 				progressBarLabel.textContent = `${progress}%`;
 				progressBar.value = progress;
 			} else if (type === "done") {
-				const blendedMerge = blendMerge(data, evaluateGeometries.center, 1);
+				const blendedMerge = blendMerge(data, mergeGeometries.center, 1);
 				const printTime = calculatePrintTime(blendedMerge);
 
 				estimatedPrintTime.textContent = printTime;

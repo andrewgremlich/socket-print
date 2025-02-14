@@ -1,5 +1,5 @@
-import { Mesh, MeshPhongMaterial } from "three";
-import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
+import { Box3, CylinderGeometry, Mesh, Vector3 } from "three";
+import { CSG } from "three-csg-ts";
 
 import { AppObject } from "./AppObject";
 import type { DistalCup } from "./DistalCup";
@@ -9,21 +9,48 @@ export class MergeGeometries extends AppObject {
 	constructor(stlModel: Socket, cylinder: DistalCup) {
 		super();
 
-		if (!stlModel.mesh || !cylinder.mesh) {
-			throw new Error("STL Model mesh and cylinder mesh is required");
+		if (!cylinder.mesh) {
+			throw new Error("Cylinder mesh not found");
 		}
 
-		const mergeableCylinder = cylinder.toMergeCompatible();
+		if (!stlModel.mesh) {
+			throw new Error("STL data has not been loaded!");
+		}
 
-		const mergedGeometry = BufferGeometryUtils.mergeGeometries([
-			mergeableCylinder,
-			stlModel.mesh.geometry,
-		]);
-		const material = new MeshPhongMaterial({
-			color: 0xffffff,
-			wireframe: true,
-		});
+		const clonedCylinder = this.cloneCylinder(cylinder);
+		const union = CSG.union(stlModel.mesh, clonedCylinder);
 
-		this.mesh = new Mesh(mergedGeometry, material);
+		this.boundingBox = new Box3().setFromObject(union);
+		this.size = this.boundingBox.getSize(new Vector3());
+		this.center = this.boundingBox.getCenter(new Vector3());
+		this.mesh = union;
+
+		this.mesh.matrixWorldAutoUpdate = true;
 	}
+
+	cloneCylinder = (cylinder: DistalCup) => {
+		if (!cylinder.mesh) {
+			throw new Error("Cylinder mesh not found");
+		}
+
+		const { height, ...cylinderParams } = (
+			cylinder.mesh.geometry as CylinderGeometry
+		).parameters;
+		const newHeight = 90;
+		const clonedCylinderGeometry = new CylinderGeometry(
+			cylinderParams.radiusTop,
+			cylinderParams.radiusBottom,
+			newHeight,
+			cylinderParams.radialSegments,
+			cylinderParams.heightSegments,
+			cylinderParams.openEnded,
+		);
+		const mesh = new Mesh(clonedCylinderGeometry, cylinder.mesh.material);
+
+		mesh.position.set(0, newHeight / 2, 0);
+
+		mesh.updateMatrixWorld(true);
+
+		return mesh;
+	};
 }
