@@ -20,10 +20,12 @@ import {
 	generateGCodeButton,
 	loadingScreen,
 	mergeMeshes,
+	printerFileInput,
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
 } from "@/utils/htmlElements";
+import { sendGCodeFile } from "./3d/sendGCodeFile";
 
 const app = new Application();
 
@@ -89,10 +91,11 @@ mergeMeshes?.addEventListener("click", () => {
 		loadingScreen.style.display = "none";
 
 		generateGCodeButton.disabled = false;
+		printerFileInput.disabled = false;
 	}, 1000);
 });
 
-generateGCodeButton.addEventListener("click", () => {
+export async function slicingAction(sendToFile: boolean) {
 	if (!progressBarDiv) {
 		throw new Error("Loading screen not found");
 	}
@@ -144,11 +147,24 @@ generateGCodeButton.addEventListener("click", () => {
 					estimatedTime: printTime,
 				});
 
-				downloadGCodeFile(gcode, `${socket.mesh?.name}.gcode`);
+				if (sendToFile) {
+					downloadGCodeFile(gcode, `${socket.mesh?.name}.gcode`);
+				} else {
+					await sendGCodeFile(new Blob([gcode]), `${socket.mesh?.name}.gcode`);
+				}
 
 				progressBarDiv.style.display = "none";
 				generateGCodeButton.disabled = false;
 			}
 		};
 	}, 1000);
+
+	return "";
+}
+
+generateGCodeButton.addEventListener("click", async () => {
+	await slicingAction(true);
+});
+printerFileInput.addEventListener("click", async () => {
+	await slicingAction(false);
 });

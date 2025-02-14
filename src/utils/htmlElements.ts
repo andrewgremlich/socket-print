@@ -36,9 +36,6 @@ export const mergeMeshes = document.getElementById(
 export const printerFileInput = document.getElementById(
 	"printerFileInput",
 ) as HTMLInputElement;
-export const printerFileInputLabel = document.getElementById(
-	"printerFileInputLabel",
-) as HTMLLabelElement;
 export const ipAddressInput = document.getElementById(
 	"ipAddressInput",
 ) as HTMLInputElement;

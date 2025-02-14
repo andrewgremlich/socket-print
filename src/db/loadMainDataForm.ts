@@ -1,8 +1,4 @@
-import {
-	generateGCodeButton,
-	printerFileInput,
-	printerFileInputLabel,
-} from "@/utils/htmlElements";
+import { generateGCodeButton, printerFileInput } from "@/utils/htmlElements";
 import { getAppSettings, getSendToFile } from "./appSettings";
 import { getActiveMaterialProfile } from "./materialProfiles";
 
@@ -40,16 +36,10 @@ export const triggerSendToFileEffect = async () => {
 	const sendToFile = await getSendToFile();
 
 	if (sendToFile) {
-		generateGCodeButton.disabled = false;
 		generateGCodeButton.classList.remove("hide");
-
-		printerFileInput.disabled = true;
-		printerFileInputLabel.classList.add("hide");
+		printerFileInput.classList.add("hide");
 	} else {
-		printerFileInput.disabled = false;
-		printerFileInputLabel.classList.remove("hide");
-
-		generateGCodeButton.disabled = true;
+		printerFileInput.classList.remove("hide");
 		generateGCodeButton.classList.add("hide");
 	}
 };
