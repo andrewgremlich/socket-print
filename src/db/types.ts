@@ -3,7 +3,7 @@ import type { EntityTable } from "dexie";
 export type AppSettings = {
 	id: number;
 	name: string;
-	value: string | number;
+	value: string | number | boolean;
 };
 
 export type MaterialProfile = {
@@ -27,4 +27,5 @@ export interface ProvelPrintSettings {
 	nozzleSize: number;
 	layerHeight: number;
 	activeMaterialProfile: string;
+	sendToFile: boolean;
 }

@@ -12,7 +12,7 @@
 <body>
     <main>
         <nav id="menuBar">
-            <h1>ProvelPrint: Alpha-v4.0.1</h1>
+            <h1>ProvelPrint: Alpha-v4.1.0</h1>
 
             <div class="menuBarButtonContainer">
                 <button class="menuBarButton">File</button>
@@ -128,13 +128,15 @@
 
                 <input type="button" value="Blend to Cup" class="button" id="mergeMeshes" disabled />
 
+                <label for="sendToFile"><input type="checkbox" id="sendToFile" name="sendToFile" />Send to
+                    File</label>
+
                 <input type="button" value="Generate GCode" class="button" id="generateGCodeButton" disabled />
 
-                <label class="fileInputLabel button" for="printerFileInput"
-                    id="printerFileInputLabel">
-                    Send to File
-                    <input type="file" accept=".gcode" id="printerFileInput" name="printerFileInput"
-                        class="fileInput" />
+                <label class="fileInputLabel button" for="printerFileInput" id="printerFileInputLabel">
+                    Print
+                    <input type="file" accept=".gcode" id="printerFileInput" name="printerFileInput" class="fileInput"
+                        disabled />
                 </label>
             </div>
         </div>

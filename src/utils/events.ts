@@ -4,6 +4,8 @@ import { connectToPrinter, sendGCodeFile } from "@/3d/sendGCodeFile";
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
 import { addNewMaterialProfile } from "@/db/materialProfiles";
 
+import { setSendToFile } from "@/db/appSettings";
+import { triggerSendToFileEffect } from "@/db/loadMainDataForm";
 import {
 	cancelMaterialProfileButton,
 	editMaterialProfiles,
@@ -15,6 +17,7 @@ import {
 	newMaterialProfile,
 	newMaterialProfileForm,
 	printerFileInput,
+	sendToFile,
 } from "./htmlElements";
 
 menuBar.addEventListener("click", (evt) => {
@@ -100,4 +103,10 @@ editMaterialProfiles.addEventListener("click", () => {
 cancelMaterialProfileButton.addEventListener("click", () => {
 	newMaterialProfileForm.reset();
 	newMaterialProfile.classList.toggle("hide");
+});
+
+sendToFile.addEventListener("change", (evt) => {
+	const target = evt.target as HTMLInputElement;
+	setSendToFile(target.checked);
+	triggerSendToFileEffect();
 });

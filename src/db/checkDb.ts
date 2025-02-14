@@ -8,6 +8,7 @@ export const defaultSettingNames: ProvelPrintSettings = {
 	nozzleSize: 5,
 	layerHeight: 1,
 	activeMaterialProfile: "cp1",
+	sendToFile: true,
 };
 
 export async function settingsDefaults() {
