@@ -17,7 +17,7 @@ export class MergeGeometries extends AppObject {
 			throw new Error("STL data has not been loaded!");
 		}
 
-		const clonedCylinder = this.cloneCylinder(cylinder);
+		const clonedCylinder = this.cloneCylinder(cylinder, stlModel.size.y);
 		const union = CSG.union(stlModel.mesh, clonedCylinder);
 
 		this.boundingBox = new Box3().setFromObject(union);
@@ -28,7 +28,7 @@ export class MergeGeometries extends AppObject {
 		this.mesh.matrixWorldAutoUpdate = true;
 	}
 
-	cloneCylinder = (cylinder: DistalCup) => {
+	cloneCylinder = (cylinder: DistalCup, newHeight: number) => {
 		if (!cylinder.mesh) {
 			throw new Error("Cylinder mesh not found");
 		}
@@ -36,7 +36,6 @@ export class MergeGeometries extends AppObject {
 		const { height, ...cylinderParams } = (
 			cylinder.mesh.geometry as CylinderGeometry
 		).parameters;
-		const newHeight = 90;
 		const clonedCylinderGeometry = new CylinderGeometry(
 			cylinderParams.radiusTop,
 			cylinderParams.radiusBottom,
