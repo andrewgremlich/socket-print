@@ -204,6 +204,7 @@ svg {
 	z-index: 9999;
 	display: flex;
 	align-items: center;
+	padding-left: 50px;
 }
 
 #userInterface {
