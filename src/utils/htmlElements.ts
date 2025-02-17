@@ -1,3 +1,5 @@
+import type { MaterialProfileForm } from "@/web-components/MaterialProfileForm";
+
 export const loadingScreen = document.getElementById("loading");
 
 export const stlFileInput = document.getElementById(
@@ -64,17 +66,11 @@ export const menuBarButtonContainers = document.querySelectorAll(
 export const menuBarDropdowns = document.querySelectorAll(
 	".menuBarDropdown",
 ) as unknown as HTMLDivElement[];
-export const ipAddressSuccess = document.getElementById(
-	"ipAddressSuccess",
-) as HTMLDivElement;
-export const ipAddressFailure = document.getElementById(
-	"ipAddressFailure",
-) as HTMLDivElement;
 export const progressBarDiv = document.getElementById(
 	"progressBarDiv",
 ) as HTMLDivElement;
-export const editMaterialProfiles = document.getElementById(
-	"editMaterialProfiles",
+export const addMaterialProfile = document.getElementById(
+	"addMaterialProfile",
 ) as HTMLDivElement;
 export const newMaterialProfile = document.getElementById(
 	"makeNewMaterialProfile",
@@ -83,6 +79,9 @@ export const estimatedPrintTime = document.getElementById(
 	"estimatedPrintTime",
 ) as HTMLParagraphElement;
 
+export const editActiveMaterialProfile = document.getElementById(
+	"editActiveMaterialProfile",
+) as HTMLDivElement;
 export const saveMaterialProfileButton = document.getElementById(
 	"saveMaterialProfile",
 ) as HTMLButtonElement;
@@ -102,9 +101,10 @@ export const clearModelButton = document.getElementById(
 export const appForm = document.getElementById(
 	"customizations",
 ) as HTMLFormElement;
-export const newMaterialProfileForm = newMaterialProfile.querySelector(
-	"form",
-) as HTMLFormElement;
 export const materialProfileDisplay = document.getElementById(
 	"materialProfileDisplay",
 ) as HTMLFormElement;
+
+export const materialProfileForm = document.querySelector(
+	"material-profile-form",
+) as MaterialProfileForm;

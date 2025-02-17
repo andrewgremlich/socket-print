@@ -1,22 +1,11 @@
-import pThrottle from "p-throttle";
-
-import { connectToPrinter, sendGCodeFile } from "@/3d/sendGCodeFile";
-import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
-import { addNewMaterialProfile } from "@/db/materialProfiles";
-
 import { setSendToFile } from "@/db/appSettings";
 import { triggerSendToFileEffect } from "@/db/loadMainDataForm";
 import {
-	cancelMaterialProfileButton,
-	editMaterialProfiles,
-	ipAddressFailure,
-	ipAddressInput,
-	ipAddressSuccess,
+	addMaterialProfile,
+	editActiveMaterialProfile,
+	materialProfileForm,
 	menuBar,
 	menuBarDropdowns,
-	newMaterialProfile,
-	newMaterialProfileForm,
-	printerFileInput,
 	sendToFile,
 } from "./htmlElements";
 
@@ -43,55 +32,13 @@ window.addEventListener("click", (evt) => {
 	}
 });
 
-const throttle = pThrottle({
-	limit: 1,
-	interval: 1000,
-});
-
-ipAddressInput.addEventListener(
-	"change",
-	throttle(() => {
-		connectToPrinter(ipAddressInput.value)
-			.then(() => {
-				ipAddressFailure.classList.toggle("hide");
-				ipAddressSuccess.classList.toggle("hide");
-			})
-			.catch((error) => {
-				console.error("CAUGHT:", error);
-			});
-	}),
+addMaterialProfile.addEventListener("click", () =>
+	materialProfileForm.showForm("new"),
 );
 
-newMaterialProfileForm.addEventListener("submit", (event) => {
-	event.preventDefault();
-
-	const materialProfileDisplay = new FormData(newMaterialProfileForm);
-	const { materialProfileName, ...rest } = Object.fromEntries(
-		materialProfileDisplay.entries(),
-	);
-
-	addNewMaterialProfile({
-		name: materialProfileName as string,
-		nozzleTemp: Number(rest.nozzleTemp),
-		cupTemp: Number(rest.cupTemp),
-		shrinkFactor: Number(rest.shrinkFactor),
-		outputFactor: Number(rest.outputFactor),
-	});
-
-	appendMaterialProfiles();
-
-	newMaterialProfileForm.reset();
-	newMaterialProfile.classList.toggle("hide");
-});
-
-editMaterialProfiles.addEventListener("click", () => {
-	newMaterialProfile.classList.toggle("hide");
-});
-
-cancelMaterialProfileButton.addEventListener("click", () => {
-	newMaterialProfileForm.reset();
-	newMaterialProfile.classList.toggle("hide");
-});
+editActiveMaterialProfile.addEventListener("click", () =>
+	materialProfileForm.showForm("edit"),
+);
 
 sendToFile.addEventListener("change", (evt) => {
 	const target = evt.target as HTMLInputElement;

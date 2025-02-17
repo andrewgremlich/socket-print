@@ -12,7 +12,7 @@
 <body>
     <main>
         <nav id="menuBar">
-            <h1>ProvelPrint: Alpha-v4.3.0</h1>
+            <h1>ProvelPrint: Alpha-v4.4.0</h1>
 
             <div class="menuBarButtonContainer">
                 <button class="menuBarButton">File</button>
@@ -35,9 +35,8 @@
                 <button class="menuBarButton">Edit</button>
 
                 <div class="menuBarDropdown">
-                    <input class="menuBarDropdownButton" id="editMaterialProfiles" type="button"
-                        value="Edit Material Profiles" />
-                    <!-- <input class="menuBarDropdownButton" type="button" value="Undo"> -->
+                    <input class="menuBarDropdownButton" id="addMaterialProfile" type="button"
+                        value="Add Material Profile" />
                 </div>
             </div>
 
@@ -55,18 +54,6 @@
                 <div id="ipAddress">
                     <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress"
                         value="" placeholder="192.168.X.XXX" />
-                    <svg class="hide" id="ipAddressSuccess" title="Successful connection to printer"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="feather feather-check">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <svg id="ipAddressFailure" title="Failed connection to printer" xmlns="http://www.w3.org/2000/svg"
-                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
                 </div>
 
                 <p>Lock Position</p>
@@ -106,7 +93,11 @@
 
                 <label for="activeMaterialProfile">Material</label>
 
-                <select name="activeMaterialProfile" id="activeMaterialProfile" name="activeMaterialProfile"></select>
+                <div id="activeMaterialProfileContainer">
+                    <select name="activeMaterialProfile" id="activeMaterialProfile"
+                        name="activeMaterialProfile"></select>
+                    <icon-element id="editActiveMaterialProfile" type="edit"></icon-element>
+                </div>
             </form>
 
             <div id="materialProfileDisplay">
@@ -172,56 +163,16 @@
         </div>
     </div>
 
-    <div id="makeNewMaterialProfile" class="hide">
-        <form>
-            <label for="materialProfileName">Material Profile Name</label>
-            <input type="text" id="materialProfileName" name="materialProfileName" required />
-
-            <label for="newNozzleTemp">Nozzle Temp in C</label>
-            <input type="number" value="200" name="nozzleTemp" id="nozzleTemp" required />
-
-            <label for="newCupTemp">Cup Temp in C</label>
-            <input type="number" value="130" name="cupTemp" id="cupTemp" required />
-
-            <label for="newShrinkFactor">Shrink Factor %</label>
-            <input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
-
-            <label for="newOutputFactor">Output Factor</label>
-            <input type="number" value="1" name="outputFactor" id="outputFactor" required />
-
-            <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
-            <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
-        </form>
-    </div>
+    <material-profile-form></material-profile-form>
 
     <div id="progressBarDiv">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-loader">
-            <line x1="12" y1="2" x2="12" y2="6"></line>
-            <line x1="12" y1="18" x2="12" y2="22"></line>
-            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-            <line x1="2" y1="12" x2="6" y2="12"></line>
-            <line x1="18" y1="12" x2="22" y2="12"></line>
-            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-        </svg>
+        <icon-element type="loader"></icon-element>
         <label for="progressBar" id="progressBarLabel">0%</label>
         <progress id="progressBar" value="0" max="100"></progress>
     </div>
 
     <div id="loading">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#fff"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-loader">
-            <line x1="12" y1="2" x2="12" y2="6"></line>
-            <line x1="12" y1="18" x2="12" y2="22"></line>
-            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-            <line x1="2" y1="12" x2="6" y2="12"></line>
-            <line x1="18" y1="12" x2="22" y2="12"></line>
-            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-        </svg>
+        <icon-element type="loader"></icon-element>
     </div>
 
     <script type="module" src="./src/renderer.ts"></script>

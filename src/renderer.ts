@@ -1,5 +1,6 @@
 import "@/global-style.css";
 import "@/db/store";
+import "@/web-components";
 import "@/utils/events";
 import "@/utils/pwa";
 

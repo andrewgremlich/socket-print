@@ -1,12 +1,6 @@
-import { connectToPrinter } from "@/3d/sendGCodeFile";
-import {
-	appForm,
-	ipAddressFailure,
-	ipAddressSuccess,
-	restoreDefaultsButton,
-} from "@/utils/htmlElements";
+import { appForm, restoreDefaultsButton } from "@/utils/htmlElements";
 
-import { getIpAddress, setAllAppSettings } from "./appSettings";
+import { setAllAppSettings } from "./appSettings";
 import { appendMaterialProfiles } from "./appendMaterialProfiles";
 import {
 	defaultSettingNames,
@@ -31,20 +25,6 @@ const initData = async () => {
 
 await initData();
 
-const ipAddress = await getIpAddress();
-
-if (ipAddress.length > 0 && import.meta.env.MODE !== "development") {
-	connectToPrinter(ipAddress)
-		.then(() => {
-			console.log("successful connection");
-			ipAddressFailure.classList.toggle("hide");
-			ipAddressSuccess.classList.toggle("hide");
-		})
-		.catch((error) => {
-			console.error("CAUGHT:", error);
-		});
-}
-
 restoreDefaultsButton.addEventListener("click", async () => {
 	await setAllAppSettings(defaultSettingNames);
 	await initData();
@@ -63,6 +43,6 @@ appForm.addEventListener("change", async (event) => {
 	const name = (event.target as HTMLInputElement).name;
 
 	if (name === "activeMaterialProfile") {
-		loadActiveMaterialProfile();
+		await loadActiveMaterialProfile();
 	}
 });

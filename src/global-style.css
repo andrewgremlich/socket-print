@@ -100,10 +100,6 @@ select {
 	}
 }
 
-svg {
-	color: #fff;
-}
-
 .error {
 	border: 5px solid red !important;
 }
@@ -279,32 +275,22 @@ svg {
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-#makeNewMaterialProfile {
-	position: absolute;
-	z-index: 9999;
-	bottom: 10px;
-	right: 10px;
-	background-color: #444;
-	padding: 10px 30px 10px;
-	border-radius: 15px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-
-	& > form {
-		display: grid;
-		row-gap: 5px;
-		column-gap: 50px;
-		grid-template-columns: 1fr 1fr;
-		align-items: center;
-
-		& > * {
-			grid-column-start: span 1;
-		}
-	}
-}
-
 #editSocket {
 	& input[type="button"] {
 		margin-right: 10px;
+	}
+}
+
+#activeMaterialProfileContainer {
+	display: flex;
+	align-items: center;
+
+	& > select {
+		margin-right: 10px;
+	}
+
+	& > icon-element {
+		cursor: pointer;
 	}
 }
 
@@ -324,7 +310,7 @@ svg {
 		margin: 10px;
 	}
 
-	svg {
+	icon-element {
 		flex-shrink: 0;
 		animation: loading 3s linear infinite;
 	}
@@ -341,7 +327,7 @@ svg {
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.8);
 
-	svg {
+	icon-element {
 		animation: loading 3s linear infinite;
 	}
 }

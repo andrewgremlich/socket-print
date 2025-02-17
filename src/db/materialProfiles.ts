@@ -17,12 +17,25 @@ export const addNewMaterialProfile = async (profile: {
 	await db.materialProfiles.add(profile);
 };
 
+export const updateMaterialProfile = async (profile: {
+	id: number;
+	name: string;
+	nozzleTemp: number;
+	cupTemp: number;
+	shrinkFactor: number;
+	outputFactor: number;
+}) => {
+	const db = await getDb();
+	await db.materialProfiles.update(profile.id, profile);
+};
+
 export const getActiveMaterialProfile = async () => {
 	const db = await getDb();
-	const activeMaterialProfile = await db.appSettings
+	const activeMaterialProfile = (await db.appSettings
 		.where("name")
 		.equals("activeMaterialProfile")
-		.first();
+		.first()) as unknown as { value: string };
+
 	const activeProfile = await db.materialProfiles
 		.where("name")
 		.equals(activeMaterialProfile.value)
@@ -33,10 +46,10 @@ export const getActiveMaterialProfile = async () => {
 
 export const getActiveMaterialProfileShrinkFactor = async () => {
 	const db = await getDb();
-	const activeMaterialProfile = await db.appSettings
+	const activeMaterialProfile = (await db.appSettings
 		.where("name")
 		.equals("activeMaterialProfile")
-		.first();
+		.first()) as unknown as { value: string };
 
 	const activeProfile = await db.materialProfiles
 		.where("name")
@@ -48,10 +61,10 @@ export const getActiveMaterialProfileShrinkFactor = async () => {
 
 export const getActiveMaterialProfileNozzleTemp = async () => {
 	const db = await getDb();
-	const activeMaterialProfile = await db.appSettings
+	const activeMaterialProfile = (await db.appSettings
 		.where("name")
 		.equals("activeMaterialProfile")
-		.first();
+		.first()) as unknown as { value: string };
 
 	const activeProfile = await db.materialProfiles
 		.where("name")
