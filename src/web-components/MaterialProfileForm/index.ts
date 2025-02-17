@@ -6,6 +6,7 @@ import {
 } from "@/db/materialProfiles";
 import type { MaterialProfile } from "@/db/types";
 
+import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
 import { formContainerStyle } from "./style";
 
 export class MaterialProfileForm extends HTMLElement {
@@ -117,7 +118,8 @@ export class MaterialProfileForm extends HTMLElement {
 			await addNewMaterialProfile(profile);
 		}
 
-		appendMaterialProfiles();
+		await appendMaterialProfiles();
+		await loadActiveMaterialProfile();
 
 		this.dispatchEvent(
 			new CustomEvent("material-profile-saved", {

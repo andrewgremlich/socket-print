@@ -183,7 +183,15 @@ export class Socket extends AppObject {
 
 	verticalChange = (evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
-		this.mesh.position.y = Number.parseInt(targetValue);
+		const numVal = Number.parseInt(targetValue);
+		const floor = 80;
+		const minY = Math.abs(this.boundingBox.min.y) + this.adjustmentHeightForCup;
+
+		if (minY + numVal < floor) {
+			this.mesh.position.y = floor;
+		} else {
+			this.mesh.position.y = minY + numVal;
+		}
 	};
 
 	depthChange = (evt: Event) => {
