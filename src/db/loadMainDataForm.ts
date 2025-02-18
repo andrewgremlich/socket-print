@@ -30,6 +30,10 @@ export async function loadActiveMaterialProfile() {
 			input.textContent = `${activeMaterialProfile[key as keyof typeof activeMaterialProfile]}`;
 		}
 	}
+
+	document
+		.querySelector(`[value="${activeMaterialProfile.name}"]`)
+		?.setAttribute("selected", "true");
 }
 
 export const triggerSendToFileEffect = async () => {

@@ -62,7 +62,6 @@ export class MaterialProfileForm extends HTMLElement {
 	}
 
 	async showForm(type: "new" | "edit") {
-		this.host.classList.remove("hide");
 		this.formTitle.textContent =
 			type === "new" ? "Add Material Profile" : "Edit Material Profile";
 
@@ -87,6 +86,8 @@ export class MaterialProfileForm extends HTMLElement {
 		} else {
 			this.form.reset();
 		}
+
+		this.host.classList.remove("hide");
 	}
 
 	async saveProfile(event: Event) {
