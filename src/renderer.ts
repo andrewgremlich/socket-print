@@ -51,12 +51,19 @@ const socket = new Socket({
 	},
 });
 
+let mergeGeometries: MergeGeometries;
+
 clearModelButton.addEventListener("click", () => {
-	app.removeMeshFromScene(socket.mesh);
+	if (mergeGeometries) {
+		app.removeMeshFromScene(mergeGeometries.mesh);
+		mergeGeometries = null;
+		distalCup.mesh.visible = true;
+	} else {
+		app.removeMeshFromScene(socket.mesh);
+	}
+
 	socket.clearData();
 });
-
-let mergeGeometries: MergeGeometries;
 
 mergeMeshes?.addEventListener("click", () => {
 	if (!loadingScreen) {
