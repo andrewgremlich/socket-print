@@ -41,9 +41,6 @@ export const printerFileInput = document.getElementById(
 export const ipAddressInput = document.getElementById(
 	"ipAddressInput",
 ) as HTMLInputElement;
-export const sendToFile = document.getElementById(
-	"sendToFile",
-) as HTMLInputElement;
 
 export const activeMaterialProfileSelect = document.getElementById(
 	"activeMaterialProfile",
@@ -78,6 +75,12 @@ export const newMaterialProfile = document.getElementById(
 export const estimatedPrintTime = document.getElementById(
 	"estimatedPrintTime",
 ) as HTMLParagraphElement;
+export const ipAddressFailure = document.getElementById(
+	"ipAddressFailure",
+) as IconElement;
+export const ipAddressSuccess = document.getElementById(
+	"ipAddressSuccess",
+) as IconElement;
 
 export const editActiveMaterialProfile = document.getElementById(
 	"editActiveMaterialProfile",

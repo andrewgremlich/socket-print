@@ -1,25 +1,6 @@
 import { getDb } from "./getDb";
 import type { ProvelPrintSettings } from "./types";
 
-export const setSendToFile = async (sendToFile: boolean) => {
-	const db = await getDb();
-
-	return await db.appSettings
-		.where("name")
-		.equals("sendToFile")
-		.modify({ value: sendToFile });
-};
-
-export const getSendToFile = async () => {
-	const db = await getDb();
-	const sendToFile = await db.appSettings
-		.where("name")
-		.equals("sendToFile")
-		.first();
-
-	return sendToFile.value as boolean;
-};
-
 export const getAppSettings = async () => {
 	const db = await getDb();
 	return await db.appSettings.toArray();

@@ -1,5 +1,4 @@
-import { generateGCodeButton, printerFileInput } from "@/utils/htmlElements";
-import { getAppSettings, getSendToFile } from "./appSettings";
+import { getAppSettings } from "./appSettings";
 import { getActiveMaterialProfile } from "./materialProfiles";
 
 export async function loadMainDataForm() {
@@ -35,15 +34,3 @@ export async function loadActiveMaterialProfile() {
 		.querySelector(`[value="${activeMaterialProfile.name}"]`)
 		?.setAttribute("selected", "true");
 }
-
-export const triggerSendToFileEffect = async () => {
-	const sendToFile = await getSendToFile();
-
-	if (sendToFile) {
-		generateGCodeButton.classList.remove("hide");
-		printerFileInput.classList.add("hide");
-	} else {
-		printerFileInput.classList.remove("hide");
-		generateGCodeButton.classList.add("hide");
-	}
-};

@@ -56,6 +56,13 @@
                         value="" placeholder="192.168.X.XXX" />
                 </div>
 
+                <p>Port Status</p>
+
+                <div>
+                    <icon-element type="success" id="ipAddressSuccess" class="hide"></icon-element>
+                    <icon-element type="failure" id="ipAddressFailure"></icon-element>
+                </div>
+
                 <p>Lock Position</p>
 
                 <select name="lockPosition" id="lockPosition" name="lockPosition">
@@ -117,13 +124,16 @@
 
                 <input type="button" value="Blend to Cup" class="button" id="mergeMeshes" disabled />
 
-                <label for="sendToFile"><input type="checkbox" id="sendToFile" name="sendToFile" />Send to
-                    File</label>
+                <div></div>
 
-                <input type="button" value="Generate GCode" class="button" id="generateGCodeButton" disabled />
+                <p>Generate G Code</p>
 
-                <input type="button" value="Print" id="printerFileInput" name="printerFileInput" class="button"
-                    disabled />
+                <div>
+                    <input type="button" value="File" class="button" id="generateGCodeButton" disabled />
+
+                    <input type="button" value="Print" id="printerFileInput" name="printerFileInput" class="button"
+                        disabled />
+                </div>
             </div>
         </div>
 

@@ -1,8 +1,11 @@
-import { setSendToFile } from "@/db/appSettings";
-import { triggerSendToFileEffect } from "@/db/loadMainDataForm";
+import { connectToPrinter } from "@/3d/sendGCodeFile";
+
 import {
 	addMaterialProfile,
 	editActiveMaterialProfile,
+	ipAddressFailure,
+	ipAddressInput,
+	ipAddressSuccess,
 	materialProfileForm,
 	menuBar,
 	menuBarDropdowns,
@@ -32,6 +35,30 @@ window.addEventListener("click", (evt) => {
 	}
 });
 
+const printerConnection = async () => {
+	try {
+		await connectToPrinter(ipAddressInput.value);
+
+		ipAddressFailure.classList.toggle("hide");
+		ipAddressSuccess.classList.toggle("hide");
+
+		ipAddressSuccess.spinIcon();
+	} catch (error) {
+		console.error("CAUGHT:", error);
+
+		ipAddressFailure.classList.remove("hide");
+		ipAddressSuccess.classList.add("hide");
+
+		ipAddressFailure.spinIcon();
+	}
+};
+
+ipAddressInput.addEventListener("input", printerConnection);
+
+if (!import.meta.env.DEV) {
+	window.addEventListener("load", printerConnection);
+}
+
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),
 );
@@ -39,9 +66,3 @@ addMaterialProfile.addEventListener("click", () =>
 editActiveMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("edit"),
 );
-
-sendToFile.addEventListener("change", (evt) => {
-	const target = evt.target as HTMLInputElement;
-	setSendToFile(target.checked);
-	triggerSendToFileEffect();
-});

@@ -10,7 +10,6 @@ import {
 import {
 	loadActiveMaterialProfile,
 	loadMainDataForm,
-	triggerSendToFileEffect,
 } from "./loadMainDataForm";
 import type { ProvelPrintSettings } from "./types";
 
@@ -20,7 +19,6 @@ const initData = async () => {
 	await appendMaterialProfiles();
 	await loadMainDataForm();
 	await loadActiveMaterialProfile();
-	triggerSendToFileEffect();
 };
 
 await initData();

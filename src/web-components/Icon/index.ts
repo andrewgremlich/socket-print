@@ -45,6 +45,11 @@ class IconElement extends HTMLElement {
 		this.render();
 	}
 
+	spinIcon() {
+		const iconContainer = this.shadowRoot.querySelector("#iconContainer");
+		iconContainer.classList.toggle("spin");
+	}
+
 	render() {
 		const type = this.getAttribute("type");
 		this.shadowRoot.innerHTML = `
@@ -52,8 +57,27 @@ class IconElement extends HTMLElement {
       svg {
         color: #fff;
       }
+
+      #iconContainer {
+        display: inline-block;
+      }
+
+      .spin {
+        animation: spin 1s linear;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
+    <div id="iconContainer">
     ${svgIcons[type as keyof typeof svgIcons] || ""}
+    </div>
     `;
 	}
 }

@@ -113,7 +113,6 @@ select {
 }
 
 .button {
-	white-space: normal;
 	font-size: 16px;
 	background-color: #f0f0f0;
 	color: #000;
@@ -123,7 +122,6 @@ select {
 	cursor: pointer;
 	padding: 4px 12px;
 	margin: 10px 0px;
-	width: 150px;
 
 	&:has(input[disabled]),
 	&[disabled] {
