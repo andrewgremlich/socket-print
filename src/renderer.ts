@@ -117,7 +117,6 @@ export async function slicingAction(sendToFile: boolean) {
 	progressBarDiv.style.display = "flex";
 
 	setTimeout(async () => {
-		// TODO: I don't know of setTimeout supports this.
 		if (!mergeGeometries.mesh) {
 			throw new Error("Geometry not found");
 		}

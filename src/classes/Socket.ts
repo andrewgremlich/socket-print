@@ -91,13 +91,6 @@ export class Socket extends AppObject {
 				0,
 			);
 
-			const nozzleSize = await getNozzleSize();
-			const currentWidth = this.size.x;
-			const nozzleScale = (Number(nozzleSize) + currentWidth) / currentWidth;
-			const shrinkScale = await getActiveMaterialProfileShrinkFactor();
-			const scaleAdjustment = nozzleScale + shrinkScale / 100;
-
-			this.mesh.scale.set(scaleAdjustment, 1, scaleAdjustment);
 			this.mesh.matrixWorldAutoUpdate = true;
 
 			this.socketCallback({

@@ -69,7 +69,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	scene.add(mesh);
 
 	const angleIncrement = (Math.PI * 2) / segments;
-	const pointGatherer: Vector3[][] = [];
+	const pointGatherer: Vector3[] = [];
 	const raycaster = new Raycaster();
 	const direction = new Vector3();
 	const ray = raycaster.ray;
@@ -83,7 +83,9 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 		heightPosition < maxHeight;
 		heightPosition += layerHeight
 	) {
-		const pointLevel: Vector3[] = [];
+		if (pointGatherer.length === 0) {
+			pointGatherer.push(new Vector3(39, socketHeight, 0)); // hardcoded start point
+		}
 
 		self.postMessage({
 			type: "progress",
@@ -103,13 +105,11 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
 				intersection.add(new Vector3(0, socketHeight, 0));
-				pointLevel.push(intersection);
+				pointGatherer.push(intersection);
 			} else {
 				console.error("No intersection found for this ray.");
 			}
 		}
-
-		pointGatherer.push(pointLevel);
 	}
 
 	self.postMessage({
