@@ -5,9 +5,10 @@ import "@/utils/events";
 import "@/utils/pwa";
 
 import { Application } from "@/classes/Application";
-import { DistalCup } from "@/classes/DistalCup";
 import { Lighting } from "@/classes/Lighting";
+import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
+import { Ring } from "@/classes/Ring";
 import { Socket } from "@/classes/Socket";
 
 import { blendMerge } from "@/3d/blendMerge";
@@ -27,6 +28,7 @@ import {
 	progressBarLabel,
 } from "@/utils/htmlElements";
 import { sendGCodeFile } from "./3d/sendGCodeFile";
+import { CIRCULUAR_SEGMENTS } from "./utils/constants";
 
 const app = new Application();
 
@@ -34,8 +36,8 @@ const lighting = new Lighting();
 app.addToScene(lighting.directionalLight);
 app.addToScene(lighting.ambientLight);
 
-const distalCup = new DistalCup();
-app.addToScene(distalCup.mesh);
+const ring = new Ring();
+app.addToScene(ring.mesh);
 
 const socket = new Socket({
 	socketCallback: ({ mesh, maxDimension }) => {
@@ -57,7 +59,6 @@ clearModelButton.addEventListener("click", () => {
 	if (mergeGeometries) {
 		app.removeMeshFromScene(mergeGeometries.mesh);
 		mergeGeometries = null;
-		distalCup.mesh.visible = true;
 	} else {
 		app.removeMeshFromScene(socket.mesh);
 	}
@@ -66,6 +67,8 @@ clearModelButton.addEventListener("click", () => {
 });
 
 mergeMeshes?.addEventListener("click", () => {
+	const mergeCup = new MergeCup();
+
 	if (!loadingScreen) {
 		throw new Error("Loading screen not found");
 	}
@@ -77,17 +80,17 @@ mergeMeshes?.addEventListener("click", () => {
 			throw new Error("STL data has not been loaded!");
 		}
 
-		if (!distalCup.mesh) {
+		if (!mergeCup.mesh) {
 			throw new Error("Cylinder mesh not found");
 		}
 
-		mergeGeometries = new MergeGeometries(socket, distalCup);
+		mergeGeometries = new MergeGeometries(socket, mergeCup);
 
 		if (!mergeGeometries.mesh) {
 			throw new Error("Geometry not found");
 		}
 
-		distalCup.mesh.visible = false;
+		mergeCup.mesh.visible = false;
 		socket.mesh.visible = false;
 
 		app.addToScene(mergeGeometries.mesh);
@@ -133,7 +136,7 @@ export async function slicingAction(sendToFile: boolean) {
 			positions: mergeGeometries.mesh.geometry.attributes.position.array,
 			verticalAxis: "y",
 			layerHeight,
-			segments: 100,
+			segments: CIRCULUAR_SEGMENTS,
 			incrementHeight: true,
 		});
 

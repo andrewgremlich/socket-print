@@ -1,0 +1,1 @@
+export const CIRCULUAR_SEGMENTS = 128;

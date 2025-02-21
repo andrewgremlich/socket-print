@@ -2,11 +2,11 @@ import { Box3, CylinderGeometry, Mesh, Vector3 } from "three";
 import { CSG } from "three-csg-ts";
 
 import { AppObject } from "./AppObject";
-import type { DistalCup } from "./DistalCup";
+import type { MergeCup } from "./MergeCup";
 import type { Socket } from "./Socket";
 
 export class MergeGeometries extends AppObject {
-	constructor(stlModel: Socket, cylinder: DistalCup) {
+	constructor(stlModel: Socket, cylinder: MergeCup) {
 		super();
 
 		if (!cylinder.mesh) {
@@ -28,7 +28,7 @@ export class MergeGeometries extends AppObject {
 		this.mesh.matrixWorldAutoUpdate = true;
 	}
 
-	cloneCylinder = (cylinder: DistalCup, newHeight: number) => {
+	cloneCylinder = (cylinder: MergeCup, newHeight: number) => {
 		if (!cylinder.mesh) {
 			throw new Error("Cylinder mesh not found");
 		}

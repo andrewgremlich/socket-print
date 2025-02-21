@@ -8,8 +8,8 @@ import {
 
 import { AppObject } from "./AppObject";
 
-// Distal Cup configuration
-export class DistalCup extends AppObject {
+// TODO: make sure to center according to the socket.
+export class MergeCup extends AppObject {
 	#radialSegments = 128;
 	#radius = 78 / 2;
 	height: number;
