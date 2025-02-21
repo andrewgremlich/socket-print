@@ -45,6 +45,8 @@ const socket = new Socket({
 		app.controls.target.set(0, 100, 0);
 		app.addToScene(mesh);
 
+		app.attachTransformControls(mesh);
+
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
 		}

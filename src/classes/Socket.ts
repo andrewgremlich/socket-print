@@ -10,8 +10,6 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 
 import { ensureUV } from "@/3d/ensureUV";
 import { removeDuplicateVertices } from "@/3d/removeDups";
-import { getNozzleSize } from "@/db/appSettings";
-import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfiles";
 import {
 	coronalRotate,
 	depthTranslate,
