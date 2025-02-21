@@ -83,10 +83,6 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 		heightPosition < maxHeight;
 		heightPosition += layerHeight
 	) {
-		if (pointGatherer.length === 0) {
-			pointGatherer.push(new Vector3(39, socketHeight, 0)); // hardcoded start point
-		}
-
 		self.postMessage({
 			type: "progress",
 			data: heightPosition / maxHeight,

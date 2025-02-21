@@ -8,12 +8,6 @@ export const stlFileInput = document.getElementById(
 export const generateGCodeButton = document.getElementById(
 	"generateGCodeButton",
 ) as HTMLInputElement;
-export const changeDistalCupSize = document.getElementById(
-	"changeDistalCupSize",
-) as HTMLInputElement;
-export const addFillerEllipsoid = document.getElementById(
-	"addFillerEllipsoid",
-) as HTMLInputElement;
 export const transversalRotate = document.getElementById(
 	"transversalRotate",
 ) as HTMLInputElement;
@@ -57,9 +51,6 @@ export const threeDViewer = document.getElementById(
 ) as HTMLCanvasElement;
 
 export const menuBar = document.getElementById("menuBar") as HTMLDivElement;
-export const menuBarButtonContainers = document.querySelectorAll(
-	".menuBarButtonContainer",
-) as unknown as HTMLDivElement[];
 export const menuBarDropdowns = document.querySelectorAll(
 	".menuBarDropdown",
 ) as unknown as HTMLDivElement[];
@@ -85,14 +76,11 @@ export const ipAddressSuccess = document.getElementById(
 export const editActiveMaterialProfile = document.getElementById(
 	"editActiveMaterialProfile",
 ) as HTMLDivElement;
-export const saveMaterialProfileButton = document.getElementById(
-	"saveMaterialProfile",
-) as HTMLButtonElement;
 export const cancelMaterialProfileButton = document.getElementById(
 	"cancelMaterialProfile",
 ) as HTMLButtonElement;
-export const updateAppButton = document.getElementById(
-	"updateAppButton",
+export const deleteMaterialProfileButton = document.getElementById(
+	"deleteMaterialProfile",
 ) as HTMLButtonElement;
 export const restoreDefaultsButton = document.getElementById(
 	"restoreDefaultsButton",
@@ -103,9 +91,6 @@ export const clearModelButton = document.getElementById(
 
 export const appForm = document.getElementById(
 	"customizations",
-) as HTMLFormElement;
-export const materialProfileDisplay = document.getElementById(
-	"materialProfileDisplay",
 ) as HTMLFormElement;
 
 export const materialProfileForm = document.querySelector(

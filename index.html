@@ -12,7 +12,7 @@
 <body>
     <main>
         <nav id="menuBar">
-            <h1>ProvelPrint: v4.4.2-alpha</h1>
+            <h1>ProvelPrint: v4.5.0-alpha</h1>
 
             <div class="menuBarButtonContainer">
                 <button class="menuBarButton">File</button>
@@ -37,6 +37,10 @@
                 <div class="menuBarDropdown">
                     <input class="menuBarDropdownButton" id="addMaterialProfile" type="button"
                         value="Add Material Profile" />
+                    <input class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button"
+                        value="Edit Active Material Profile" />
+                    <input class="menuBarDropdownButton" id="deleteMaterialProfile" type="button"
+                        value="Delete Active Material Profile" />
                 </div>
             </div>
 
@@ -58,7 +62,7 @@
 
                 <p>Port Status</p>
 
-                <div>
+                <div id="portStatusIcons">
                     <icon-element type="success" id="ipAddressSuccess" class="hide"></icon-element>
                     <icon-element type="failure" id="ipAddressFailure"></icon-element>
                 </div>
@@ -103,7 +107,6 @@
                 <div id="activeMaterialProfileContainer">
                     <select name="activeMaterialProfile" id="activeMaterialProfile"
                         name="activeMaterialProfile"></select>
-                    <icon-element id="editActiveMaterialProfile" type="edit"></icon-element>
                 </div>
             </form>
 

@@ -54,12 +54,19 @@ class IconElement extends HTMLElement {
 		const type = this.getAttribute("type");
 		this.shadowRoot.innerHTML = `
     <style>
+      :host {      
+        display: inline-block;
+      }
+      
       svg {
         color: #fff;
+        width: 100%;
+        height: 100%;
       }
 
       #iconContainer {
-        display: inline-block;
+        display: block;
+        height: 100%;
       }
 
       .spin {

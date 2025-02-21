@@ -114,6 +114,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 	mergeGeometries.updateMatrixWorld();
 	generateGCodeButton.disabled = true;
+	printerFileInput.disabled = true;
 	progressBarDiv.style.display = "flex";
 
 	setTimeout(async () => {

@@ -17,6 +17,19 @@ export const addNewMaterialProfile = async (profile: {
 	await db.materialProfiles.add(profile);
 };
 
+export const deleteActiveMaterialProfile = async () => {
+	const db = await getDb();
+	const activeMaterialProfile = (await db.appSettings
+		.where("name")
+		.equals("activeMaterialProfile")
+		.first()) as unknown as { value: string };
+
+	await db.materialProfiles
+		.where("name")
+		.equals(activeMaterialProfile.value)
+		.delete();
+};
+
 export const updateMaterialProfile = async (profile: {
 	id: number;
 	name: string;

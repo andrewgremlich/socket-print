@@ -320,13 +320,15 @@ select {
 	z-index: 9999;
 	width: 100%;
 	height: 100%;
-	display: none; /* switch to flex to show loading */
+	display: none;
 	justify-content: center;
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.8);
 
 	icon-element {
 		animation: loading 3s linear infinite;
+		width: 100px;
+		height: 100px;
 	}
 }
 

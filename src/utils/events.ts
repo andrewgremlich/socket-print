@@ -1,7 +1,15 @@
 import { connectToPrinter } from "@/3d/sendGCodeFile";
 
+import { saveActiveMaterialProfile } from "@/db/appSettings";
+import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
+import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
+import {
+	deleteActiveMaterialProfile,
+	getMaterialProfiles,
+} from "@/db/materialProfiles";
 import {
 	addMaterialProfile,
+	deleteMaterialProfileButton,
 	editActiveMaterialProfile,
 	ipAddressFailure,
 	ipAddressInput,
@@ -9,7 +17,6 @@ import {
 	materialProfileForm,
 	menuBar,
 	menuBarDropdowns,
-	sendToFile,
 } from "./htmlElements";
 
 menuBar.addEventListener("click", (evt) => {
@@ -66,3 +73,13 @@ addMaterialProfile.addEventListener("click", () =>
 editActiveMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("edit"),
 );
+
+deleteMaterialProfileButton.addEventListener("click", async () => {
+	await deleteActiveMaterialProfile();
+
+	const materialProfiles = await getMaterialProfiles();
+
+	await saveActiveMaterialProfile(materialProfiles[0].name);
+	await appendMaterialProfiles();
+	await loadActiveMaterialProfile();
+});
