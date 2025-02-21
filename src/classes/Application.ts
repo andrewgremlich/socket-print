@@ -62,6 +62,20 @@ export class Application {
 
 	removeMeshFromScene = (mesh: Mesh) => this.scene.remove(mesh);
 
+	removeTransformControls = () => {
+		console.log(this.scene.children);
+
+		const transformControls = this.scene.children.find(
+			(child) => child instanceof TransformControls,
+		);
+
+		console.log(transformControls);
+
+		// if (transformControls) {
+		// 	this.scene.remove(transformControls);
+		// }
+	};
+
 	attachTransformControls = (mesh: Mesh) => {
 		const transformControls = new TransformControls(
 			this.camera,

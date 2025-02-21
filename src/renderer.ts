@@ -69,6 +69,8 @@ clearModelButton.addEventListener("click", () => {
 });
 
 mergeMeshes?.addEventListener("click", () => {
+	// app.removeTransformControls();
+
 	const mergeCup = new MergeCup();
 
 	if (!loadingScreen) {
