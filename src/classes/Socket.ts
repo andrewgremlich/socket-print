@@ -11,17 +11,18 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 import { ensureUV } from "@/3d/ensureUV";
 import { removeDuplicateVertices } from "@/3d/removeDups";
 import {
-	coronalRotate,
+	coronalRotater,
 	depthTranslate,
 	horizontalTranslate,
 	loadingScreen,
 	mergeMeshes,
 	sagittalRotate,
 	stlFileInput,
-	transversalRotate,
+	transversalRotater,
 	verticalTranslate,
 } from "@/utils/htmlElements";
 
+import { getLockDepth } from "@/db/appSettings";
 import { AppObject } from "./AppObject";
 
 type SocketCallback = (params: {
@@ -31,7 +32,7 @@ type SocketCallback = (params: {
 }) => void;
 
 export class Socket extends AppObject {
-	adjustmentHeightForCup = 10;
+	adjustmentHeightForCup = 0;
 	socketCallback: SocketCallback;
 
 	constructor({ socketCallback }: { socketCallback: SocketCallback }) {
@@ -44,9 +45,9 @@ export class Socket extends AppObject {
 		}
 
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
-		transversalRotate?.addEventListener("click", this.transverseRotate90);
+		coronalRotater?.addEventListener("click", this.transverseRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
-		coronalRotate?.addEventListener("click", this.coronalRotate90);
+		transversalRotater?.addEventListener("click", this.transversalRotater90);
 		verticalTranslate?.addEventListener("input", this.verticalChange);
 		horizontalTranslate?.addEventListener("input", this.horizontalChange);
 		depthTranslate?.addEventListener("input", this.depthChange);
@@ -85,7 +86,7 @@ export class Socket extends AppObject {
 			this.computeBoundingBox();
 			this.mesh.position.set(
 				0,
-				this.size.y / 2 + this.adjustmentHeightForCup,
+				this.size.y / 2 + this.adjustmentHeightForCup - (await getLockDepth()),
 				0,
 			);
 
@@ -116,9 +117,9 @@ export class Socket extends AppObject {
 	};
 
 	toggleInput = (isDisabled: boolean) => {
-		transversalRotate.disabled = isDisabled;
+		coronalRotater.disabled = isDisabled;
 		sagittalRotate.disabled = isDisabled;
-		coronalRotate.disabled = isDisabled;
+		transversalRotater.disabled = isDisabled;
 		mergeMeshes.disabled = isDisabled;
 		verticalTranslate.disabled = isDisabled;
 		horizontalTranslate.disabled = isDisabled;
@@ -162,7 +163,7 @@ export class Socket extends AppObject {
 		this.autoAlignMesh();
 	};
 
-	coronalRotate90 = () => {
+	transversalRotater90 = () => {
 		this.mesh.rotateY(Math.PI / 2);
 		this.autoAlignMesh();
 	};

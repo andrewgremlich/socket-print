@@ -25,7 +25,7 @@ export interface ProvelPrintSettings {
 	lockPosition: "left" | "right";
 	cupSize: string;
 	nozzleSize: number;
+	lockDepth: number;
 	layerHeight: number;
 	activeMaterialProfile: string;
-	sendToFile: boolean;
 }

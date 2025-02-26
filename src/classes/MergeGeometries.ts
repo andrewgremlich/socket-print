@@ -17,8 +17,25 @@ export class MergeGeometries extends AppObject {
 			throw new Error("STL data has not been loaded!");
 		}
 
-		const clonedCylinder = this.cloneCylinder(cylinder, stlModel.size.y);
-		const union = CSG.union(stlModel.mesh, clonedCylinder);
+		const clearBelowZ0 = this.cloneCylinder(cylinder.mesh, {
+			newHeight: 20,
+			radius: 100,
+			openEnded: false,
+			heightPlacement: -10,
+		});
+		const subtractBelowZ0 = CSG.subtract(stlModel.mesh, clearBelowZ0);
+
+		// const clearCylinder = this.cloneCylinder(cylinder.mesh, {
+		// 	newHeight: 40,
+		// 	radius: 100,
+		// 	openEnded: false,
+		// });
+		// const subtract = CSG.subtract(stlModel.mesh, clearCylinder);
+
+		const clonedCylinder = this.cloneCylinder(cylinder.mesh, {
+			newHeight: stlModel.size.y,
+		});
+		const union = CSG.union(subtractBelowZ0, clonedCylinder);
 
 		this.boundingBox = new Box3().setFromObject(union);
 		this.size = this.boundingBox.getSize(new Vector3());
@@ -28,25 +45,43 @@ export class MergeGeometries extends AppObject {
 		this.mesh.matrixWorldAutoUpdate = true;
 	}
 
-	cloneCylinder = (cylinder: MergeCup, newHeight: number) => {
-		if (!cylinder.mesh) {
-			throw new Error("Cylinder mesh not found");
+	cloneCylinder = (
+		cylinder: Mesh,
+		{
+			newHeight,
+			radius,
+			openEnded,
+			heightPlacement,
+		}: {
+			newHeight?: number;
+			radius?: number;
+			openEnded?: boolean;
+			heightPlacement?: number;
+		} = {},
+	) => {
+		if (!cylinder) {
+			throw new Error("Mesh not found");
 		}
 
 		const { height, ...cylinderParams } = (
-			cylinder.mesh.geometry as CylinderGeometry
+			cylinder.geometry as CylinderGeometry
 		).parameters;
+		const h = newHeight !== undefined ? newHeight : height;
 		const clonedCylinderGeometry = new CylinderGeometry(
-			cylinderParams.radiusTop,
-			cylinderParams.radiusBottom,
-			newHeight,
+			radius !== undefined ? radius : cylinderParams.radiusTop,
+			radius !== undefined ? radius : cylinderParams.radiusBottom,
+			h,
 			cylinderParams.radialSegments,
 			cylinderParams.heightSegments,
-			cylinderParams.openEnded,
+			openEnded !== undefined ? openEnded : cylinderParams.openEnded,
 		);
-		const mesh = new Mesh(clonedCylinderGeometry, cylinder.mesh.material);
+		const mesh = new Mesh(clonedCylinderGeometry, cylinder.material);
 
-		mesh.position.set(0, newHeight / 2, 0);
+		mesh.position.set(
+			0,
+			heightPlacement !== undefined ? heightPlacement : h / 2,
+			0,
+		);
 
 		mesh.updateMatrixWorld(true);
 

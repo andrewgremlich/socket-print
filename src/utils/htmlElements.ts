@@ -8,14 +8,14 @@ export const stlFileInput = document.getElementById(
 export const generateGCodeButton = document.getElementById(
 	"generateGCodeButton",
 ) as HTMLInputElement;
-export const transversalRotate = document.getElementById(
-	"transversalRotate",
+export const coronalRotater = document.getElementById(
+	"coronalRotater",
 ) as HTMLInputElement;
 export const sagittalRotate = document.getElementById(
 	"sagittalRotate",
 ) as HTMLInputElement;
-export const coronalRotate = document.getElementById(
-	"coronalRotate",
+export const transversalRotater = document.getElementById(
+	"transversalRotater",
 ) as HTMLInputElement;
 export const horizontalTranslate = document.getElementById(
 	"horizontalTranslate",

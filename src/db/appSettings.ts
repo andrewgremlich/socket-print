@@ -132,3 +132,12 @@ export const saveActiveMaterialProfile = async (
 		.equals("activeMaterialProfile")
 		.modify({ value: activeMaterialProfile });
 };
+
+export const getLockDepth = async () => {
+	const db = await getDb();
+	const lockDepth = await db.appSettings
+		.where("name")
+		.equals("lockDepth")
+		.first();
+	return Number(lockDepth.value);
+};

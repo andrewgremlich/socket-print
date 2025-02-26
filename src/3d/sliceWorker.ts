@@ -41,7 +41,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	}
 
 	const scene = new Scene();
-	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(500, 500) });
+	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
 	const rawgeometry = new BufferGeometry();
 
 	renderer.render(scene, new PerspectiveCamera(75, 1, 0.1, 1000));

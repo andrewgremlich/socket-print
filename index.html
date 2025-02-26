@@ -63,8 +63,8 @@
                 <p>Port Status</p>
 
                 <div id="portStatusIcons">
-                    <icon-element type="success" id="ipAddressSuccess" class="hide"></icon-element>
-                    <icon-element type="failure" id="ipAddressFailure"></icon-element>
+                    <p type="success" id="ipAddressSuccess" class="hide">Connected!</p>
+                    <p type="failure" id="ipAddressFailure">Disconnected</p>
                 </div>
 
                 <p>Lock Position</p>
@@ -147,9 +147,9 @@
         <div id="editSocket">
             <div id="rotateSocket">
                 <p>Rotate 90</p>
-                <input disabled id="transversalRotate" class="button" type="button" value="Transverse" />
+                <input disabled id="coronalRotater" class="button" type="button" value="Coronal" />
                 <input disabled id="sagittalRotate" class="button" type="button" value="Sagittal" />
-                <input disabled id="coronalRotate" class="button" type="button" value="Coronal" />
+                <input disabled id="transversalRotater" class="button" type="button" value="Transverse" />
             </div>
             <div id="changePosition">
                 <p>Translate</p>
@@ -160,7 +160,7 @@
                     <input disabled id="depthTranslate" type="range" value="0" step="1" min="-100" max="100" />
                 </label>
                 <label for="verticalTranslate">Z
-                    <input disabled id="verticalTranslate" type="range" value="0" step="1" min="-100" max="100" />
+                    <input disabled id="verticalTranslate" type="number" value="0" step="1" min="-25" max="25" />
                 </label>
             </div>
         </div>

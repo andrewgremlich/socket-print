@@ -8,7 +8,6 @@ import { Application } from "@/classes/Application";
 import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
-import { Ring } from "@/classes/Ring";
 import { Socket } from "@/classes/Socket";
 
 import { blendMerge } from "@/3d/blendMerge";
@@ -27,8 +26,12 @@ import {
 	progressBarDiv,
 	progressBarLabel,
 } from "@/utils/htmlElements";
+import { Vector3 } from "three";
+import { adjustForShrinkAndOffset } from "./3d/adjustForShrinkAndOffset";
 import { sendGCodeFile } from "./3d/sendGCodeFile";
-import { CIRCULUAR_SEGMENTS } from "./utils/constants";
+import { DebugPoint } from "./classes/DebugPoint";
+
+export const CIRCULUAR_SEGMENTS = 128;
 
 const app = new Application();
 
@@ -36,8 +39,8 @@ const lighting = new Lighting();
 app.addToScene(lighting.directionalLight);
 app.addToScene(lighting.ambientLight);
 
-const ring = new Ring();
-app.addToScene(ring.mesh);
+const mergeCup = new MergeCup();
+app.addToScene(mergeCup.mesh);
 
 const socket = new Socket({
 	socketCallback: ({ mesh, maxDimension }) => {
@@ -154,11 +157,25 @@ export async function slicingAction(sendToFile: boolean) {
 				progressBar.value = progress;
 			} else if (type === "done") {
 				const blendedMerge = blendMerge(data, mergeGeometries.center, 1);
-				const printTime = calculatePrintTime(blendedMerge);
+				const adjustedDim = await adjustForShrinkAndOffset(
+					blendedMerge,
+					mergeGeometries.center,
+				);
+				const printTime = calculatePrintTime(adjustedDim);
+
+				const debugPoint1 = new DebugPoint(
+					new Vector3(blendedMerge[0].x, blendedMerge[0].y, blendedMerge[0].z),
+				);
+				const debugPoint2 = new DebugPoint(
+					new Vector3(adjustedDim[0].x, adjustedDim[0].y, adjustedDim[0].z),
+				);
+
+				app.addToScene(debugPoint1.mesh);
+				app.addToScene(debugPoint2.mesh);
 
 				estimatedPrintTime.textContent = printTime;
 
-				const gcode = await generateGCode(blendedMerge, "y", {
+				const gcode = await generateGCode(adjustedDim, "y", {
 					estimatedTime: printTime,
 				});
 
