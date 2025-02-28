@@ -10,21 +10,20 @@ function calculateHorizontalDistance(point: Vector3): number {
 function getPointAtDistance(
 	higherPoint: RawPoint,
 	lowerPoint: RawPoint,
-	d: number,
+	distanceToChange: number,
 ): RawPoint {
-	const pointA = new Vector3(higherPoint.x, 0, higherPoint.z);
-	const pointB = new Vector3(lowerPoint.x, 0, lowerPoint.z);
+	const dx = higherPoint.x - lowerPoint.x;
+	const dz = higherPoint.z - lowerPoint.z;
+	const distance = Math.sqrt(dx * dx + dz * dz);
 
-	const direction = new Vector3().subVectors(pointA, pointB);
+	const unitX = dx / distance;
+	const unitZ = dz / distance;
 
-	direction.normalize();
-	direction.multiplyScalar(d);
-
-	console.log({ pointA, pointB, direction });
-
-	const P = new Vector3().addVectors(pointA, direction);
-
-	return { x: P.x, y: lowerPoint.y, z: P.z };
+	return {
+		x: higherPoint.x - distanceToChange * unitX,
+		y: lowerPoint.y,
+		z: higherPoint.z - distanceToChange * unitZ,
+	};
 }
 
 export function blendMerge(
@@ -60,18 +59,10 @@ export function blendMerge(
 				calculateHorizontalDistance(lowerPoint);
 
 			if (
-				Math.abs(
-					distanceToCenterFromCurrentPoint - distanceToCenterFromLowerPoint,
-				) > overlapTolerance
+				distanceToCenterFromCurrentPoint - distanceToCenterFromLowerPoint >
+				overlapTolerance
 			) {
-				const adjustmentFactor = 0.97;
-				const newPointWithScalar = {
-					x: center.x + currentPoint.x * adjustmentFactor,
-					y: lowerPoint.y,
-					z: center.z + currentPoint.z * adjustmentFactor,
-				};
-
-				const newEquationForPoint = getPointAtDistance(
+				const newPoint = getPointAtDistance(
 					currentLevel[j],
 					lowerLevel[j],
 					overlapTolerance / 2,
@@ -84,7 +75,7 @@ export function blendMerge(
 				// 	center,
 				// });
 
-				lowerLevel[j] = newEquationForPoint;
+				lowerLevel[j] = newPoint;
 			}
 		}
 	}

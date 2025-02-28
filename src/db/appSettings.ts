@@ -1,3 +1,4 @@
+import { c } from "node_modules/vite/dist/node/moduleRunnerTransport.d-CXw_Ws6P";
 import { getDb } from "./getDb";
 import type { ProvelPrintSettings } from "./types";
 
@@ -57,12 +58,13 @@ export const saveLockPosition = async (lockPosition: string) => {
 
 export const getCupSize = async () => {
 	const db = await getDb();
-	return await db.appSettings.where("name").equals("cupSize").first();
+	const cupSize = await db.appSettings.where("name").equals("cupSize").first();
+	return cupSize.value as string;
 };
 
 export const getCupSizeHeight = async () => {
 	const cupSize = await getCupSize();
-	const splitWidthAndHeight = (cupSize.value as string).split("x");
+	const splitWidthAndHeight = (cupSize as string).split("x");
 
 	return Number(splitWidthAndHeight[1]);
 };

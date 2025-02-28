@@ -1,59 +1,57 @@
 {
-  "name": "socket-print",
-  "productName": "Provel Print",
-  "description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
-  "version": "v4.6.0-alpha",
-  "main": ".vite/build/main.js",
-  "author": {
-    "name": "andrewgremlich",
-    "email": "engineering@gremlich.xyz"
-  },
-  "license": "MIT",
-  "repository": {
-    "url": "https://github.com/andrewgremlich/socket-print"
-  },
-  "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "dev": "npm run dev:web",
-    "dev:web": "vite --config vite.renderer.config.ts",
-    "build": "vite build --config vite.renderer.config.ts",
-    "preview": "vite preview",
-    "prepare": "husky",
-    "test": "vitest src/ --config ./vite.renderer.config.ts",
-    "type-check": "tsc --noEmit",
-    "check": "biome check --write ./src",
-    "clean": "rimraf ./dist ./.vite ./out"
-  },
-  "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "npm run check"
-    ]
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@types/node": "^22.13.4",
-    "@types/three": "^0.173.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.2.11",
-    "rimraf": "^6.0.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.2",
-    "vite": "^6.0.6",
-    "vite-plugin-top-level-await": "^1.5.0",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.5"
-  },
-  "dependencies": {
-    "crc-32": "^1.2.2",
-    "dexie": "^4.0.11",
-    "mathjs": "^14.2.0",
-    "p-throttle": "^7.0.0",
-    "three": "^0.173.0",
-    "three-csg-ts": "^3.2.0",
-    "three-mesh-bvh": "^0.9.0",
-    "vite-plugin-pwa": "^0.21.1"
-  }
+	"name": "socket-print",
+	"productName": "Provel Print",
+	"description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
+	"version": "v4.7.0-alpha",
+	"main": ".vite/build/main.js",
+	"author": {
+		"name": "andrewgremlich",
+		"email": "engineering@gremlich.xyz"
+	},
+	"license": "MIT",
+	"repository": {
+		"url": "https://github.com/andrewgremlich/socket-print"
+	},
+	"scripts": {
+		"start": "electron-forge start",
+		"package": "electron-forge package",
+		"make": "electron-forge make",
+		"publish": "electron-forge publish",
+		"dev": "npm run dev:web",
+		"dev:web": "vite --config vite.renderer.config.ts",
+		"build": "vite build --config vite.renderer.config.ts",
+		"preview": "vite preview",
+		"prepare": "husky",
+		"test": "vitest src/ --config ./vite.renderer.config.ts",
+		"type-check": "tsc --noEmit",
+		"check": "biome check --write ./src",
+		"clean": "rimraf ./dist ./.vite ./out"
+	},
+	"lint-staged": {
+		"*.{js,ts,tsx}": ["npm run check"]
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.13.4",
+		"@types/three": "^0.173.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.2.11",
+		"rimraf": "^6.0.1",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.7.2",
+		"vite": "^6.0.6",
+		"vite-plugin-top-level-await": "^1.5.0",
+		"vite-tsconfig-paths": "^5.1.4",
+		"vitest": "^3.0.5"
+	},
+	"dependencies": {
+		"crc-32": "^1.2.2",
+		"dexie": "^4.0.11",
+		"mathjs": "^14.2.0",
+		"p-throttle": "^7.0.0",
+		"three": "^0.173.0",
+		"three-csg-ts": "^3.2.0",
+		"three-mesh-bvh": "^0.9.0",
+		"vite-plugin-pwa": "^0.21.1"
+	}
 }

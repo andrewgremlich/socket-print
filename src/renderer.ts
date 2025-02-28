@@ -148,16 +148,16 @@ export async function slicingAction(sendToFile: boolean) {
 					data,
 					mergeGeometries.center,
 				);
-				// const blendedMerge = await blendMerge(
-				// 	adjustedDim,
-				// 	mergeGeometries.center,
-				// 	1,
-				// );
-				const printTime = calculatePrintTime(adjustedDim);
+				const blendedMerge = await blendMerge(
+					adjustedDim,
+					mergeGeometries.center,
+					1,
+				);
+				const printTime = calculatePrintTime(blendedMerge);
 
 				estimatedPrintTime.textContent = printTime;
 
-				const gcode = await generateGCode(adjustedDim, "y", {
+				const gcode = await generateGCode(blendedMerge, "y", {
 					estimatedTime: printTime,
 				});
 
