@@ -149,9 +149,9 @@ export async function slicingAction(sendToFile: boolean) {
 					mergeGeometries.center,
 				);
 				// const blendedMerge = await blendMerge(
-				//   adjustedDim,
-				//   mergeGeometries.center,
-				//   1
+				// 	adjustedDim,
+				// 	mergeGeometries.center,
+				// 	1,
 				// );
 				const printTime = calculatePrintTime(adjustedDim);
 
