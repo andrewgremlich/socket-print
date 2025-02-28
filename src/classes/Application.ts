@@ -9,11 +9,7 @@ import {
 	WebGLRenderer,
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import {
-	FontLoader,
-	TextGeometry,
-	TransformControls,
-} from "three/examples/jsm/Addons.js";
+import { FontLoader, TextGeometry } from "three/examples/jsm/Addons.js";
 
 export class Application {
 	#provelPrintView: HTMLElement | null = document.getElementById("provelPrint");
@@ -61,38 +57,6 @@ export class Application {
 	addToScene = (object: Object3D) => this.scene.add(object);
 
 	removeMeshFromScene = (mesh: Mesh) => this.scene.remove(mesh);
-
-	removeTransformControls = () => {
-		console.log(this.scene.children);
-
-		const transformControls = this.scene.children.find(
-			(child) => child instanceof TransformControls,
-		);
-
-		console.log(transformControls);
-
-		// if (transformControls) {
-		// 	this.scene.remove(transformControls);
-		// }
-	};
-
-	attachTransformControls = (mesh: Mesh) => {
-		const transformControls = new TransformControls(
-			this.camera,
-			this.renderer.domElement,
-		);
-
-		transformControls.addEventListener("change", this.#animate);
-		transformControls.addEventListener("dragging-changed", (event) => {
-			this.controls.enabled = !event.value;
-		});
-
-		this.scene.add(transformControls as unknown as Object3D);
-		transformControls.attach(mesh);
-
-		const gizmo = transformControls.getHelper();
-		this.scene.add(gizmo);
-	};
 
 	loadFont = () => {
 		const loader = new FontLoader();

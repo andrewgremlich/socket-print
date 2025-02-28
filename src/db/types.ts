@@ -28,4 +28,5 @@ export interface ProvelPrintSettings {
 	lockDepth: number;
 	layerHeight: number;
 	activeMaterialProfile: string;
+	circularSegments: number;
 }

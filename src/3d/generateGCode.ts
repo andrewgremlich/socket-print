@@ -27,7 +27,7 @@ interface GCodeOptions {
  * Generates G-code from a single level array of points.
  */
 export async function generateGCode(
-	points: RawPoint[],
+	pointGatherer: RawPoint[][],
 	verticalAxis: "y" | "z" = "y",
 	options: GCodeOptions = {},
 ): Promise<string> {
@@ -95,22 +95,28 @@ export async function generateGCode(
 	let previousPoint: RawPoint = { x: 39, y: 0, z: socketHeight }; // hardcoded start point
 
 	gcode.push(
-		`G1 X${previousPoint.x.toFixed(2)} Y${previousPoint.y.toFixed(2)} Z${previousPoint.z.toFixed(2)} F${feedrate}`,
+		`G1 X${previousPoint.x.toFixed(2)} Y${previousPoint.y.toFixed(
+			2,
+		)} Z${previousPoint.z.toFixed(2)} F${feedrate}`,
 	);
 
-	for (const point of points) {
-		let extrusion = 0;
-		if (previousPoint) {
-			const dx = point.x - previousPoint.x;
-			const dy = point.y - previousPoint.y;
-			const dz = point.z - previousPoint.z;
-			extrusion = Math.sqrt(dx * dx + dy * dy + dz * dz) * extrusionFactor;
+	for (const pointLevel of pointGatherer) {
+		for (const point of pointLevel) {
+			let extrusion = 0;
+			if (previousPoint) {
+				const dx = point.x - previousPoint.x;
+				const dy = point.y - previousPoint.y;
+				const dz = point.z - previousPoint.z;
+				extrusion = Math.sqrt(dx * dx + dy * dy + dz * dz) * extrusionFactor;
+			}
+			previousPoint = point;
+			const flipHeight = flipVerticalAxis(verticalAxis);
+			gcode.push(
+				`G1 X${point.x.toFixed(2)} Y${point[flipHeight].toFixed(2)} Z${point[
+					verticalAxis
+				].toFixed(2)} E${extrusion.toFixed(4)} F${feedrate}`,
+			);
 		}
-		previousPoint = point;
-		const flipHeight = flipVerticalAxis(verticalAxis);
-		gcode.push(
-			`G1 X${point.x.toFixed(2)} Y${point[flipHeight].toFixed(2)} Z${point[verticalAxis].toFixed(2)} E${extrusion.toFixed(4)} F${feedrate}`,
-		);
 	}
 
 	gcode.push(";# END GCODE SEQUENCE FOR CUP PRINT#;");

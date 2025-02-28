@@ -1,4 +1,4 @@
-import { Box3, CylinderGeometry, Mesh, Vector3 } from "three";
+import { Box3, BoxHelper, CylinderGeometry, Mesh, Vector3 } from "three";
 import { CSG } from "three-csg-ts";
 
 import { AppObject } from "./AppObject";
@@ -16,33 +16,15 @@ export class MergeGeometries extends AppObject {
 		if (!stlModel.mesh) {
 			throw new Error("STL data has not been loaded!");
 		}
-
-		const clearBelowZ0 = this.cloneCylinder(cylinder.mesh, {
-			newHeight: 20,
-			radius: 100,
-			openEnded: false,
-			heightPlacement: -10,
-		});
-		const subtractBelowZ0 = CSG.subtract(stlModel.mesh, clearBelowZ0);
-
-		// const clearCylinder = this.cloneCylinder(cylinder.mesh, {
-		// 	newHeight: 40,
-		// 	radius: 100,
-		// 	openEnded: false,
-		// });
-		// const subtract = CSG.subtract(stlModel.mesh, clearCylinder);
-
 		const clonedCylinder = this.cloneCylinder(cylinder.mesh, {
 			newHeight: stlModel.size.y,
 		});
-		const union = CSG.union(subtractBelowZ0, clonedCylinder);
+		const union = CSG.union(stlModel.mesh, clonedCylinder);
 
 		this.boundingBox = new Box3().setFromObject(union);
 		this.size = this.boundingBox.getSize(new Vector3());
 		this.center = this.boundingBox.getCenter(new Vector3());
 		this.mesh = union;
-
-		this.mesh.matrixWorldAutoUpdate = true;
 	}
 
 	cloneCylinder = (
@@ -87,4 +69,11 @@ export class MergeGeometries extends AppObject {
 
 		return mesh;
 	};
+
+	createBoundingBoxHelper() {
+		if (!this.mesh) {
+			throw new Error("Mesh not found");
+		}
+		return new BoxHelper(this.mesh, 0xff0000); // Red color for the bounding box
+	}
 }

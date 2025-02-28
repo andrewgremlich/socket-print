@@ -6,7 +6,7 @@ import { getActiveMaterialProfile } from "@/db/materialProfiles";
 import type { RawPoint } from "./blendMerge";
 
 export async function adjustForShrinkAndOffset(
-	points: RawPoint[],
+	points: RawPoint[][],
 	center: RawPoint,
 ) {
 	const activeMaterialProfile = await getActiveMaterialProfile();
@@ -17,24 +17,32 @@ export async function adjustForShrinkAndOffset(
 		return points;
 	}
 
-	return points.map((pt) => {
-		// Shift the point relative to the center
-		const dx = pt.x - center.x;
-		const dy = pt.y - center.y;
+	const adjustedPoints: RawPoint[][] = [];
 
-		// Get polar coordinates from the shifted point (projected on X-Z plane)
-		const r = sqrt(dx * dx + dy * dy) as number;
-		const theta = atan2(dy, dx);
+	for (const layer of points) {
+		const adjustedLayer: RawPoint[] = [];
+		for (const pt of layer) {
+			// Shift the point relative to the center
+			const dx = pt.x - center.x;
+			const dz = pt.z - center.z;
 
-		// Adjust radius: add nozzle size and apply shrink percentage adjustment
-		let adjustedR = r + nozzleSize;
-		adjustedR = adjustedR * (1 - shrinkAllowance / 100);
+			// Get polar coordinates from the shifted point (projected on X-Y plane)
+			const r = sqrt(dx * dx + dz * dz) as number;
+			const theta = atan2(dz, dx);
 
-		// Create new adjusted point and shift it back to the original coordinate system
-		return {
-			x: center.x + adjustedR * cos(theta),
-			y: center.y + adjustedR * sin(theta),
-			z: pt.z,
-		};
-	});
+			// Adjust radius: add nozzle size and apply shrink percentage adjustment
+			let adjustedR = r + nozzleSize / 2;
+			adjustedR = adjustedR * (1 - shrinkAllowance / 100);
+
+			// Create new adjusted point and shift it back to the original coordinate system
+			adjustedLayer.push({
+				x: center.x + adjustedR * cos(theta),
+				y: pt.y,
+				z: center.z + adjustedR * sin(theta),
+			});
+		}
+		adjustedPoints.push(adjustedLayer);
+	}
+
+	return adjustedPoints;
 }

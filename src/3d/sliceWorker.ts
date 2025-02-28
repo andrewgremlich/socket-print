@@ -13,20 +13,23 @@ import {
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
-import { getCupSizeHeight } from "../db/appSettings";
+import {
+	getCircularSegments,
+	getCupSizeHeight,
+	getLayerHeight,
+} from "../db/appSettings";
 import { ensureUV } from "./ensureUV";
 
 type SliceWorker = {
 	positions: number[];
 	verticalAxis: "y" | "z";
-	layerHeight: number;
-	segments: number;
 	incrementHeight: boolean;
 };
 
 self.onmessage = async (event: MessageEvent<SliceWorker>) => {
-	const { positions, verticalAxis, layerHeight, segments, incrementHeight } =
-		event.data;
+	const { positions, verticalAxis, incrementHeight } = event.data;
+	const layerHeight = await getLayerHeight();
+	const segments = await getCircularSegments();
 
 	if (layerHeight <= 0) {
 		throw new Error("Layer height must be greater than 0.");
@@ -44,8 +47,6 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
 	const rawgeometry = new BufferGeometry();
 
-	renderer.render(scene, new PerspectiveCamera(75, 1, 0.1, 1000));
-
 	rawgeometry.setAttribute(
 		"position",
 		new BufferAttribute(new Float32Array(positions), 3),
@@ -53,10 +54,13 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	rawgeometry.computeBoundingBox();
 	rawgeometry.computeBoundingSphere();
 	rawgeometry.computeVertexNormals();
+	rawgeometry.setIndex([
+		...Array(rawgeometry.attributes.position.count).keys(),
+	]);
 	ensureUV(rawgeometry);
 
 	const mesh = new Mesh(
-		BufferGeometryUtils.mergeVertices(rawgeometry),
+		BufferGeometryUtils.mergeVertices(rawgeometry, 1e-5),
 		new MeshStandardMaterial({
 			color: 0x00ff00,
 			side: DoubleSide,
@@ -65,24 +69,31 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const boundingBox = new Box3().setFromObject(mesh);
 	const center = boundingBox.getCenter(new Vector3());
 	const maxHeight = boundingBox.max[verticalAxis];
+	const camera = new PerspectiveCamera(75, 1, 0.1, 1000);
+	camera.position.set(0, 0, 10);
+	camera.lookAt(center);
+	renderer.render(scene, camera);
 
 	scene.add(mesh);
+	mesh.updateMatrixWorld(true);
 
 	const angleIncrement = (Math.PI * 2) / segments;
-	const pointGatherer: Vector3[] = [];
+	const pointGatherer: Vector3[][] = [];
 	const raycaster = new Raycaster();
 	const direction = new Vector3();
 	const ray = raycaster.ray;
 
-	ray.direction.set(0, 0, -1);
+	ray.direction.set(0, 0, -1).normalize();
 
 	const socketHeight = (await getCupSizeHeight()) + 5;
 
 	for (
-		let heightPosition = boundingBox.min[verticalAxis];
+		let heightPosition = 0;
 		heightPosition < maxHeight;
 		heightPosition += layerHeight
 	) {
+		const pointLevel: Vector3[] = [];
+
 		self.postMessage({
 			type: "progress",
 			data: heightPosition / maxHeight,
@@ -92,8 +103,10 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			const height = incrementHeight
 				? heightPosition + (angle / (Math.PI * 2)) * layerHeight
 				: heightPosition;
+			const xdirection = Math.cos(angle);
+			const zdirection = Math.sin(angle);
 
-			direction.set(Math.cos(angle), 0, Math.sin(angle));
+			direction.set(xdirection, 0, zdirection);
 			raycaster.set(new Vector3(center.x, height, center.z), direction);
 
 			const intersects = raycaster.intersectObject(mesh);
@@ -101,11 +114,12 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
 				intersection.add(new Vector3(0, socketHeight, 0));
-				pointGatherer.push(intersection);
+				pointLevel.push(intersection);
 			} else {
 				console.error("No intersection found for this ray.");
 			}
 		}
+		pointGatherer.push(pointLevel);
 	}
 
 	self.postMessage({

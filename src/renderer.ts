@@ -14,7 +14,6 @@ import { blendMerge } from "@/3d/blendMerge";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
 import { downloadGCodeFile, generateGCode } from "@/3d/generateGCode";
 import sliceWorker from "@/3d/sliceWorker?worker";
-import { getLayerHeight } from "@/db/appSettings";
 import {
 	clearModelButton,
 	estimatedPrintTime,
@@ -31,8 +30,6 @@ import { adjustForShrinkAndOffset } from "./3d/adjustForShrinkAndOffset";
 import { sendGCodeFile } from "./3d/sendGCodeFile";
 import { DebugPoint } from "./classes/DebugPoint";
 
-export const CIRCULUAR_SEGMENTS = 128;
-
 const app = new Application();
 
 const lighting = new Lighting();
@@ -47,8 +44,6 @@ const socket = new Socket({
 		app.camera.position.set(0, 200, maxDimension);
 		app.controls.target.set(0, 100, 0);
 		app.addToScene(mesh);
-
-		// app.attachTransformControls(mesh);
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
@@ -71,11 +66,7 @@ clearModelButton.addEventListener("click", () => {
 	socket.clearData();
 });
 
-mergeMeshes?.addEventListener("click", () => {
-	// app.removeTransformControls();
-
-	const mergeCup = new MergeCup();
-
+mergeMeshes?.addEventListener("click", async () => {
 	if (!loadingScreen) {
 		throw new Error("Loading screen not found");
 	}
@@ -137,13 +128,10 @@ export async function slicingAction(sendToFile: boolean) {
 		}
 
 		const worker = new sliceWorker();
-		const layerHeight = await getLayerHeight();
 
 		worker.postMessage({
 			positions: mergeGeometries.mesh.geometry.attributes.position.array,
 			verticalAxis: "y",
-			layerHeight,
-			segments: CIRCULUAR_SEGMENTS,
 			incrementHeight: true,
 		});
 
@@ -156,22 +144,16 @@ export async function slicingAction(sendToFile: boolean) {
 				progressBarLabel.textContent = `${progress}%`;
 				progressBar.value = progress;
 			} else if (type === "done") {
-				const blendedMerge = blendMerge(data, mergeGeometries.center, 1);
 				const adjustedDim = await adjustForShrinkAndOffset(
-					blendedMerge,
+					data,
 					mergeGeometries.center,
 				);
+				// const blendedMerge = await blendMerge(
+				//   adjustedDim,
+				//   mergeGeometries.center,
+				//   1
+				// );
 				const printTime = calculatePrintTime(adjustedDim);
-
-				const debugPoint1 = new DebugPoint(
-					new Vector3(blendedMerge[0].x, blendedMerge[0].y, blendedMerge[0].z),
-				);
-				const debugPoint2 = new DebugPoint(
-					new Vector3(adjustedDim[0].x, adjustedDim[0].y, adjustedDim[0].z),
-				);
-
-				app.addToScene(debugPoint1.mesh);
-				app.addToScene(debugPoint2.mesh);
 
 				estimatedPrintTime.textContent = printTime;
 

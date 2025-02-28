@@ -141,3 +141,13 @@ export const getLockDepth = async () => {
 		.first();
 	return Number(lockDepth.value);
 };
+
+export const getCircularSegments = async () => {
+	const db = await getDb();
+	const circularSegments = await db.appSettings
+		.where("name")
+		.equals("circularSegments")
+		.first();
+
+	return Number(circularSegments.value);
+};

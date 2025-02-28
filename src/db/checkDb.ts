@@ -9,6 +9,7 @@ export const defaultSettingNames: ProvelPrintSettings = {
 	layerHeight: 1,
 	activeMaterialProfile: "cp1",
 	lockDepth: 13,
+	circularSegments: 128,
 };
 
 export async function settingsDefaults() {
