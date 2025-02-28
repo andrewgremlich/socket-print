@@ -5,14 +5,17 @@ import "@/utils/events";
 import "@/utils/pwa";
 
 import { Application } from "@/classes/Application";
+import { DebugPoint } from "@/classes/DebugPoint";
 import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
 
+import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendMerge } from "@/3d/blendMerge";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
 import { downloadGCodeFile, generateGCode } from "@/3d/generateGCode";
+import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import {
 	clearModelButton,
@@ -26,9 +29,6 @@ import {
 	progressBarLabel,
 } from "@/utils/htmlElements";
 import { Vector3 } from "three";
-import { adjustForShrinkAndOffset } from "./3d/adjustForShrinkAndOffset";
-import { sendGCodeFile } from "./3d/sendGCodeFile";
-import { DebugPoint } from "./classes/DebugPoint";
 
 const app = new Application();
 

@@ -68,8 +68,6 @@ export class MaterialProfileForm extends HTMLElement {
 		if (type === "edit") {
 			const profile = await getActiveMaterialProfile();
 
-			console.log("Active Material Profile", profile);
-
 			this.editMaterialProfile = profile;
 
 			(
