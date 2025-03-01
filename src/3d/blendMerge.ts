@@ -69,13 +69,6 @@ export function blendMerge(
 					overlapTolerance / 2,
 				);
 
-				// console.log({
-				// 	newPointWithScalar,
-				// 	lowerPoint,
-				// 	currentPoint,
-				// 	center,
-				// });
-
 				lowerLevel[j] = newPoint;
 			}
 		}
