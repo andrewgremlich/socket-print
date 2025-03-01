@@ -59,6 +59,7 @@ clearModelButton.addEventListener("click", () => {
 	if (mergeGeometries) {
 		app.removeMeshFromScene(mergeGeometries.mesh);
 		mergeGeometries = null;
+		app.addToScene(mergeCup.mesh);
 	} else {
 		app.removeMeshFromScene(socket.mesh);
 	}
