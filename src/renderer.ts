@@ -5,11 +5,11 @@ import "@/utils/events";
 import "@/utils/pwa";
 
 import { Application } from "@/classes/Application";
-import { DebugPoint } from "@/classes/DebugPoint";
 import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
+import { ceil } from "mathjs";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendMerge } from "@/3d/blendMerge";
@@ -28,7 +28,6 @@ import {
 	progressBarDiv,
 	progressBarLabel,
 } from "@/utils/htmlElements";
-import { Vector3 } from "three";
 
 const app = new Application();
 
@@ -140,7 +139,7 @@ export async function slicingAction(sendToFile: boolean) {
 			const { type, data } = event.data;
 
 			if (type === "progress") {
-				const progress = Math.ceil(data * 100);
+				const progress = ceil(data * 100);
 
 				progressBarLabel.textContent = `${progress}%`;
 				progressBar.value = progress;

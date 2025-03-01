@@ -1,3 +1,4 @@
+import { ceil, floor, sqrt } from "mathjs";
 import type { RawPoint } from "./blendMerge";
 
 export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
@@ -16,19 +17,17 @@ export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
 			const dy = point2.y - point1.y;
 			const dz = point2.z - point1.z;
 
-			totalDistance += Math.sqrt(dx * dx + dy * dy + dz * dz);
+			totalDistance += sqrt(dx * dx + dy * dy + dz * dz) as number;
 		}
 	}
 
 	const averageSpeed = 20;
 	const printTime = totalDistance / averageSpeed;
-	const roundedPrintTime = Math.ceil(printTime);
+	const roundedPrintTime = ceil(printTime);
 
 	const hours = roundedPrintTime / 60;
 	const minutes = roundedPrintTime % 60;
-	const estimatedPrintTimeString = `${Math.floor(hours)}h ${Math.floor(
-		minutes,
-	)}m`;
+	const estimatedPrintTimeString = `${floor(hours)}h ${floor(minutes)}m`;
 
 	return estimatedPrintTimeString;
 }

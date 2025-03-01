@@ -28,28 +28,30 @@
 		"clean": "rimraf ./dist ./.vite ./out"
 	},
 	"lint-staged": {
-		"*.{js,ts,tsx}": ["npm run check"]
+		"*.{js,ts,tsx}": [
+			"npm run check"
+		]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"@types/node": "^22.13.4",
-		"@types/three": "^0.173.0",
+		"@types/node": "^22.13.7",
+		"@types/three": "^0.174.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^15.2.11",
 		"rimraf": "^6.0.1",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.7.2",
-		"vite": "^6.0.6",
+		"typescript": "^5.8.2",
+		"vite": "^6.2.0",
 		"vite-plugin-top-level-await": "^1.5.0",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^3.0.5"
+		"vitest": "^3.0.7"
 	},
 	"dependencies": {
 		"crc-32": "^1.2.2",
 		"dexie": "^4.0.11",
-		"mathjs": "^14.2.0",
+		"mathjs": "^14.3.0",
 		"p-throttle": "^7.0.0",
-		"three": "^0.173.0",
+		"three": "^0.174.0",
 		"three-csg-ts": "^3.2.0",
 		"three-mesh-bvh": "^0.9.0",
 		"vite-plugin-pwa": "^0.21.1"

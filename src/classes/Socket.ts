@@ -1,3 +1,4 @@
+import { abs, max, pi } from "mathjs";
 import {
 	type Box3,
 	type BufferGeometry,
@@ -10,6 +11,7 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 
 import { ensureUV } from "@/3d/ensureUV";
 import { removeDuplicateVertices } from "@/3d/removeDups";
+import { getLockDepth } from "@/db/appSettings";
 import {
 	coronalRotater,
 	depthTranslate,
@@ -22,7 +24,6 @@ import {
 	verticalTranslate,
 } from "@/utils/htmlElements";
 
-import { getLockDepth } from "@/db/appSettings";
 import { AppObject } from "./AppObject";
 
 type SocketCallback = (params: {
@@ -72,7 +73,7 @@ export class Socket extends AppObject {
 			const geometry = BufferGeometryUtils.mergeVertices(removeDups);
 
 			// convert Z - Y
-			geometry.rotateX(-Math.PI / 2);
+			geometry.rotateX(-pi / 2);
 			ensureUV(geometry);
 
 			const material = new MeshStandardMaterial({
@@ -94,7 +95,7 @@ export class Socket extends AppObject {
 
 			this.socketCallback({
 				mesh,
-				maxDimension: Math.max(this.size.x, this.size.y, this.size.z),
+				maxDimension: max(this.size.x, this.size.y, this.size.z),
 				boundingBox: this.boundingBox,
 			});
 
@@ -149,22 +150,22 @@ export class Socket extends AppObject {
 		this.mesh.position.z -= this.center.z;
 
 		if (minY < 0) {
-			this.mesh.position.y += Math.abs(minY) + this.adjustmentHeightForCup;
+			this.mesh.position.y += abs(minY) + this.adjustmentHeightForCup;
 		}
 	};
 
 	transverseRotate90 = () => {
-		this.mesh.rotateX(Math.PI / 2);
+		this.mesh.rotateX(pi / 2);
 		this.autoAlignMesh();
 	};
 
 	sagittalRotate90 = () => {
-		this.mesh.rotateZ(Math.PI / 2);
+		this.mesh.rotateZ(pi / 2);
 		this.autoAlignMesh();
 	};
 
 	transversalRotater90 = () => {
-		this.mesh.rotateY(Math.PI / 2);
+		this.mesh.rotateY(pi / 2);
 		this.autoAlignMesh();
 	};
 
@@ -177,7 +178,7 @@ export class Socket extends AppObject {
 		const targetValue = (evt.target as HTMLInputElement).value;
 		const numVal = Number.parseInt(targetValue);
 		const floor = 80;
-		const minY = Math.abs(this.boundingBox.min.y) + this.adjustmentHeightForCup;
+		const minY = abs(this.boundingBox.min.y) + this.adjustmentHeightForCup;
 
 		if (minY + numVal < floor) {
 			this.mesh.position.y = floor;

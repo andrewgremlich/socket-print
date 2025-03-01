@@ -1,3 +1,4 @@
+import { cos, pi, sin } from "mathjs";
 import {
 	Box3,
 	BufferAttribute,
@@ -77,7 +78,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	scene.add(mesh);
 	mesh.updateMatrixWorld(true);
 
-	const angleIncrement = (Math.PI * 2) / segments;
+	const angleIncrement = (pi * 2) / segments;
 	const pointGatherer: Vector3[][] = [];
 	const raycaster = new Raycaster();
 	const direction = new Vector3();
@@ -99,12 +100,12 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			data: heightPosition / maxHeight,
 		});
 
-		for (let angle = 0; angle < Math.PI * 2; angle += angleIncrement) {
+		for (let angle = 0; angle < pi * 2; angle += angleIncrement) {
 			const height = incrementHeight
-				? heightPosition + (angle / (Math.PI * 2)) * layerHeight
+				? heightPosition + (angle / (pi * 2)) * layerHeight
 				: heightPosition;
-			const xdirection = Math.cos(angle);
-			const zdirection = Math.sin(angle);
+			const xdirection = cos(angle);
+			const zdirection = sin(angle);
 
 			direction.set(xdirection, 0, zdirection);
 			raycaster.set(new Vector3(center.x, height, center.z), direction);

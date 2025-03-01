@@ -1,3 +1,4 @@
+import { sqrt } from "mathjs";
 import { Vector3 } from "three";
 
 export type RawPoint = { x: number; y: number; z: number };
@@ -14,7 +15,7 @@ function getPointAtDistance(
 ): RawPoint {
 	const dx = higherPoint.x - lowerPoint.x;
 	const dz = higherPoint.z - lowerPoint.z;
-	const distance = Math.sqrt(dx * dx + dz * dz);
+	const distance = sqrt(dx * dx + dz * dz) as number;
 
 	const unitX = dx / distance;
 	const unitZ = dz / distance;

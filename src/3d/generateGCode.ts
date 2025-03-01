@@ -6,6 +6,7 @@ import {
 } from "@/db/appSettings";
 import { getActiveMaterialProfileNozzleTemp } from "@/db/materialProfiles";
 
+import { sqrt } from "mathjs";
 import pkg from "../../package.json";
 import type { RawPoint } from "./blendMerge";
 
@@ -107,7 +108,8 @@ export async function generateGCode(
 				const dx = point.x - previousPoint.x;
 				const dy = point.y - previousPoint.y;
 				const dz = point.z - previousPoint.z;
-				extrusion = Math.sqrt(dx * dx + dy * dy + dz * dz) * extrusionFactor;
+				extrusion =
+					(sqrt(dx * dx + dy * dy + dz * dz) as number) * extrusionFactor;
 			}
 			previousPoint = point;
 			const flipHeight = flipVerticalAxis(verticalAxis);
