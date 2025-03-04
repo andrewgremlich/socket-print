@@ -29,7 +29,6 @@ function getPointAtDistance(
 
 export function blendMerge(
 	points: RawPoint[][],
-	center: Vector3,
 	overlapTolerance = 0.5,
 ): RawPoint[][] {
 	const allLevels: RawPoint[][] = [...points];
