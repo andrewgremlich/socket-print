@@ -4,6 +4,7 @@
 	"description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
 	"version": "v4.7.0-alpha",
 	"main": ".vite/build/main.js",
+	"type": "module",
 	"author": {
 		"name": "andrewgremlich",
 		"email": "engineering@gremlich.xyz"
@@ -13,24 +14,18 @@
 		"url": "https://github.com/andrewgremlich/socket-print"
 	},
 	"scripts": {
-		"start": "electron-forge start",
-		"package": "electron-forge package",
-		"make": "electron-forge make",
-		"publish": "electron-forge publish",
 		"dev": "npm run dev:web",
-		"dev:web": "vite --config vite.renderer.config.ts",
-		"build": "vite build --config vite.renderer.config.ts",
+		"dev:web": "vite --config vite.config.ts",
+		"build": "vite build --config vite.config.ts",
 		"preview": "vite preview",
 		"prepare": "husky",
-		"test": "vitest src/ --config ./vite.renderer.config.ts",
+		"test": "vitest src/ --config ./vite.config.ts",
 		"type-check": "tsc --noEmit",
 		"check": "biome check --write ./src",
-		"clean": "rimraf ./dist ./.vite ./out"
+		"clean": "rimraf ./dist ./.vite ./out ./dev-dist"
 	},
 	"lint-staged": {
-		"*.{js,ts,tsx}": [
-			"npm run check"
-		]
+		"*.{js,ts,tsx}": ["npm run check"]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
