@@ -9,8 +9,8 @@ import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
-import { invoke } from "@tauri-apps/api/core";
 import { ceil } from "mathjs";
+// import { invoke } from "@tauri-apps/api/core";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendMerge } from "@/3d/blendMerge";
