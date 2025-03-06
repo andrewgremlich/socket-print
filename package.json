@@ -25,10 +25,13 @@
 		"clean": "rimraf ./dist ./.vite ./out ./dev-dist"
 	},
 	"lint-staged": {
-		"*.{js,ts,tsx}": ["npm run check"]
+		"*.{js,ts,tsx}": [
+			"npm run check"
+		]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
+		"@tauri-apps/cli": "^2.3.1",
 		"@types/node": "^22.13.7",
 		"@types/three": "^0.174.0",
 		"husky": "^9.1.7",
@@ -42,6 +45,7 @@
 		"vitest": "^3.0.7"
 	},
 	"dependencies": {
+		"@tauri-apps/api": "^2.3.0",
 		"crc-32": "^1.2.2",
 		"dexie": "^4.0.11",
 		"mathjs": "^14.3.0",

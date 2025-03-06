@@ -4,7 +4,7 @@ import type { ProvelPrintSettings } from "./types";
 export const defaultSettingNames: ProvelPrintSettings = {
 	ipAddress: "",
 	lockPosition: "right",
-	cupSize: "93x28",
+	cupSize: "93x25",
 	nozzleSize: 5,
 	layerHeight: 1,
 	activeMaterialProfile: "cp1",

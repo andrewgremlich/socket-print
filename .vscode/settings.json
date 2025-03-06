@@ -3,5 +3,8 @@
   "editor.formatOnSave": true,
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
   }
 }
