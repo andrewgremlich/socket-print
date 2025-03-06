@@ -9,8 +9,8 @@ import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
+import { invoke } from "@tauri-apps/api/core";
 import { ceil } from "mathjs";
-// import { invoke } from "@tauri-apps/api/core";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendMerge } from "@/3d/blendMerge";
@@ -126,6 +126,9 @@ export async function slicingAction(sendToFile: boolean) {
 	if (!window.Worker) {
 		throw new Error("Web Worker not supported");
 	}
+
+	// const slicer = await invoke("slicer", { name: "Andrew!" });
+	// console.log(slicer);
 
 	const worker = new sliceWorker();
 
