@@ -1,3 +1,5 @@
+import { round, sqrt } from "mathjs";
+
 import {
 	getActiveMaterialProfile,
 	getCupSize,
@@ -6,7 +8,6 @@ import {
 } from "@/db/appSettings";
 import { getActiveMaterialProfileNozzleTemp } from "@/db/materialProfiles";
 
-import { sqrt } from "mathjs";
 import pkg from "../../package.json";
 import type { RawPoint } from "./blendMerge";
 
@@ -101,8 +102,11 @@ export async function generateGCode(
 		)} Z${previousPoint.z.toFixed(2)} F${feedrate}`,
 	);
 
-	for (const pointLevel of pointGatherer) {
-		for (const point of pointLevel) {
+	for (let i = 0; i < pointGatherer.length; i++) {
+		const pointLevel = pointGatherer[i];
+
+		for (let j = 0; j < pointLevel.length; j++) {
+			const point = pointLevel[j];
 			let extrusion = 0;
 			if (previousPoint) {
 				const dx = point.x - previousPoint.x;
@@ -111,12 +115,15 @@ export async function generateGCode(
 				extrusion =
 					(sqrt(dx * dx + dy * dy + dz * dz) as number) * extrusionFactor;
 			}
+
+			if (i === 0) {
+				extrusion = extrusion * ((j + 1) / pointLevel.length);
+			}
+
 			previousPoint = point;
 			const flipHeight = flipVerticalAxis(verticalAxis);
 			gcode.push(
-				`G1 X${point.x.toFixed(2)} Y${point[flipHeight].toFixed(2)} Z${point[
-					verticalAxis
-				].toFixed(2)} E${extrusion.toFixed(4)} F${feedrate}`,
+				`G1 X${round(point.x, 2)} Y${round(point[flipHeight], 2)} Z${round(point[verticalAxis], 2)} E${round(extrusion, 4)} F${feedrate}`,
 			);
 		}
 	}
