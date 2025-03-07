@@ -139,8 +139,6 @@ export async function slicingAction(sendToFile: boolean) {
 
 	worker.postMessage({
 		positions: mergeGeometries.mesh.geometry.attributes.position.array,
-		verticalAxis: "y",
-		incrementHeight: true,
 	});
 
 	worker.onmessage = async (event) => {

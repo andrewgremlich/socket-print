@@ -20,14 +20,14 @@ fn triangulate(input: Vec<f32>) -> Vec<Triangle> {
 
 #[tauri::command]
 pub fn slicer(
-    input: Vec<f32>,
+    positions: Vec<f32>,
+    axis: char,
     bottom_height: f32,
     top_height: f32,
-    axis: char,
     radians_turn: f32,
     height_of_rotation: f32,
 ) -> Vec<f32> {
-    let triangled: Vec<Triangle> = triangulate(input);
+    let triangled: Vec<Triangle> = triangulate(positions);
     let mut intersections: Vec<f32> = vec![];
     let mut raycaster = RayCaster::new(Vec3::new(0.0, 0.0, 0.0), Vec3::new(10.0, 0.0, 0.0));
 

@@ -23,14 +23,14 @@ import { ensureUV } from "./ensureUV";
 
 type SliceWorker = {
 	positions: number[];
-	verticalAxis: "y" | "z";
-	incrementHeight: boolean;
 };
 
 self.onmessage = async (event: MessageEvent<SliceWorker>) => {
-	const { positions, verticalAxis, incrementHeight } = event.data;
+	const { positions } = event.data;
 	const layerHeight = await getLayerHeight();
 	const segments = await getCircularSegments();
+	const incrementHeight = true;
+	const verticalAxis = "y";
 
 	if (layerHeight <= 0) {
 		throw new Error("Layer height must be greater than 0.");
