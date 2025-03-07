@@ -18,6 +18,7 @@ import { downloadGCodeFile, generateGCode } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import {
+	activeFileName,
 	clearModelButton,
 	estimatedPrintTime,
 	generateGCodeButton,
@@ -61,11 +62,13 @@ clearModelButton.addEventListener("click", () => {
 	if (mergeGeometries) {
 		app.removeMeshFromScene(mergeGeometries.mesh);
 		mergeGeometries = null;
+		mergeCup.mesh.visible = true;
 		app.addToScene(mergeCup.mesh);
 	} else {
 		app.removeMeshFromScene(socket.mesh);
 	}
 
+	activeFileName.textContent = "No file selected";
 	socket.clearData();
 });
 
