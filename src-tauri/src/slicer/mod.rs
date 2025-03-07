@@ -19,7 +19,7 @@ fn triangulate(input: Vec<f32>) -> Vec<Triangle> {
 }
 
 #[tauri::command]
-pub fn slice_with_ray(
+pub fn slicer(
     input: Vec<f32>,
     bottom_height: f32,
     top_height: f32,
