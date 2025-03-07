@@ -13,7 +13,7 @@ import {
 } from "./loadMainDataForm";
 import type { ProvelPrintSettings } from "./types";
 
-const initData = async () => {
+export const initData = async () => {
 	await materialProfileDefaults();
 	await settingsDefaults();
 	await appendMaterialProfiles();

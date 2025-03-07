@@ -29,47 +29,8 @@ import {
 	progressBarLabel,
 } from "@/utils/htmlElements";
 
+// import "@/menu";
 // import { invoke } from "@tauri-apps/api/core";
-// import { Menu, Submenu } from "@tauri-apps/api/menu";
-// import { open } from "@tauri-apps/plugin-dialog";
-
-// const fileSubMenu = await Submenu.new({
-// 	id: "file",
-// 	text: "File",
-// 	items: [
-// 		{
-// 			id: "open",
-// 			text: "Open File",
-// 			accelerator: "CmdOrCtrl+O",
-// 			action: async () => {
-// 				console.log("Open Filez");
-// 				const file = await open({
-// 					multiple: false,
-// 					directory: false,
-// 					filters: [{ name: "STL Files", extensions: ["stl"] }],
-// 				});
-// 				if (file) {
-// 					console.log(`Opened file: ${file}`);
-// 				} else {
-// 					console.log("No file was selected.");
-// 				}
-// 			},
-// 		},
-// 		{
-// 			id: "restore",
-// 			text: "Restore",
-// 			accelerator: "CmdOrCtrl+R",
-// 			action: () => {
-// 				console.log("Restore");
-// 			},
-// 		},
-// 	],
-// });
-// const menu = await Menu.new({
-// 	items: [fileSubMenu],
-// });
-
-// await menu.setAsAppMenu();
 
 const app = new Application();
 
