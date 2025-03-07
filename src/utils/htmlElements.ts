@@ -49,6 +49,9 @@ export const progressBarLabel = document.getElementById(
 export const threeDViewer = document.getElementById(
 	"3dViewer",
 ) as HTMLCanvasElement;
+export const activeFileName = document.getElementById(
+	"activeFileName",
+) as HTMLSpanElement;
 
 export const menuBar = document.getElementById("menuBar") as HTMLDivElement;
 export const menuBarDropdowns = document.querySelectorAll(

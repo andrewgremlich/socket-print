@@ -14,6 +14,7 @@ import { ensureUV } from "@/3d/ensureUV";
 import { removeDuplicateVertices } from "@/3d/removeDups";
 import { getLockDepth } from "@/db/appSettings";
 import {
+	activeFileName,
 	coronalRotater,
 	depthTranslate,
 	horizontalTranslate,
@@ -86,6 +87,7 @@ export class Socket extends AppObject {
 
 			this.mesh = mesh;
 			this.mesh.name = file.name;
+			activeFileName.textContent = file.name;
 			this.computeBoundingBox();
 			this.mesh.position.set(
 				0,
