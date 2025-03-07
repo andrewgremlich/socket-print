@@ -21,12 +21,8 @@ import {
 } from "../db/appSettings";
 import { ensureUV } from "./ensureUV";
 
-type SliceWorker = {
-	positions: number[];
-};
-
-self.onmessage = async (event: MessageEvent<SliceWorker>) => {
-	const { positions } = event.data;
+self.onmessage = async (event: MessageEvent<number[]>) => {
+	const positions = event.data;
 	const layerHeight = await getLayerHeight();
 	const segments = await getCircularSegments();
 	const incrementHeight = true;

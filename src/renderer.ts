@@ -137,9 +137,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 	const worker = new sliceWorker();
 
-	worker.postMessage({
-		positions: mergeGeometries.mesh.geometry.attributes.position.array,
-	});
+	worker.postMessage(mergeGeometries.mesh.geometry.attributes.position.array);
 
 	worker.onmessage = async (event) => {
 		const { type, data } = event.data;
