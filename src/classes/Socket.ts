@@ -9,6 +9,7 @@ import {
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
+import type { RawPoint } from "@/3d/blendMerge";
 import { ensureUV } from "@/3d/ensureUV";
 import { removeDuplicateVertices } from "@/3d/removeDups";
 import { getLockDepth } from "@/db/appSettings";
@@ -34,6 +35,7 @@ type SocketCallback = (params: {
 
 export class Socket extends AppObject {
 	adjustmentHeightForCup = 0;
+	setPosition: RawPoint | null = null;
 	socketCallback: SocketCallback;
 
 	constructor({ socketCallback }: { socketCallback: SocketCallback }) {
@@ -92,6 +94,12 @@ export class Socket extends AppObject {
 			);
 
 			this.mesh.matrixWorldAutoUpdate = true;
+
+			this.setPosition = {
+				x: this.mesh.position.x,
+				y: this.mesh.position.y,
+				z: this.mesh.position.z,
+			};
 
 			this.socketCallback({
 				mesh,
@@ -171,24 +179,22 @@ export class Socket extends AppObject {
 
 	horizontalChange = (evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
-		this.mesh.position.x = Number.parseInt(targetValue);
+		const numVal = Number.parseInt(targetValue);
+
+		this.mesh.position.x = this.setPosition.x + numVal;
 	};
 
 	verticalChange = (evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
 		const numVal = Number.parseInt(targetValue);
-		const floor = 80;
-		const minY = abs(this.boundingBox.min.y) + this.adjustmentHeightForCup;
 
-		if (minY + numVal < floor) {
-			this.mesh.position.y = floor;
-		} else {
-			this.mesh.position.y = minY + numVal;
-		}
+		this.mesh.position.y = this.setPosition.y + numVal;
 	};
 
 	depthChange = (evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
-		this.mesh.position.z = Number.parseInt(targetValue);
+		const numVal = Number.parseInt(targetValue);
+
+		this.mesh.position.z = this.setPosition.z + numVal;
 	};
 }
