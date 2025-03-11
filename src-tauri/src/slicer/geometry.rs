@@ -121,7 +121,7 @@ impl RayCaster {
         self.direction = Vec3::new(
             self.direction.x * cos_angle - self.direction.y * sin_angle,
             self.direction.x * sin_angle + self.direction.y * cos_angle,
-            self.direction.z,
+            self.direction.z, // Keep the z component unchanged
         );
     }
 }

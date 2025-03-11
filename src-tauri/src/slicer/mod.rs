@@ -39,14 +39,20 @@ pub fn slicer(positions: Vec<f32>, center: Vec<f32>) -> Vec<f32> {
     for triangle in triangled {
         let mut found_intersection = false;
 
-        if let Some(intersection) = triangle.ray_intersection(&raycaster) {
-            intersections.push(intersection.0.x);
-            intersections.push(intersection.0.y);
-            intersections.push(intersection.0.z);
-            found_intersection = true;
-            break;
-        } else {
-            raycaster.ray_rotate(angle_increment, layer_height);
+        while !found_intersection {
+            if let Some(intersection) = triangle.ray_intersection(&raycaster) {
+                intersections.push(intersection.0.x);
+                intersections.push(intersection.0.y);
+                intersections.push(intersection.0.z);
+                found_intersection = true;
+                break;
+            } else {
+                raycaster.ray_rotate(angle_increment, layer_height);
+            }
+
+            if raycaster.origin.z > cup_size_height as f32 {
+                break;
+            }
         }
     }
 
