@@ -1,4 +1,3 @@
-import { c } from "node_modules/vite/dist/node/moduleRunnerTransport.d-CXw_Ws6P";
 import { getDb } from "./getDb";
 import type { ProvelPrintSettings } from "./types";
 

@@ -9,6 +9,7 @@ import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
+import { invoke } from "@tauri-apps/api/core";
 import { ceil } from "mathjs";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
@@ -18,7 +19,6 @@ import { downloadGCodeFile, generateGCode } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import {
-	activeFileName,
 	clearModelButton,
 	estimatedPrintTime,
 	generateGCodeButton,
@@ -29,9 +29,6 @@ import {
 	progressBarDiv,
 	progressBarLabel,
 } from "@/utils/htmlElements";
-
-// import "@/menu";
-// import { invoke } from "@tauri-apps/api/core";
 
 const app = new Application();
 
@@ -62,13 +59,11 @@ clearModelButton.addEventListener("click", () => {
 	if (mergeGeometries) {
 		app.removeMeshFromScene(mergeGeometries.mesh);
 		mergeGeometries = null;
-		mergeCup.mesh.visible = true;
 		app.addToScene(mergeCup.mesh);
 	} else {
 		app.removeMeshFromScene(socket.mesh);
 	}
 
-	activeFileName.textContent = "No file selected";
 	socket.clearData();
 });
 
@@ -124,53 +119,64 @@ export async function slicingAction(sendToFile: boolean) {
 	printerFileInput.disabled = true;
 	progressBarDiv.style.display = "flex";
 
-	if (!mergeGeometries.mesh) {
-		throw new Error("Geometry not found");
-	}
-
-	if (!window.Worker) {
-		throw new Error("Web Worker not supported");
-	}
-
-	// const slicer = await invoke("slicer", { name: "Andrew!" });
-	// console.log(slicer);
-
-	const worker = new sliceWorker();
-
-	worker.postMessage(mergeGeometries.mesh.geometry.attributes.position.array);
-
-	worker.onmessage = async (event) => {
-		const { type, data } = event.data;
-
-		if (type === "progress") {
-			const progress = ceil(data * 100);
-
-			progressBarLabel.textContent = `${progress}%`;
-			progressBar.value = progress;
-		} else if (type === "done") {
-			const adjustedDim = await adjustForShrinkAndOffset(
-				data,
-				mergeGeometries.center,
-			);
-			const blendedMerge = await blendMerge(adjustedDim, 1);
-			const printTime = calculatePrintTime(blendedMerge);
-
-			estimatedPrintTime.textContent = printTime;
-
-			const gcode = await generateGCode(blendedMerge, "y", {
-				estimatedTime: printTime,
-			});
-
-			if (sendToFile) {
-				downloadGCodeFile(gcode, `${socket.mesh?.name}.gcode`);
-			} else {
-				await sendGCodeFile(new Blob([gcode]), `${socket.mesh?.name}.gcode`);
-			}
-
-			progressBarDiv.style.display = "none";
-			generateGCodeButton.disabled = false;
+	setTimeout(async () => {
+		if (!mergeGeometries.mesh) {
+			throw new Error("Geometry not found");
 		}
-	};
+
+		if (!window.Worker) {
+			throw new Error("Web Worker not supported");
+		}
+
+		const worker = new sliceWorker();
+
+		worker.postMessage({
+			positions: mergeGeometries.mesh.geometry.attributes.position.array,
+			verticalAxis: "y",
+			incrementHeight: true,
+		});
+
+		worker.onmessage = async (event) => {
+			const { type, data } = event.data;
+
+			if (type === "progress") {
+				const progress = ceil(data * 100);
+
+				progressBarLabel.textContent = `${progress}%`;
+				progressBar.value = progress;
+			} else if (type === "done") {
+				const adjustedDim = await adjustForShrinkAndOffset(
+					data,
+					mergeGeometries.center,
+				);
+				const blendedMerge = await blendMerge(adjustedDim, 1);
+				const printTime = calculatePrintTime(blendedMerge);
+
+				// const greeting = await invoke<string>("greet", { name: "Andrew" });
+				// console.log(greeting);
+
+				// const rustPrintTIme = await invoke<number>("calculate_print_time", {
+				// 	data: blendedMerge,
+				// });
+				// console.log(rustPrintTIme);
+
+				estimatedPrintTime.textContent = printTime;
+
+				const gcode = await generateGCode(blendedMerge, "y", {
+					estimatedTime: printTime,
+				});
+
+				if (sendToFile) {
+					downloadGCodeFile(gcode, `${socket.mesh?.name}.gcode`);
+				} else {
+					await sendGCodeFile(new Blob([gcode]), `${socket.mesh?.name}.gcode`);
+				}
+
+				progressBarDiv.style.display = "none";
+				generateGCodeButton.disabled = false;
+			}
+		};
+	}, 1000);
 
 	return "";
 }

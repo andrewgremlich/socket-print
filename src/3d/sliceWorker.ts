@@ -1,4 +1,3 @@
-import { cos, pi, sin } from "mathjs";
 import {
 	Box3,
 	BufferAttribute,
@@ -21,12 +20,16 @@ import {
 } from "../db/appSettings";
 import { ensureUV } from "./ensureUV";
 
-self.onmessage = async (event: MessageEvent<number[]>) => {
-	const positions = event.data;
+type SliceWorker = {
+	positions: number[];
+	verticalAxis: "y" | "z";
+	incrementHeight: boolean;
+};
+
+self.onmessage = async (event: MessageEvent<SliceWorker>) => {
+	const { positions, verticalAxis, incrementHeight } = event.data;
 	const layerHeight = await getLayerHeight();
 	const segments = await getCircularSegments();
-	const incrementHeight = true;
-	const verticalAxis = "y";
 
 	if (layerHeight <= 0) {
 		throw new Error("Layer height must be greater than 0.");
@@ -74,8 +77,8 @@ self.onmessage = async (event: MessageEvent<number[]>) => {
 	scene.add(mesh);
 	mesh.updateMatrixWorld(true);
 
-	const angleIncrement = (pi * 2) / segments;
-	const pointGatherer: Vector3[][] = [];
+	const angleIncrement = (Math.PI * 2) / segments;
+	const pointGatherer: Vector3[] = [];
 	const raycaster = new Raycaster();
 	const direction = new Vector3();
 	const ray = raycaster.ray;
@@ -89,19 +92,17 @@ self.onmessage = async (event: MessageEvent<number[]>) => {
 		heightPosition < maxHeight;
 		heightPosition += layerHeight
 	) {
-		const pointLevel: Vector3[] = [];
-
 		self.postMessage({
 			type: "progress",
 			data: heightPosition / maxHeight,
 		});
 
-		for (let angle = 0; angle < pi * 2; angle += angleIncrement) {
+		for (let angle = 0; angle < Math.PI * 2; angle += angleIncrement) {
 			const height = incrementHeight
-				? heightPosition + (angle / (pi * 2)) * layerHeight
+				? heightPosition + (angle / (Math.PI * 2)) * layerHeight
 				: heightPosition;
-			const xdirection = cos(angle);
-			const zdirection = sin(angle);
+			const xdirection = Math.cos(angle);
+			const zdirection = Math.sin(angle);
 
 			direction.set(xdirection, 0, zdirection);
 			raycaster.set(new Vector3(center.x, height, center.z), direction);
@@ -111,12 +112,11 @@ self.onmessage = async (event: MessageEvent<number[]>) => {
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
 				intersection.add(new Vector3(0, socketHeight, 0));
-				pointLevel.push(intersection);
+				pointGatherer.push(intersection);
 			} else {
 				console.error("No intersection found for this ray.");
 			}
 		}
-		pointGatherer.push(pointLevel);
 	}
 
 	self.postMessage({
