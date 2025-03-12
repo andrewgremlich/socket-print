@@ -21,6 +21,7 @@ export async function adjustForShrinkAndOffset(
 
 	for (const layer of points) {
 		const adjustedLayer: RawPoint[] = [];
+
 		for (const pt of layer) {
 			// Shift the point relative to the center
 			const dx = pt.x - center.x;

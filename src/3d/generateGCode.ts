@@ -52,7 +52,6 @@ export async function generateGCode(
 		`;customInfo nozzleSize="${nozzleSize}mm"`,
 		`;customInfo cupSize="${cupSize}"`,
 		`;customInfo nozzleTemp="${nozzleTemp}C"`,
-		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 		";# START GCODE SEQUENCE FOR CUP PRINT#;",
 
 		"G21 ; Set units to millimeters",
@@ -71,6 +70,7 @@ export async function generateGCode(
 		"G1 X-95 ; only once at correct Z height move in to register with cup heater for pickup",
 		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
+		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 
 		";##cup heater removal sequence##",
 		"M140 P1 S0 ;cup heater off",

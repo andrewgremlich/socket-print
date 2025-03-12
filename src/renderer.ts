@@ -119,64 +119,62 @@ export async function slicingAction(sendToFile: boolean) {
 	printerFileInput.disabled = true;
 	progressBarDiv.style.display = "flex";
 
-	setTimeout(async () => {
-		if (!mergeGeometries.mesh) {
-			throw new Error("Geometry not found");
-		}
+	if (!mergeGeometries.mesh) {
+		throw new Error("Geometry not found");
+	}
 
-		if (!window.Worker) {
-			throw new Error("Web Worker not supported");
-		}
+	if (!window.Worker) {
+		throw new Error("Web Worker not supported");
+	}
 
-		const worker = new sliceWorker();
+	const worker = new sliceWorker();
 
-		worker.postMessage({
-			positions: mergeGeometries.mesh.geometry.attributes.position.array,
-			verticalAxis: "y",
-			incrementHeight: true,
-		});
+	worker.postMessage({
+		positions: mergeGeometries.mesh.geometry.attributes.position.array,
+		verticalAxis: "y",
+		incrementHeight: true,
+	});
 
-		worker.onmessage = async (event) => {
-			const { type, data } = event.data;
+	worker.onmessage = async (event) => {
+		const { type, data } = event.data;
 
-			if (type === "progress") {
-				const progress = ceil(data * 100);
+		if (type === "progress") {
+			const progress = ceil(data * 100);
 
-				progressBarLabel.textContent = `${progress}%`;
-				progressBar.value = progress;
-			} else if (type === "done") {
-				const adjustedDim = await adjustForShrinkAndOffset(
-					data,
-					mergeGeometries.center,
-				);
-				const blendedMerge = await blendMerge(adjustedDim, 1);
-				const printTime = calculatePrintTime(blendedMerge);
+			progressBarLabel.textContent = `${progress}%`;
+			progressBar.value = progress;
+		} else if (type === "done") {
+			const adjustedDim = await adjustForShrinkAndOffset(
+				data,
+				mergeGeometries.center,
+			);
+			const blendedMerge = await blendMerge(adjustedDim, 1);
+			const printTime = calculatePrintTime(blendedMerge);
 
-				// const greeting = await invoke<string>("greet", { name: "Andrew" });
-				// console.log(greeting);
+			// const greeting = await invoke<string>("greet", { name: "Andrew" });
+			// console.log(greeting);
 
-				// const rustPrintTIme = await invoke<number>("calculate_print_time", {
-				// 	data: blendedMerge,
-				// });
-				// console.log(rustPrintTIme);
+			// const rustPrintTIme = await invoke<number>("calculate_print_time", {
+			// 	data: blendedMerge,
+			// });
+			// console.log(rustPrintTIme);
 
-				estimatedPrintTime.textContent = printTime;
+			estimatedPrintTime.textContent = printTime;
 
-				const gcode = await generateGCode(blendedMerge, "y", {
-					estimatedTime: printTime,
-				});
+			const gcode = await generateGCode(blendedMerge, "y", {
+				estimatedTime: printTime,
+			});
 
-				if (sendToFile) {
-					downloadGCodeFile(gcode, `${socket.mesh?.name}.gcode`);
-				} else {
-					await sendGCodeFile(new Blob([gcode]), `${socket.mesh?.name}.gcode`);
-				}
-
-				progressBarDiv.style.display = "none";
-				generateGCodeButton.disabled = false;
+			if (sendToFile) {
+				downloadGCodeFile(gcode, `${socket.mesh?.name}.gcode`);
+			} else {
+				await sendGCodeFile(new Blob([gcode]), `${socket.mesh?.name}.gcode`);
 			}
-		};
-	}, 1000);
+
+			progressBarDiv.style.display = "none";
+			generateGCodeButton.disabled = false;
+		}
+	};
 
 	return "";
 }
