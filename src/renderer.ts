@@ -9,7 +9,7 @@ import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
-import { invoke } from "@tauri-apps/api/core";
+// import { invoke } from "@tauri-apps/api/core";
 import { ceil } from "mathjs";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
@@ -150,14 +150,6 @@ export async function slicingAction(sendToFile: boolean) {
 			);
 			const blendedMerge = await blendMerge(adjustedDim, 1);
 			const printTime = calculatePrintTime(blendedMerge);
-
-			// const greeting = await invoke<string>("greet", { name: "Andrew" });
-			// console.log(greeting);
-
-			// const rustPrintTIme = await invoke<number>("calculate_print_time", {
-			// 	data: blendedMerge,
-			// });
-			// console.log(rustPrintTIme);
 
 			estimatedPrintTime.textContent = printTime;
 
