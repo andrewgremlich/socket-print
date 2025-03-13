@@ -41,16 +41,11 @@ fn find_height(positions: Vec<f32>, vertical_axis: char) -> f32 {
         }
     }
 
-    println!("Lowest height: {}", min_height);
     max_height - min_height
 }
 
 #[tauri::command]
-pub fn slicer(positions: &str, center: Vec<f32>) -> Vec<f32> {
-    println!("Slicing...");
-    println!("Positions: {:?}", positions);
-    println!("Center: {:?}", center);
-
+pub fn slicer(positions: Vec<f32>, center: Vec<f32>) -> Vec<Vec<f32>> {
     let layer_height: f32 = 1.0;
     let segments: u8 = 128;
     let cup_size_height: f32 = 38.0 + 5.0;
@@ -58,24 +53,24 @@ pub fn slicer(positions: &str, center: Vec<f32>) -> Vec<f32> {
     let increment_height: bool = true;
     let vertical_axis: char = 'y';
 
-    let positions_parsed: Vec<f32> =
-        serde_json::from_str(&positions).expect("Invalid JSON format for positions");
-    let triangled: Vec<Triangle> = triangulate(positions_parsed.clone());
-    let mut intersections: Vec<f32> = vec![];
+    let triangled: Vec<Triangle> = triangulate(positions.clone());
+    let mut intersections: Vec<Vec<f32>> = vec![];
     let mut raycaster = RayCaster::new(
         Vec3::new(center[0], center[1], center[2]),
         Vec3::new(0.0, 0.0, -1.0),
     );
-    let height = find_height(positions_parsed.clone(), vertical_axis);
+    let height = find_height(positions.clone(), vertical_axis);
 
     for triangle in triangled {
         let mut found_intersection = false;
 
         while !found_intersection {
             if let Some(intersection) = triangle.ray_intersection(&raycaster) {
-                intersections.push(intersection.0.x);
-                intersections.push(intersection.0.y + cup_size_height);
-                intersections.push(intersection.0.z);
+                intersections.push(vec![
+                    intersection.0.x,
+                    intersection.0.y + cup_size_height,
+                    intersection.0.z,
+                ]);
                 found_intersection = true;
                 break;
             } else {

@@ -9,7 +9,7 @@ import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
-// import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "@tauri-apps/api/core";
 import { ceil } from "mathjs";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
@@ -177,16 +177,15 @@ generateGCodeButton.addEventListener("click", async () => {
 		// const hello = await invoke("greet", { name: "Andrew" });
 		// console.log(hello);
 
-		// console.log("Slicing action started");
-		// console.log({
-		// 	positions: mergeGeometries.mesh.geometry.attributes.position.array,
-		// 	center: mergeGeometries.center,
-		// });
 		// const testSlicer = await invoke("slicer", {
-		// 	positions: JSON.stringify(
+		// 	positions: Array.from(
 		// 		mergeGeometries.mesh.geometry.attributes.position.array,
 		// 	),
-		// 	center: mergeGeometries.center,
+		// 	center: [
+		// 		mergeGeometries.center.x,
+		// 		mergeGeometries.center.y,
+		// 		mergeGeometries.center.z,
+		// 	],
 		// });
 		// console.log(testSlicer);
 	} catch (error) {
