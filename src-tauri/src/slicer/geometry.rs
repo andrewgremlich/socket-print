@@ -72,8 +72,8 @@ impl Triangle {
         let h = raycaster.direction.cross(&edge2);
         let a = edge1.dot(&h);
 
-        if a.abs() < EPSILON {
-            return None;
+        if a < EPSILON {
+            return None; // Ray is parallel to the triangle or intersects from behind
         }
 
         let f = 1.0 / a;
@@ -113,8 +113,8 @@ impl RayCaster {
         Self { origin, direction }
     }
 
-    pub fn ray_rotate(&mut self, radians: f32, height: f32) {
-        let (sin_angle, cos_angle) = radians.sin_cos();
+    pub fn ray_rotate(&mut self, angle: f32, height: f32) {
+        let (sin_angle, cos_angle) = angle.sin_cos();
 
         self.origin.z += height;
 
