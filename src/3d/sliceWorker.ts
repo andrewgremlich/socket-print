@@ -106,7 +106,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			const xdirection = Math.cos(angle);
 			const zdirection = Math.sin(angle);
 
-			direction.set(xdirection, 0, zdirection);
+			direction.set(xdirection, 0, zdirection); // TODO: is this a mistake with the y being 0?
 			raycaster.set(new Vector3(center.x, height, center.z), direction);
 
 			const intersects = raycaster.intersectObject(mesh);

@@ -1,6 +1,6 @@
 {
 	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-	"productName": "Socket Print",
+	"productName": "Provel Print",
 	"version": "1.0.0",
 	"identifier": "com.tauri.dev",
 	"build": {

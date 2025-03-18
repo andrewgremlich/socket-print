@@ -1,3 +1,4 @@
+use std::f32::consts::PI;
 use std::ops::{Add, Mul, Sub};
 
 #[derive(Debug, Copy, Clone)]
@@ -53,9 +54,9 @@ impl Mul<f32> for Vec3 {
 #[derive(Debug, Copy, Clone)]
 
 pub struct Triangle {
-    p1: Vec3,
-    p2: Vec3,
-    p3: Vec3,
+    pub p1: Vec3,
+    pub p2: Vec3,
+    pub p3: Vec3,
 }
 
 impl Triangle {
@@ -69,33 +70,34 @@ impl Triangle {
         let edge1 = self.p2 - self.p1;
         let edge2 = self.p3 - self.p1;
 
-        let h = raycaster.direction.cross(&edge2);
-        let a = edge1.dot(&h);
+        let cross_direction_edge2 = raycaster.direction.cross(&edge2);
+        let determinant = edge1.dot(&cross_direction_edge2);
 
-        if a < EPSILON {
+        if determinant < EPSILON {
             return None; // Ray is parallel to the triangle or intersects from behind
         }
 
-        let f = 1.0 / a;
-        let s = raycaster.origin - self.p1;
-        let u = f * s.dot(&h);
+        let inverse_determinant = 1.0 / determinant;
+        let origin_to_vertex = raycaster.origin - self.p1;
+        let barycentric_u = inverse_determinant * origin_to_vertex.dot(&cross_direction_edge2);
 
-        if u < 0.0 || u > 1.0 {
-            return None;
-        }
-        let q = s.cross(&edge1);
-        let v = f * raycaster.direction.dot(&q);
-
-        if v < 0.0 || (u + v) > 1.0 {
+        if barycentric_u < 0.0 || barycentric_u > 1.0 {
             return None;
         }
 
-        let t = f * edge2.dot(&q);
+        let cross_origin_edge1 = origin_to_vertex.cross(&edge1);
+        let barycentric_v = inverse_determinant * raycaster.direction.dot(&cross_origin_edge1);
 
-        if t > EPSILON {
+        if barycentric_v < 0.0 || (barycentric_u + barycentric_v) > 1.0 {
+            return None;
+        }
+
+        let ray_distance = inverse_determinant * edge2.dot(&cross_origin_edge1);
+
+        if ray_distance > EPSILON {
             // Correctly calculate the intersection point
-            let intersection_point = raycaster.origin + (raycaster.direction * t);
-            Some((intersection_point, t))
+            let intersection_point = raycaster.origin + (raycaster.direction * ray_distance);
+            Some((intersection_point, ray_distance))
         } else {
             None // Intersection is behind the ray origin
         }
@@ -106,22 +108,46 @@ impl Triangle {
 pub struct RayCaster {
     pub origin: Vec3,
     pub direction: Vec3,
+
+    angle: f32,
+    height: f32,
 }
 
 impl RayCaster {
     pub fn new(origin: Vec3, direction: Vec3) -> Self {
-        Self { origin, direction }
+        Self {
+            origin,
+            direction,
+            angle: 0.0,
+            height: 0.0,
+        }
     }
 
     pub fn ray_rotate(&mut self, angle: f32, height: f32) {
-        let (sin_angle, cos_angle) = angle.sin_cos();
+        self.angle += angle;
+        self.height += height;
 
-        self.origin.z += height;
+        let rotation_matrix = |angle: f32| -> (f32, f32) {
+            let cos_angle = angle.cos();
+            let sin_angle = angle.sin();
+            (cos_angle, sin_angle)
+        };
+
+        let (cos_angle, sin_angle) = rotation_matrix(angle);
 
         self.direction = Vec3::new(
-            self.direction.x * cos_angle - self.direction.y * sin_angle,
-            self.direction.x * sin_angle + self.direction.y * cos_angle,
-            self.direction.z, // Keep the z component unchanged
+            self.direction.x * cos_angle - self.direction.z * sin_angle,
+            self.direction.y,
+            self.direction.x * sin_angle + self.direction.z * cos_angle,
         );
+
+        self.origin.y += height;
+    }
+
+    pub fn reset_raycaster(&mut self, origin: Vec3, direction: Vec3) {
+        self.origin = origin;
+        self.direction = direction;
+        self.angle = 0.0;
+        self.height = 0.0;
     }
 }

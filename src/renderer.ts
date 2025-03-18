@@ -177,6 +177,7 @@ generateGCodeButton.addEventListener("click", async () => {
 		// const hello = await invoke("greet", { name: "Andrew" });
 		// console.log(hello);
 
+		// mergeGeometries.updateMatrixWorld();
 		// const testSlicer = await invoke("slicer", {
 		// 	positions: Array.from(
 		// 		mergeGeometries.mesh.geometry.attributes.position.array,
