@@ -173,22 +173,22 @@ export async function slicingAction(sendToFile: boolean) {
 
 generateGCodeButton.addEventListener("click", async () => {
 	try {
-		await slicingAction(true);
-		// const hello = await invoke("greet", { name: "Andrew" });
-		// console.log(hello);
+		// await slicingAction(true);
+		const hello = await invoke("greet", { name: "Andrew" });
+		console.log(hello);
 
-		// mergeGeometries.updateMatrixWorld();
-		// const testSlicer = await invoke("slicer", {
-		// 	positions: Array.from(
-		// 		mergeGeometries.mesh.geometry.attributes.position.array,
-		// 	),
-		// 	center: [
-		// 		mergeGeometries.center.x,
-		// 		mergeGeometries.center.y,
-		// 		mergeGeometries.center.z,
-		// 	],
-		// });
-		// console.log(testSlicer);
+		mergeGeometries.updateMatrixWorld();
+		const testSlicer = await invoke("slicer", {
+			positions: Array.from(
+				mergeGeometries.mesh.geometry.attributes.position.array,
+			),
+			center: [
+				mergeGeometries.center.x,
+				mergeGeometries.center.y,
+				mergeGeometries.center.z,
+			],
+		});
+		console.log(testSlicer);
 	} catch (error) {
 		console.error("Error invoking Rust function:", error);
 	}

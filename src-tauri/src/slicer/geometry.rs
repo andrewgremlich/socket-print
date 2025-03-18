@@ -1,4 +1,3 @@
-use std::f32::consts::PI;
 use std::ops::{Add, Mul, Sub};
 
 #[derive(Debug, Copy, Clone)]
@@ -73,8 +72,8 @@ impl Triangle {
         let cross_direction_edge2 = raycaster.direction.cross(&edge2);
         let determinant = edge1.dot(&cross_direction_edge2);
 
-        if determinant < EPSILON {
-            return None; // Ray is parallel to the triangle or intersects from behind
+        if determinant.abs() < EPSILON {
+            return None; // Ray is parallel to the triangle
         }
 
         let inverse_determinant = 1.0 / determinant;
@@ -94,13 +93,9 @@ impl Triangle {
 
         let ray_distance = inverse_determinant * edge2.dot(&cross_origin_edge1);
 
-        if ray_distance > EPSILON {
-            // Correctly calculate the intersection point
-            let intersection_point = raycaster.origin + (raycaster.direction * ray_distance);
-            Some((intersection_point, ray_distance))
-        } else {
-            None // Intersection is behind the ray origin
-        }
+        // Allow intersection from behind by removing the ray_distance > EPSILON check
+        let intersection_point = raycaster.origin + (raycaster.direction * ray_distance);
+        Some((intersection_point, ray_distance))
     }
 }
 
