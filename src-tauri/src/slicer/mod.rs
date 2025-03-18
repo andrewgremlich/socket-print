@@ -47,9 +47,9 @@ fn find_height(positions: Vec<f32>, vertical_axis: char) -> f32 {
 #[tauri::command]
 pub fn slicer(positions: Vec<f32>, center: Vec<f32>) -> Vec<Vec<f32>> {
     let layer_height: f32 = 1.0;
-    let segments: u8 = 128;
+    let segments: f32 = 128.0;
     let cup_size_height: f32 = 38.0 + 5.0;
-    let angle_increment: f32 = (PI * 2.0) / segments as f32;
+    let angle_increment: f32 = (PI * 2.0) / segments;
     let increment_height: bool = true;
     let vertical_axis: char = 'y';
 
