@@ -92,6 +92,11 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 
 	ray.direction.set(0, 0, -1).normalize();
 
+	// 	const origin = new THREE.Vector3(0, 5, 0); // Starts at y = 5
+	// const direction = new THREE.Vector3(1, 0, 0).normalize(); // No Y component, so it's horizontal
+
+	// const raycaster = new THREE.Raycaster(origin, direction);
+
 	const socketHeight = (await getCupSizeHeight()) + 5;
 
 	for (
