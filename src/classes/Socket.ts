@@ -5,6 +5,7 @@ import {
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
+	Vector3,
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -96,6 +97,9 @@ export class Socket extends AppObject {
 			);
 
 			this.mesh.matrixWorldAutoUpdate = true;
+
+			verticalTranslate.max = `${this.size.y * 0.6}`;
+			verticalTranslate.min = `-${this.size.y * 0.6}`;
 
 			this.setPosition = {
 				x: this.mesh.position.x,
