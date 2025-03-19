@@ -11,6 +11,7 @@ import {
 	Vector3,
 	WebGLRenderer,
 } from "three";
+import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
 import {
@@ -19,6 +20,8 @@ import {
 	getLayerHeight,
 } from "../db/appSettings";
 import { ensureUV } from "./ensureUV";
+
+Mesh.prototype.raycast = acceleratedRaycast;
 
 type SliceWorker = {
 	positions: number[];
@@ -77,6 +80,10 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	scene.add(mesh);
 	mesh.updateMatrixWorld(true);
 
+	// Build BVH for optimized raycasting
+	const bvh = new MeshBVH(mesh.geometry);
+	mesh.geometry.boundsTree = bvh;
+
 	const angleIncrement = (Math.PI * 2) / segments;
 	const pointGatherer: Vector3[][] = [];
 	const raycaster = new Raycaster();
@@ -107,8 +114,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			const zdirection = Math.sin(angle);
 
 			direction.set(xdirection, 0, zdirection);
-			raycaster.set(new Vector3(center.x, height, center.z), direction);
-
+			ray.origin.set(center.x, height, center.z);
+			ray.direction.copy(direction);
 			const intersects = raycaster.intersectObject(mesh);
 
 			if (intersects.length > 0) {
