@@ -21,7 +21,7 @@ export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
 		}
 	}
 
-	const averageSpeed = 20;
+	const averageSpeed = 1100; // mm/hr
 	const printTime = totalDistance / averageSpeed;
 	const roundedPrintTime = ceil(printTime);
 
