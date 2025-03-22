@@ -33,7 +33,7 @@ export function blendMerge(
 ): RawPoint[][] {
 	const allLevels: RawPoint[][] = [...points];
 
-	for (let i = allLevels.length - 1; i > 0; i--) {
+	for (let i = Math.floor((allLevels.length - 1) * 0.5); i > 0; i--) {
 		const currentLevel = allLevels[i];
 		const lowerLevel = allLevels[i - 1];
 

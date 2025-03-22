@@ -1,6 +1,3 @@
-mod calculate_print_time;
-mod slicer;
-
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}!", name)
@@ -21,11 +18,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            greet,
-            slicer::slicer,
-            calculate_print_time::calculate_print_time
-        ])
+        .invoke_handler(tauri::generate_handler![greet,])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

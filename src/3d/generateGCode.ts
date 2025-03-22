@@ -36,7 +36,7 @@ export async function generateGCode(
 	const {
 		feedrate = 1500,
 		estimatedTime = "0h 0m 0s",
-		extrusionFactor = 1,
+		extrusionFactor = 0.77,
 	} = options;
 	const activeMaterialProfile = await getActiveMaterialProfile();
 	const nozzleSize = await getNozzleSize();
@@ -104,6 +104,23 @@ export async function generateGCode(
 
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
+
+		//NOTE: Used to find optimum cooling settings for the printer. REMOVE LATER.
+		// if (i === 1) {
+		// 	gcode.push("M106 P2 S0.25 ; set fan speed");
+		// }
+
+		// if (i === 2) {
+		// 	gcode.push("M106 P2 S0.5 ; set fan speed");
+		// }
+
+		// if (i === 3) {
+		// 	gcode.push("M106 P2 S0.75 ; set fan speed");
+		// }
+
+		// if (i === 4) {
+		// 	gcode.push("M106 P2 S1 ; set fan speed");
+		// }
 
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j];

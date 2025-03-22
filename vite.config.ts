@@ -4,8 +4,20 @@ import { VitePWA } from "vite-plugin-pwa";
 import topLevelAwait from "vite-plugin-top-level-await";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig(() => ({
+export default defineConfig({
+	css: {
+		transformer: "lightningcss",
+		lightningcss: {
+			targets: {
+				chrome: 100,
+				firefox: 100,
+				safari: 14,
+				edge: 100,
+			},
+		},
+	},
 	build: {
+		minify: true,
 		target: "esnext",
 		rollupOptions: {
 			input: {
@@ -15,6 +27,7 @@ export default defineConfig(() => ({
 			output: {
 				manualChunks: {
 					three: ["three"],
+					"three-mesh-bvh": ["three-mesh-bvh"],
 				},
 			},
 		},
@@ -24,7 +37,6 @@ export default defineConfig(() => ({
 		topLevelAwait(),
 		VitePWA({
 			registerType: "autoUpdate",
-			// includeAssets: ["/favicon.ico", "/robots.txt", "/safari-pinned-tab.svg"],
 			manifest: {
 				name: "Provel Print",
 				display: "standalone",
@@ -32,19 +44,7 @@ export default defineConfig(() => ({
 				description:
 					"A simple CAD software to join socket prosthesis with distal cups.",
 				theme_color: "#ffffff",
-				// icons: [
-				//   {
-				//     src: "/android-chrome-192x192.png",
-				//     sizes: "192x192",
-				//     type: "image/png",
-				//   },
-				//   {
-				//     src: "/android-chrome-512x512.png",
-				//     sizes: "512x512",
-				//     type: "image/png",
-				//   },
-				// ],
 			},
 		}),
 	],
-}));
+});

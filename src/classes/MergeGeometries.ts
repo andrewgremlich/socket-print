@@ -17,7 +17,7 @@ export class MergeGeometries extends AppObject {
 			throw new Error("STL data has not been loaded!");
 		}
 		const clonedCylinder = this.cloneCylinder(cylinder.mesh, {
-			newHeight: stlModel.size.y,
+			newHeight: stlModel.size.y * 0.5,
 		});
 		const union = CSG.union(stlModel.mesh, clonedCylinder);
 
