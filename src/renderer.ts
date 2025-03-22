@@ -9,7 +9,6 @@ import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
-// import { invoke } from "@tauri-apps/api/core";
 import { ceil } from "mathjs";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
@@ -177,25 +176,14 @@ export async function slicingAction(sendToFile: boolean) {
 generateGCodeButton.addEventListener("click", async () => {
 	try {
 		await slicingAction(true);
-		// const hello = await invoke("greet", { name: "Andrew" });
-		// console.log(hello);
-
-		// mergeGeometries.updateMatrixWorld();
-		// const testSlicer = await invoke("slicer", {
-		// 	positions: Array.from(
-		// 		mergeGeometries.mesh.geometry.attributes.position.array,
-		// 	),
-		// 	center: [
-		// 		mergeGeometries.center.x,
-		// 		mergeGeometries.center.y,
-		// 		mergeGeometries.center.z,
-		// 	],
-		// });
-		// console.log(testSlicer);
 	} catch (error) {
-		console.error("Error invoking Rust function:", error);
+		console.error("Error invoking slicing function:", error);
 	}
 });
 printerFileInput.addEventListener("click", async () => {
-	// await slicingAction(false);
+	try {
+		await slicingAction(false);
+	} catch (error) {
+		console.error("Error invoking slicing action:", error);
+	}
 });
