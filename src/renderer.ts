@@ -105,7 +105,7 @@ mergeMeshes?.addEventListener("click", async () => {
 
 		generateGCodeButton.disabled = false;
 		printerFileInput.disabled = false;
-	}, 1000);
+	}, 500);
 });
 
 export async function slicingAction(sendToFile: boolean) {
