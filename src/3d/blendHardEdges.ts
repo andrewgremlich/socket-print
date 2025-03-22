@@ -27,7 +27,7 @@ function getPointAtDistance(
 	};
 }
 
-export function blendMerge(
+export function blendHardEdges(
 	points: RawPoint[][],
 	overlapTolerance = 0.5,
 ): RawPoint[][] {

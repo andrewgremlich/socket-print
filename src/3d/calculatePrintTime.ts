@@ -1,5 +1,5 @@
 import { ceil, floor, sqrt } from "mathjs";
-import type { RawPoint } from "./blendMerge";
+import type { RawPoint } from "./blendHardEdges";
 
 export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
 	if (levelsOfPoints.length < 2) {

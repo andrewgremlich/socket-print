@@ -3,7 +3,7 @@ import { atan2, cos, sin, sqrt } from "mathjs";
 import { getNozzleSize } from "@/db/appSettings";
 import { getActiveMaterialProfile } from "@/db/materialProfiles";
 
-import type { RawPoint } from "./blendMerge";
+import type { RawPoint } from "./blendHardEdges";
 
 export async function adjustForShrinkAndOffset(
 	points: RawPoint[][],

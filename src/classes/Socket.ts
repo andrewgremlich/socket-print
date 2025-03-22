@@ -10,7 +10,7 @@ import {
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
-import type { RawPoint } from "@/3d/blendMerge";
+import type { RawPoint } from "@/3d/blendHardEdges";
 import { ensureUV } from "@/3d/ensureUV";
 import { removeDuplicateVertices } from "@/3d/removeDups";
 import { getLockDepth } from "@/db/appSettings";

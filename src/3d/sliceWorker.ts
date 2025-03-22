@@ -33,6 +33,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const { positions, verticalAxis, incrementHeight } = event.data;
 	const layerHeight = await getLayerHeight();
 	const segments = await getCircularSegments();
+	const socketHeight = (await getCupSizeHeight()) + 5;
+	const angleIncrement = (Math.PI * 2) / segments;
 
 	if (layerHeight <= 0) {
 		throw new Error("Layer height must be greater than 0.");
@@ -69,35 +71,27 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			side: DoubleSide,
 		}),
 	);
+
+	const bvh = new MeshBVH(mesh.geometry);
+
 	const boundingBox = new Box3().setFromObject(mesh);
 	const center = boundingBox.getCenter(new Vector3());
 	const maxHeight = boundingBox.max[verticalAxis];
 	const camera = new PerspectiveCamera(75, 1, 0.1, 1000);
+
 	camera.position.set(0, 0, 10);
 	camera.lookAt(center);
 	renderer.render(scene, camera);
-
 	scene.add(mesh);
+	mesh.geometry.boundsTree = bvh;
 	mesh.updateMatrixWorld(true);
 
-	// Build BVH for optimized raycasting
-	const bvh = new MeshBVH(mesh.geometry);
-	mesh.geometry.boundsTree = bvh;
-
-	const angleIncrement = (Math.PI * 2) / segments;
 	const pointGatherer: Vector3[][] = [];
 	const raycaster = new Raycaster();
 	const direction = new Vector3();
 	const ray = raycaster.ray;
 
 	ray.direction.set(0, 0, -1).normalize();
-
-	// 	const origin = new THREE.Vector3(0, 5, 0); // Starts at y = 5
-	// const direction = new THREE.Vector3(1, 0, 0).normalize(); // No Y component, so it's horizontal
-
-	// const raycaster = new THREE.Raycaster(origin, direction);
-
-	const socketHeight = (await getCupSizeHeight()) + 5;
 
 	for (
 		let heightPosition = 0;

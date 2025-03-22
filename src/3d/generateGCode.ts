@@ -9,7 +9,7 @@ import {
 import { getActiveMaterialProfileNozzleTemp } from "@/db/materialProfiles";
 
 import pkg from "../../package.json";
-import type { RawPoint } from "./blendMerge";
+import type { RawPoint } from "./blendHardEdges";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";

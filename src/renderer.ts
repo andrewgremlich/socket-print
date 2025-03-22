@@ -12,7 +12,7 @@ import { Socket } from "@/classes/Socket";
 import { ceil } from "mathjs";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
-import { blendMerge } from "@/3d/blendMerge";
+import { blendHardEdges } from "@/3d/blendHardEdges";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
 import { downloadGCodeFile, generateGCode } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
@@ -150,12 +150,12 @@ export async function slicingAction(sendToFile: boolean) {
 				data,
 				mergeGeometries.center,
 			);
-			const blendedMerge = await blendMerge(adjustedDim, 1);
-			const printTime = calculatePrintTime(blendedMerge);
+			const blended = await blendHardEdges(adjustedDim, 1);
+			const printTime = calculatePrintTime(blended);
 
 			estimatedPrintTime.textContent = printTime;
 
-			const gcode = await generateGCode(blendedMerge, "y", {
+			const gcode = await generateGCode(blended, "y", {
 				estimatedTime: printTime,
 			});
 
@@ -175,13 +175,16 @@ export async function slicingAction(sendToFile: boolean) {
 
 generateGCodeButton.addEventListener("click", async () => {
 	try {
+		console.info("Generate GCode button clicked");
 		await slicingAction(true);
 	} catch (error) {
 		console.error("Error invoking slicing function:", error);
 	}
 });
+
 printerFileInput.addEventListener("click", async () => {
 	try {
+		console.info("Printer file input clicked");
 		await slicingAction(false);
 	} catch (error) {
 		console.error("Error invoking slicing action:", error);
