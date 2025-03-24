@@ -54,6 +54,11 @@ export class Application {
 		window.addEventListener("resize", this.#onWindowResize);
 	}
 
+	resetCameraPosition = () => {
+		this.camera.position.set(0, 100, 200);
+		this.controls.target.set(0, 100, 0);
+	};
+
 	addToScene = (object: Object3D) => this.scene.add(object);
 
 	removeMeshFromScene = (mesh: Mesh) => this.scene.remove(mesh);

@@ -20,14 +20,17 @@ import sliceWorker from "@/3d/sliceWorker?worker";
 import {
 	activeFileName,
 	clearModelButton,
+	depthTranslate,
 	estimatedPrintTime,
 	generateGCodeButton,
+	horizontalTranslate,
 	loadingScreen,
 	mergeMeshes,
 	printerFileInput,
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
+	verticalTranslate,
 } from "@/utils/htmlElements";
 
 if (!window.Worker) {
@@ -69,8 +72,13 @@ clearModelButton.addEventListener("click", () => {
 		app.removeMeshFromScene(socket.mesh);
 	}
 
+	horizontalTranslate.value = "0";
+	depthTranslate.value = "0";
+	verticalTranslate.value = "0";
 	activeFileName.textContent = "";
 	socket.clearData();
+
+	app.resetCameraPosition();
 });
 
 mergeMeshes?.addEventListener("click", async () => {
