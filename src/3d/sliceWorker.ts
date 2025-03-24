@@ -25,12 +25,10 @@ Mesh.prototype.raycast = acceleratedRaycast;
 
 type SliceWorker = {
 	positions: number[];
-	verticalAxis: "y" | "z";
-	incrementHeight: boolean;
 };
 
 self.onmessage = async (event: MessageEvent<SliceWorker>) => {
-	const { positions, verticalAxis, incrementHeight } = event.data;
+	const { positions } = event.data;
 	const layerHeight = await getLayerHeight();
 	const segments = await getCircularSegments();
 	const socketHeight = (await getCupSizeHeight()) + 5;
@@ -63,7 +61,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 
 	const boundingBox = new Box3().setFromObject(mesh);
 	const center = boundingBox.getCenter(new Vector3());
-	const maxHeight = boundingBox.max[verticalAxis];
+	const maxHeight = boundingBox.max.y;
 	const camera = new PerspectiveCamera(75, 1, 0.1, 1000);
 
 	camera.position.set(0, 0, 10);
@@ -91,9 +89,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 		});
 
 		for (let angle = 0; angle < Math.PI * 2; angle += angleIncrement) {
-			const height = incrementHeight
-				? heightPosition + (angle / (Math.PI * 2)) * layerHeight
-				: heightPosition;
+			const height = heightPosition + (angle / (Math.PI * 2)) * layerHeight;
 			const xdirection = Math.cos(angle);
 			const zdirection = Math.sin(angle);
 
