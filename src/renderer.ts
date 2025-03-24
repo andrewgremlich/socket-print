@@ -30,6 +30,10 @@ import {
 	progressBarLabel,
 } from "@/utils/htmlElements";
 
+if (!window.Worker) {
+	throw new Error("Web Worker not supported");
+}
+
 const app = new Application();
 
 const lighting = new Lighting();
@@ -108,26 +112,10 @@ mergeMeshes?.addEventListener("click", async () => {
 });
 
 export async function slicingAction(sendToFile: boolean) {
-	if (!progressBarDiv) {
-		throw new Error("Loading screen not found");
-	}
-
-	if (!loadingScreen) {
-		throw new Error("Loading screen not found");
-	}
-
 	mergeGeometries.updateMatrixWorld();
 	generateGCodeButton.disabled = true;
 	printerFileInput.disabled = true;
 	progressBarDiv.style.display = "flex";
-
-	if (!mergeGeometries.mesh) {
-		throw new Error("Geometry not found");
-	}
-
-	if (!window.Worker) {
-		throw new Error("Web Worker not supported");
-	}
 
 	const worker = new sliceWorker();
 

@@ -35,19 +35,6 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const segments = await getCircularSegments();
 	const socketHeight = (await getCupSizeHeight()) + 5;
 	const angleIncrement = (Math.PI * 2) / segments;
-
-	if (layerHeight <= 0) {
-		throw new Error("Layer height must be greater than 0.");
-	}
-
-	if (segments <= 0) {
-		throw new Error("Segments must be greater than 0.");
-	}
-
-	if (verticalAxis !== "y" && verticalAxis !== "z") {
-		throw new Error("Vertical axis must be either 'y' or 'z'.");
-	}
-
 	const scene = new Scene();
 	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
 	const rawgeometry = new BufferGeometry();
