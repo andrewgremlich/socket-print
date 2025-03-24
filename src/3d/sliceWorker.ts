@@ -91,8 +91,6 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const direction = new Vector3();
 	const ray = raycaster.ray;
 
-	ray.direction.set(0, 0, -1).normalize();
-
 	for (
 		let heightPosition = 0;
 		heightPosition < maxHeight;
@@ -112,7 +110,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			const xdirection = Math.cos(angle);
 			const zdirection = Math.sin(angle);
 
-			direction.set(xdirection, 0, zdirection);
+			direction.set(xdirection, 0, zdirection).normalize();
 			ray.origin.set(center.x, height, center.z);
 			ray.direction.copy(direction);
 			const intersects = raycaster.intersectObject(mesh);
