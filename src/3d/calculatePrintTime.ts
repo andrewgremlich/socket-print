@@ -13,6 +13,10 @@ export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
 			const point1 = levelsOfPoints[i - 1][j];
 			const point2 = levelsOfPoints[i][j];
 
+			if (point1 === undefined || point2 === undefined) {
+				continue;
+			}
+
 			const dx = point2.x - point1.x;
 			const dy = point2.y - point1.y;
 			const dz = point2.z - point1.z;

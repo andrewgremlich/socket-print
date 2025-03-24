@@ -103,7 +103,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 				intersection.add(new Vector3(0, socketHeight, 0));
 				pointLevel.push(intersection);
 			} else {
-				console.error("No intersection found for this ray.");
+				console.warn("No intersection found for this ray.");
 			}
 		}
 

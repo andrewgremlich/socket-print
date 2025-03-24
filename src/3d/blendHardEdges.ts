@@ -42,6 +42,10 @@ export function blendHardEdges(
 		}
 
 		for (let j = 0; j < currentLevel.length; j++) {
+			if (lowerLevel[j] === undefined) {
+				continue;
+			}
+
 			const currentPoint = new Vector3(
 				currentLevel[j].x,
 				currentLevel[j].y,
