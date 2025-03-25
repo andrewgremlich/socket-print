@@ -6,8 +6,31 @@
     "main"
   ],
   "permissions": [
-    "core:default",
+    "fs:default",
     "dialog:default",
-    "dialog:default"
+    {
+      "identifier": "fs:allow-app-write",
+      "allow": [
+        {
+          "path": "$DOCUMENT/*"
+        }
+      ]
+    },
+    {
+      "identifier": "dialog:allow-open",
+      "allow": [
+        {
+          "path": "$DOCUMENT/*"
+        }
+      ]
+    },
+    {
+      "identifier": "dialog:allow-save",
+      "allow": [
+        {
+          "path": "$DOCUMENT/*"
+        }
+      ]
+    }
   ]
 }

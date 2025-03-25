@@ -14,7 +14,7 @@ import { ceil } from "mathjs";
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendHardEdges } from "@/3d/blendHardEdges";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
-import { downloadGCodeFile, generateGCode } from "@/3d/generateGCode";
+import { generateGCode, writeGCodeFile } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import {
@@ -154,11 +154,12 @@ export async function slicingAction(sendToFile: boolean) {
 			const gcode = await generateGCode(blended, "y", {
 				estimatedTime: printTime,
 			});
+			const filePathName = `${socket.mesh?.name}.gcode`;
 
 			if (sendToFile) {
-				downloadGCodeFile(gcode, `${socket.mesh?.name}.gcode`);
+				await writeGCodeFile(gcode, filePathName);
 			} else {
-				await sendGCodeFile(new Blob([gcode]), `${socket.mesh?.name}.gcode`);
+				await sendGCodeFile(new Blob([gcode]), filePathName);
 			}
 
 			progressBarDiv.style.display = "none";
