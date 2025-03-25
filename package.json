@@ -6,8 +6,7 @@
 	"main": ".vite/build/main.js",
 	"type": "module",
 	"author": {
-		"name": "andrewgremlich",
-		"email": "engineering@gremlich.xyz"
+		"name": "andrewgremlich"
 	},
 	"license": "MIT",
 	"repository": {
