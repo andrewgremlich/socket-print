@@ -32,10 +32,13 @@ import {
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
+import { webLogger } from "@/utils/webLogger";
 
 if (!window.Worker) {
 	throw new Error("Web Worker not supported");
 }
+
+await webLogger();
 
 const app = new Application();
 

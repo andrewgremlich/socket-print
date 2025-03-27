@@ -1,12 +1,14 @@
-import { connectToPrinter } from "@/3d/sendGCodeFile";
+import hotkeys from "hotkeys-js";
 
-import { saveActiveMaterialProfile } from "@/db/appSettings";
+import { connectToPrinter } from "@/3d/sendGCodeFile";
+import { saveActiveMaterialProfile, toggleDebugMode } from "@/db/appSettings";
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
 import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
 import {
 	deleteActiveMaterialProfile,
 	getMaterialProfiles,
 } from "@/db/materialProfiles";
+
 import {
 	addMaterialProfile,
 	deleteMaterialProfileButton,
@@ -18,6 +20,16 @@ import {
 	menuBar,
 	menuBarDropdowns,
 } from "./htmlElements";
+
+hotkeys("ctrl+shift+d", () => {
+	toggleDebugMode().then((data) => {
+		if (data) {
+			console.log("Debug mode enabled");
+		} else {
+			console.log("Debug mode disabled");
+		}
+	});
+});
 
 menuBar.addEventListener("click", (evt) => {
 	const target = evt.target as HTMLElement;
@@ -43,6 +55,8 @@ window.addEventListener("click", (evt) => {
 });
 
 const printerConnection = async () => {
+	console.log("Printer connection check");
+
 	try {
 		await connectToPrinter(ipAddressInput.value);
 
@@ -51,7 +65,7 @@ const printerConnection = async () => {
 
 		ipAddressSuccess.spinIcon();
 	} catch (error) {
-		console.error("CAUGHT:", error);
+		console.info("CAUGHT:", error);
 
 		ipAddressFailure.classList.remove("hide");
 		ipAddressSuccess.classList.add("hide");

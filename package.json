@@ -24,7 +24,9 @@
 		"clean": "rimraf ./dist ./.vite ./out ./dev-dist"
 	},
 	"lint-staged": {
-		"*.{js,ts,tsx}": ["npm run check"]
+		"*.{js,ts,tsx}": [
+			"npm run check"
+		]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
@@ -49,6 +51,7 @@
 		"@tauri-apps/plugin-fs": "^2.2.0",
 		"crc-32": "^1.2.2",
 		"dexie": "^4.0.11",
+		"hotkeys-js": "^3.13.9",
 		"mathjs": "^14.3.1",
 		"p-throttle": "^7.0.0",
 		"three": "^0.174.0",
