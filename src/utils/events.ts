@@ -21,14 +21,23 @@ import {
 	menuBarDropdowns,
 } from "./htmlElements";
 
-hotkeys("ctrl+shift+d", () => {
-	toggleDebugMode().then((data) => {
-		if (data) {
-			console.log("Debug mode enabled");
-		} else {
-			console.log("Debug mode disabled");
-		}
-	});
+hotkeys("ctrl+shift+d,ctrl+shift+r", (event, handler) => {
+	switch (handler.key) {
+		case "ctrl+shift+d":
+			toggleDebugMode().then((data) => {
+				if (data) {
+					console.log("Debug mode enabled");
+				} else {
+					console.log("Debug mode disabled");
+				}
+			});
+			break;
+		case "ctrl+shift+r":
+			location.reload();
+			break;
+		default:
+			break;
+	}
 });
 
 menuBar.addEventListener("click", (evt) => {
