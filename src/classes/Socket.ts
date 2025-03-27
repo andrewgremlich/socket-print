@@ -39,6 +39,7 @@ export class Socket extends AppObject {
 	adjustmentHeightForCup = 0;
 	setPosition: RawPoint | null = null;
 	socketCallback: SocketCallback;
+	lockDepth: number | null = null;
 
 	constructor({ socketCallback }: { socketCallback: SocketCallback }) {
 		super();
@@ -50,7 +51,7 @@ export class Socket extends AppObject {
 		}
 
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
-		coronalRotater?.addEventListener("click", this.transverseRotate90);
+		coronalRotater?.addEventListener("click", this.coronalRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
 		transversalRotater?.addEventListener("click", this.transversalRotater90);
 		verticalTranslate?.addEventListener("input", this.verticalChange);
@@ -90,9 +91,10 @@ export class Socket extends AppObject {
 			this.mesh.name = file.name;
 			activeFileName.textContent = file.name;
 			this.computeBoundingBox();
+			this.lockDepth = await getLockDepth();
 			this.mesh.position.set(
 				0,
-				this.size.y / 2 + this.adjustmentHeightForCup - (await getLockDepth()),
+				this.size.y / 2 + this.adjustmentHeightForCup - this.lockDepth,
 				0,
 			);
 
@@ -100,6 +102,8 @@ export class Socket extends AppObject {
 
 			verticalTranslate.max = `${this.size.y * 0.6}`;
 			verticalTranslate.min = `-${this.size.y * 0.6}`;
+
+			console.log(this.mesh.position.y);
 
 			this.setPosition = {
 				x: this.mesh.position.x,
@@ -164,11 +168,20 @@ export class Socket extends AppObject {
 		this.mesh.position.z -= this.center.z;
 
 		if (minY < 0) {
-			this.mesh.position.y += abs(minY) + this.adjustmentHeightForCup;
+			this.mesh.position.y +=
+				abs(minY) + this.adjustmentHeightForCup - this.lockDepth;
 		}
+
+		this.updateMatrixWorld();
+
+		this.setPosition = {
+			x: this.mesh.position.x,
+			y: this.mesh.position.y,
+			z: this.mesh.position.z,
+		};
 	};
 
-	transverseRotate90 = () => {
+	coronalRotate90 = () => {
 		this.mesh.rotateX(pi / 2);
 		this.autoAlignMesh();
 	};
@@ -193,6 +206,8 @@ export class Socket extends AppObject {
 	verticalChange = (evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
 		const numVal = Number.parseInt(targetValue);
+
+		console.log("SET POSITION", this.setPosition.y);
 
 		this.mesh.position.y = this.setPosition.y + numVal;
 	};
