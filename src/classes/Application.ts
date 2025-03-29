@@ -36,7 +36,7 @@ export class Application {
 			0.1,
 			1000,
 		);
-		this.renderer = new WebGLRenderer({ canvas: threeDViewer }); // TODO: this accepts offscreenCanvas
+		this.renderer = new WebGLRenderer({ canvas: threeDViewer });
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.gridHelper = new GridHelper(200, 50);
 

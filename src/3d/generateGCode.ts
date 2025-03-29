@@ -1,4 +1,5 @@
 import { round, sqrt } from "mathjs";
+import pkg from "pkg";
 
 import {
 	getActiveMaterialProfile,
@@ -8,14 +9,11 @@ import {
 } from "@/db/appSettings";
 import { getActiveMaterialProfileNozzleTemp } from "@/db/materialProfiles";
 
-import pkg from "../../package.json";
 import type { RawPoint } from "./blendHardEdges";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
 }
-
-// TODO: import application version from package.json
 
 /**
  * Options for G-code generation.
