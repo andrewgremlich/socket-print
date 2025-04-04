@@ -94,7 +94,7 @@ export async function generateGCode(
 		";--------print file in here--------",
 	];
 
-	let previousPoint: RawPoint = { x: 39, y: 0, z: socketHeight }; // hardcoded start point
+	let previousPoint: RawPoint = { x: 39, y: 0, z: socketHeight }; // hardcoded start point... see from gcode
 
 	gcode.push(
 		`G1 X${previousPoint.x.toFixed(2)} Y${previousPoint.y.toFixed(
