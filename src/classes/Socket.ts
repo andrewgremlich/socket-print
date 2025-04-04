@@ -199,14 +199,12 @@ export class Socket extends AppObject {
 		const targetValue = (evt.target as HTMLInputElement).value;
 		const numVal = Number.parseInt(targetValue);
 
-		this.mesh.position.x = this.setPosition.x + numVal;
+		this.mesh.position.x = this.setPosition.x - numVal;
 	};
 
 	verticalChange = (evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
 		const numVal = Number.parseInt(targetValue);
-
-		console.log("SET POSITION", this.setPosition.y);
 
 		this.mesh.position.y = this.setPosition.y + numVal;
 	};
@@ -215,6 +213,6 @@ export class Socket extends AppObject {
 		const targetValue = (evt.target as HTMLInputElement).value;
 		const numVal = Number.parseInt(targetValue);
 
-		this.mesh.position.z = this.setPosition.z + numVal;
+		this.mesh.position.z = this.setPosition.z - numVal;
 	};
 }
