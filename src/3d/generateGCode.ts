@@ -80,13 +80,13 @@ export async function generateGCode(
 		"G1 X90 F1500; X left to disengage cup heater",
 		`G1 Z${socketHeight} F1500; Z up to CH + 5 for groove fill`,
 
-		";##Groove fill",
-		"G1 X50 Y0 F1500 ; Move to start of pre groove fill extrusion",
-		"G1 E15 E300 ; extrude a bit to make up for any ooze",
-		"G1 X39 Y0 E10 F1500 ; Move to start of circle at the edge, continue slight extrusion",
-		"G1 E20 E300 ;extruder a bit to prevent a small gap at the start/end.",
-		" ;Extrude in a circle A",
-		"G3 X39 Y0 I-39 J0 E1030 F600 ; Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
+		// ";##Groove fill",
+		// "G1 X50 Y0 F1500 ; Move to start of pre groove fill extrusion",
+		// "G1 E15 E300 ; extrude a bit to make up for any ooze",
+		// "G1 X39 Y0 E10 F1500 ; Move to start of circle at the edge, continue slight extrusion",
+		// "G1 E20 E300 ;extruder a bit to prevent a small gap at the start/end.",
+		// " ;Extrude in a circle A",
+		// "G3 X39 Y0 I-39 J0 E1030 F600 ; Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
 
 		";#End of start gcode sequence for cup print#",
 		";##Spiral vase mode socket print to start immediately following this.",
@@ -105,6 +105,18 @@ export async function generateGCode(
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
 
+		if (i === 0) {
+			gcode.push("M106 P2 S0 ; set fan speed");
+		}
+
+		if (i === 1) {
+			gcode.push("M106 P2 S0.5 ; set fan speed");
+		}
+
+		if (i === 2) {
+			gcode.push("M106 P2 S1 ; set fan speed");
+		}
+
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j];
 			let extrusion = 0;
@@ -120,18 +132,6 @@ export async function generateGCode(
 
 			if (i === 0) {
 				extrusion = extrusion * ((j + 1) / pointLevel.length);
-			}
-
-			if (j === 0) {
-				gcode.push("M106 P2 S0 ; set fan speed");
-			}
-
-			if (j === 1) {
-				gcode.push("M106 P2 S0.5 ; set fan speed");
-			}
-
-			if (j === 2) {
-				gcode.push("M106 P2 S1 ; set fan speed");
 			}
 
 			previousPoint = point;
