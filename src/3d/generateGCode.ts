@@ -34,9 +34,9 @@ export async function generateGCode(
 	options: GCodeOptions = {},
 ): Promise<string> {
 	const {
-		feedrate = 1500,
+		feedrate = 2250,
 		estimatedTime = "0h 0m 0s",
-		extrusionFactor = 0.77,
+		extrusionFactor = 1,
 	} = options;
 	const activeMaterialProfile = await getActiveMaterialProfile();
 	const nozzleSize = await getNozzleSize();
@@ -112,12 +112,26 @@ export async function generateGCode(
 				const dx = point.x - previousPoint.x;
 				const dy = point.y - previousPoint.y;
 				const dz = point.z - previousPoint.z;
+				const extrusionMultiplier =
+					j === 0 ? extrusionFactor : extrusionFactor * 0.77;
 				extrusion =
-					(sqrt(dx * dx + dy * dy + dz * dz) as number) * extrusionFactor;
+					(sqrt(dx * dx + dy * dy + dz * dz) as number) * extrusionMultiplier;
 			}
 
 			if (i === 0) {
 				extrusion = extrusion * ((j + 1) / pointLevel.length);
+			}
+
+			if (j === 0) {
+				gcode.push("M106 P2 S0 ; set fan speed");
+			}
+
+			if (j === 1) {
+				gcode.push("M106 P2 S0.5 ; set fan speed");
+			}
+
+			if (j === 2) {
+				gcode.push("M106 P2 S1 ; set fan speed");
 			}
 
 			previousPoint = point;
