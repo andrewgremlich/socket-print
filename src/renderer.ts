@@ -51,7 +51,7 @@ app.addToScene(mergeCup.mesh);
 
 const socket = new Socket({
 	socketCallback: ({ mesh, maxDimension }) => {
-		app.camera.position.set(0, 200, maxDimension);
+		app.camera.position.set(0, 200, -maxDimension);
 		app.controls.target.set(0, 100, 0);
 		app.addToScene(mesh);
 

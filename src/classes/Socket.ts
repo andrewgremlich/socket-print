@@ -5,7 +5,6 @@ import {
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
-	Vector3,
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -77,8 +76,8 @@ export class Socket extends AppObject {
 			const removeDups = removeDuplicateVertices(rawGeometry);
 			const geometry = BufferGeometryUtils.mergeVertices(removeDups);
 
-			// convert Z - Y
 			geometry.rotateX(-pi / 2);
+			geometry.rotateY(pi);
 			ensureUV(geometry);
 
 			const material = new MeshStandardMaterial({

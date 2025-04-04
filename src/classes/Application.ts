@@ -44,19 +44,17 @@ export class Application {
 		this.renderer.setAnimationLoop(this.#animate);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 
-		this.camera.position.set(0, 100, 200);
+		this.camera.position.set(0, 100, -200);
 		this.controls.enableDamping = true;
 
 		this.addToScene(this.gridHelper);
 		this.loadFont();
 
-		// Add event listener for window resize
 		window.addEventListener("resize", this.#onWindowResize);
 	}
 
 	resetCameraPosition = () => {
-		this.camera.position.set(0, 100, 200);
-		this.controls.target.set(0, 100, 0);
+		this.camera.position.set(0, 100, -200);
 	};
 
 	addToScene = (object: Object3D) => this.scene.add(object);
@@ -77,7 +75,9 @@ export class Application {
 				new MeshBasicMaterial({ color: 0xffffff }),
 			);
 
-			textMesh.position.set(-20, 0, 100);
+			textMesh.position.set(0, 0, -100);
+			textMesh.rotation.x = -Math.PI / 2;
+			textMesh.rotation.z = Math.PI;
 
 			this.addToScene(textMesh);
 		});
