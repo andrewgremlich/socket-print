@@ -150,7 +150,7 @@ export async function slicingAction(sendToFile: boolean) {
 				mergeGeometries.center,
 			);
 			const blended = await blendHardEdges(adjustedDim, 1);
-			const printTime = calculatePrintTime(blended);
+			const printTime = await calculatePrintTime(blended);
 
 			estimatedPrintTime.textContent = printTime;
 

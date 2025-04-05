@@ -1,7 +1,12 @@
 import { ceil, floor, sqrt } from "mathjs";
+
+import { getActiveMaterialProfileFeedrate } from "@/db/materialProfiles";
+
 import type { RawPoint } from "./blendHardEdges";
 
-export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
+export async function calculatePrintTime(
+	levelsOfPoints: RawPoint[][],
+): Promise<string> {
 	if (levelsOfPoints.length < 2) {
 		return "0h 0m 0s";
 	}
@@ -25,13 +30,14 @@ export function calculatePrintTime(levelsOfPoints: RawPoint[][]): string {
 		}
 	}
 
-	const averageSpeed = 1100; // cm/min
-	const printTime = totalDistance / averageSpeed;
+	const feedrate = await getActiveMaterialProfileFeedrate(); // mm/min
+	const printTime = totalDistance / feedrate;
 	const roundedPrintTime = ceil(printTime);
 
 	const hours = floor(roundedPrintTime / 60);
 	const minutes = floor(roundedPrintTime % 60);
-	const estimatedPrintTimeString = `${hours}h ${minutes}m`;
+	const seconds = roundedPrintTime % 60;
+	const estimatedPrintTimeString = `${hours}h ${minutes}m ${seconds}s`;
 
 	return estimatedPrintTimeString;
 }
