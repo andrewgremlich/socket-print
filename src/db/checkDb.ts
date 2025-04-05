@@ -1,19 +1,9 @@
 import { getDb } from "./getDb";
-import type { ProvelPrintSettings } from "./types";
+import type { MaterialProfile, ProvelPrintSettings } from "./types";
 
-export const defaultSettingNames: ProvelPrintSettings = {
-	ipAddress: "",
-	lockPosition: "right",
-	cupSize: "93x25",
-	nozzleSize: 5,
-	layerHeight: 1,
-	activeMaterialProfile: "cp1",
-	lockDepth: 13,
-	circularSegments: 128,
-	debug: true,
-};
-
-export async function settingsDefaults() {
+export async function settingsDefaults(
+	defaultSettingNames: ProvelPrintSettings,
+) {
 	const db = await getDb();
 	const settings = await db.appSettings.toArray();
 
@@ -34,20 +24,31 @@ export async function settingsDefaults() {
 	}
 }
 
-export async function materialProfileDefaults() {
+export async function makeMaterialProfileDefaults(
+	materialProfileDefaults: Omit<MaterialProfile, "id">,
+) {
 	const db = await getDb();
 	const defaultProfile = await db.materialProfiles
 		.where("name")
 		.equals("cp1")
 		.first();
 
+	const missingKeys = Object.keys(materialProfileDefaults).filter(
+		(key) => !Object.keys(defaultProfile).includes(key),
+	);
+
 	if (!defaultProfile) {
-		await db.materialProfiles.add({
-			name: "cp1",
-			nozzleTemp: 200,
-			cupTemp: 130,
-			shrinkFactor: 2.6,
-			outputFactor: 1.0,
-		});
+		await db.materialProfiles.add(materialProfileDefaults);
+	} else if (missingKeys.length) {
+		await Promise.all(
+			missingKeys.map((key) =>
+				db.materialProfiles.update(defaultProfile.id, {
+					[key as keyof typeof materialProfileDefaults]:
+						materialProfileDefaults[
+							key as keyof typeof materialProfileDefaults
+						],
+				}),
+			),
+		);
 	}
 }

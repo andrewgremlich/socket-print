@@ -13,6 +13,7 @@ export type MaterialProfile = {
 	cupTemp: number;
 	shrinkFactor: number;
 	outputFactor: number;
+	feedrate: number;
 };
 
 export type Entities = {

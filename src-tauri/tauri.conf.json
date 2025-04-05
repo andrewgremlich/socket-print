@@ -2,9 +2,9 @@
 	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
 	"productName": "Provel Print",
 	"version": "1.0.0",
-	"identifier": "com.tauri.dev",
+	"identifier": "dev.gremlich.provelprint",
 	"build": {
-		"frontendDist": "../../dist",
+		"frontendDist": "../dist",
 		"devUrl": "http://localhost:5173",
 		"beforeDevCommand": "npm run dev",
 		"beforeBuildCommand": "npm run build"
@@ -24,6 +24,26 @@
 		}
 	},
 	"bundle": {
+		"macOS": {
+			"dmg": {
+				"appPosition": {
+					"x": 180,
+					"y": 170
+				},
+				"applicationFolderPosition": {
+					"x": 480,
+					"y": 170
+				},
+				"windowSize": {
+					"height": 400,
+					"width": 660
+				}
+			},
+			"files": {},
+			"hardenedRuntime": true,
+			"minimumSystemVersion": "10.13.6",
+			"signingIdentity": "Developer ID Application: Andrew Gremlich (7X2Y6XQ67X)"
+		},
 		"active": true,
 		"targets": "all",
 		"icon": [

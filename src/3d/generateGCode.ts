@@ -7,7 +7,11 @@ import {
 	getCupSizeHeight,
 	getNozzleSize,
 } from "@/db/appSettings";
-import { getActiveMaterialProfileNozzleTemp } from "@/db/materialProfiles";
+import {
+	getActiveMaterialProfileFeedrate,
+	getActiveMaterialProfileNozzleTemp,
+	getActiveMaterialProfileOutputFactor,
+} from "@/db/materialProfiles";
 
 import type { RawPoint } from "./blendHardEdges";
 
@@ -33,12 +37,10 @@ export async function generateGCode(
 	verticalAxis: "y" | "z" = "y",
 	options: GCodeOptions = {},
 ): Promise<string> {
-	const {
-		feedrate = 2250,
-		estimatedTime = "0h 0m 0s",
-		extrusionFactor = 1,
-	} = options;
+	const { estimatedTime = "0h 0m 0s" } = options;
 	const activeMaterialProfile = await getActiveMaterialProfile();
+	const extrusionFactor = await getActiveMaterialProfileOutputFactor();
+	const feedrate = await getActiveMaterialProfileFeedrate();
 	const nozzleSize = await getNozzleSize();
 	const cupSize = await getCupSize();
 	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
