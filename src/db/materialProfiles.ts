@@ -7,7 +7,9 @@ export const getMaterialProfiles = async () => {
 	return profiles;
 };
 
-export const addNewMaterialProfile = async (profile: MaterialProfile) => {
+export const addNewMaterialProfile = async (
+	profile: Omit<MaterialProfile, "id">,
+) => {
 	const db = await getDb();
 	await db.materialProfiles.add(profile);
 };

@@ -29,5 +29,11 @@ export class AppObject {
 		this.boundingBox = boundingBox;
 		this.size = boundingBox.getSize(new Vector3());
 		this.center = boundingBox.getCenter(new Vector3());
+
+		this.mesh.geometry.translate(
+			-this.center.x,
+			-this.center.y,
+			-this.center.z,
+		);
 	};
 }

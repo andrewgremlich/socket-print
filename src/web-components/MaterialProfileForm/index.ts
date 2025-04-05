@@ -40,6 +40,9 @@ export class MaterialProfileForm extends HTMLElement {
           
           <label for="outputFactor">Output Factor</label>
           <input type="number" value="1" name="outputFactor" id="outputFactor" required />
+
+          <label for="feedrate">Feedrate (mm/min)</label>
+          <input type="number" value="2000" name="feedrate" id="feedrate" step="25" required />
           
           <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
           <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
@@ -98,6 +101,7 @@ export class MaterialProfileForm extends HTMLElement {
 			cupTemp,
 			shrinkFactor,
 			outputFactor,
+			feedrate,
 		} = Object.fromEntries(materialProfileDisplay.entries());
 
 		const profile = {
@@ -106,6 +110,7 @@ export class MaterialProfileForm extends HTMLElement {
 			cupTemp: Number.parseFloat(cupTemp as string),
 			shrinkFactor: Number.parseFloat(shrinkFactor as string),
 			outputFactor: Number.parseFloat(outputFactor as string),
+			feedrate: Number.parseFloat(feedrate as string),
 		};
 
 		if (this.editMaterialProfile) {

@@ -1,4 +1,4 @@
-import { abs, max, pi } from "mathjs";
+import { abs, max, pi, re } from "mathjs";
 import {
 	type Box3,
 	type BufferGeometry,
@@ -76,6 +76,7 @@ export class Socket extends AppObject {
 			const removeDups = removeDuplicateVertices(rawGeometry);
 			const geometry = BufferGeometryUtils.mergeVertices(removeDups);
 
+			console.log("geometry", removeDups);
 			geometry.rotateX(-pi / 2);
 			geometry.rotateY(pi);
 			ensureUV(geometry);
@@ -88,8 +89,8 @@ export class Socket extends AppObject {
 
 			this.mesh = mesh;
 			this.mesh.name = file.name;
-			activeFileName.textContent = file.name;
 			this.computeBoundingBox();
+			activeFileName.textContent = file.name;
 			this.lockDepth = await getLockDepth();
 			this.mesh.position.set(
 				0,
@@ -101,8 +102,6 @@ export class Socket extends AppObject {
 
 			verticalTranslate.max = `${this.size.y * 0.6}`;
 			verticalTranslate.min = `-${this.size.y * 0.6}`;
-
-			console.log(this.mesh.position.y);
 
 			this.setPosition = {
 				x: this.mesh.position.x,

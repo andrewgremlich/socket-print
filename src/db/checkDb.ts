@@ -33,13 +33,10 @@ export async function makeMaterialProfileDefaults(
 		.equals("cp1")
 		.first();
 
-	const missingKeys = Object.keys(materialProfileDefaults).filter(
-		(key) => !Object.keys(defaultProfile).includes(key),
-	);
-
-	if (!defaultProfile) {
-		await db.materialProfiles.add(materialProfileDefaults);
-	} else if (missingKeys.length) {
+	if (defaultProfile) {
+		const missingKeys = Object.keys(materialProfileDefaults).filter(
+			(key) => !Object.keys(defaultProfile).includes(key),
+		);
 		await Promise.all(
 			missingKeys.map((key) =>
 				db.materialProfiles.update(defaultProfile.id, {
@@ -50,5 +47,9 @@ export async function makeMaterialProfileDefaults(
 				}),
 			),
 		);
+	}
+
+	if (!defaultProfile) {
+		await db.materialProfiles.add(materialProfileDefaults);
 	}
 }
