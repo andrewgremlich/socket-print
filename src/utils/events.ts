@@ -68,6 +68,8 @@ const printerConnection = () => {
 
 	connectToPrinter(ipAddressInput.value)
 		.then(() => {
+			console.info("Printer connected");
+
 			ipAddressFailure.classList.toggle("hide");
 			ipAddressSuccess.classList.toggle("hide");
 
@@ -84,7 +86,6 @@ const printerConnection = () => {
 };
 
 ipAddressInput.addEventListener("input", printerConnection);
-
 printerConnection();
 
 addMaterialProfile.addEventListener("click", () =>
