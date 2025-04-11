@@ -1,4 +1,4 @@
-import { abs, max, pi, re } from "mathjs";
+import { abs, max, pi } from "mathjs";
 import {
 	type Box3,
 	type BufferGeometry,
@@ -76,7 +76,6 @@ export class Socket extends AppObject {
 			const removeDups = removeDuplicateVertices(rawGeometry);
 			const geometry = BufferGeometryUtils.mergeVertices(removeDups);
 
-			console.log("geometry", removeDups);
 			geometry.rotateX(-pi / 2);
 			geometry.rotateY(pi);
 			ensureUV(geometry);
@@ -92,13 +91,15 @@ export class Socket extends AppObject {
 			this.computeBoundingBox();
 			activeFileName.textContent = file.name;
 			this.lockDepth = await getLockDepth();
-			this.mesh.position.set(
-				0,
-				this.size.y / 2 + this.adjustmentHeightForCup - this.lockDepth,
-				0,
-			);
 
-			this.mesh.matrixWorldAutoUpdate = true;
+			// Set position and update matrix
+			this.mesh.geometry.translate(
+				-this.center.x,
+				-this.center.y,
+				-this.center.z,
+			);
+			this.mesh.position.set(0, this.size.y / 2 - this.lockDepth, 0);
+			this.updateMatrixWorld();
 
 			verticalTranslate.max = `${this.size.y * 0.6}`;
 			verticalTranslate.min = `-${this.size.y * 0.6}`;
@@ -166,8 +167,7 @@ export class Socket extends AppObject {
 		this.mesh.position.z -= this.center.z;
 
 		if (minY < 0) {
-			this.mesh.position.y +=
-				abs(minY) + this.adjustmentHeightForCup - this.lockDepth;
+			this.mesh.position.y += abs(minY) - this.lockDepth;
 		}
 
 		this.updateMatrixWorld();

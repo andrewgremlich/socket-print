@@ -32,13 +32,10 @@ import {
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
-import { webLogger } from "@/utils/webLogger";
 
 if (!window.Worker) {
 	throw new Error("Web Worker not supported");
 }
-
-await webLogger();
 
 const app = new Application();
 
@@ -123,7 +120,6 @@ mergeMeshes?.addEventListener("click", async () => {
 });
 
 export async function slicingAction(sendToFile: boolean) {
-	mergeGeometries.updateMatrixWorld();
 	generateGCodeButton.disabled = true;
 	printerFileInput.disabled = true;
 	progressBarDiv.style.display = "flex";
