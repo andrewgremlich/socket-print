@@ -85,6 +85,7 @@ const printerConnection = async () => {
 
 ipAddressInput.addEventListener("input", printerConnection);
 
+console.log("Printer connection check on load");
 window.addEventListener("load", printerConnection);
 
 addMaterialProfile.addEventListener("click", () =>
