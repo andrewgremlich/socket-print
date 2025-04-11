@@ -92,6 +92,10 @@ window.addEventListener("load", () => {
 	console.log("Window loaded");
 });
 
+window.addEventListener("DOMContentLoaded", () => {
+	console.log("DOM fully loaded and parsed");
+});
+
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),
 );
