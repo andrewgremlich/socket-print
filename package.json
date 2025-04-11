@@ -16,7 +16,7 @@
 		"dev": "npm run dev:web",
 		"dev:web": "vite --config vite.config.ts",
 		"build": "vite build --config vite.config.ts",
-		"preview": "vite preview",
+		"preview": "vite preview --config vite.config.ts",
 		"prepare": "husky",
 		"test": "vitest src/ --config ./vite.config.ts",
 		"type-check": "tsc --noEmit",

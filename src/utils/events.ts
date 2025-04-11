@@ -85,8 +85,7 @@ const printerConnection = () => {
 
 ipAddressInput.addEventListener("input", printerConnection);
 
-console.log("Printer connection check on load");
-window.addEventListener("load", printerConnection);
+printerConnection();
 
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),
