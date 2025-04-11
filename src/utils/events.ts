@@ -85,10 +85,7 @@ const printerConnection = async () => {
 
 ipAddressInput.addEventListener("input", printerConnection);
 
-if (!import.meta.env.DEV) {
-	console.log("Production mode");
-	window.addEventListener("load", printerConnection);
-}
+window.addEventListener("load", printerConnection);
 
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),
