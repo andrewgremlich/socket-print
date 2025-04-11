@@ -88,6 +88,10 @@ const printerConnection = () => {
 ipAddressInput.addEventListener("input", printerConnection);
 printerConnection();
 
+window.addEventListener("load", () => {
+	console.log("Window loaded");
+});
+
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),
 );
