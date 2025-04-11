@@ -63,24 +63,24 @@ window.addEventListener("click", (evt) => {
 	}
 });
 
-const printerConnection = async () => {
+const printerConnection = () => {
 	console.log("Printer connection check");
 
-	try {
-		await connectToPrinter(ipAddressInput.value);
+	connectToPrinter(ipAddressInput.value)
+		.then(() => {
+			ipAddressFailure.classList.toggle("hide");
+			ipAddressSuccess.classList.toggle("hide");
 
-		ipAddressFailure.classList.toggle("hide");
-		ipAddressSuccess.classList.toggle("hide");
+			ipAddressSuccess.spinIcon();
+		})
+		.catch((error) => {
+			console.info("CAUGHT:", error);
 
-		ipAddressSuccess.spinIcon();
-	} catch (error) {
-		console.info("CAUGHT:", error);
+			ipAddressFailure.classList.remove("hide");
+			ipAddressSuccess.classList.add("hide");
 
-		ipAddressFailure.classList.remove("hide");
-		ipAddressSuccess.classList.add("hide");
-
-		ipAddressFailure.spinIcon();
-	}
+			ipAddressFailure.spinIcon();
+		});
 };
 
 ipAddressInput.addEventListener("input", printerConnection);
