@@ -44,7 +44,7 @@ describe("App Settings", () => {
 		vi.resetAllMocks();
 
 		// Setup the mocked database
-		(getDb as jest.MockedFunction<typeof getDb>).mockResolvedValue(
+		(getDb as vi.MockedFunction<typeof getDb>).mockResolvedValue(
 			mockDb as unknown as Dexie & Entities,
 		);
 		mockDb.appSettings.where.mockReturnValue(mockWhere);

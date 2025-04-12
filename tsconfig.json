@@ -11,9 +11,12 @@
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"baseUrl": "./",
+		"types": ["vitest/globals"],
 		"paths": {
 			"@/*": ["./src/*"],
 			"pkg": ["package.json"]
 		}
-	}
+	},
+	"include": ["src"],
+	"exclude": ["node_modules", "**/*.spec.ts"]
 }

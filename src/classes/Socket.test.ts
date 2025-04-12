@@ -24,7 +24,7 @@ vi.mock("@/classes/AppObject", () => {
 					max: { x: 0.5, y: 0.5, z: 0.5 },
 					getSize: vi.fn().mockReturnValue(new Vector3(1, 1, 1)),
 					getCenter: vi.fn().mockReturnValue(new Vector3(0, 0, 0)),
-				} as Box3;
+				} as unknown as Box3;
 				this.size = new Vector3(1, 1, 1);
 				this.center = new Vector3(0, 0, 0);
 			}),

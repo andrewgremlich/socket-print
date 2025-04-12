@@ -129,7 +129,7 @@ describe("MaterialProfileForm", () => {
 	});
 
 	it("should show form with correct title and populate fields for edit profile", async () => {
-		(getActiveMaterialProfile as jest.Mock).mockResolvedValue(mockProfile);
+		(getActiveMaterialProfile as vi.Mock).mockResolvedValue(mockProfile);
 
 		// Create mock inputs
 		const materialNameInput = document.createElement("input");
