@@ -15,15 +15,17 @@
 	"scripts": {
 		"dev": "npm run dev:web",
 		"dev:web": "vite --config vite.config.ts",
-		"build": "vite build --config vite.config.ts",
+		"build": "vite build",
+		"build:tauri": "tauri build",
 		"preview": "vite preview --config vite.config.ts",
 		"prepare": "husky",
 		"test": "vitest run src/ --config ./vite.config.ts",
 		"test:watch": "vitest src/ --config ./vite.config.ts",
-		"test:coverage": "vitest run --coverage src/ --config ./vite.config.ts",
+		"test:coverage": "vitest run --coverage src/ --config ./vitest.coverage.config.ts",
 		"type-check": "tsc --noEmit",
 		"check": "biome check --write ./src",
-		"clean": "rimraf ./dist ./.vite ./out ./dev-dist"
+		"clean": "rimraf ./dist ./.vite ./out ./dev-dist",
+		"tauri": "tauri"
 	},
 	"lint-staged": {
 		"*.{js,ts,tsx}": ["npm run check"]
