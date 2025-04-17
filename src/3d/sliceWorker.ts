@@ -111,6 +111,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			}
 		}
 
+		console.log("pointLevel", pointLevel.length);
+
 		pointGatherer.push(pointLevel);
 	}
 
