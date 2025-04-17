@@ -20,7 +20,7 @@ export async function connectToPrinter(ipAddress: string) {
 
 	try {
 		const response = await fetch(
-			`http://${ipAddress}/rr_connect?password=${password}`, //TODO: this is sending the full address with `socketprint`
+			`http://${ipAddress}/rr_connect?password=${password}`,
 		);
 
 		if (!response.ok) {
@@ -37,7 +37,7 @@ export async function connectToPrinter(ipAddress: string) {
 			throw new Error("Too many user sessions");
 		}
 
-		return `Connection response:${data}`;
+		return data;
 	} catch (error) {
 		throw new Error(`There was a problem with the fetch operation:${error}`);
 	}

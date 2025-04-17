@@ -107,6 +107,8 @@ export async function generateGCode(
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
 
+		gcode.push(";START NEW LEVEL");
+
 		if (i === 0) {
 			gcode.push("M106 P2 S0 ; set fan speed");
 		}
@@ -120,17 +122,16 @@ export async function generateGCode(
 		}
 
 		for (let j = 0; j < pointLevel.length; j++) {
-			const point = pointLevel[j];
 			let extrusion = 0;
-			if (previousPoint) {
-				const dx = point.x - previousPoint.x;
-				const dy = point.y - previousPoint.y;
-				const dz = point.z - previousPoint.z;
-				const extrusionMultiplier =
-					j === 0 ? extrusionFactor : extrusionFactor * 0.77;
-				extrusion =
-					(sqrt(dx * dx + dy * dy + dz * dz) as number) * extrusionMultiplier;
-			}
+
+			const point = pointLevel[j];
+			const dx = point.x - previousPoint.x;
+			const dy = point.y - previousPoint.y;
+			const dz = point.z - previousPoint.z;
+			const extrusionMultiplier =
+				j === 0 ? extrusionFactor : extrusionFactor * 0.77;
+			extrusion =
+				(sqrt(dx * dx + dy * dy + dz * dz) as number) * extrusionMultiplier;
 
 			if (i === 0) {
 				extrusion = extrusion * ((j + 1) / pointLevel.length);

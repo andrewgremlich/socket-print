@@ -67,21 +67,22 @@ const printerConnection = () => {
 	console.log("Printer connection check");
 
 	connectToPrinter(ipAddressInput.value)
-		.then(() => {
+		.then((data) => {
 			console.info("Printer connected");
 
 			ipAddressFailure.classList.toggle("hide");
 			ipAddressSuccess.classList.toggle("hide");
 
-			ipAddressSuccess.spinIcon();
+			if (data.sessionTimeout) {
+				const timeout = Math.max(0, data.sessionTimeout - 1000);
+				setTimeout(printerConnection, timeout);
+			}
 		})
 		.catch((error) => {
 			console.info("CAUGHT:", error);
 
 			ipAddressFailure.classList.remove("hide");
 			ipAddressSuccess.classList.add("hide");
-
-			ipAddressFailure.spinIcon();
 		});
 };
 

@@ -1,4 +1,4 @@
-import { ceil, floor, sqrt } from "mathjs";
+import { ceil, floor, sqrt, to } from "mathjs";
 
 import { getActiveMaterialProfileFeedrate } from "@/db/materialProfiles";
 
@@ -13,31 +13,43 @@ export async function calculatePrintTime(
 
 	let totalDistance = 0;
 
-	for (let i = 1; i < levelsOfPoints.length; i++) {
-		for (let j = 0; j < levelsOfPoints[i].length; j++) {
-			const point1 = levelsOfPoints[i - 1][j];
-			const point2 = levelsOfPoints[i][j];
-
-			if (point1 === undefined || point2 === undefined) {
-				continue;
+	// Sum path length within each layer
+	for (let i = 0; i < levelsOfPoints.length; i++) {
+		const layer = levelsOfPoints[i];
+		for (let j = 1; j < layer.length; j++) {
+			const p1 = layer[j - 1];
+			const p2 = layer[j];
+			if (p1 && p2) {
+				const dx = p2.x - p1.x;
+				const dy = p2.y - p1.y;
+				const dz = p2.z - p1.z;
+				totalDistance += sqrt(dx * dx + dy * dy + dz * dz) as number;
 			}
+		}
+	}
 
-			const dx = point2.x - point1.x;
-			const dy = point2.y - point1.y;
-			const dz = point2.z - point1.z;
-
-			totalDistance += sqrt(dx * dx + dy * dy + dz * dz) as number;
+	// Add distance from end of one layer to start of next
+	for (let i = 1; i < levelsOfPoints.length; i++) {
+		const prevLayer = levelsOfPoints[i - 1];
+		const currLayer = levelsOfPoints[i];
+		if (prevLayer.length > 0 && currLayer.length > 0) {
+			const p1 = prevLayer[prevLayer.length - 1];
+			const p2 = currLayer[0];
+			if (p1 && p2) {
+				const dx = p2.x - p1.x;
+				const dy = p2.y - p1.y;
+				const dz = p2.z - p1.z;
+				totalDistance += sqrt(dx * dx + dy * dy + dz * dz) as number;
+			}
 		}
 	}
 
 	const feedrate = await getActiveMaterialProfileFeedrate(); // mm/min
 	const printTime = totalDistance / feedrate;
 	const roundedPrintTime = ceil(printTime);
-
-	const hours = floor(roundedPrintTime / 60);
 	const minutes = floor(roundedPrintTime % 60);
 	const seconds = roundedPrintTime % 60;
-	const estimatedPrintTimeString = `${hours}h ${minutes}m ${seconds}s`;
+	const estimatedPrintTimeString = `${minutes}m ${seconds}s`;
 
 	return estimatedPrintTimeString;
 }
