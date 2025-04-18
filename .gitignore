@@ -33,3 +33,4 @@ CertificateSigningRequest.certSigningRequest
 coverage/
 certificate-base64.txt
 Certificates.p12
+notary.sh
