@@ -37,17 +37,6 @@ if (!window.Worker) {
 	throw new Error("Web Worker not supported");
 }
 
-fetch("http://localhost:8724")
-	.then((response) => {
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		return response.text();
-	})
-	.then((data) => {
-		console.log("Response from local proxy server:", data);
-	});
-
 const app = new Application();
 
 const lighting = new Lighting();

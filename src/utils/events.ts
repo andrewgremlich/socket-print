@@ -1,13 +1,18 @@
 import hotkeys from "hotkeys-js";
 
-import { connectToPrinter } from "@/3d/sendGCodeFile";
-import { saveActiveMaterialProfile, toggleDebugMode } from "@/db/appSettings";
+import { connectToPrinter, setPrinterIp } from "@/3d/sendGCodeFile";
+import {
+	getIpAddress,
+	saveActiveMaterialProfile,
+	toggleDebugMode,
+} from "@/db/appSettings";
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
 import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
 import {
 	deleteActiveMaterialProfile,
 	getMaterialProfiles,
 } from "@/db/materialProfiles";
+import { isFQDN, isIP } from "validator";
 
 import {
 	addMaterialProfile,
@@ -63,31 +68,42 @@ window.addEventListener("click", (evt) => {
 	}
 });
 
-const printerConnection = () => {
+const printerConnection = async () => {
 	console.log("Printer connection check");
 
-	connectToPrinter(ipAddressInput.value)
-		.then((data) => {
+	const storedIpAddress = await getIpAddress();
+	const ipAddress = ipAddressInput.value || storedIpAddress;
+	const isValid =
+		isIP(ipAddress) || isFQDN(ipAddress) || ipAddress.includes("localhost");
+
+	console.log("IP address: ", ipAddress, isValid);
+
+	if (isValid) {
+		try {
+			await setPrinterIp(ipAddress);
+
+			const { sessionTimeout } = await connectToPrinter(ipAddress);
+
 			console.info("Printer connected");
+			console.log("Session timeout:", sessionTimeout);
 
 			ipAddressFailure.classList.toggle("hide");
 			ipAddressSuccess.classList.toggle("hide");
 
-			if (data.sessionTimeout) {
-				const timeout = Math.max(0, data.sessionTimeout - 1000);
+			if (sessionTimeout) {
+				const timeout = Math.max(0, sessionTimeout - 1000);
 				setTimeout(printerConnection, timeout);
 			}
-		})
-		.catch((error) => {
-			console.info("CAUGHT:", error);
-
+		} catch (error) {
+			console.error("Error connecting to printer:", error);
 			ipAddressFailure.classList.remove("hide");
 			ipAddressSuccess.classList.add("hide");
-		});
+		}
+	}
 };
 
 ipAddressInput.addEventListener("input", printerConnection);
-printerConnection();
+await printerConnection();
 
 window.addEventListener("load", () => {
 	console.log("Window loaded");

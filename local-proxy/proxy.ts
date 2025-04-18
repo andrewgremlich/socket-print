@@ -1,51 +1,93 @@
-import { Application } from "jsr:@oak/oak/application";
-import { Router } from "jsr:@oak/oak/router";
-import type { Context } from "@oak/oak/context";
+import { Application } from "@oak/oak/application";
+import { Router } from "@oak/oak/router";
 
-// Update this to match your printer's IP and port
-// const TARGET_BASE = "http://192.168.1.50";
+import { accessControlMiddleware } from "./accessControlMiddleware.ts";
 
 const kv = await Deno.openKv();
 
-const accessControlMiddleware = async (
-	ctx: Context,
-	next: () => Promise<unknown>,
-) => {
-	ctx.response.headers.set("Access-Control-Allow-Origin", "*");
-	ctx.response.headers.set(
-		"Access-Control-Allow-Methods",
-		"GET, POST, OPTIONS",
-	);
-	ctx.response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-	if (ctx.request.method === "OPTIONS") {
-		ctx.response.status = 204;
-	} else {
-		await next();
-	}
-};
-
 const router = new Router();
-router.get("/", (ctx) => {
-	ctx.response.body = "hello world";
-});
 
 router.get("/health", (ctx) => {
 	ctx.response.status = 200;
 	ctx.response.body = { status: "ok" };
 });
 
-router.post("/set_printer_ip", async (ctx) => {
-	const { ip } = await ctx.request.body.json();
-	if (!ip) {
-		ctx.response.status = 400;
-		ctx.response.body = { error: "IP address is required" };
-		return;
-	}
+router.post("/printer_ip", async (ctx) => {
+	try {
+		const { ip } = await ctx.request.body.json();
+		if (!ip) {
+			ctx.response.status = 400;
+			ctx.response.body = { error: "IP address is required" };
+		}
 
-	await kv.set(["printer_ip"], ip);
-	ctx.response.status = 200;
-	ctx.response.body = { status: "ok" };
+		await kv.set(["printer_ip"], ip);
+		ctx.response.status = 200;
+		ctx.response.body = { success: true };
+	} catch (error) {
+		console.error("Error processing request:", error);
+
+		ctx.response.status = 500;
+		ctx.response.body = {
+			message: "Could not set printer IP address",
+			success: false,
+		};
+	}
 });
+
+router
+	.get("/proxy/(.*)", async (ctx) => {
+		const [printer_param] = ctx.params[0].split("/");
+		const { search } = ctx.request.url;
+
+		try {
+			const { value: printerIp } = await kv.get(["printer_ip"]);
+			const response = await fetch(
+				`http://${printerIp}/${printer_param}${search}`,
+				{
+					method: ctx.request.method,
+					headers: ctx.request.headers,
+				},
+			);
+
+			ctx.response.status = response.status;
+			ctx.response.body = await response.json();
+		} catch (error) {
+			console.error("Error processing request:", error);
+			ctx.response.status = 500;
+			ctx.response.body = {
+				message: (error as TypeError).message,
+				success: false,
+			};
+		}
+	})
+	.post("/proxy/(.*)", async (ctx) => {
+		// NOTE: this is duplicated from GET but with POST-centric logic
+		const [printer_param] = ctx.params[0].split("/");
+		const { search } = ctx.request.url;
+
+		try {
+			const { value: printerIp } = await kv.get(["printer_ip"]);
+			const body = await ctx.request.body.blob();
+			const response = await fetch(
+				`http://${printerIp}/${printer_param}${search}`,
+				{
+					method: ctx.request.method,
+					headers: ctx.request.headers,
+					body: body,
+				},
+			);
+
+			ctx.response.status = response.status;
+			ctx.response.body = await response.json();
+		} catch (error) {
+			console.error("Error processing request:", error);
+			ctx.response.status = 500;
+			ctx.response.body = {
+				message: (error as TypeError).message,
+				success: false,
+			};
+		}
+	});
 
 const app = new Application();
 app.use(accessControlMiddleware);
@@ -53,33 +95,3 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 app.listen({ port: 8724 }); // first recorded date working on this project 08-07-2024
-
-// Deno.serve({ port: 8724 }, async (req) => {
-// 	const url = new URL(req.url);
-// 	const targetPath = url.pathname + url.search;
-
-// const proxiedUrl = `${TARGET_BASE}${targetPath}`;
-
-// const newReq = new Request(proxiedUrl, {
-// 	method: req.method,
-// 	headers: req.headers,
-// 	body: req.body,
-// 	redirect: "manual",
-// });
-
-// try {
-// 	const response = await fetch(newReq);
-// 	return new Response(response.body, {
-//     status: response.status,
-//     headers: new Headers({
-//       ...Object.fromEntries(response.headers.entries()),
-//       "Access-Control-Allow-Origin": "*",
-//       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-//       "Access-Control-Allow-Headers": "Content-Type",
-//     }),
-//   });
-// } catch (err) {
-// 	console.error("Proxy error:", err);
-// 	return new Response("Proxy error", { status: 502 });
-// }
-// });
