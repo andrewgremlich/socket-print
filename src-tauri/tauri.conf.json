@@ -42,7 +42,7 @@
 			"files": {},
 			"hardenedRuntime": true,
 			"minimumSystemVersion": "10.13.6",
-			"signingIdentity": "Developer ID Application: Andrew Gremlich (7X2Y6XQ67X)"
+			"signingIdentity": "1EDFAAC16E64F1859939B8C2284D4470349B8BF3"
 		},
 		"active": true,
 		"targets": "all",
