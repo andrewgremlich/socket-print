@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	type Mock,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
 import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
@@ -129,7 +137,7 @@ describe("MaterialProfileForm", () => {
 	});
 
 	it("should show form with correct title and populate fields for edit profile", async () => {
-		(getActiveMaterialProfile as vi.Mock).mockResolvedValue(mockProfile);
+		(getActiveMaterialProfile as Mock).mockResolvedValue(mockProfile);
 
 		// Create mock inputs
 		const materialNameInput = document.createElement("input");

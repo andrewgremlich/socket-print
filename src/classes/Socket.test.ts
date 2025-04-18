@@ -149,7 +149,7 @@ describe("Socket", () => {
 			updateWorldMatrix: vi.fn(),
 			geometry: {
 				computeVertexNormals: vi.fn(),
-				applyMatrix4: vi.fn<[Matrix4], void>(),
+				applyMatrix4: vi.fn(),
 				translate: vi.fn(),
 			},
 		} as unknown as Mesh;

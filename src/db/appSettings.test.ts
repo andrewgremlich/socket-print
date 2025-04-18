@@ -1,5 +1,13 @@
 import type { Dexie } from "dexie";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	type MockedFunction,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 import {
 	getAppSettings,
 	getCupSize,
@@ -33,6 +41,7 @@ describe("App Settings", () => {
 
 	const mockFirst = {
 		first: vi.fn(),
+		modify: vi.fn(),
 	};
 
 	const mockModify = {
@@ -44,7 +53,7 @@ describe("App Settings", () => {
 		vi.resetAllMocks();
 
 		// Setup the mocked database
-		(getDb as vi.MockedFunction<typeof getDb>).mockResolvedValue(
+		(getDb as MockedFunction<typeof getDb>).mockResolvedValue(
 			mockDb as unknown as Dexie & Entities,
 		);
 		mockDb.appSettings.where.mockReturnValue(mockWhere);
