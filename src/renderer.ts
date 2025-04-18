@@ -37,7 +37,7 @@ if (!window.Worker) {
 	throw new Error("Web Worker not supported");
 }
 
-fetch("http://localhost:8080")
+fetch("http://localhost:8724")
 	.then((response) => {
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
