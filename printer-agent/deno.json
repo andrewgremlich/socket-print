@@ -1,0 +1,28 @@
+{
+	"tasks": {
+		"start": "deno run --allow-net server.ts",
+		"dev": "deno run --allow-net --watch server.ts",
+		"build": "deno compile --allow-net --output server server.ts"
+	},
+	"compilerOptions": {
+		"lib": ["deno.window"],
+		"strict": true
+	},
+	"fmt": {
+		"useTabs": false,
+		"indentWidth": 2,
+		"lineWidth": 80,
+		"semiColons": true,
+		"singleQuote": true,
+		"proseWrap": "preserve"
+	},
+	"lint": {
+		"rules": {
+			"tags": ["recommended"]
+		}
+	},
+	"lock": false,
+	"imports": {
+		"@oak/oak": "jsr:@oak/oak@^17.1.4"
+	}
+}
