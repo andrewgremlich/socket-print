@@ -31,3 +31,5 @@ publish.sh
 dev-dist/
 CertificateSigningRequest.certSigningRequest
 coverage/
+certificate-base64.txt
+Certificates.p12
