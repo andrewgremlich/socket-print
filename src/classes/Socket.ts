@@ -6,12 +6,10 @@ import {
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
-import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
 import type { RawPoint } from "@/3d/blendHardEdges";
 import { ensureUV } from "@/3d/ensureUV";
-import { removeDuplicateVertices } from "@/3d/removeDups";
 import { getLockDepth } from "@/db/appSettings";
 import {
 	activeFileName,
@@ -73,18 +71,16 @@ export class Socket extends AppObject {
 			loadingScreen.style.display = "flex";
 
 			const rawGeometry = await this.#readSTLFile(file);
-			const removeDups = removeDuplicateVertices(rawGeometry);
-			const geometry = BufferGeometryUtils.mergeVertices(removeDups);
 
-			geometry.rotateX(-pi / 2);
-			geometry.rotateY(pi);
-			ensureUV(geometry);
+			rawGeometry.rotateX(-pi / 2);
+			rawGeometry.rotateY(pi);
+			ensureUV(rawGeometry);
 
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
 				side: DoubleSide,
 			});
-			const mesh = new Mesh(geometry, material);
+			const mesh = new Mesh(rawGeometry, material);
 
 			this.mesh = mesh;
 			this.mesh.name = file.name;

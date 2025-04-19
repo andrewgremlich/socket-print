@@ -209,6 +209,9 @@ select {
 	padding-left: 50px;
 	display: flex;
 	flex-direction: column;
+	overflow-y: scroll;
+	/* scrollbar-width: none; */
+	position: relative;
 
 	& #customizations,
 	& #printActions,

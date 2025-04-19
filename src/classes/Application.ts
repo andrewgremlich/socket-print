@@ -1,5 +1,7 @@
 import { threeDViewer } from "@/utils/htmlElements";
 import {
+	AmbientLight,
+	DirectionalLight,
 	GridHelper,
 	Mesh,
 	MeshBasicMaterial,
@@ -39,7 +41,12 @@ export class Application {
 		this.renderer = new WebGLRenderer({ canvas: threeDViewer });
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.gridHelper = new GridHelper(200, 50);
+		const ambientLight = new AmbientLight(0xffffff, 1);
+		const directionalLight1 = new DirectionalLight(0xffffff, 2);
+		const directionalLight2 = new DirectionalLight(0xffffff, 2);
 
+		directionalLight1.position.set(100, 100, -300);
+		directionalLight2.position.set(100, 100, 300);
 		this.renderer.setSize(this.width, this.height);
 		this.renderer.setAnimationLoop(this.#animate);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -48,6 +55,9 @@ export class Application {
 		this.controls.enableDamping = true;
 
 		this.addToScene(this.gridHelper);
+		this.addToScene(ambientLight);
+		this.addToScene(directionalLight1);
+		this.addToScene(directionalLight2);
 		this.loadFont();
 
 		window.addEventListener("resize", this.#onWindowResize);

@@ -71,16 +71,17 @@ export async function generateGCode(
 		"G1 Y0 Z48 F6000 ;Z down to cup height + 10 , Y moves back to cup center",
 		"G1 X-95 ; only once at correct Z height move in to register with cup heater for pickup",
 		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
-		"set global.pelletFeedOn = true  ; enable pellet feed",
-		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 
 		";##cup heater removal sequence##",
 		"M140 P1 S0 ;cup heater off",
 		"G1 Z70 F1500; Z moves up to pick up cup heater",
-		"G1 X120 F1500; X right to park cup heater",
-		"G1 Z17 F1500; Z down to place cup heater on bed",
-		"G1 X90 F1500; X left to disengage cup heater",
-		`G1 Z${socketHeight} F1500; Z up to CH + 5 for groove fill`,
+		"G1 X120 F2000; X right to park cup heater",
+		"G1 Z17 F2000; Z down to place cup heater on bed",
+		"G1 X90 F2000; X left to disengage cup heater",
+		"set global.pelletFeedOn = true  ; enable pellet feed",
+		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
+		"G4 S2 ; pause for 2 seconds for prime to finish",
+		`G1 Z${socketHeight} F2000; Z up to CH + 5 for groove fill`,
 
 		";##Groove fill",
 		"G1 X50 Y0 F1500 ; Move to start of pre groove fill extrusion",
@@ -117,9 +118,9 @@ export async function generateGCode(
 			gcode.push("M106 P2 S0.5 ; set fan speed");
 		}
 
-		if (i === 2) {
-			gcode.push("M106 P2 S1 ; set fan speed");
-		}
+		// if (i === 2) {
+		// 	gcode.push("M106 P2 S1 ; set fan speed");
+		// }
 
 		for (let j = 0; j < pointLevel.length; j++) {
 			let extrusion = 0;
@@ -148,6 +149,7 @@ export async function generateGCode(
 	gcode.push(";# END GCODE SEQUENCE FOR CUP PRINT#;");
 	gcode.push("M107");
 	gcode.push("set global.pelletFeedOn = false");
+	gcode.push("G4 S1 ; pause for 1 second to stop extrudate");
 	gcode.push('M98 P"0:/sys/provel/purge.g"');
 	gcode.push("M106 S0; turn the blowers and fan off");
 	gcode.push("M140 S0 ; set bed temperature");

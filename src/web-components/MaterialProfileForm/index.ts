@@ -84,6 +84,8 @@ export class MaterialProfileForm extends HTMLElement {
 				profile.shrinkFactor.toString();
 			(this.form.elements.namedItem("outputFactor") as HTMLInputElement).value =
 				profile.outputFactor.toString();
+			(this.form.elements.namedItem("feedrate") as HTMLInputElement).value =
+				profile.feedrate.toString();
 		} else {
 			this.form.reset();
 		}

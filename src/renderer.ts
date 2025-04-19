@@ -5,7 +5,6 @@ import "@/utils/events";
 import "@/utils/pwa";
 
 import { Application } from "@/classes/Application";
-import { Lighting } from "@/classes/Lighting";
 import { MergeCup } from "@/classes/MergeCup";
 import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
@@ -38,11 +37,6 @@ if (!window.Worker) {
 }
 
 const app = new Application();
-
-const lighting = new Lighting();
-app.addToScene(lighting.directionalLight);
-app.addToScene(lighting.ambientLight);
-
 const mergeCup = new MergeCup();
 app.addToScene(mergeCup.mesh);
 
