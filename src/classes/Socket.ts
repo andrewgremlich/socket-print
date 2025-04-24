@@ -1,0 +1,213 @@
+import { abs, max, pi } from "mathjs";
+import {
+	type Box3,
+	type BufferGeometry,
+	DoubleSide,
+	Mesh,
+	MeshStandardMaterial,
+} from "three";
+import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
+
+import type { RawPoint } from "@/3d/blendHardEdges";
+import { ensureUV } from "@/3d/ensureUV";
+import { getLockDepth } from "@/db/appSettings";
+import {
+	activeFileName,
+	coronalRotater,
+	depthTranslate,
+	horizontalTranslate,
+	loadingScreen,
+	mergeMeshes,
+	sagittalRotate,
+	stlFileInput,
+	transversalRotater,
+	verticalTranslate,
+} from "@/utils/htmlElements";
+
+import { AppObject } from "./AppObject";
+
+type SocketCallback = (params: {
+	mesh: Mesh;
+	maxDimension: number;
+	boundingBox: Box3;
+}) => void;
+
+export class Socket extends AppObject {
+	adjustmentHeightForCup = 0;
+	setPosition: RawPoint | null = null;
+	socketCallback: SocketCallback;
+	lockDepth: number | null = null;
+
+	constructor({ socketCallback }: { socketCallback: SocketCallback }) {
+		super();
+
+		this.socketCallback = socketCallback;
+
+		if (!stlFileInput) {
+			throw new Error("STL File Input not found");
+		}
+
+		stlFileInput?.addEventListener("change", this.#onStlFileChange);
+		coronalRotater?.addEventListener("click", this.coronalRotate90);
+		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
+		transversalRotater?.addEventListener("click", this.transversalRotater90);
+		verticalTranslate?.addEventListener("input", this.verticalChange);
+		horizontalTranslate?.addEventListener("input", this.horizontalChange);
+		depthTranslate?.addEventListener("input", this.depthChange);
+	}
+
+	#onStlFileChange = async ({ target: inputFiles }: Event) => {
+		const file = (inputFiles as HTMLInputElement).files?.[0];
+
+		if (!loadingScreen) {
+			throw new Error("Loading screen not found");
+		}
+
+		if (!stlFileInput) {
+			throw new Error("STL File Input not found");
+		}
+
+		if (file) {
+			loadingScreen.style.display = "flex";
+
+			const rawGeometry = await this.#readSTLFile(file);
+
+			rawGeometry.rotateX(-pi / 2);
+			rawGeometry.rotateY(pi);
+			ensureUV(rawGeometry);
+
+			const material = new MeshStandardMaterial({
+				color: 0xffffff,
+				side: DoubleSide,
+			});
+			const mesh = new Mesh(rawGeometry, material);
+
+			this.mesh = mesh;
+			this.mesh.name = file.name;
+			this.computeBoundingBox();
+			activeFileName.textContent = file.name;
+			this.lockDepth = await getLockDepth();
+
+			// Set position and update matrix
+			this.mesh.geometry.translate(
+				-this.center.x,
+				-this.center.y,
+				-this.center.z,
+			);
+			this.mesh.position.set(0, this.size.y / 2 - this.lockDepth, 0);
+			this.updateMatrixWorld();
+
+			verticalTranslate.max = `${this.size.y * 0.6}`;
+			verticalTranslate.min = `-${this.size.y * 0.6}`;
+
+			this.setPosition = {
+				x: this.mesh.position.x,
+				y: this.mesh.position.y,
+				z: this.mesh.position.z,
+			};
+
+			this.socketCallback({
+				mesh,
+				maxDimension: max(this.size.x, this.size.y, this.size.z),
+				boundingBox: this.boundingBox,
+			});
+
+			this.toggleInput(false);
+		}
+	};
+
+	clearData = () => {
+		if (this.mesh) {
+			this.mesh.geometry.dispose();
+			this.mesh = undefined;
+		}
+
+		stlFileInput.value = "";
+		this.boundingBox = undefined;
+		this.center = undefined;
+		this.size = undefined;
+
+		this.toggleInput(true);
+	};
+
+	toggleInput = (isDisabled: boolean) => {
+		coronalRotater.disabled = isDisabled;
+		sagittalRotate.disabled = isDisabled;
+		transversalRotater.disabled = isDisabled;
+		mergeMeshes.disabled = isDisabled;
+		verticalTranslate.disabled = isDisabled;
+		horizontalTranslate.disabled = isDisabled;
+		depthTranslate.disabled = isDisabled;
+	};
+
+	#readSTLFile = async (file: File): Promise<BufferGeometry> => {
+		return new Promise((resolve, _reject) => {
+			const reader = new FileReader();
+
+			reader.onload = async (e) => {
+				const buffer = e.target?.result as ArrayBuffer;
+				const loader = new ThreeSTLLoader();
+				const geometry = loader.parse(buffer);
+				resolve(geometry);
+			};
+
+			reader.readAsArrayBuffer(file);
+		});
+	};
+
+	autoAlignMesh = () => {
+		this.computeBoundingBox();
+		const minY = this.boundingBox.min.y;
+
+		this.mesh.position.x -= this.center.x;
+		this.mesh.position.z -= this.center.z;
+
+		if (minY < 0) {
+			this.mesh.position.y += abs(minY) - this.lockDepth;
+		}
+
+		this.updateMatrixWorld();
+
+		this.setPosition = {
+			x: this.mesh.position.x,
+			y: this.mesh.position.y,
+			z: this.mesh.position.z,
+		};
+	};
+
+	coronalRotate90 = () => {
+		this.mesh.rotateX(pi / 2);
+		this.autoAlignMesh();
+	};
+
+	sagittalRotate90 = () => {
+		this.mesh.rotateZ(pi / 2);
+		this.autoAlignMesh();
+	};
+
+	transversalRotater90 = () => {
+		this.mesh.rotateY(pi / 2);
+		this.autoAlignMesh();
+	};
+
+	horizontalChange = (evt: Event) => {
+		const targetValue = (evt.target as HTMLInputElement).value;
+		const numVal = Number.parseInt(targetValue);
+
+		this.mesh.position.x = this.setPosition.x - numVal;
+	};
+
+	verticalChange = (evt: Event) => {
+		const targetValue = (evt.target as HTMLInputElement).value;
+		const numVal = Number.parseInt(targetValue);
+
+		this.mesh.position.y = this.setPosition.y + numVal;
+	};
+
+	depthChange = (evt: Event) => {
+		const targetValue = (evt.target as HTMLInputElement).value;
+		const numVal = Number.parseInt(targetValue);
+
+		this.mesh.position.z = this.setPosition.z - numVal;
+	};
+}
