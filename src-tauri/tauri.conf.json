@@ -25,7 +25,6 @@
 	},
 	"plugins": {},
 	"bundle": {
-		"createUpdaterArtifacts": true,
 		"active": true,
 		"targets": "all",
 		"macOS": {
