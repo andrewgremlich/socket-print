@@ -23,8 +23,20 @@
 			"csp": null
 		}
 	},
-	"plugins": {},
+	"plugins": {
+		"updater": {
+			"active": true,
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVBRENDODg0NkE3ODcwOUYKUldTZmNIaHFoTWpjV2dsUEJxMVJEbDBWZHJGc3VUcU9lenJudGtVbklUY0RscTFhSzREVHZIUkIK",
+			"endpoints": [
+				"https://github.com/andrewgremlich/socket-print/releases/latest/download/latest.json"
+			],
+			"windows": {
+				"installMode": "passive"
+			}
+		}
+	},
 	"bundle": {
+		"createUpdaterArtifacts": true,
 		"active": true,
 		"targets": "all",
 		"macOS": {
