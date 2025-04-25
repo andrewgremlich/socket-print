@@ -51,7 +51,29 @@ export default defineConfig({
 				short_name: "PP",
 				description:
 					"A simple CAD software to join socket prosthesis with distal cups.",
-				theme_color: "#ffffff",
+				theme_color: "#00e1ee",
+				icons: [
+					{
+						src: "64x64.png",
+						sizes: "64x64",
+						type: "image/png",
+					},
+					{
+						src: "128x128@2x.png",
+						sizes: "128x128",
+						type: "image/png",
+					},
+					{
+						src: "Square310x310Logo.png",
+						sizes: "310x310",
+						type: "image/png",
+					},
+					{
+						src: "AppIcon-512@2x.png",
+						sizes: "512x512",
+						type: "image/png",
+					},
+				],
 			},
 		}),
 	],

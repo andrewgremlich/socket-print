@@ -73,6 +73,7 @@ export async function generateGCode(
 		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
 
 		";##cup heater removal sequence##",
+		'M98 P"0:/sys/provel/prime.g"   ;prime extruder', //?
 		"M140 P1 S0 ;cup heater off",
 		"G1 Z70 F2250; Z moves up to pick up cup heater",
 		"G1 X120 F2250; X right to park cup heater",
