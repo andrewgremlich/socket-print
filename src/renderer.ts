@@ -3,6 +3,7 @@ import "@/db/store";
 import "@/web-components";
 import "@/utils/events";
 import "@/utils/pwa";
+import "@/utils/updater";
 
 import { Application } from "@/classes/Application";
 import { MergeCup } from "@/classes/MergeCup";
