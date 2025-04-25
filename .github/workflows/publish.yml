@@ -2,11 +2,8 @@ name: "Publish Desktop Apps"
 
 on:
   push:
-    branches:
-      - main
-
-# This is the example for publishing a Universal macOS app with a signing certificate.
-# On each push to the `release` branch it will create or update a GitHub release, build your app, and upload the artifacts to the release.
+    tags:
+      - 'v*.*'
 
 jobs:
   publish-tauri:
@@ -22,6 +19,13 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
+      - name: Check tag format
+        run: |
+          if [[ ! "${GITHUB_REF##*/}" =~ ^v[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag does not match the required format. Exiting."
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
 
       - name: setup node
@@ -61,7 +65,7 @@ jobs:
           echo "Certificate imported."
 
       - name: build and publish
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v0 # https://github.com/tauri-apps/tauri-action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
