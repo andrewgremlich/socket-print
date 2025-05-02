@@ -38,6 +38,14 @@ jobs:
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
+      - name: install Rust target for ARM
+        if: matrix.args == '--target aarch64-pc-windows-msvc'
+        run: rustup target add aarch64-pc-windows-msvc
+
+      - name: install Rust target for x86
+        if: matrix.args == '--target i686-pc-windows-msvc'
+        run: rustup target add i686-pc-windows-msvc
+
       - name: install frontend dependencies
         run: npm install
 
