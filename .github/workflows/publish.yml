@@ -19,6 +19,10 @@ jobs:
             args: '--target universal-apple-darwin'
           - platform: 'windows-latest'
             args: ''
+          - platform: 'windows-latest'
+            args: '--target aarch64-pc-windows-msvc'
+          - platform: 'windows-latest'
+            args: '--target i686-pc-windows-msvc'
 
     runs-on: ${{ matrix.platform }}
     steps:
