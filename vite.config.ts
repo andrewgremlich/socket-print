@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import { isTauri } from "@tauri-apps/api/core";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import topLevelAwait from "vite-plugin-top-level-await";
@@ -43,39 +44,41 @@ export default defineConfig({
 	plugins: [
 		tsconfigPaths(),
 		topLevelAwait(),
-		VitePWA({
-			registerType: "autoUpdate",
-			manifest: {
-				name: "Provel Print",
-				display: "standalone",
-				short_name: "PP",
-				description:
-					"A simple CAD software to join socket prosthesis with distal cups.",
-				theme_color: "#00e1ee",
-				icons: [
-					{
-						src: "64x64.png",
-						sizes: "64x64",
-						type: "image/png",
+		!isTauri()
+			? VitePWA({
+					registerType: "autoUpdate",
+					manifest: {
+						name: "Provel Print",
+						display: "standalone",
+						short_name: "PP",
+						description:
+							"A simple CAD software to join socket prosthesis with distal cups.",
+						theme_color: "#00e1ee",
+						icons: [
+							{
+								src: "64x64.png",
+								sizes: "64x64",
+								type: "image/png",
+							},
+							{
+								src: "128x128@2x.png",
+								sizes: "128x128",
+								type: "image/png",
+							},
+							{
+								src: "Square310x310Logo.png",
+								sizes: "310x310",
+								type: "image/png",
+							},
+							{
+								src: "AppIcon-512@2x.png",
+								sizes: "512x512",
+								type: "image/png",
+							},
+						],
 					},
-					{
-						src: "128x128@2x.png",
-						sizes: "128x128",
-						type: "image/png",
-					},
-					{
-						src: "Square310x310Logo.png",
-						sizes: "310x310",
-						type: "image/png",
-					},
-					{
-						src: "AppIcon-512@2x.png",
-						sizes: "512x512",
-						type: "image/png",
-					},
-				],
-			},
-		}),
+				})
+			: null,
 	],
 	test: {
 		globals: true,

@@ -76,7 +76,7 @@ const printerConnection = async () => {
 	const isValid =
 		isIP(ipAddress) || isFQDN(ipAddress) || ipAddress.includes("localhost");
 
-	console.log("IP address: ", ipAddress, isValid);
+	console.log("IP address", ipAddress, "is valid", isValid);
 
 	if (isValid) {
 		try {

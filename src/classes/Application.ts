@@ -47,6 +47,8 @@ export class Application {
 		const directionalLight2 = new DirectionalLight(0xffffff, 2);
 		const directionalLight3 = new DirectionalLight(0xffffff, 2);
 
+		console.log("SCENE", this.scene);
+
 		directionalLight1.position.set(100, 150, -300);
 		directionalLight2.position.set(100, 150, 350);
 		directionalLight3.position.set(-400, 150, 100);

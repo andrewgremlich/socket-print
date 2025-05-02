@@ -28,8 +28,9 @@ export const getIpAddress = async () => {
 		.where("name")
 		.equals("ipAddress")
 		.first();
+	const ipAddressValue = (ipAddress?.value as string) ?? "";
 
-	return ipAddress.value as string;
+	return ipAddressValue;
 };
 
 export const saveIpAddress = async (ipAddress: string) => {

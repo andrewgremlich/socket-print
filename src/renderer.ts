@@ -2,7 +2,6 @@ import "@/global-style.css";
 import "@/db/store";
 import "@/web-components";
 import "@/utils/events";
-import "@/utils/pwa";
 import "@/utils/updater";
 
 import { Application } from "@/classes/Application";
