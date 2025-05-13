@@ -68,15 +68,15 @@ export async function generateGCode(
 		";G28",
 
 		";## move to prime position/ pickup cup heater start position ##",
-		"G1 Y0 Z48 F6000 ;Z down to cup height + 10 , Y moves back to cup center",
 		"G1 X-95 ; only once at correct Z height move in to register with cup heater for pickup",
+		"G1 Y0 Z48 F6000 ;Z down to cup height + 10 , Y moves back to cup center",
 		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
 
 		";##cup heater removal sequence##",
 		'M98 P"0:/sys/provel/prime.g"   ;prime extruder', //?
 		"M140 P1 S0 ;cup heater off",
 		"G1 Z70 F2250; Z moves up to pick up cup heater",
-		"G1 X120 F2250; X right to park cup heater",
+		"G1 X120 F6000; X right to park cup heater",
 		"G1 Z17 F2250; Z down to place cup heater on bed",
 		"G1 X90 F2250; X left to disengage cup heater",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
@@ -85,9 +85,9 @@ export async function generateGCode(
 		`G1 Z${socketHeight} F2250; Z up to CH + 5 for groove fill`,
 
 		";##Groove fill",
-		"G1 X50 Y0 F1500 ; Move to start of pre groove fill extrusion",
+		"G1 X50 Y0 F2250 ; Move to start of pre groove fill extrusion",
 		"G1 E15 E300 ; extrude a bit to make up for any ooze",
-		"G1 X39 Y0 E10 F1500 ; Move to start of circle at the edge, continue slight extrusion",
+		"G1 X39 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
 		"G1 E20 E300 ;extruder a bit to prevent a small gap at the start/end.",
 		" ;Extrude in a circle A",
 		"G3 X39 Y0 I-39 J0 E1030 F600 ; Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
