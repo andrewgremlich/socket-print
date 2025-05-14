@@ -26,7 +26,13 @@ export default defineConfig({
 		host: "localhost",
 	},
 	build: {
-		minify: true,
+		minify: "esbuild",
+		terserOptions: {
+			compress: {
+				drop_console: true,
+			},
+		},
+		sourcemap: false,
 		target: "es2022",
 		rollupOptions: {
 			input: {
