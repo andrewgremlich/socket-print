@@ -33,11 +33,6 @@ export default defineConfig({
 				main: resolve(__dirname, "index.html"),
 				help: resolve(__dirname, "help.html"),
 			},
-			output: {
-				manualChunks: {
-					three: ["three"],
-				},
-			},
 		},
 	},
 	plugins: [
