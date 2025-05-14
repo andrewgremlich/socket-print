@@ -36,7 +36,6 @@ export default defineConfig({
 			output: {
 				manualChunks: {
 					three: ["three"],
-					"three-mesh-bvh": ["three-mesh-bvh"],
 				},
 			},
 		},
