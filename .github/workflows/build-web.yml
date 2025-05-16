@@ -73,12 +73,14 @@ jobs:
           DO_HOST: ${{ secrets.DO_HOST }}
           DO_USER: ${{ secrets.DO_USER }}
         run: |
-          echo "$DO_SSH_KEY" > id_rsa
-          chmod 600 id_rsa
-          scp -i id_rsa -o StrictHostKeyChecking=no dist.zip $DO_USER@$DO_HOST:/var/www/
-          ssh -i id_rsa -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "unzip -o /var/www/dist.zip -d /var/www/"
-          ssh -i id_rsa -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "rm /var/www/dist.zip"
-          rm id_rsa
+          mkdir -p ~/.ssh
+          echo "$DO_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $DO_HOST >> ~/.ssh/known_hosts
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no dist.zip $DO_USER@$DO_HOST:/var/www/
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "unzip -o /var/www/dist.zip -d /var/www/"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "rm /var/www/dist.zip"
+          rm -f ~/.ssh/id_rsa
         shell: bash
         if: ${{ success() }}
 
