@@ -1,6 +1,6 @@
 import hotkeys from "hotkeys-js";
 
-import { connectToPrinter, setPrinterIp } from "@/3d/sendGCodeFile";
+import { connectToPrinter } from "@/3d/sendGCodeFile";
 import {
 	getIpAddress,
 	saveActiveMaterialProfile,
@@ -80,7 +80,7 @@ const printerConnection = async () => {
 
 	if (isValid) {
 		try {
-			await setPrinterIp(ipAddress);
+			// await setPrinterIp(ipAddress); // Uncomment this line if you want to set the IP address in Deno
 
 			const { sessionTimeout } = await connectToPrinter(ipAddress);
 
@@ -92,6 +92,10 @@ const printerConnection = async () => {
 
 			if (sessionTimeout) {
 				const timeout = Math.max(0, sessionTimeout - 1000);
+				setTimeout(printerConnection, timeout);
+			} else {
+				console.warn("Session timeout is not defined");
+				const timeout = 5000;
 				setTimeout(printerConnection, timeout);
 			}
 		} catch (error) {
