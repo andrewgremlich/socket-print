@@ -79,6 +79,7 @@ jobs:
           port: 22
           script: |
             cd ~/
-            unzip -o socket-print.zip
-            rm socket-print.zip
+            rm -rf socket-print
+            mkdir -p socket-print
+            unzip -o socket-print.zip -d socket-print
             mv socket-print/ /var/www/
