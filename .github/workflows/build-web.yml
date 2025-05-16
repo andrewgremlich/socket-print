@@ -104,8 +104,9 @@ jobs:
           port: 22
           script: |
             cd ~/
-            rm -rf /var/www/*
+            rm -rf /var/www/socket-print/*
             mkdir -p socket-print
+            mkdir -p /var/www/socket-print
             unzip -o socket-print.zip -d socket-print
-            cp -rT socket-print /var/www
+            cp -rT socket-print /var/www/socket-print
             rm -rf socket-print socket-print.zip
