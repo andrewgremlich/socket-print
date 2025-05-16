@@ -67,25 +67,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
       - name: Send dist to DigitalOcean Droplet
         env:
-          DO_SSH_KEY: ${{ secrets.DO_SSH_KEY }}
           DO_HOST: ${{ secrets.DO_HOST }}
           DO_USER: ${{ secrets.DO_USER }}
         run: |
-          mkdir -p ~/.ssh
-          echo "$DO_SSH_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H $DO_HOST >> ~/.ssh/known_hosts
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no dist.zip $DO_USER@$DO_HOST:/var/www/
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "unzip -o /var/www/dist.zip -d /var/www/"
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "rm /var/www/dist.zip"
-          rm -f ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no dist.zip $DO_USER@$DO_HOST:/var/www/
+          ssh -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "unzip -o /var/www/dist.zip -d /var/www/"
+          ssh -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "rm /var/www/dist.zip"
         shell: bash
         if: ${{ success() }}
 
-      - name: Clean up
-        run: |
-          rm -f id_rsa
-          rm -f dist.zip
-        if: ${{ success() }}
