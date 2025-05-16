@@ -2,11 +2,8 @@ name: Build and Zip Vite Web Project
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - 'Web v*'
 
 permissions:
   contents: write
