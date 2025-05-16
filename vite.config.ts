@@ -71,6 +71,39 @@ export default defineConfig({
 							},
 						],
 					},
+					workbox: {
+						clientsClaim: true,
+						skipWaiting: true,
+						runtimeCaching: [
+							{
+								urlPattern: ({ request }) =>
+									request.destination === "document" ||
+									request.destination === "script" ||
+									request.destination === "style" ||
+									request.destination === "image" ||
+									request.destination === "font",
+								handler: "CacheFirst",
+								options: {
+									cacheName: "assets-cache",
+									expiration: {
+										maxEntries: 100,
+										maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
+									},
+								},
+							},
+							{
+								urlPattern: ({ url }) => url.origin === self.location.origin,
+								handler: "NetworkFirst",
+								options: {
+									cacheName: "pages-cache",
+									expiration: {
+										maxEntries: 50,
+										maxAgeSeconds: 60 * 60 * 24 * 7, // 7 Days
+									},
+								},
+							},
+						],
+					},
 				})
 			: null,
 	],

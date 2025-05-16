@@ -11,7 +11,7 @@
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"baseUrl": "./",
-		"types": ["vitest/globals"],
+		"types": ["vitest"],
 		"paths": {
 			"@/*": ["./src/*"],
 			"pkg": ["package.json"]

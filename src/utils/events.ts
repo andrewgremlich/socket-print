@@ -107,7 +107,9 @@ const printerConnection = async () => {
 };
 
 ipAddressInput.addEventListener("input", printerConnection);
-await printerConnection();
+setTimeout(async () => {
+	await printerConnection();
+}, 1000);
 
 window.addEventListener("load", () => {
 	console.log("Window loaded");

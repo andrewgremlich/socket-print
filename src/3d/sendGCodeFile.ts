@@ -35,9 +35,17 @@ export async function connectToPrinter(ipAddress: string) {
 	const password = "";
 
 	try {
+		console.log("Connecting to printer at", ipAddress);
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
+
 		const response = await fetch(
 			`http://${ipAddress}/rr_connect?password=${password}`,
+			{ signal: controller.signal },
 		);
+
+		clearTimeout(timeout);
+		console.log("Response:", response);
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
