@@ -76,20 +76,13 @@ jobs:
       #     environment: production
 
       - name: Set up SSH Key and Deploy my App on Server
-        # run: |
         uses: appleboy/ssh-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # passphrase: ${{ secrets.SSH_PASSPHRASE }}
           port: 22
-          script: |
-            git config --global url."https://${{ secrets.GITHUB_TOKEN }}:@github.com".insteadOf "https://github.com"
-            cd ~/
-            git pull origin main
+          script: whoami
 
       # - name: Set up SSH
       #   uses: webfactory/ssh-agent@v0.5.4
