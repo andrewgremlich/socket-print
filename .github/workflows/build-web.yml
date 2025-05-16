@@ -82,7 +82,9 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          script: whoami
+          script: |
+            whoami
+            ls -al
 
       # - name: Set up SSH
       #   uses: webfactory/ssh-agent@v0.5.4
