@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "socket-print.zip"
-          target: /var/www
+          target: ~/
 
       - name: Set up SSH Key and Deploy my App on Server
         uses: appleboy/ssh-action@master
@@ -78,6 +78,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /var/www
+            cd ~/
             unzip -o socket-print.zip
             rm socket-print.zip
+            mv socket-print/ /var/www/
