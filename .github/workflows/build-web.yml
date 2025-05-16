@@ -50,7 +50,7 @@ jobs:
         uses: actions/create-release@v1
         with:
           tag_name: v${{ env.VERSION }}
-          release_name: Release v${{ env.VERSION }}
+          release_name: ProvelPrint Web Release v${{ env.VERSION }}
           draft: true
           prerelease: false
         env:
@@ -66,3 +66,24 @@ jobs:
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send dist to DigitalOcean Droplet
+        env:
+          DO_SSH_KEY: ${{ secrets.DO_SSH_KEY }}
+          DO_HOST: ${{ secrets.DO_HOST }}
+          DO_USER: ${{ secrets.DO_USER }}
+        run: |
+          echo "$DO_SSH_KEY" > id_rsa
+          chmod 600 id_rsa
+          scp -i id_rsa -o StrictHostKeyChecking=no dist.zip $DO_USER@$DO_HOST:/var/www/
+          ssh -i id_rsa -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "unzip -o /var/www/dist.zip -d /var/www/"
+          ssh -i id_rsa -o StrictHostKeyChecking=no $DO_USER@$DO_HOST "rm /var/www/dist.zip"
+          rm id_rsa
+        shell: bash
+        if: ${{ success() }}
+
+      - name: Clean up
+        run: |
+          rm -f id_rsa
+          rm -f dist.zip
+        if: ${{ success() }}
