@@ -34,19 +34,19 @@ jobs:
         run: |
           cd dist
           zip -r ../dist.zip .
-        if: success()
+        if: ${{ success() }}
 
       - name: Get version from package.json
         id: get_version
-        shell: bash
-        run: echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+        run: |
+          echo "VERSION=$(node -p "import pkg from './package.json' assert { type: 'json' }; console.log(pkg.version);")" >> $GITHUB_ENV
 
       - name: Create GitHub Release Draft
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          release_name: Release v${{ steps.get_version.outputs.version }}
+          tag_name: v${{ env.VERSION }}
+          release_name: Release v${{ env.VERSION }}
           draft: true
           prerelease: false
         env:
