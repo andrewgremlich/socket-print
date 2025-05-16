@@ -2,10 +2,10 @@ name: "Publish Desktop ProvelPrint Apps"
 
 on:
   push:
-    branches:
-      - main
-    # tags:
-    #   - 'v*'
+    # branches:
+    #   - main
+    tags:
+      - 'v*'
 
 jobs:
   publish-tauri:
