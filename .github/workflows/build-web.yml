@@ -82,5 +82,5 @@ jobs:
             rm -rf socket-print
             mkdir -p socket-print
             unzip -o socket-print.zip -d socket-print
-            mv socket-print/ /var/www/
+            mv socket-print/* /var/www/*
             rm -rf socket-print.zip
