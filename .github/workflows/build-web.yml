@@ -36,13 +36,13 @@ jobs:
           zip -r ../dist.zip .
         if: success()
 
+      - name: Get version from package.json
+        id: get_version
+        run: echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release Draft
         id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.sha }}
-          release_name: Release ${{ github.sha }}
-          draft: true
+        uses: actions/create
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
