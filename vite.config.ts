@@ -41,6 +41,16 @@ export default defineConfig({
 		!isTauri()
 			? VitePWA({
 					registerType: "autoUpdate",
+					devOptions: {
+						enabled: true,
+					},
+					includeAssets: [
+						"favicon.svg",
+						"favicon.ico",
+						"robots.txt",
+						"apple-touch-icon.png",
+						"safari-pinned-tab.svg",
+					],
 					manifest: {
 						name: "Provel Print",
 						display: "standalone",
@@ -74,6 +84,9 @@ export default defineConfig({
 					workbox: {
 						clientsClaim: true,
 						skipWaiting: true,
+						globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff}"],
+						globIgnores: ["**/index.html", "**/help.html"],
+						globDirectory: "dist",
 						runtimeCaching: [
 							{
 								urlPattern: ({ request }) =>

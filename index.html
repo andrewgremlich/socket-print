@@ -1,197 +1,312 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-        description="A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb." />
     <title>Provel Print</title>
-</head>
+    <meta
+      description="A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb."
+    />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="mask-icon" href="/mask-icon.svg" color="#00e1ee" />
+    <meta name="theme-color" content="#00e1ee" />
+  </head>
 
-<body>
+  <body>
     <main>
-        <nav id="menuBar"> 
-            <h1>ProvelPrint: v1.0.0</h1>
+      <nav id="menuBar">
+        <h1>ProvelPrint</h1>
 
-            <div class="menuBarButtonContainer">
-                <button class="menuBarButton">File</button>
+        <div class="menuBarButtonContainer">
+          <button class="menuBarButton">File</button>
 
-                <div class="menuBarDropdown">
-                    <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
-                        id="stlFileInputLabel">
-                        Open STL file
-                        <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput" />
-                    </label>
+          <div class="menuBarDropdown">
+            <label
+              style="display: block"
+              class="menuBarDropdownButton fileInputLabel"
+              for="stlFileInput"
+              id="stlFileInputLabel"
+            >
+              Open STL file
+              <input
+                type="file"
+                accept=".stl"
+                id="stlFileInput"
+                name="stlFileInput"
+                class="fileInput"
+              />
+            </label>
 
-                    <input class="menuBarDropdownButton" type="button" value="Restore Defaults"
-                        id="restoreDefaultsButton" />
+            <input
+              class="menuBarDropdownButton"
+              type="button"
+              value="Restore Defaults"
+              id="restoreDefaultsButton"
+            />
 
-                    <input class="menuBarDropdownButton" type="button" value="Clear model" id="clearModelButton" />
-                </div>
-            </div>
-
-            <div class="menuBarButtonContainer">
-                <button class="menuBarButton">Edit</button>
-
-                <div class="menuBarDropdown">
-                    <input class="menuBarDropdownButton" id="addMaterialProfile" type="button"
-                        value="Add Material Profile" />
-                    <input class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button"
-                        value="Edit Active Material Profile" />
-                    <input class="menuBarDropdownButton" id="deleteMaterialProfile" type="button"
-                        value="Delete Active Material Profile" />
-                </div>
-            </div>
-
-            <div class="menuBarButtonContainer">
-                <div class="menuBarButton">
-                    <a class="menuBarButton" href="/help.html">Help</a>
-                </div>
-            </div>
-        </nav>
-
-        <div id="userInterface">
-            <form id="customizations">
-                <p>IP Address and Port</p>
-
-                <div id="ipAddress">
-                    <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress"
-                        value="" placeholder="192.168.X.XXX" />
-                </div>
-
-                <p>Port Status</p>
-
-                <div id="portStatusIcons">
-                    <p type="success" id="ipAddressSuccess" class="hide">Connected!</p>
-                    <p type="failure" id="ipAddressFailure">Disconnected</p>
-                </div>
-
-                <p>Lock Position</p>
-
-                <select name="lockPosition" id="lockPosition" name="lockPosition">
-                    <option value="left" selected>Left</option>
-                    <option value="right">Right</option>
-                </select>
-
-                <label for="cupSize">Cup Size</label>
-
-                <select name="cupSize" id="cupSize" name="cupSize">
-                    <option value="93x38" selected>93 x 38</option>
-                    <!-- Place 30 mm above printer --->
-                    <option value="93x25">93 x 25</option>
-                    <!-- Place 17 mm above printer --->
-                </select>
-
-                <label for="nozzleSize">Nozzle Size</label>
-
-                <select name="nozzleSize" id="nozzleSize" name="nozzleSize">
-                    <option value="3">3mm</option>
-                    <option value="4">4mm</option>
-                    <option value="5" selected>5mm</option>
-                    <option value="6">6mm</option>
-                    <option value="7">7mm</option>
-                </select>
-
-                <label for="layerHeight">Layer Height</label>
-
-                <select name="layerHeight" id="layerHeight" name="layerHeight">
-                    <option value="0.5">0.5mm</option>
-                    <option value="1" selected>1mm</option>
-                    <option value="1.5">1.5mm</option>
-                    <option value="2">2mm</option>
-                </select>
-
-                <label for="activeMaterialProfile">Material</label>
-
-                <div id="activeMaterialProfileContainer">
-                    <select name="activeMaterialProfile" id="activeMaterialProfile"
-                        name="activeMaterialProfile"></select>
-                </div>
-            </form>
-
-            <div id="materialProfileDisplay">
-                <label>Nozzle Temp (C): </label><label id="nozzleTempDisplay">200</label>
-
-                <label>Cup Temp (C): </label><label id="cupTempDisplay">130</label>
-
-                <label>Shrink Factor (%): </label><label id="shrinkFactorDisplay">2.6</label>
-
-                <label>Output Factor: </label><label id="outputFactorDisplay">1</label>
-
-                <label>Feedrate (mm/min): </label><label id="feedrateDisplay">1</label>
-            </div>
-
-            <div id="printActions">
-                <p style="margin: 10px 0px">Estimated Print Time:</p>
-
-                <p id="estimatedPrintTime"></p>
-
-                <input type="button" value="Blend to Cup" class="button" id="mergeMeshes" disabled />
-
-                <div></div>
-
-                <p>Generate G Code</p>
-
-                <div>
-                    <input type="button" value="File" class="button" id="generateGCodeButton" disabled />
-
-                    <input type="button" value="Print" id="printerFileInput" name="printerFileInput" class="button"
-                        disabled />
-                </div>
-            </div>
+            <input
+              class="menuBarDropdownButton"
+              type="button"
+              value="Clear model"
+              id="clearModelButton"
+            />
+          </div>
         </div>
 
-        <div id="provelPrint">
-            <span id="activeFileName">No file selected</span>
-            <canvas id="3dViewer"></canvas>
+        <div class="menuBarButtonContainer">
+          <button class="menuBarButton">Edit</button>
+
+          <div class="menuBarDropdown">
+            <input
+              class="menuBarDropdownButton"
+              id="addMaterialProfile"
+              type="button"
+              value="Add Material Profile"
+            />
+            <input
+              class="menuBarDropdownButton"
+              id="editActiveMaterialProfile"
+              type="button"
+              value="Edit Active Material Profile"
+            />
+            <input
+              class="menuBarDropdownButton"
+              id="deleteMaterialProfile"
+              type="button"
+              value="Delete Active Material Profile"
+            />
+          </div>
         </div>
 
-        <div id="editSocket">
-            <div id="rotateSocket">
-                <p>Rotate 90</p>
-                <input disabled id="coronalRotater" class="button" type="button" value="Coronal" />
-                <input disabled id="sagittalRotate" class="button" type="button" value="Sagittal" />
-                <input disabled id="transversalRotater" class="button" type="button" value="Transverse" />
-            </div>
-            <div id="changePosition">
-                <p>Translate</p>
-                <label for="horizontalTranslate">X
-                    <input disabled id="horizontalTranslate" type="number" value="0" step="1" min="-100" max="100" />
-                </label>
-                <label for="depthTranslate">Y
-                    <input disabled id="depthTranslate" type="number" value="0" step="1" min="-100" max="100" />
-                </label>
-                <label for="verticalTranslate">Z
-                    <input disabled id="verticalTranslate" type="number" value="0" step="1" min="-25" max="25" />
-                </label>
-            </div>
+        <div class="menuBarButtonContainer">
+          <div class="menuBarButton">
+            <a class="menuBarButton" href="/help.html">Help</a>
+          </div>
         </div>
+      </nav>
+
+      <div id="userInterface">
+        <form id="customizations">
+          <p>IP Address and Port</p>
+
+          <div id="ipAddress">
+            <input
+              style="padding-left: 5px; margin-right: 5px"
+              type="text"
+              id="ipAddressInput"
+              name="ipAddress"
+              value=""
+              placeholder="192.168.X.XXX"
+            />
+          </div>
+
+          <p>Port Status</p>
+
+          <div id="portStatusIcons">
+            <p type="success" id="ipAddressSuccess" class="hide">Connected!</p>
+            <p type="failure" id="ipAddressFailure">Disconnected</p>
+          </div>
+
+          <p>Lock Position</p>
+
+          <select name="lockPosition" id="lockPosition" name="lockPosition">
+            <option value="left" selected>Left</option>
+            <option value="right">Right</option>
+          </select>
+
+          <label for="cupSize">Cup Size</label>
+
+          <select name="cupSize" id="cupSize" name="cupSize">
+            <option value="93x38" selected>93 x 38</option>
+            <!-- Place 30 mm above printer --->
+            <option value="93x25">93 x 25</option>
+            <!-- Place 17 mm above printer --->
+          </select>
+
+          <label for="nozzleSize">Nozzle Size</label>
+
+          <select name="nozzleSize" id="nozzleSize" name="nozzleSize">
+            <option value="3">3mm</option>
+            <option value="4">4mm</option>
+            <option value="5" selected>5mm</option>
+            <option value="6">6mm</option>
+            <option value="7">7mm</option>
+          </select>
+
+          <label for="layerHeight">Layer Height</label>
+
+          <select name="layerHeight" id="layerHeight" name="layerHeight">
+            <option value="0.5">0.5mm</option>
+            <option value="1" selected>1mm</option>
+            <option value="1.5">1.5mm</option>
+            <option value="2">2mm</option>
+          </select>
+
+          <label for="activeMaterialProfile">Material</label>
+
+          <div id="activeMaterialProfileContainer">
+            <select
+              name="activeMaterialProfile"
+              id="activeMaterialProfile"
+              name="activeMaterialProfile"
+            ></select>
+          </div>
+        </form>
+
+        <div id="materialProfileDisplay">
+          <label>Nozzle Temp (C): </label
+          ><label id="nozzleTempDisplay">200</label>
+
+          <label>Cup Temp (C): </label><label id="cupTempDisplay">130</label>
+
+          <label>Shrink Factor (%): </label
+          ><label id="shrinkFactorDisplay">2.6</label>
+
+          <label>Output Factor: </label
+          ><label id="outputFactorDisplay">1</label>
+
+          <label>Feedrate (mm/min): </label
+          ><label id="feedrateDisplay">1</label>
+        </div>
+
+        <div id="printActions">
+          <p style="margin: 10px 0px">Estimated Print Time:</p>
+
+          <p id="estimatedPrintTime"></p>
+
+          <input
+            type="button"
+            value="Blend to Cup"
+            class="button"
+            id="mergeMeshes"
+            disabled
+          />
+
+          <div></div>
+
+          <p>Generate G Code</p>
+
+          <div>
+            <input
+              type="button"
+              value="File"
+              class="button"
+              id="generateGCodeButton"
+              disabled
+            />
+
+            <input
+              type="button"
+              value="Print"
+              id="printerFileInput"
+              name="printerFileInput"
+              class="button"
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+
+      <div id="provelPrint">
+        <span id="activeFileName">No file selected</span>
+        <canvas id="3dViewer"></canvas>
+      </div>
+
+      <div id="editSocket">
+        <div id="rotateSocket">
+          <p>Rotate 90</p>
+          <input
+            disabled
+            id="coronalRotater"
+            class="button"
+            type="button"
+            value="Coronal"
+          />
+          <input
+            disabled
+            id="sagittalRotate"
+            class="button"
+            type="button"
+            value="Sagittal"
+          />
+          <input
+            disabled
+            id="transversalRotater"
+            class="button"
+            type="button"
+            value="Transverse"
+          />
+        </div>
+        <div id="changePosition">
+          <p>Translate</p>
+          <label for="horizontalTranslate"
+            >X
+            <input
+              disabled
+              id="horizontalTranslate"
+              type="number"
+              value="0"
+              step="1"
+              min="-100"
+              max="100"
+            />
+          </label>
+          <label for="depthTranslate"
+            >Y
+            <input
+              disabled
+              id="depthTranslate"
+              type="number"
+              value="0"
+              step="1"
+              min="-100"
+              max="100"
+            />
+          </label>
+          <label for="verticalTranslate"
+            >Z
+            <input
+              disabled
+              id="verticalTranslate"
+              type="number"
+              value="0"
+              step="1"
+              min="-25"
+              max="25"
+            />
+          </label>
+        </div>
+      </div>
     </main>
 
     <div id="updateApp" class="hide">
-        <div id="promptUpdate">
-            <p>Update Available</p>
-            <input type="button" value="Update" class="button" id="updateAppButton" />
-        </div>
-        <div id="readyToGo">
-            <p>All updated!</p>
-        </div>
+      <div id="promptUpdate">
+        <p>Update Available</p>
+        <input
+          type="button"
+          value="Update"
+          class="button"
+          id="updateAppButton"
+        />
+      </div>
+      <div id="readyToGo">
+        <p>All updated!</p>
+      </div>
     </div>
 
     <material-profile-form></material-profile-form>
 
     <div id="progressBarDiv">
-        <icon-element type="loader"></icon-element>
-        <label for="progressBar" id="progressBarLabel">0%</label>
-        <progress id="progressBar" value="0" max="100"></progress>
+      <icon-element type="loader"></icon-element>
+      <label for="progressBar" id="progressBarLabel">0%</label>
+      <progress id="progressBar" value="0" max="100"></progress>
     </div>
 
     <div id="loading">
-        <icon-element type="loader"></icon-element>
+      <icon-element type="loader"></icon-element>
     </div>
 
     <script type="module" src="./src/renderer.ts"></script>
-</body>
-
+  </body>
 </html>
