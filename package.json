@@ -28,7 +28,9 @@
 		"tauri": "tauri"
 	},
 	"lint-staged": {
-		"*.{js,ts,tsx}": ["npm run check"]
+		"*.{js,ts,tsx}": [
+			"npm run check"
+		]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
@@ -66,7 +68,6 @@
 		"three": "^0.176.0",
 		"three-csg-ts": "^3.2.0",
 		"three-mesh-bvh": "^0.9.0",
-		"validator": "^13.15.0",
-		"vite-plugin-pwa": "^1.0.0"
+		"validator": "^13.15.0"
 	}
 }
