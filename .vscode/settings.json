@@ -1,7 +1,7 @@
 {
 	"editor.defaultFormatter": "biomejs.biome",
 	"editor.formatOnSave": true,
-	"[typescript]": {
+	"[typescript,javascript,css,jsx]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"[rust]": {

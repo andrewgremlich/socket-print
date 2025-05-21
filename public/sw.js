@@ -1,3 +1,4 @@
+// NOTE: This only works in HTTPS
 const cacheName = "v1";
 
 const addResourcesToCache = async (resources) => {
