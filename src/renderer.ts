@@ -165,7 +165,6 @@ export async function slicingAction(sendToFile: boolean) {
 
 generateGCodeButton.addEventListener("click", async () => {
 	try {
-		console.info("Generate GCode button clicked");
 		await slicingAction(true);
 	} catch (error) {
 		console.error("Error invoking slicing function:", error);
@@ -174,7 +173,6 @@ generateGCodeButton.addEventListener("click", async () => {
 
 printerFileInput.addEventListener("click", async () => {
 	try {
-		console.info("Printer file input clicked");
 		await slicingAction(false);
 	} catch (error) {
 		console.error("Error invoking slicing action:", error);
