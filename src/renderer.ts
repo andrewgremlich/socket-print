@@ -92,6 +92,7 @@ mergeMeshes?.addEventListener("click", async () => {
 		}
 
 		mergeGeometries = new MergeGeometries(socket, mergeCup);
+		mergeGeometries.updateMatrixWorld();
 
 		if (!mergeGeometries.mesh) {
 			throw new Error("Geometry not found");
@@ -135,17 +136,17 @@ export async function slicingAction(sendToFile: boolean) {
 			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === "done") {
-			const adjustedDim = await adjustForShrinkAndOffset(
-				data,
-				mergeGeometries.center,
-			);
-			const blended = await blendHardEdges(adjustedDim, 1);
-			const printTime = await calculatePrintTime(blended);
+			// const adjustedDim = await adjustForShrinkAndOffset(
+			// 	data,
+			// 	mergeGeometries.center,
+			// );
+			// const blended = await blendHardEdges(adjustedDim, 1);
+			// const printTime = await calculatePrintTime(blended);
 
-			estimatedPrintTime.textContent = printTime;
+			// estimatedPrintTime.textContent = printTime;
 
-			const gcode = await generateGCode(blended, "y", {
-				estimatedTime: printTime,
+			const gcode = await generateGCode(data, "y", {
+				// estimatedTime: printTime,
 			});
 			const filePathName = `${socket.mesh?.name}.gcode`;
 

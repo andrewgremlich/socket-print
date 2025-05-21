@@ -142,7 +142,7 @@ export async function generateGCode(
 			previousPoint = point;
 			const flipHeight = flipVerticalAxis(verticalAxis);
 			gcode.push(
-				`G1 X${round(point.x, 2)} Y${round(point[flipHeight], 2)} Z${round(point[verticalAxis], 2)} E${round(extrusion, 4)} F${feedrate}`,
+				`G1 X${-round(point.x, 2)} Y${round(point[flipHeight], 2)} Z${round(point[verticalAxis], 2)} E${round(extrusion, 4)} F${feedrate}`,
 			);
 		}
 	}
