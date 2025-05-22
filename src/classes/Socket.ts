@@ -134,7 +134,6 @@ export class Socket extends AppObject {
 		coronalRotater.disabled = isDisabled;
 		sagittalRotate.disabled = isDisabled;
 		transversalRotater.disabled = isDisabled;
-		mergeMeshes.disabled = isDisabled;
 		verticalTranslate.disabled = isDisabled;
 		horizontalTranslate.disabled = isDisabled;
 		depthTranslate.disabled = isDisabled;

@@ -6,7 +6,6 @@ import "@/utils/updater";
 
 import { Application } from "@/classes/Application";
 import { MergeCup } from "@/classes/MergeCup";
-import { MergeGeometries } from "@/classes/MergeGeometries";
 import { Socket } from "@/classes/Socket";
 import { ceil } from "mathjs";
 
@@ -24,21 +23,22 @@ import {
 	generateGCodeButton,
 	horizontalTranslate,
 	loadingScreen,
-	mergeMeshes,
 	printerFileInput,
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
+import { Ring } from "./classes/Ring";
 
 if (!window.Worker) {
 	throw new Error("Web Worker not supported");
 }
 
 const app = new Application();
-const mergeCup = new MergeCup();
-app.addToScene(mergeCup.mesh);
+const ring = new Ring();
+
+app.addToScene(ring.mesh);
 
 const socket = new Socket({
 	socketCallback: ({ mesh, maxDimension }) => {
@@ -54,77 +54,35 @@ const socket = new Socket({
 	},
 });
 
-let mergeGeometries: MergeGeometries;
-
 clearModelButton.addEventListener("click", () => {
-	if (mergeGeometries) {
-		app.removeMeshFromScene(mergeGeometries.mesh);
-		mergeGeometries = null;
-
-		mergeCup.mesh.visible = true;
-	} else {
-		app.removeMeshFromScene(socket.mesh);
-	}
+	app.removeMeshFromScene(socket.mesh);
 
 	horizontalTranslate.value = "0";
 	depthTranslate.value = "0";
 	verticalTranslate.value = "0";
 	activeFileName.textContent = "";
-	socket.clearData();
 
+	socket.clearData();
 	app.resetCameraPosition();
 });
 
-mergeMeshes?.addEventListener("click", async () => {
-	if (!loadingScreen) {
-		throw new Error("Loading screen not found");
-	}
-
-	loadingScreen.style.display = "flex";
-
-	setTimeout(() => {
-		if (!socket.mesh) {
-			throw new Error("STL data has not been loaded!");
-		}
-
-		if (!mergeCup.mesh) {
-			throw new Error("Cylinder mesh not found");
-		}
-
-		mergeGeometries = new MergeGeometries(socket, mergeCup);
-		mergeGeometries.updateMatrixWorld();
-
-		if (!mergeGeometries.mesh) {
-			throw new Error("Geometry not found");
-		}
-
-		mergeCup.mesh.visible = false;
-		socket.mesh.visible = false;
-
-		app.addToScene(mergeGeometries.mesh);
-
-		if (!loadingScreen) {
-			throw new Error("Loading screen not found");
-		}
-
-		loadingScreen.style.display = "none";
-
-		generateGCodeButton.disabled = false;
-		printerFileInput.disabled = false;
-	}, 500);
-});
-
 export async function slicingAction(sendToFile: boolean) {
-	generateGCodeButton.disabled = true;
-	printerFileInput.disabled = true;
+	const mergeCup = new MergeCup({
+		height: socket.boundingBox.max.y,
+	});
+
+	app.addToScene(mergeCup.mesh);
+
+	socket.updateMatrixWorld();
+
+	const allGeometries = app.collectAllGeometries();
+
 	progressBarDiv.style.display = "flex";
 
 	const worker = new sliceWorker();
 
 	worker.postMessage({
-		positions: mergeGeometries.mesh.geometry.attributes.position.array,
-		verticalAxis: "y",
-		incrementHeight: true,
+		positions: allGeometries.attributes.position.array,
 	});
 
 	worker.onmessage = async (event) => {
@@ -136,17 +94,14 @@ export async function slicingAction(sendToFile: boolean) {
 			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === "done") {
-			// const adjustedDim = await adjustForShrinkAndOffset(
-			// 	data,
-			// 	mergeGeometries.center,
-			// );
-			// const blended = await blendHardEdges(adjustedDim, 1);
-			// const printTime = await calculatePrintTime(blended);
+			const adjustedDim = await adjustForShrinkAndOffset(data, socket.center);
+			const blended = await blendHardEdges(adjustedDim, 1);
+			const printTime = await calculatePrintTime(blended);
 
-			// estimatedPrintTime.textContent = printTime;
+			estimatedPrintTime.textContent = printTime;
 
-			const gcode = await generateGCode(data, "y", {
-				// estimatedTime: printTime,
+			const gcode = await generateGCode(blended, "y", {
+				estimatedTime: printTime,
 			});
 			const filePathName = `${socket.mesh?.name}.gcode`;
 
@@ -157,7 +112,6 @@ export async function slicingAction(sendToFile: boolean) {
 			}
 
 			progressBarDiv.style.display = "none";
-			generateGCodeButton.disabled = false;
 		}
 	};
 

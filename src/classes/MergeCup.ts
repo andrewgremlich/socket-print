@@ -14,10 +14,10 @@ export class MergeCup extends AppObject {
 	#radius = 78 / 2;
 	height: number;
 
-	constructor(options: { openEnded: boolean } = { openEnded: true }) {
+	constructor(options: { height: number }) {
 		super();
 
-		this.height = 41.3;
+		this.height = options.height;
 
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
@@ -29,11 +29,12 @@ export class MergeCup extends AppObject {
 			this.height,
 			this.#radialSegments,
 			1,
-			options.openEnded,
+			true,
 		);
 
 		this.mesh = new Mesh(geometry, material);
 		this.mesh.position.set(0, this.height / 2, 0);
+		this.updateMatrixWorld();
 	}
 
 	toMergeCompatible = () => {

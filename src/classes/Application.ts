@@ -1,6 +1,7 @@
 import { threeDViewer } from "@/utils/htmlElements";
 import {
 	AmbientLight,
+	type BufferGeometry,
 	DirectionalLight,
 	DirectionalLightHelper,
 	GridHelper,
@@ -8,11 +9,16 @@ import {
 	MeshBasicMaterial,
 	type Object3D,
 	PerspectiveCamera,
+	RingGeometry,
 	Scene,
 	WebGLRenderer,
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { FontLoader, TextGeometry } from "three/examples/jsm/Addons.js";
+import {
+	BufferGeometryUtils,
+	FontLoader,
+	TextGeometry,
+} from "three/examples/jsm/Addons.js";
 
 export class Application {
 	#provelPrintView: HTMLElement | null = document.getElementById("provelPrint");
@@ -85,6 +91,25 @@ export class Application {
 
 		window.addEventListener("resize", this.#onWindowResize);
 	}
+
+	collectAllGeometries = () => {
+		const geometries: BufferGeometry[] = [];
+
+		this.scene.traverse((object) => {
+			if (
+				object instanceof Mesh &&
+				!(object.geometry instanceof TextGeometry) &&
+				!(object.geometry instanceof RingGeometry)
+			) {
+				const cloned = object.geometry.clone();
+				// Ensure all geometries are non-indexed for merging
+				const nonIndexed = cloned.index ? cloned.toNonIndexed() : cloned;
+				geometries.push(nonIndexed);
+			}
+		});
+
+		return BufferGeometryUtils.mergeGeometries(geometries, false);
+	};
 
 	resetCameraPosition = () => {
 		this.camera.position.set(0, 100, -200);

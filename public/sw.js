@@ -20,11 +20,11 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", async (event) => {
-	// Claim clients immediately so the service worker starts controlling them
 	await self.clients.claim();
-	// Delete old caches if there is a new cache version
+
 	const cacheWhitelist = [cacheName];
 	const cacheNames = await caches.keys();
+
 	await Promise.all(
 		cacheNames.map(async (cacheName) => {
 			if (!cacheWhitelist.includes(cacheName)) {
@@ -35,8 +35,6 @@ self.addEventListener("activate", async (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-	console.log("Fetch event for ", event.request.url);
-
 	event.respondWith(
 		(async () => {
 			const cachedResponse = await caches.match(event.request);
