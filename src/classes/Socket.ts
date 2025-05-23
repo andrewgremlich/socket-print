@@ -6,6 +6,7 @@ import {
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
+import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
 import type { RawPoint } from "@/3d/blendHardEdges";
@@ -17,7 +18,6 @@ import {
 	depthTranslate,
 	horizontalTranslate,
 	loadingScreen,
-	mergeMeshes,
 	sagittalRotate,
 	stlFileInput,
 	transversalRotater,
@@ -25,6 +25,7 @@ import {
 } from "@/utils/htmlElements";
 
 import { AppObject } from "./AppObject";
+import type { Ring } from "./Ring";
 
 type SocketCallback = (params: {
 	mesh: Mesh;
@@ -32,13 +33,15 @@ type SocketCallback = (params: {
 	boundingBox: Box3;
 }) => void;
 
+type SocketProps = { socketCallback: SocketCallback; ring: Ring };
+
 export class Socket extends AppObject {
 	adjustmentHeightForCup = 0;
 	setPosition: RawPoint | null = null;
 	socketCallback: SocketCallback;
 	lockDepth: number | null = null;
 
-	constructor({ socketCallback }: { socketCallback: SocketCallback }) {
+	constructor({ socketCallback, ring }: SocketProps) {
 		super();
 
 		this.socketCallback = socketCallback;
@@ -51,10 +54,24 @@ export class Socket extends AppObject {
 		coronalRotater?.addEventListener("click", this.coronalRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
 		transversalRotater?.addEventListener("click", this.transversalRotater90);
-		verticalTranslate?.addEventListener("input", this.verticalChange);
-		horizontalTranslate?.addEventListener("input", this.horizontalChange);
-		depthTranslate?.addEventListener("input", this.depthChange);
+		verticalTranslate?.addEventListener("input", (evt) => {
+			this.verticalChange(evt);
+			// console.log(this.hasIntersection(ring));
+		});
+		horizontalTranslate?.addEventListener("input", (evt) => {
+			this.horizontalChange(evt);
+		});
+		depthTranslate?.addEventListener("input", (evt) => {
+			this.depthChange(evt);
+		});
 	}
+
+	hasIntersection = (ring: Ring): boolean => {
+		return this.mesh.geometry.boundsTree.intersectsGeometry(
+			this.mesh.geometry,
+			ring.mesh.matrixWorld,
+		);
+	};
 
 	#onStlFileChange = async ({ target: inputFiles }: Event) => {
 		const file = (inputFiles as HTMLInputElement).files?.[0];
@@ -81,8 +98,13 @@ export class Socket extends AppObject {
 				side: DoubleSide,
 			});
 			const mesh = new Mesh(rawGeometry, material);
+			const bvh = new MeshBVH(mesh.geometry);
 
 			this.mesh = mesh;
+			this.mesh.raycast = acceleratedRaycast;
+
+			this.mesh.geometry.boundsTree = bvh;
+
 			this.mesh.name = file.name;
 			this.computeBoundingBox();
 			activeFileName.textContent = file.name;
@@ -107,7 +129,7 @@ export class Socket extends AppObject {
 			};
 
 			this.socketCallback({
-				mesh,
+				mesh: this.mesh,
 				maxDimension: max(this.size.x, this.size.y, this.size.z),
 				boundingBox: this.boundingBox,
 			});

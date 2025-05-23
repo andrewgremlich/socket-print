@@ -4,9 +4,6 @@ import "@/web-components";
 import "@/utils/events";
 import "@/utils/updater";
 
-import { Application } from "@/classes/Application";
-import { MergeCup } from "@/classes/MergeCup";
-import { Socket } from "@/classes/Socket";
 import { ceil } from "mathjs";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
@@ -15,6 +12,10 @@ import { calculatePrintTime } from "@/3d/calculatePrintTime";
 import { generateGCode, writeGCodeFile } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
+import { Application } from "@/classes/Application";
+import { MergeCup } from "@/classes/MergeCup";
+import { Ring } from "@/classes/Ring";
+import { Socket } from "@/classes/Socket";
 import {
 	activeFileName,
 	clearModelButton,
@@ -29,7 +30,6 @@ import {
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
-import { Ring } from "./classes/Ring";
 
 if (!window.Worker) {
 	throw new Error("Web Worker not supported");
@@ -41,6 +41,7 @@ const ring = new Ring();
 app.addToScene(ring.mesh);
 
 const socket = new Socket({
+	ring,
 	socketCallback: ({ mesh, maxDimension }) => {
 		app.camera.position.set(0, 200, -maxDimension);
 		app.controls.target.set(0, 100, 0);

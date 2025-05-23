@@ -1,4 +1,6 @@
 import { DoubleSide, Mesh, MeshStandardMaterial, RingGeometry } from "three";
+import { MeshBVH, acceleratedRaycast, computeBoundsTree } from "three-mesh-bvh";
+
 import { AppObject } from "./AppObject";
 
 export class Ring extends AppObject {
@@ -21,8 +23,13 @@ export class Ring extends AppObject {
 			this.#innerRadius + this.#thickness, // outer radius
 			this.#radialSegments,
 		);
+		const mesh = new Mesh(geometry, material);
+		const bvh = new MeshBVH(mesh.geometry);
 
-		this.mesh = new Mesh(geometry, material);
+		this.mesh = mesh;
+		this.mesh.raycast = acceleratedRaycast;
+		this.mesh.name = "ring";
+		this.mesh.geometry.boundsTree = bvh;
 		this.mesh.position.set(0, 0, 0);
 		this.mesh.rotation.x = Math.PI / 2;
 
