@@ -109,6 +109,9 @@ vi.mock("@/utils/htmlElements", () => ({
 	depthTranslate: {
 		addEventListener: vi.fn(),
 	},
+	addTestStlButton: {
+		addEventListener: vi.fn(),
+	},
 }));
 
 describe("Socket", () => {
