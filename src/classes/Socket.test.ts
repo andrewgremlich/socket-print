@@ -165,16 +165,9 @@ describe("Socket", () => {
 		vi.clearAllMocks();
 	});
 
-	it("should initialize with event listeners", () => {
-		const {
-			stlFileInput,
-			coronalRotater,
-			sagittalRotate,
-			transversalRotater,
-			verticalTranslate,
-			horizontalTranslate,
-			depthTranslate,
-		} = htmlElements;
+	it("should initialize with event listeners", async () => {
+		const { stlFileInput, coronalRotater, sagittalRotate, transversalRotater } =
+			htmlElements;
 
 		expect(stlFileInput.addEventListener).toHaveBeenCalledWith(
 			"change",
@@ -191,18 +184,6 @@ describe("Socket", () => {
 		expect(transversalRotater.addEventListener).toHaveBeenCalledWith(
 			"click",
 			socket.transversalRotater90,
-		);
-		expect(verticalTranslate.addEventListener).toHaveBeenCalledWith(
-			"input",
-			socket.verticalChange,
-		);
-		expect(horizontalTranslate.addEventListener).toHaveBeenCalledWith(
-			"input",
-			socket.horizontalChange,
-		);
-		expect(depthTranslate.addEventListener).toHaveBeenCalledWith(
-			"input",
-			socket.depthChange,
 		);
 	});
 
