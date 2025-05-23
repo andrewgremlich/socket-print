@@ -33,7 +33,7 @@ type SocketCallback = (params: {
 	boundingBox: Box3;
 }) => void;
 
-type SocketProps = { socketCallback: SocketCallback; ring: Ring };
+type SocketProps = { socketCallback: SocketCallback; ring?: Ring };
 
 export class Socket extends AppObject {
 	adjustmentHeightForCup = 0;
