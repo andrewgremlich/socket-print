@@ -14,6 +14,7 @@ import { ensureUV } from "@/3d/ensureUV";
 import { getLockDepth } from "@/db/appSettings";
 import {
 	activeFileName,
+	addTestStlButton,
 	coronalRotater,
 	depthTranslate,
 	horizontalTranslate,
@@ -50,6 +51,20 @@ export class Socket extends AppObject {
 			throw new Error("STL File Input not found");
 		}
 
+		addTestStlButton?.addEventListener("click", async () => {
+			const response = await fetch("/test_stl_file.stl");
+			const arrayBuffer = await response.arrayBuffer();
+			const file = new File([arrayBuffer], "test_stl_file.stl", {
+				type: "model/stl",
+			});
+
+			const dataTransfer = new DataTransfer();
+			dataTransfer.items.add(file);
+			stlFileInput.files = dataTransfer.files;
+
+			const changeEvent = new Event("change", { bubbles: true });
+			stlFileInput.dispatchEvent(changeEvent);
+		});
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
 		coronalRotater?.addEventListener("click", this.coronalRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);

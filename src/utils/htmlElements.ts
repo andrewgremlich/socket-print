@@ -2,6 +2,9 @@ import type { MaterialProfileForm } from "@/web-components/MaterialProfileForm";
 
 export const loadingScreen = document.getElementById("loading");
 
+export const addTestStlButton = document.getElementById(
+	"addTestStlButton",
+) as HTMLButtonElement;
 export const stlFileInput = document.getElementById(
 	"stlFileInput",
 ) as HTMLInputElement;

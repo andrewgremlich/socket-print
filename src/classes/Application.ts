@@ -115,7 +115,9 @@ export class Application {
 		this.camera.position.set(0, 100, -200);
 	};
 
-	addToScene = (object: Object3D) => this.scene.add(object);
+	addToScene = (object: Object3D) => {
+		this.scene.add(object);
+	};
 
 	removeMeshFromScene = (mesh: Mesh) => this.scene.remove(mesh);
 
