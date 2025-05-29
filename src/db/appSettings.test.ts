@@ -11,11 +11,9 @@ import {
 import {
 	getAppSettings,
 	getCupSize,
-	getDebugMode,
 	getLockPosition,
 	saveCupSize,
 	saveLockPosition,
-	toggleDebugMode,
 } from "../db/appSettings";
 import { getDb } from "../db/getDb";
 import type { Entities } from "../db/types";
@@ -70,7 +68,6 @@ describe("App Settings", () => {
 			{ id: 1, name: "ipAddress", value: "192.168.1.100" },
 			{ id: 2, name: "lockPosition", value: "right" },
 			{ id: 3, name: "cupSize", value: "93x25" },
-			{ id: 4, name: "debug", value: true },
 		];
 
 		mockDb.appSettings.toArray.mockResolvedValue(mockSettings);
@@ -134,35 +131,5 @@ describe("App Settings", () => {
 		expect(mockDb.appSettings.where).toHaveBeenCalledWith("name");
 		expect(mockWhere.equals).toHaveBeenCalledWith("cupSize");
 		expect(mockModify.modify).toHaveBeenCalledWith({ value: newCupSize });
-	});
-
-	it("should get the debug mode setting", async () => {
-		const mockDebugMode = { id: 4, name: "debug", value: true };
-
-		mockFirst.first.mockResolvedValue(mockDebugMode);
-
-		const debugMode = await getDebugMode();
-
-		expect(getDb).toHaveBeenCalledTimes(1);
-		expect(mockDb.appSettings.where).toHaveBeenCalledWith("name");
-		expect(mockWhere.equals).toHaveBeenCalledWith("debug");
-		expect(mockFirst.first).toHaveBeenCalledTimes(1);
-		expect(debugMode).toEqual(true);
-	});
-
-	it("should toggle the debug mode setting", async () => {
-		const mockDebugMode = { id: 4, name: "debug", value: true };
-
-		mockFirst.first.mockResolvedValue(mockDebugMode);
-		mockModify.modify.mockResolvedValue(1); // Number of records modified
-
-		const newDebugMode = await toggleDebugMode();
-
-		expect(getDb).toHaveBeenCalledTimes(1);
-		expect(mockDb.appSettings.where).toHaveBeenCalledWith("name");
-		expect(mockWhere.equals).toHaveBeenCalledWith("debug");
-		expect(mockFirst.first).toHaveBeenCalledTimes(1);
-		expect(mockModify.modify).toHaveBeenCalledWith({ value: false });
-		expect(newDebugMode).toEqual(false);
 	});
 });

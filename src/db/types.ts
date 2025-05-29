@@ -30,5 +30,4 @@ export interface ProvelPrintSettings {
 	layerHeight: number;
 	activeMaterialProfile: string;
 	circularSegments: number;
-	debug: boolean;
 }

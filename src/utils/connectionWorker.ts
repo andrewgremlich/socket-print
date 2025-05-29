@@ -11,25 +11,14 @@ import {
 
 self.onmessage = async () => {
 	const printerConnection = async () => {
-		console.log("Printer connection check");
-
 		const storedIpAddress = await getIpAddress();
 		const ipAddress = ipAddressInput.value || storedIpAddress;
 		const isValid =
 			isIP(ipAddress) || isFQDN(ipAddress) || ipAddress.includes("localhost");
 
-		console.log("IP address", ipAddress, "is valid", isValid);
-
 		if (isValid) {
 			try {
-				// await setPrinterIp(ipAddress); // Uncomment this line if you want to set the IP address in Deno
-
-				console.log("Connecting to printer at", ipAddress);
 				const { sessionTimeout } = await connectToPrinter(ipAddress);
-				console.log(sessionTimeout);
-
-				console.info("Printer connected");
-				console.log("Session timeout:", sessionTimeout);
 
 				ipAddressFailure.classList.toggle("hide");
 				ipAddressSuccess.classList.toggle("hide");

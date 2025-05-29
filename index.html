@@ -41,6 +41,8 @@
           <input class="menuBarDropdownButton" type="button" value="Clear model" id="clearModelButton" />
 
           <input class="menuBarDropdownButton" type="button" value="Add Test STL" id="addTestStlButton" />
+
+          <input class="menuBarDropdownButton" type="button" value="Add Test Cylinder" id="addTestCylinderButton" />
         </div>
       </div>
 
@@ -205,11 +207,7 @@
 
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      }).catch((error) => {
-        console.error('Service Worker registration failed:', error);
-      });
+      navigator.serviceWorker.register('/sw.js')
     }
   </script>
 </body>

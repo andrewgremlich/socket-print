@@ -2,7 +2,7 @@ import { appForm, restoreDefaultsButton } from "@/utils/htmlElements";
 
 import { setAllAppSettings } from "./appSettings";
 import { appendMaterialProfiles } from "./appendMaterialProfiles";
-import { makeMaterialProfileDefaults, settingsDefaults } from "./checkDb";
+import { makeMaterialProfileDefaults, settingsDefaults } from "./dbDefaults";
 import {
 	loadActiveMaterialProfile,
 	loadMainDataForm,
@@ -18,7 +18,6 @@ const defaultSettingNames: ProvelPrintSettings = {
 	activeMaterialProfile: "cp1",
 	lockDepth: 13,
 	circularSegments: 128,
-	debug: true,
 };
 
 const materialProfileDefaults: Omit<MaterialProfile, "id"> = {

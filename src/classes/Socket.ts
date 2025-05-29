@@ -69,10 +69,9 @@ export class Socket extends AppObject {
 		coronalRotater?.addEventListener("click", this.coronalRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
 		transversalRotater?.addEventListener("click", this.transversalRotater90);
-		verticalTranslate?.addEventListener("input", (evt) => {
-			this.verticalChange(evt);
-			// console.log(this.hasIntersection(ring));
-		});
+		verticalTranslate?.addEventListener("input", (evt) =>
+			this.verticalChange(evt),
+		);
 		horizontalTranslate?.addEventListener("input", (evt) => {
 			this.horizontalChange(evt);
 		});

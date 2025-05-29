@@ -22,15 +22,12 @@
 		"test": "vitest run src/ --config ./vite.config.ts",
 		"test:watch": "vitest src/ --config ./vite.config.ts",
 		"test:coverage": "vitest run --coverage src/",
-		"type-check": "tsc --noEmit",
-		"check": "biome check --write ./src",
+		"check": "tsc --noEmit && biome check --write ./src",
 		"clean": "rimraf ./dist ./.vite ./out ./dev-dist",
 		"tauri": "tauri"
 	},
 	"lint-staged": {
-		"*.{js,ts,tsx}": [
-			"npm run check"
-		]
+		"*.{js,ts,tsx}": ["npm run check"]
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",

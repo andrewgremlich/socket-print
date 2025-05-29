@@ -153,24 +153,3 @@ export const getCircularSegments = async () => {
 
 	return Number(circularSegments.value);
 };
-
-export const getDebugMode = async () => {
-	const db = await getDb();
-	const debugMode = await db.appSettings.where("name").equals("debug").first();
-
-	return debugMode.value as boolean;
-};
-
-export const toggleDebugMode = async () => {
-	const db = await getDb();
-	const debugMode = await db.appSettings.where("name").equals("debug").first();
-
-	const newDebugMode = !debugMode.value;
-
-	await db.appSettings
-		.where("name")
-		.equals("debug")
-		.modify({ value: newDebugMode });
-
-	return newDebugMode;
-};
