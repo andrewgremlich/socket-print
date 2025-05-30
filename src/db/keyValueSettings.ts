@@ -1,12 +1,18 @@
 import { getDb } from "./getDb";
-import type { ProvelPrintSettings } from "./types";
+import type {
+	DefaultKeyValueCollectionNames,
+	DefaultKeyValueCollectionValues,
+} from "./types";
 
-export const getAppSettings = async () => {
+export const getFormKeyValues = async () => {
 	const db = await getDb();
-	return await db.appSettings.toArray();
+	return await db.formValues.toArray();
 };
 
-export const setAllAppSettings = async (settings: ProvelPrintSettings) => {
+export const resetAllDefaultKeyValues = async (
+	collection: DefaultKeyValueCollectionNames,
+	settings: DefaultKeyValueCollectionValues,
+) => {
 	const db = await getDb();
 
 	const settingsArray = Object.entries(settings).map(([name, value]) => ({
@@ -15,7 +21,7 @@ export const setAllAppSettings = async (settings: ProvelPrintSettings) => {
 	}));
 
 	for (const setting of settingsArray) {
-		await db.appSettings
+		await db[collection]
 			.where("name")
 			.equals(setting.name)
 			.modify({ value: setting.value });
@@ -24,7 +30,7 @@ export const setAllAppSettings = async (settings: ProvelPrintSettings) => {
 
 export const getIpAddress = async () => {
 	const db = await getDb();
-	const ipAddress = await db.appSettings
+	const ipAddress = await db.formValues
 		.where("name")
 		.equals("ipAddress")
 		.first();
@@ -36,7 +42,7 @@ export const getIpAddress = async () => {
 export const saveIpAddress = async (ipAddress: string) => {
 	const db = await getDb();
 
-	return await db.appSettings
+	return await db.formValues
 		.where("name")
 		.equals("ipAddress")
 		.modify({ value: ipAddress });
@@ -44,13 +50,13 @@ export const saveIpAddress = async (ipAddress: string) => {
 
 export const getLockPosition = async () => {
 	const db = await getDb();
-	return await db.appSettings.where("name").equals("lockPosition").first();
+	return await db.formValues.where("name").equals("lockPosition").first();
 };
 
 export const saveLockPosition = async (lockPosition: string) => {
 	const db = await getDb();
 
-	return await db.appSettings
+	return await db.formValues
 		.where("name")
 		.equals("lockPosition")
 		.modify({ value: lockPosition });
@@ -58,7 +64,7 @@ export const saveLockPosition = async (lockPosition: string) => {
 
 export const getCupSize = async () => {
 	const db = await getDb();
-	const cupSize = await db.appSettings.where("name").equals("cupSize").first();
+	const cupSize = await db.formValues.where("name").equals("cupSize").first();
 	return cupSize.value as string;
 };
 
@@ -72,7 +78,7 @@ export const getCupSizeHeight = async () => {
 export const saveCupSize = async (cupSize: string) => {
 	const db = await getDb();
 
-	return await db.appSettings
+	return await db.formValues
 		.where("name")
 		.equals("cupSize")
 		.modify({ value: cupSize });
@@ -80,7 +86,7 @@ export const saveCupSize = async (cupSize: string) => {
 
 export const getNozzleSize = async () => {
 	const db = await getDb();
-	const nozzleSize = await db.appSettings
+	const nozzleSize = await db.formValues
 		.where("name")
 		.equals("nozzleSize")
 		.first();
@@ -90,7 +96,7 @@ export const getNozzleSize = async () => {
 export const saveNozzleSize = async (nozzleSize: number) => {
 	const db = await getDb();
 
-	return await db.appSettings
+	return await db.formValues
 		.where("name")
 		.equals("nozzleSize")
 		.modify({ value: nozzleSize });
@@ -98,7 +104,7 @@ export const saveNozzleSize = async (nozzleSize: number) => {
 
 export const getLayerHeight = async () => {
 	const db = await getDb();
-	const layerHeight = await db.appSettings
+	const layerHeight = await db.formValues
 		.where("name")
 		.equals("layerHeight")
 		.first();
@@ -109,7 +115,7 @@ export const getLayerHeight = async () => {
 export const saveLayerHeight = async (layerHeight: number) => {
 	const db = await getDb();
 
-	return await db.appSettings
+	return await db.formValues
 		.where("name")
 		.equals("layerHeight")
 		.modify({ value: layerHeight });
@@ -117,7 +123,7 @@ export const saveLayerHeight = async (layerHeight: number) => {
 
 export const getActiveMaterialProfile = async () => {
 	const db = await getDb();
-	const activeMaterialProfile = await db.appSettings
+	const activeMaterialProfile = await db.formValues
 		.where("name")
 		.equals("activeMaterialProfile")
 		.first();
@@ -129,7 +135,7 @@ export const saveActiveMaterialProfile = async (
 ) => {
 	const db = await getDb();
 
-	return await db.appSettings
+	return await db.formValues
 		.where("name")
 		.equals("activeMaterialProfile")
 		.modify({ value: activeMaterialProfile });

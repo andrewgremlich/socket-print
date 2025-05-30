@@ -1,4 +1,4 @@
-import { getIpAddress } from "@/db/appSettings";
+import { getIpAddress } from "@/db/keyValueSettings";
 import crc32 from "crc-32";
 
 type UploadResponse = {

@@ -1,6 +1,6 @@
 import type { EntityTable } from "dexie";
 
-export type AppSettings = {
+type KeyValueSetting = {
 	id: number;
 	name: string;
 	value: string | number | boolean;
@@ -16,18 +16,39 @@ export type MaterialProfile = {
 	feedrate: number;
 };
 
-export type Entities = {
-	appSettings: EntityTable<AppSettings, "id">;
-	materialProfiles: EntityTable<MaterialProfile, "id">;
-};
-
-export interface ProvelPrintSettings {
+export type FormValues = {
 	ipAddress: string;
 	lockPosition: "left" | "right";
 	cupSize: string;
 	nozzleSize: number;
-	lockDepth: number;
 	layerHeight: number;
 	activeMaterialProfile: string;
+};
+
+export type ProvelPrintSettings = {
+	lockDepth: number;
 	circularSegments: number;
+};
+
+export type Entities = {
+	formValues: EntityTable<KeyValueSetting, "id">;
+	appSettings: EntityTable<KeyValueSetting, "id">;
+	materialProfiles: EntityTable<MaterialProfile, "id">;
+};
+
+// Create an enum from the keys
+export enum EntityEnum {
+	formValues = "formValues",
+	appSettings = "appSettings",
+	materialProfiles = "materialProfiles",
 }
+
+export type DefaultKeyValueCollectionNames = Exclude<
+	keyof Entities,
+	"materialProfiles"
+>;
+
+export type DefaultKeyValueCollectionValues = Record<
+	string,
+	string | number | boolean
+>;

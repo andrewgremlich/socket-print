@@ -1,8 +1,8 @@
 import hotkeys from "hotkeys-js";
 
 import { connectToPrinter } from "@/3d/sendGCodeFile";
-import { getIpAddress, saveActiveMaterialProfile } from "@/db/appSettings";
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
+import { getIpAddress, saveActiveMaterialProfile } from "@/db/keyValueSettings";
 import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
 import {
 	deleteActiveMaterialProfile,

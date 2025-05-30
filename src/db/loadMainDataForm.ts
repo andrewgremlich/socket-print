@@ -1,8 +1,8 @@
-import { getAppSettings } from "./appSettings";
+import { getFormKeyValues } from "./keyValueSettings";
 import { getActiveMaterialProfile } from "./materialProfiles";
 
 export async function loadMainDataForm() {
-	const appSettings = await getAppSettings();
+	const appSettings = await getFormKeyValues();
 
 	for (const { name, value } of Object.values(appSettings)) {
 		const input = document.querySelector(

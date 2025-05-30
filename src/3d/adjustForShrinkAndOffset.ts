@@ -1,6 +1,6 @@
 import { atan2, cos, sin, sqrt } from "mathjs";
 
-import { getNozzleSize } from "@/db/appSettings";
+import { getNozzleSize } from "@/db/keyValueSettings";
 import { getActiveMaterialProfile } from "@/db/materialProfiles";
 
 import type { RawPoint } from "./blendHardEdges";

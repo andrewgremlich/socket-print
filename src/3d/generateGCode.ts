@@ -6,7 +6,7 @@ import {
 	getCupSize,
 	getCupSizeHeight,
 	getNozzleSize,
-} from "@/db/appSettings";
+} from "@/db/keyValueSettings";
 import {
 	getActiveMaterialProfileFeedrate,
 	getActiveMaterialProfileNozzleTemp,

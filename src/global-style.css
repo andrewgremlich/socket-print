@@ -213,7 +213,7 @@ select {
 	/* scrollbar-width: none; */
 	position: relative;
 
-	& #customizations,
+	& #appForm,
 	& #printActions,
 	& #materialProfileDisplay {
 		display: grid;

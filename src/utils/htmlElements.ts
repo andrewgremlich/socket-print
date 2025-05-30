@@ -98,9 +98,7 @@ export const clearModelButton = document.getElementById(
 	"clearModelButton",
 ) as HTMLButtonElement;
 
-export const appForm = document.getElementById(
-	"customizations",
-) as HTMLFormElement;
+export const appForm = document.getElementById("appForm") as HTMLFormElement;
 
 export const materialProfileForm = document.querySelector(
 	"material-profile-form",

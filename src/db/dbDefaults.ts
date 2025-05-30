@@ -1,32 +1,21 @@
 import { getDb } from "./getDb";
-import type { MaterialProfile, ProvelPrintSettings } from "./types";
+import type {
+	DefaultKeyValueCollectionNames,
+	DefaultKeyValueCollectionValues,
+	Entities,
+	MaterialProfile,
+} from "./types";
 
-export async function settingsDefaults(
-	defaultSettingNames: ProvelPrintSettings,
-) {
-	const db = await getDb();
-	const settings = await db.appSettings.toArray();
+const materialProfileDefaults: Omit<MaterialProfile, "id"> = {
+	name: "cp1",
+	nozzleTemp: 200,
+	cupTemp: 130,
+	shrinkFactor: 2.6,
+	outputFactor: 1.0,
+	feedrate: 2250,
+};
 
-	const missingSettings = Object.keys(defaultSettingNames).filter(
-		(defaultSettingName) =>
-			!settings.some((setting) => setting.name === defaultSettingName),
-	);
-
-	if (missingSettings.length) {
-		await Promise.all(
-			missingSettings.map((name) =>
-				db.appSettings.add({
-					name,
-					value: defaultSettingNames[name as keyof ProvelPrintSettings],
-				}),
-			),
-		);
-	}
-}
-
-export async function makeMaterialProfileDefaults(
-	materialProfileDefaults: Omit<MaterialProfile, "id">,
-) {
+export async function makeMaterialProfileDefaults() {
 	const db = await getDb();
 	const defaultProfile = await db.materialProfiles
 		.where("name")
@@ -51,5 +40,28 @@ export async function makeMaterialProfileDefaults(
 
 	if (!defaultProfile) {
 		await db.materialProfiles.add(materialProfileDefaults);
+	}
+}
+
+export async function makeDefaultsKeyValues(
+	collection: DefaultKeyValueCollectionNames,
+	defaultValues: DefaultKeyValueCollectionValues,
+) {
+	const db = await getDb();
+	const dbCollection = await db[collection].toArray();
+
+	const missingKeys = Object.keys(defaultValues).filter(
+		(key) => !dbCollection.some((item) => item.name === key),
+	);
+
+	if (missingKeys.length) {
+		await Promise.all(
+			missingKeys.map((name) =>
+				db[collection].add({
+					name,
+					value: defaultValues[name],
+				}),
+			),
+		);
 	}
 }

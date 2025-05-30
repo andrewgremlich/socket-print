@@ -18,7 +18,7 @@ import {
 	getCircularSegments,
 	getCupSizeHeight,
 	getLayerHeight,
-} from "../db/appSettings";
+} from "../db/keyValueSettings";
 import { ensureUV } from "./ensureUV";
 
 Mesh.prototype.raycast = acceleratedRaycast;

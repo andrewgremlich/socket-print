@@ -1,7 +1,7 @@
 import { isFQDN, isIP } from "validator";
 
 import { connectToPrinter } from "@/3d/sendGCodeFile";
-import { getIpAddress } from "@/db/appSettings";
+import { getIpAddress } from "@/db/keyValueSettings";
 
 import {
 	ipAddressFailure,

@@ -11,7 +11,7 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 
 import type { RawPoint } from "@/3d/blendHardEdges";
 import { ensureUV } from "@/3d/ensureUV";
-import { getLockDepth } from "@/db/appSettings";
+import { getLockDepth } from "@/db/keyValueSettings";
 import {
 	activeFileName,
 	addTestStlButton,
