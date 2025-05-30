@@ -30,6 +30,12 @@ a {
 
 h1 {
 	margin-right: 50px;
+
+	& a {
+		cursor: pointer;
+		text-decoration: none;
+		color: #fff;
+	}
 }
 
 main {
@@ -173,6 +179,8 @@ select {
 	color: #fff;
 	font-size: 16px;
 	padding: 5px 10px;
+	text-decoration: none;
+	display: block;
 
 	&:hover {
 		text-decoration: underline;
@@ -186,6 +194,17 @@ select {
 
 	& > .fileInput {
 		display: none;
+	}
+}
+
+#helpContent {
+	max-width: 600px;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	margin: 0 auto;
+
+	& p, & h1, & h2, & h3 {
+		margin-bottom: 20px;
 	}
 }
 

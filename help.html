@@ -9,71 +9,79 @@
 </head>
 
 <body>
-  <h1>Help</h1>
+  <nav id="menuBar">
+    <h1><a href="/">ProvelPrint</a></h1>
+  </nav>
 
-  <p>ProvelPrint was designed for printing prosthetic sockets using Provel Print Cups and the Provel E2.20 Extrusion
-    Printer. The user will import a residual limb shape file created by scanning patient anatomy or by casting the
-    residual limb and digitizing with a cast digitizer. The resulting STL file will be imported into a prosthetic limb
-    CAD
-    program for modification. Once the necessary adjustments have been made, the shape is ready to open in ProvelPrint.
-  </p>
+  <div id="helpContent">
+    <h1>Help</h1>
 
-  <h3>File</h3>
-  <p>Allows the user to navigate to and open a file.</p>
+    <p>ProvelPrint was designed for printing prosthetic sockets using Provel Print Cups and the Provel E2.20 Extrusion
+      Printer. The user will import a residual limb shape file created by scanning patient anatomy or by casting the
+      residual limb and digitizing with a cast digitizer. The resulting STL file will be imported into a prosthetic limb
+      CAD
+      program for modification. Once the necessary adjustments have been made, the shape is ready to open in
+      ProvelPrint.
+    </p>
 
-  <h3>Edit</h3>
-  <p>Allows changing material profile values including: Nozzle Temp, Cup Temp, Shrink Factor, and Output Factor.</p>
+    <h3>File</h3>
+    <p>Allows the user to navigate to and open a file.</p>
 
-  <h3>IP Address and Port</h3>
-  <p>Allows the user to enter a port and the printer IP address to establish connection with the printer. Indicates
-    whether
-    the port is open or closed.</p>
+    <h3>Edit</h3>
+    <p>Allows changing material profile values including: Nozzle Temp, Cup Temp, Shrink Factor, and Output Factor.</p>
 
-  <h3>Lock</h3>
-  <p>Indicates which side the release button hole in the cup should be on when loading the cup in the cup fixture.</p>
+    <h3>IP Address and Port</h3>
+    <p>Allows the user to enter a port and the printer IP address to establish connection with the printer. Indicates
+      whether
+      the port is open or closed.</p>
 
-  <h3>Cup</h3>
-  <p>Allows selection of the correct cup diameter and height.</p>
+    <h3>Lock</h3>
+    <p>Indicates which side the release button hole in the cup should be on when loading the cup in the cup fixture.</p>
 
-  <h3>Nozzle Size</h3>
-  <p>Generally a 5 mm nozzle will be used to print adult sockets, but a smaller nozzle (4 mm) may be more typical for a
-    juvenile or pediatric socket.</p>
+    <h3>Cup</h3>
+    <p>Allows selection of the correct cup diameter and height.</p>
 
-  <h3>Layer Height</h3>
-  <p>A layer height of 2.0 mm (.080") might be typical. But for abrupt contour changes, a thinner layer height will
-    allow
-    greater overlap and commensurate improvements in layer to layer adhesion. Thicker layer heights will usually print
-    faster.</p>
+    <h3>Nozzle Size</h3>
+    <p>Generally a 5 mm nozzle will be used to print adult sockets, but a smaller nozzle (4 mm) may be more typical for
+      a
+      juvenile or pediatric socket.</p>
 
-  <h3>Material</h3>
-  <p>CP1 is the same polypropylene copolymer used to injection mold Provel Print Cups. This provides best adhesion
-    between
-    the cup and the socket. There is a long history in the industry of using polypropylene copolymer for thermoplastic
-    sockets.</p>
+    <h3>Layer Height</h3>
+    <p>A layer height of 2.0 mm (.080") might be typical. But for abrupt contour changes, a thinner layer height will
+      allow
+      greater overlap and commensurate improvements in layer to layer adhesion. Thicker layer heights will usually print
+      faster.</p>
 
-  <h3>Shrink Factor</h3>
-  <p>Corrects for normal shrinkage during cooling. Can be edited in Material Profiles.</p>
+    <h3>Material</h3>
+    <p>CP1 is the same polypropylene copolymer used to injection mold Provel Print Cups. This provides best adhesion
+      between
+      the cup and the socket. There is a long history in the industry of using polypropylene copolymer for thermoplastic
+      sockets.</p>
 
-  <h3>Output Factor</h3>
-  <p>This allows user correction for minor over or under extrusion while printing.</p>
+    <h3>Shrink Factor</h3>
+    <p>Corrects for normal shrinkage during cooling. Can be edited in Material Profiles.</p>
 
-  <h3>Print Time</h3>
-  <p>Shows estimated print time.</p>
+    <h3>Output Factor</h3>
+    <p>This allows user correction for minor over or under extrusion while printing.</p>
 
-  <h3>Conform End</h3>
-  <p>Blends the distal end of the socket shape to the groove in the top of the chosen cup size.</p>
+    <h3>Print Time</h3>
+    <p>Shows estimated print time.</p>
 
-  <h3>Generate GCode / Send to Printer</h3>
-  <p>Sends the completed and sliced file to the printer.</p>
+    <h3>Conform End</h3>
+    <p>Blends the distal end of the socket shape to the groove in the top of the chosen cup size.</p>
 
-  <h3>Generate GCode / Send to Folder</h3>
-  <p>Sends the completed and sliced file to designated folder.</p>
+    <h3>Generate GCode / Send to Printer</h3>
+    <p>Sends the completed and sliced file to the printer.</p>
 
-  <h3>Rotate</h3>
-  <p>Allows correct orientation of the socket.</p>
+    <h3>Generate GCode / Send to Folder</h3>
+    <p>Sends the completed and sliced file to designated folder.</p>
 
-  <h3>Vertical</h3>
-  <p>Allows the socket to be moved vertically.</p>
+    <h3>Rotate</h3>
+    <p>Allows correct orientation of the socket.</p>
+
+    <h3>Vertical</h3>
+    <p>Allows the socket to be moved vertically.</p>
+  </div>
 
   <script type="module" src="./src/help-renderer.ts"></script>
 </body>

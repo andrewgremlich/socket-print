@@ -42,10 +42,8 @@ const initData = async () => {
 await initData();
 
 restoreDefaultsButton.addEventListener("click", async () => {
-	await Promise.all([
-		makeDefaultsKeyValues(EntityEnum.formValues, defaultFormValues),
-		makeDefaultsKeyValues(EntityEnum.appSettings, defaultSettingNames),
-	]);
+	console.log("Restoring defaults...");
+	await makeDefaultsKeyValues(EntityEnum.formValues, defaultFormValues, true);
 	await initData();
 });
 

@@ -46,6 +46,7 @@ export async function makeMaterialProfileDefaults() {
 export async function makeDefaultsKeyValues(
 	collection: DefaultKeyValueCollectionNames,
 	defaultValues: DefaultKeyValueCollectionValues,
+	forceUpdate = false,
 ) {
 	const db = await getDb();
 	const dbCollection = await db[collection].toArray();
@@ -54,7 +55,11 @@ export async function makeDefaultsKeyValues(
 		(key) => !dbCollection.some((item) => item.name === key),
 	);
 
-	if (missingKeys.length) {
+	if (missingKeys.length || forceUpdate) {
+		if (forceUpdate) {
+			await db[collection].clear();
+		}
+
 		await Promise.all(
 			missingKeys.map((name) =>
 				db[collection].add({

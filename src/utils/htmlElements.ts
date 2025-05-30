@@ -5,9 +5,6 @@ export const loadingScreen = document.getElementById("loading");
 export const addTestStlButton = document.getElementById(
 	"addTestStlButton",
 ) as HTMLButtonElement;
-export const addTestCylinderButton = document.getElementById(
-	"addTestCylinderButton",
-) as HTMLButtonElement;
 export const stlFileInput = document.getElementById(
 	"stlFileInput",
 ) as HTMLInputElement;
