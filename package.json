@@ -59,7 +59,7 @@
 		"@tauri-apps/plugin-updater": "^2.7.1",
 		"crc-32": "^1.2.2",
 		"dexie": "^4.0.11",
-		"hotkeys-js": "^3.13.9",
+		"hotkeys-js": "^3.13.10",
 		"mathjs": "^14.4.0",
 		"p-throttle": "^7.0.0",
 		"three": "^0.176.0",
