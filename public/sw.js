@@ -1,5 +1,5 @@
 // NOTE: This only works in HTTPS
-const cacheName = "v2";
+const cacheName = "v3";
 
 const addResourcesToCache = async (resources) => {
 	const cache = await caches.open(cacheName);
@@ -15,6 +15,14 @@ self.addEventListener("install", (event) => {
 			"/test_stl_file.stl",
 			"/TF-IschialContainment_20151230164058.stl",
 			"/Crosswalk.stl",
+			"/assets/global-style.css",
+			"/assets/global-style.js",
+			"/assets/index.js",
+			"/assets/index2.js",
+			"/assets/main.js",
+			"/assets/sliceWorker-BMZJ18CQ.js",
+			"/assets/three-mesh-bvh.js",
+			"/assets/three.js",
 		]),
 	);
 });

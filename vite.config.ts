@@ -31,6 +31,19 @@ export default defineConfig({
 				main: resolve(__dirname, "index.html"),
 				help: resolve(__dirname, "help.html"),
 			},
+			output: {
+				entryFileNames: "assets/[name].js",
+				chunkFileNames: "assets/[name].js",
+				assetFileNames: "assets/[name][extname]",
+				manualChunks(id) {
+					if (id.includes("node_modules/three/")) {
+						return "three";
+					}
+					if (id.includes("node_modules/three-mesh-bvh/")) {
+						return "three-mesh-bvh";
+					}
+				},
+			},
 		},
 	},
 	plugins: [tsconfigPaths(), topLevelAwait()],
