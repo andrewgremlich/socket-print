@@ -10,6 +10,7 @@ import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
 import { formContainerStyle } from "./style";
 
 export class MaterialProfileForm extends HTMLElement {
+	dialog: HTMLDialogElement;
 	form: HTMLFormElement;
 	formTitle: HTMLElement;
 	cancelButton: HTMLElement;
@@ -24,31 +25,36 @@ export class MaterialProfileForm extends HTMLElement {
       <style>
           ${formContainerStyle}
       </style>
-      <h3 id="formTitle"></h3>
-      <form id="materialForm">
-          <label for="materialProfileName">Material Profile Name</label>
-          <input type="text" id="materialProfileName" name="materialProfileName" required />
-          
-          <label for="nozzleTemp">Nozzle Temp in C</label>
-          <input type="number" value="200" name="nozzleTemp" id="nozzleTemp" required />
-          
-          <label for="cupTemp">Cup Temp in C</label>
-          <input type="number" value="130" name="cupTemp" id="cupTemp" required />
-          
-          <label for="shrinkFactor">Shrink Factor %</label>
-          <input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
-          
-          <label for="outputFactor">Output Factor</label>
-          <input type="number" value="1" name="outputFactor" id="outputFactor" required />
+      <dialog id="materialDialog">
+        <h3 id="formTitle"></h3>
+        <form id="materialForm" method="dialog">
+            <label for="materialProfileName">Material Profile Name</label>
+            <input type="text" id="materialProfileName" name="materialProfileName" required />
+            
+            <label for="nozzleTemp">Nozzle Temp in C</label>
+            <input type="number" value="200" name="nozzleTemp" id="nozzleTemp" required />
+            
+            <label for="cupTemp">Cup Temp in C</label>
+            <input type="number" value="130" name="cupTemp" id="cupTemp" required />
+            
+            <label for="shrinkFactor">Shrink Factor %</label>
+            <input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
+            
+            <label for="outputFactor">Output Factor</label>
+            <input type="number" value="1" name="outputFactor" id="outputFactor" required />
 
-          <label for="feedrate">Feedrate (mm/min)</label>
-          <input type="number" value="2000" name="feedrate" id="feedrate" step="25" required />
-          
-          <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
-          <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
-      </form>
+            <label for="feedrate">Feedrate (mm/min)</label>
+            <input type="number" value="2000" name="feedrate" id="feedrate" step="25" required />
+            
+            <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
+            <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
+        </form>
+      </dialog>
     `;
 
+		this.dialog = this.shadowRoot.getElementById(
+			"materialDialog",
+		) as HTMLDialogElement;
 		this.form = this.shadowRoot.getElementById(
 			"materialForm",
 		) as HTMLFormElement;
@@ -56,12 +62,10 @@ export class MaterialProfileForm extends HTMLElement {
 		this.cancelButton = this.shadowRoot.getElementById(
 			"cancelMaterialProfile",
 		) as HTMLElement;
-		this.host = this.shadowRoot.host;
-
-		this.shadowRoot.host.classList.add("hide");
 
 		this.form.addEventListener("submit", (e) => this.saveProfile(e));
 		this.cancelButton.addEventListener("click", () => this.hideForm());
+		this.dialog.addEventListener("close", () => this.hideForm());
 	}
 
 	async showForm(type: "new" | "edit") {
@@ -70,9 +74,7 @@ export class MaterialProfileForm extends HTMLElement {
 
 		if (type === "edit") {
 			const profile = await getActiveMaterialProfile();
-
 			this.editMaterialProfile = profile;
-
 			(
 				this.form.elements.namedItem("materialProfileName") as HTMLInputElement
 			).value = profile.name;
@@ -90,12 +92,12 @@ export class MaterialProfileForm extends HTMLElement {
 			this.form.reset();
 		}
 
-		this.host.classList.remove("hide");
+		if (!this.dialog.open) {
+			this.dialog.showModal();
+		}
 	}
 
 	async saveProfile(event: Event) {
-		event.preventDefault();
-
 		const materialProfileDisplay = new FormData(this.form);
 		const {
 			materialProfileName,
@@ -126,21 +128,14 @@ export class MaterialProfileForm extends HTMLElement {
 
 		await appendMaterialProfiles();
 		await loadActiveMaterialProfile();
-
-		this.dispatchEvent(
-			new CustomEvent("material-profile-saved", {
-				detail: profile,
-				bubbles: true,
-				composed: true,
-			}),
-		);
-
-		this.hideForm();
 	}
 
 	hideForm() {
 		this.form.reset();
-		this.host.classList.add("hide");
+
+		if (this.dialog.open) {
+			this.dialog.close();
+		}
 	}
 }
 
