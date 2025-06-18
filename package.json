@@ -60,7 +60,7 @@
 		"crc-32": "^1.2.2",
 		"dexie": "^4.0.11",
 		"hotkeys-js": "^3.13.9",
-		"mathjs": "^14.4.0",
+		"mathjs": "^14.5.0",
 		"p-throttle": "^7.0.0",
 		"three": "^0.176.0",
 		"three-mesh-bvh": "^0.9.0",
