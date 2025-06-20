@@ -1,3 +1,4 @@
+import { cos, pi, sin } from "mathjs";
 import {
 	Box3,
 	BufferAttribute,
@@ -11,9 +12,8 @@ import {
 	Vector3,
 	WebGLRenderer,
 } from "three";
-import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
-
+import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 import {
 	getCircularSegments,
 	getCupSizeHeight,
@@ -32,7 +32,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const layerHeight = await getLayerHeight();
 	const segments = await getCircularSegments();
 	const socketHeight = (await getCupSizeHeight()) + 5;
-	const angleIncrement = (Math.PI * 2) / segments;
+	const angleIncrement = (pi * 2) / segments;
 	const scene = new Scene();
 	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
 	const rawgeometry = new BufferGeometry();
@@ -88,13 +88,9 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			data: heightPosition / maxHeight,
 		});
 
-		for (
-			let angle = angleIncrement;
-			angle < Math.PI * 2;
-			angle += angleIncrement
-		) {
-			const xdirection = Math.cos(-angle);
-			const zdirection = Math.sin(-angle);
+		for (let angle = angleIncrement; angle < pi * 2; angle += angleIncrement) {
+			const xdirection = cos(-angle);
+			const zdirection = sin(-angle);
 
 			direction.set(xdirection, 0, zdirection).normalize();
 			ray.origin.set(center.x, heightPosition, center.z);

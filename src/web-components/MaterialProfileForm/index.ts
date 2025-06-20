@@ -1,12 +1,11 @@
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
+import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
 import {
 	addNewMaterialProfile,
 	getActiveMaterialProfile,
 	updateMaterialProfile,
 } from "@/db/materialProfiles";
 import type { MaterialProfile } from "@/db/types";
-
-import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
 import { formContainerStyle } from "./style";
 
 export class MaterialProfileForm extends HTMLElement {
@@ -62,10 +61,20 @@ export class MaterialProfileForm extends HTMLElement {
 		this.cancelButton = this.shadowRoot.getElementById(
 			"cancelMaterialProfile",
 		) as HTMLElement;
+	}
 
-		this.form.addEventListener("submit", (e) => this.saveProfile(e));
+	connectedCallback() {
+		this.form.addEventListener("submit", () => this.saveProfile());
+
 		this.cancelButton.addEventListener("click", () => this.hideForm());
+
 		this.dialog.addEventListener("close", () => this.hideForm());
+
+		this.dialog.addEventListener("click", ({ target, currentTarget }) => {
+			if (target === currentTarget) {
+				this.hideForm();
+			}
+		});
 	}
 
 	async showForm(type: "new" | "edit") {
@@ -97,7 +106,7 @@ export class MaterialProfileForm extends HTMLElement {
 		}
 	}
 
-	async saveProfile(event: Event) {
+	async saveProfile() {
 		const materialProfileDisplay = new FormData(this.form);
 		const {
 			materialProfileName,

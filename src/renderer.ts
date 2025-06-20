@@ -41,7 +41,6 @@ const ring = new Ring();
 app.addToScene(ring.mesh);
 
 const socket = new Socket({
-	ring,
 	socketCallback: ({ mesh, maxDimension }) => {
 		app.camera.position.set(0, 200, -maxDimension);
 		app.controls.target.set(0, 100, 0);

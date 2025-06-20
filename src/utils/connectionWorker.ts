@@ -1,8 +1,7 @@
+import { max } from "mathjs";
 import { isFQDN, isIP } from "validator";
-
 import { connectToPrinter } from "@/3d/sendGCodeFile";
 import { getIpAddress } from "@/db/keyValueSettings";
-
 import {
 	ipAddressFailure,
 	ipAddressInput,
@@ -24,7 +23,7 @@ self.onmessage = async () => {
 				ipAddressSuccess.classList.toggle("hide");
 
 				if (sessionTimeout) {
-					const timeout = Math.max(0, sessionTimeout - 1000);
+					const timeout = max(0, sessionTimeout - 1000);
 					setTimeout(printerConnection, timeout);
 				}
 			} catch (error) {

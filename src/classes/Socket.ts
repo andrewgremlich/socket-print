@@ -6,8 +6,8 @@ import {
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
-import { MeshBVH, acceleratedRaycast } from "three-mesh-bvh";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
+import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import type { RawPoint } from "@/3d/blendHardEdges";
 import { ensureUV } from "@/3d/ensureUV";
@@ -34,7 +34,7 @@ type SocketCallback = (params: {
 	boundingBox: Box3;
 }) => void;
 
-type SocketProps = { socketCallback: SocketCallback; ring?: Ring };
+type SocketProps = { socketCallback: SocketCallback };
 
 export class Socket extends AppObject {
 	adjustmentHeightForCup = 0;
@@ -42,7 +42,7 @@ export class Socket extends AppObject {
 	socketCallback: SocketCallback;
 	lockDepth: number | null = null;
 
-	constructor({ socketCallback, ring }: SocketProps) {
+	constructor({ socketCallback }: SocketProps) {
 		super();
 
 		this.socketCallback = socketCallback;

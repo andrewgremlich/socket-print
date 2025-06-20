@@ -1,4 +1,4 @@
-import { threeDViewer } from "@/utils/htmlElements";
+import { pi } from "mathjs";
 import {
 	AmbientLight,
 	type BufferGeometry,
@@ -19,6 +19,7 @@ import {
 	FontLoader,
 	TextGeometry,
 } from "three/examples/jsm/Addons.js";
+import { threeDViewer } from "@/utils/htmlElements";
 
 export class Application {
 	#provelPrintView: HTMLElement | null = document.getElementById("provelPrint");
@@ -136,8 +137,8 @@ export class Application {
 			);
 
 			textMesh.position.set(0, 0, -100);
-			textMesh.rotation.x = -Math.PI / 2;
-			textMesh.rotation.z = Math.PI;
+			textMesh.rotation.x = -pi / 2;
+			textMesh.rotation.z = pi;
 
 			this.addToScene(textMesh);
 		});

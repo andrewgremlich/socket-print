@@ -1,4 +1,4 @@
-import { sqrt } from "mathjs";
+import { floor, sqrt } from "mathjs";
 import { Vector3 } from "three";
 
 export type RawPoint = { x: number; y: number; z: number };
@@ -33,7 +33,7 @@ export function blendHardEdges(
 ): RawPoint[][] {
 	const allLevels: RawPoint[][] = [...points];
 
-	for (let i = Math.floor((allLevels.length - 1) * 0.5); i > 0; i--) {
+	for (let i = floor((allLevels.length - 1) * 0.5); i > 0; i--) {
 		const currentLevel = allLevels[i];
 		const lowerLevel = allLevels[i - 1];
 

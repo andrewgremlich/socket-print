@@ -1,9 +1,9 @@
+import { pi } from "mathjs";
+import type { Box3, Mesh } from "three";
 import { Vector3 } from "three";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
 import { Socket } from "@/classes/Socket";
 import * as htmlElements from "@/utils/htmlElements";
-import type { Box3, Matrix4, Mesh } from "three";
 
 // Mock AppObject
 vi.mock("@/classes/AppObject", () => {
@@ -193,7 +193,7 @@ describe("Socket", () => {
 	it("should rotate mesh 90 degrees on coronalRotate90", () => {
 		socket.coronalRotate90();
 
-		expect(socket.mesh.rotation.x).toBeCloseTo(Math.PI / 2);
+		expect(socket.mesh.rotation.x).toBeCloseTo(pi / 2);
 		expect(socket.mesh.rotation.y).toBe(0);
 		expect(socket.mesh.rotation.z).toBe(0);
 	});
@@ -203,14 +203,14 @@ describe("Socket", () => {
 
 		expect(socket.mesh.rotation.x).toBe(0);
 		expect(socket.mesh.rotation.y).toBe(0);
-		expect(socket.mesh.rotation.z).toBeCloseTo(Math.PI / 2);
+		expect(socket.mesh.rotation.z).toBeCloseTo(pi / 2);
 	});
 
 	it("should rotate mesh 90 degrees on transversalRotater90", () => {
 		socket.transversalRotater90();
 
 		expect(socket.mesh.rotation.x).toBe(0);
-		expect(socket.mesh.rotation.y).toBeCloseTo(Math.PI / 2);
+		expect(socket.mesh.rotation.y).toBeCloseTo(pi / 2);
 		expect(socket.mesh.rotation.z).toBe(0);
 	});
 

@@ -2,7 +2,6 @@ import { getDb } from "./getDb";
 import type {
 	DefaultKeyValueCollectionNames,
 	DefaultKeyValueCollectionValues,
-	Entities,
 	MaterialProfile,
 } from "./types";
 

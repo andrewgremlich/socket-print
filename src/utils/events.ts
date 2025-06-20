@@ -1,4 +1,6 @@
 import hotkeys from "hotkeys-js";
+import { max } from "mathjs";
+import { isFQDN, isIP } from "validator";
 
 import { connectToPrinter } from "@/3d/sendGCodeFile";
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
@@ -8,10 +10,11 @@ import {
 	deleteActiveMaterialProfile,
 	getMaterialProfiles,
 } from "@/db/materialProfiles";
-import { isFQDN, isIP } from "validator";
 
 import {
+	activateInfoDialog,
 	addMaterialProfile,
+	appInfo,
 	deleteMaterialProfileButton,
 	editActiveMaterialProfile,
 	ipAddressFailure,
@@ -22,7 +25,7 @@ import {
 	menuBarDropdowns,
 } from "./htmlElements";
 
-hotkeys("ctrl+shift+d,ctrl+shift+r", (event, handler) => {
+hotkeys("ctrl+shift+r", (_event, handler) => {
 	switch (handler.key) {
 		case "ctrl+shift+r":
 			location.reload();
@@ -61,16 +64,17 @@ const printerConnection = async () => {
 	const isValid =
 		isIP(ipAddress) || isFQDN(ipAddress) || ipAddress.includes("localhost");
 
+	console.log({ ipAddress, isValid });
+
 	if (isValid) {
 		try {
-			// await setPrinterIp(ipAddress); // Uncomment this line if you want to set the IP address in Deno
 			const { sessionTimeout } = await connectToPrinter(ipAddress);
 
 			ipAddressFailure.classList.toggle("hide");
 			ipAddressSuccess.classList.toggle("hide");
 
 			if (sessionTimeout) {
-				const timeout = Math.max(0, sessionTimeout - 1000);
+				const timeout = max(0, sessionTimeout - 1000);
 				setTimeout(printerConnection, timeout);
 			} else {
 				const timeout = 5000;
@@ -81,13 +85,19 @@ const printerConnection = async () => {
 			ipAddressFailure.classList.remove("hide");
 			ipAddressSuccess.classList.add("hide");
 		}
+	} else {
+		console.warn("Invalid IP address or FQDN:", ipAddress);
+		ipAddressFailure.classList.remove("hide");
+		ipAddressSuccess.classList.add("hide");
 	}
 };
 
 ipAddressInput.addEventListener("input", printerConnection);
 setTimeout(async () => {
 	await printerConnection();
-}, 1000);
+}, 500);
+
+activateInfoDialog.addEventListener("click", () => appInfo.toggleDialog());
 
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),

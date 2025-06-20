@@ -1,5 +1,5 @@
-import { getIpAddress } from "@/db/keyValueSettings";
 import crc32 from "crc-32";
+import { getIpAddress } from "@/db/keyValueSettings";
 
 type UploadResponse = {
 	err: 0 | 1 | 2;
@@ -108,13 +108,18 @@ function decimalToHex(decimal: number) {
 export async function sendGCodeFile(binaryData: Blob, fileName: string) {
 	try {
 		const ipAddress = await getIpAddress();
+
+		console.log(ipAddress);
+
 		await connectToPrinter(ipAddress);
 
 		const crc = await calculateCRC32(binaryData);
 		const crcHex = decimalToHex(crc);
 
 		const response = await fetch(
-			`http://${ipAddress}/rr_upload?name=/gcodes/${encodeURIComponent(fileName)}&crc32=${crcHex}`,
+			`http://${ipAddress}/rr_upload?name=/gcodes/${encodeURIComponent(
+				fileName,
+			)}&crc32=${crcHex}`,
 			{
 				method: "POST",
 				headers: {

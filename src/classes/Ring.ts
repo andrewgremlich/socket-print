@@ -1,6 +1,6 @@
+import { pi } from "mathjs";
 import { DoubleSide, Mesh, MeshStandardMaterial, RingGeometry } from "three";
-import { MeshBVH, acceleratedRaycast, computeBoundsTree } from "three-mesh-bvh";
-
+import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 import { AppObject } from "./AppObject";
 
 export class Ring extends AppObject {
@@ -31,7 +31,7 @@ export class Ring extends AppObject {
 		this.mesh.name = "ring";
 		this.mesh.geometry.boundsTree = bvh;
 		this.mesh.position.set(0, 0, 0);
-		this.mesh.rotation.x = Math.PI / 2;
+		this.mesh.rotation.x = pi / 2;
 
 		this.updateMatrixWorld();
 	}

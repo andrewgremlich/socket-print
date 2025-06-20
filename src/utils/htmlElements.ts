@@ -1,3 +1,4 @@
+import type { AppInfo } from "@/web-components/AppInfo";
 import type { MaterialProfileForm } from "@/web-components/MaterialProfileForm";
 
 export const loadingScreen = document.getElementById("loading");
@@ -100,3 +101,7 @@ export const appForm = document.getElementById("appForm") as HTMLFormElement;
 export const materialProfileForm = document.querySelector(
 	"material-profile-form",
 ) as MaterialProfileForm;
+export const appInfo = document.querySelector("app-info") as AppInfo;
+export const activateInfoDialog = document.getElementById(
+	"activateInfoDialog",
+) as HTMLInputElement;
