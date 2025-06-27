@@ -64,17 +64,15 @@ const printerConnection = async () => {
 	const isValid =
 		isIP(ipAddress) || isFQDN(ipAddress) || ipAddress.includes("localhost");
 
-	console.log({ ipAddress, isValid });
-
 	if (isValid) {
 		try {
 			const { sessionTimeout } = await connectToPrinter(ipAddress);
 
-			ipAddressFailure.classList.toggle("hide");
-			ipAddressSuccess.classList.toggle("hide");
+			ipAddressFailure.classList.add("hide");
+			ipAddressSuccess.classList.remove("hide");
 
 			if (sessionTimeout) {
-				const timeout = max(0, sessionTimeout - 1000);
+				const timeout = max(0, sessionTimeout - 500);
 				setTimeout(printerConnection, timeout);
 			} else {
 				const timeout = 5000;

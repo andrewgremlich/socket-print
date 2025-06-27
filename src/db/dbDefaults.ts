@@ -11,7 +11,7 @@ const materialProfileDefaults: Omit<MaterialProfile, "id"> = {
 	cupTemp: 130,
 	shrinkFactor: 2.6,
 	outputFactor: 1.0,
-	feedrate: 2250,
+	secondsPerLayer: 8,
 };
 
 export async function makeMaterialProfileDefaults() {

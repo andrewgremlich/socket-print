@@ -42,9 +42,9 @@ export class MaterialProfileForm extends HTMLElement {
             <label for="outputFactor">Output Factor</label>
             <input type="number" value="1" name="outputFactor" id="outputFactor" required />
 
-            <label for="feedrate">Feedrate (mm/min)</label>
-            <input type="number" value="2000" name="feedrate" id="feedrate" step="25" required />
-            
+            <label for="secondsPerLayer">Seconds Per Layer</label>
+            <input type="number" value="8" name="secondsPerLayer" id="secondsPerLayer" required />
+
             <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
             <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
         </form>
@@ -95,8 +95,9 @@ export class MaterialProfileForm extends HTMLElement {
 				profile.shrinkFactor.toString();
 			(this.form.elements.namedItem("outputFactor") as HTMLInputElement).value =
 				profile.outputFactor.toString();
-			(this.form.elements.namedItem("feedrate") as HTMLInputElement).value =
-				profile.feedrate.toString();
+			(
+				this.form.elements.namedItem("secondsPerLayer") as HTMLInputElement
+			).value = profile.secondsPerLayer.toString();
 		} else {
 			this.form.reset();
 		}
@@ -114,7 +115,7 @@ export class MaterialProfileForm extends HTMLElement {
 			cupTemp,
 			shrinkFactor,
 			outputFactor,
-			feedrate,
+			secondsPerLayer,
 		} = Object.fromEntries(materialProfileDisplay.entries());
 
 		const profile = {
@@ -123,7 +124,7 @@ export class MaterialProfileForm extends HTMLElement {
 			cupTemp: Number.parseFloat(cupTemp as string),
 			shrinkFactor: Number.parseFloat(shrinkFactor as string),
 			outputFactor: Number.parseFloat(outputFactor as string),
-			feedrate: Number.parseFloat(feedrate as string),
+			secondsPerLayer: Number.parseFloat(secondsPerLayer as string),
 		};
 
 		if (this.editMaterialProfile) {

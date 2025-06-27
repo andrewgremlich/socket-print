@@ -8,7 +8,6 @@ import {
 	getNozzleSize,
 } from "@/db/keyValueSettings";
 import {
-	getActiveMaterialProfileFeedrate,
 	getActiveMaterialProfileNozzleTemp,
 	getActiveMaterialProfileOutputFactor,
 } from "@/db/materialProfiles";
@@ -19,28 +18,21 @@ export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
 }
 
-/**
- * Options for G-code generation.
- */
 interface GCodeOptions {
-	feedrate?: number; // Feedrate in mm/min
 	extrusionFactor?: number; // Factor for extrusion
 	layerHeight?: number; // Layer height in mm
 	estimatedTime?: string; // Estimated printing time
 }
 
-/**
- * Generates G-code from a single level array of points.
- */
 export async function generateGCode(
 	pointGatherer: RawPoint[][],
+	feedratePerLevel: number[],
 	verticalAxis: "y" | "z" = "y",
 	options: GCodeOptions = {},
 ): Promise<string> {
-	const { estimatedTime = "0h 0m 0s" } = options;
+	const { estimatedTime = "0m 0s" } = options;
 	const activeMaterialProfile = await getActiveMaterialProfile();
 	const extrusionFactor = await getActiveMaterialProfileOutputFactor();
-	const feedrate = await getActiveMaterialProfileFeedrate();
 	const nozzleSize = await getNozzleSize();
 	const cupSize = await getCupSize();
 	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
@@ -104,7 +96,7 @@ export async function generateGCode(
 	gcode.push(
 		`G1 X${previousPoint.x.toFixed(2)} Y${previousPoint.y.toFixed(
 			2,
-		)} Z${previousPoint.z.toFixed(2)} F${feedrate}`,
+		)} Z${previousPoint.z.toFixed(2)} F2250`,
 	);
 
 	for (let i = 0; i < pointGatherer.length; i++) {
@@ -143,7 +135,7 @@ export async function generateGCode(
 			previousPoint = point;
 			const flipHeight = flipVerticalAxis(verticalAxis);
 			gcode.push(
-				`G1 X${-round(point.x, 2)} Y${round(point[flipHeight], 2)} Z${round(point[verticalAxis], 2)} E${round(extrusion, 4)} F${feedrate}`,
+				`G1 X${-round(point.x, 2)} Y${round(point[flipHeight], 2)} Z${round(point[verticalAxis], 2)} E${round(extrusion, 4)} F${feedratePerLevel[i]}`,
 			);
 		}
 	}
@@ -160,6 +152,17 @@ export async function generateGCode(
 	return gcode.join("\n");
 }
 
+/**
+ * Writes the provided G-code string to a file, handling both Tauri and browser environments.
+ *
+ * - In a Tauri environment, opens a save dialog for the user to choose the file location,
+ *   then writes the G-code string to the selected file using the Tauri filesystem API.
+ * - In a browser environment, triggers a download of the G-code string as a `.gcode` file.
+ *
+ * @param gcodeString - The G-code content to be written to the file.
+ * @param fileName - The default file name to use for saving the G-code file (defaults to "file.gcode").
+ * @returns A promise that resolves when the file has been written or the download has been triggered.
+ */
 export async function writeGCodeFile(
 	gcodeString: string,
 	fileName = "file.gcode",

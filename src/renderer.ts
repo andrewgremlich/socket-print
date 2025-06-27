@@ -8,6 +8,7 @@ import { ceil } from "mathjs";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendHardEdges } from "@/3d/blendHardEdges";
+import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
 import { generateGCode, writeGCodeFile } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
@@ -37,9 +38,7 @@ if (!window.Worker) {
 
 const app = new Application();
 const ring = new Ring();
-
-app.addToScene(ring.mesh);
-
+const mergeCup = new MergeCup();
 const socket = new Socket({
 	socketCallback: ({ mesh, maxDimension }) => {
 		app.camera.position.set(0, 200, -maxDimension);
@@ -54,22 +53,25 @@ const socket = new Socket({
 	},
 });
 
+app.addToScene(ring.mesh);
+
 clearModelButton.addEventListener("click", () => {
 	app.removeMeshFromScene(socket.mesh);
+	app.removeMeshFromScene(mergeCup.mesh);
 
 	horizontalTranslate.value = "0";
 	depthTranslate.value = "0";
 	verticalTranslate.value = "0";
 	activeFileName.textContent = "";
 
+	estimatedPrintTime.textContent = "0m 0s";
+
 	socket.clearData();
 	app.resetCameraPosition();
 });
 
 export async function slicingAction(sendToFile: boolean) {
-	const mergeCup = new MergeCup({
-		height: socket.boundingBox.max.y,
-	});
+	mergeCup.setHeight(socket.boundingBox.max.y);
 
 	app.addToScene(mergeCup.mesh);
 
@@ -96,11 +98,12 @@ export async function slicingAction(sendToFile: boolean) {
 		} else if (type === "done") {
 			const adjustedDim = await adjustForShrinkAndOffset(data, socket.center);
 			const blended = await blendHardEdges(adjustedDim, 1);
-			const printTime = await calculatePrintTime(blended);
+			const feedratePerLevel = await calculateFeedratePerLevel(blended);
+			const printTime = await calculatePrintTime(blended, feedratePerLevel);
 
 			estimatedPrintTime.textContent = printTime;
 
-			const gcode = await generateGCode(blended, "y", {
+			const gcode = await generateGCode(blended, feedratePerLevel, "y", {
 				estimatedTime: printTime,
 			});
 			const filePathName = `${socket.mesh?.name}.gcode`;

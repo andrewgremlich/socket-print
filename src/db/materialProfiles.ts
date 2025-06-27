@@ -61,6 +61,6 @@ export const getActiveMaterialProfileOutputFactor = async () => {
 	return (await getActiveMaterialProfile()).outputFactor;
 };
 
-export const getActiveMaterialProfileFeedrate = async () => {
-	return (await getActiveMaterialProfile()).feedrate;
+export const getActiveMaterialProfileSecondsPerLayer = async () => {
+	return (await getActiveMaterialProfile()).secondsPerLayer;
 };

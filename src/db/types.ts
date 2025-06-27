@@ -13,7 +13,7 @@ export type MaterialProfile = {
 	cupTemp: number;
 	shrinkFactor: number;
 	outputFactor: number;
-	feedrate: number;
+	secondsPerLayer: number;
 };
 
 export type FormValues = {

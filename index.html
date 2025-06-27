@@ -58,17 +58,9 @@
         </div>
       </div>
 
-      <div class="menuBarButtonContainer">
-        <div class="menuBarButton">
-          <a class="menuBarButton" href="/help.html">Help</a>
-        </div>
-      </div>
+      <a class="menuBarButton" href="/help.html">Help</a>
 
-      <div class="menuBarButtonContainer">
-        <div class="menuBarButton">
-          <input id="activateInfoDialog" type="button" value="Info" />
-        </div>
-      </div>
+      <input id="activateInfoDialog" class="menuBarButton" type="button" value="Info" />
     </nav>
 
     <div id="userInterface">
@@ -83,7 +75,7 @@
         <p>Port Status</p>
 
         <div id="portStatusIcons">
-          <p type="success" id="ipAddressSuccess" class="hide">Connected!</p>
+          <p type="success" id="ipAddressSuccess" class="hide">Connected</p>
           <p type="failure" id="ipAddressFailure">Disconnected</p>
         </div>
 
@@ -138,7 +130,7 @@
 
         <label>Output Factor: </label><label id="outputFactorDisplay">1</label>
 
-        <label>Feedrate (mm/min): </label><label id="feedrateDisplay">1</label>
+        <label>Seconds Per Layer: </label><label id="secondsPerLayerDisplay">1</label>
       </div>
 
       <div id="printActions">
