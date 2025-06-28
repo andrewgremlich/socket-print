@@ -44,7 +44,10 @@ menuBar.addEventListener("click", (evt) => {
 		}
 	}
 
-	if (target.matches(".menuBarButton")) {
+	if (
+		target.matches(".menuBarButton") &&
+		!target.classList.contains("noDropdown")
+	) {
 		const nextSibling = target.nextElementSibling as HTMLElement;
 		nextSibling.classList.toggle("show");
 	}
@@ -68,6 +71,9 @@ const printerConnection = async () => {
 		try {
 			const { sessionTimeout } = await connectToPrinter(ipAddress);
 
+			console.log("Connected to printer at:", ipAddress);
+			console.log("Session timeout:", sessionTimeout);
+
 			ipAddressFailure.classList.add("hide");
 			ipAddressSuccess.classList.remove("hide");
 
@@ -90,10 +96,8 @@ const printerConnection = async () => {
 	}
 };
 
-ipAddressInput.addEventListener("input", printerConnection);
-setTimeout(async () => {
-	await printerConnection();
-}, 500);
+ipAddressInput.addEventListener("input", async () => await printerConnection());
+setTimeout(async () => await printerConnection(), 500);
 
 activateInfoDialog.addEventListener("click", () => appInfo.toggleDialog());
 

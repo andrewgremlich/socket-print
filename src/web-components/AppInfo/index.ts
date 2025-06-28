@@ -43,9 +43,9 @@ export class AppInfo extends HTMLElement {
       }
       </style>
       <dialog id="appInfoDialog">
-      <h3>Application Info</h3>
-      <p>Version: ${version}</p>
-      <p>Made by <strong><a href="https://gremlich.xyz" target="_blank">Andrew Gremlich</a></strong></p>
+        <h3>Application Info</h3>
+        <p>Version: ${version}</p>
+        <p>Made by <strong><a href="https://gremlich.xyz" target="_blank">Andrew Gremlich</a></strong></p>
       </dialog>
     `;
 		this.dialog = this.shadowRoot.getElementById(
