@@ -5,6 +5,7 @@ import {
 	getActiveMaterialProfile,
 	getCupSize,
 	getCupSizeHeight,
+	getLockPosition,
 	getNozzleSize,
 } from "@/db/keyValueSettings";
 import {
@@ -35,6 +36,7 @@ export async function generateGCode(
 	const extrusionFactor = await getActiveMaterialProfileOutputFactor();
 	const nozzleSize = await getNozzleSize();
 	const cupSize = await getCupSize();
+	const lockPosition = await getLockPosition();
 	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
 	const socketHeight = (await getCupSizeHeight()) + 5;
 	const gcode = [
@@ -46,6 +48,7 @@ export async function generateGCode(
 		`;customInfo nozzleSize="${nozzleSize}mm"`,
 		`;customInfo cupSize="${cupSize}"`,
 		`;customInfo nozzleTemp="${nozzleTemp}C"`,
+		`;customInfo lockPosition="${lockPosition}"`,
 		";# START GCODE SEQUENCE FOR CUP PRINT#;",
 
 		"G21 ; Set units to millimeters",
