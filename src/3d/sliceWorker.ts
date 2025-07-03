@@ -88,12 +88,17 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			data: heightPosition / maxHeight,
 		});
 
-		for (let angle = angleIncrement; angle < pi * 2; angle += angleIncrement) {
-			const xdirection = cos(-angle);
-			const zdirection = sin(-angle);
+		for (
+			let angle = angleIncrement - Math.PI;
+			angle < pi * 2 - Math.PI;
+			angle += angleIncrement
+		) {
+			const height = heightPosition + (angle / (Math.PI * 2)) * layerHeight;
+			const xdirection = Math.cos(angle);
+			const zdirection = Math.sin(angle);
 
 			direction.set(xdirection, 0, zdirection).normalize();
-			ray.origin.set(center.x, heightPosition, center.z);
+			ray.origin.set(center.x, height, center.z);
 			ray.direction.copy(direction);
 			const intersects = raycaster.intersectObject(mesh);
 
