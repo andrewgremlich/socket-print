@@ -50,7 +50,12 @@ export const saveIpAddress = async (ipAddress: string) => {
 
 export const getLockPosition = async () => {
 	const db = await getDb();
-	return await db.formValues.where("name").equals("lockPosition").first();
+	const lockPosition = await db.formValues
+		.where("name")
+		.equals("lockPosition")
+		.first();
+
+	return lockPosition?.value as string;
 };
 
 export const saveLockPosition = async (lockPosition: string) => {
