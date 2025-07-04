@@ -75,8 +75,6 @@ export async function generateGCode(
 		"G1 Z17 F2250; Z down to place cup heater on bed",
 		"G1 X90 F2250; X left to disengage cup heater",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
-		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
-		"G4 S2 ; pause for 2 seconds for prime to finish",
 		`G1 Z${socketHeight} F2250; Z up to CH + 5 for groove fill`,
 
 		// Groove fill was removed because the cups do not require it anymore.
