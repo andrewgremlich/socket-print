@@ -46,9 +46,8 @@ export async function generateGCode(
 		`;estimated printing time (normal mode)=${estimatedTime}`,
 		`;customInfo material="${activeMaterialProfile}"`,
 		`;customInfo nozzleSize="${nozzleSize}mm"`,
-		`;customInfo cupSize="${cupSize}"`,
+		`;customInfo cupSize="${cupSize} ${lockPosition === "left" ? "L" : "R"}"`,
 		`;customInfo nozzleTemp="${nozzleTemp}C"`,
-		`;customInfo lockPosition="${lockPosition}"`,
 		";# START GCODE SEQUENCE FOR CUP PRINT#;",
 
 		"G21 ; Set units to millimeters",

@@ -2,6 +2,7 @@ import { getDb } from "./getDb";
 import type {
 	DefaultKeyValueCollectionNames,
 	DefaultKeyValueCollectionValues,
+	FormValues,
 } from "./types";
 
 export const getFormKeyValues = async () => {
@@ -55,10 +56,12 @@ export const getLockPosition = async () => {
 		.equals("lockPosition")
 		.first();
 
-	return lockPosition?.value as string;
+	return lockPosition?.value as FormValues["lockPosition"];
 };
 
-export const saveLockPosition = async (lockPosition: string) => {
+export const saveLockPosition = async (
+	lockPosition: FormValues["lockPosition"],
+) => {
 	const db = await getDb();
 
 	return await db.formValues
