@@ -1,5 +1,5 @@
 // NOTE: This only works in HTTPS
-const cacheName = "v5";
+const cacheName = "v6";
 
 const addResourcesToCache = async (resources) => {
 	const cache = await caches.open(cacheName);
@@ -27,7 +27,7 @@ self.addEventListener("install", (event) => {
 	);
 });
 
-self.addEventListener("activate", async (event) => {
+self.addEventListener("activate", async () => {
 	await self.clients.claim();
 
 	const cacheWhitelist = [cacheName];
@@ -61,7 +61,7 @@ self.addEventListener("fetch", (event) => {
 				}
 
 				return networkResponse;
-			} catch (err) {
+			} catch (_err) {
 				const offlineResponse = await caches.match("/no-network.html");
 				return (
 					offlineResponse ||

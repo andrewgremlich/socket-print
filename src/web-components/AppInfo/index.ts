@@ -54,13 +54,15 @@ export class AppInfo extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.addEventListener("click", this.toggleDialog.bind(this));
+		this.addEventListener("click", () => {
+			if (this.dialog.open) {
+				this.dialog.close();
+			}
+		});
 	}
 
-	toggleDialog() {
-		if (this.dialog.open) {
-			this.dialog.close();
-		} else {
+	show() {
+		if (!this.dialog.open) {
 			this.dialog.showModal();
 		}
 	}

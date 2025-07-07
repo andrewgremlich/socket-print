@@ -150,7 +150,7 @@ const handleIpAddressChange = async () => {
 ipAddressInput.addEventListener("input", handleIpAddressChange);
 setTimeout(async () => await printerConnection(), 500);
 
-activateInfoDialog.addEventListener("click", () => appInfo.toggleDialog());
+activateInfoDialog.addEventListener("click", () => appInfo.show());
 
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),
