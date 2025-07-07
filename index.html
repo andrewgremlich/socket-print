@@ -23,47 +23,57 @@
 </head>
 
 <body>
+  <div id="menuBar">
+    <div>
+      <nav>
+        <h1><a href="/">ProvelPrint</a></h1>
+
+        <div class="menuBarButtonContainer">
+          <button class="menuBarButton">File</button>
+
+          <div class="menuBarDropdown">
+            <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
+              id="stlFileInputLabel">
+              Open STL file
+              <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput" />
+            </label>
+
+            <button class="menuBarDropdownButton" id="restoreDefaultsButton" type="button">Restore Defaults</button>
+
+            <button class="menuBarDropdownButton" id="clearModelButton" type="button">Clear model</button>
+
+            <button class="menuBarDropdownButton" id="addTestStlButton" type="button">Load Test STL</button>
+
+            <a download href="/test_cylinder.gcode" class="menuBarDropdownButton">Get Test Cylinder GCode</a>
+          </div>
+        </div>
+
+        <div class="menuBarButtonContainer">
+          <button class="menuBarButton">Edit</button>
+
+          <div class="menuBarDropdown">
+            <button class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material Profile</button>
+            <button class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit Active Material
+              Profile</button>
+            <button class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete Active Material
+              Profile</button>
+          </div>
+        </div>
+
+        <a class="menuBarButton noDropdown" href="/help.html">Help</a>
+
+        <button id="activateInfoDialog" class="menuBarButton noDropdown" type="button">Info</button>
+      </nav>
+
+      <div id="printActions">
+        <button type="button" id="generateGCodeButton">File</button>
+
+        <button type="button" id="printerFileInput" name="printerFileInput">Print</button>
+      </div>
+    </div>
+  </div>
+
   <main>
-    <nav id="menuBar">
-      <h1><a href="/">ProvelPrint</a></h1>
-
-      <div class="menuBarButtonContainer">
-        <button class="menuBarButton">File</button>
-
-        <div class="menuBarDropdown">
-          <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
-            id="stlFileInputLabel">
-            Open STL file
-            <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput" />
-          </label>
-
-          <input class="menuBarDropdownButton" type="button" value="Restore Defaults" id="restoreDefaultsButton" />
-
-          <input class="menuBarDropdownButton" type="button" value="Clear model" id="clearModelButton" />
-
-          <input class="menuBarDropdownButton" type="button" value="Load Test STL" id="addTestStlButton" />
-
-          <a download href="/test_cylinder.gcode" class="menuBarDropdownButton">Get Test Cylinder GCode</a>
-        </div>
-      </div>
-
-      <div class="menuBarButtonContainer">
-        <button class="menuBarButton">Edit</button>
-
-        <div class="menuBarDropdown">
-          <input class="menuBarDropdownButton" id="addMaterialProfile" type="button" value="Add Material Profile" />
-          <input class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button"
-            value="Edit Active Material Profile" />
-          <input class="menuBarDropdownButton" id="deleteMaterialProfile" type="button"
-            value="Delete Active Material Profile" />
-        </div>
-      </div>
-
-      <a class="menuBarButton noDropdown" href="/help.html">Help</a>
-
-      <input id="activateInfoDialog" class="menuBarButton noDropdown" type="button" value="Info" />
-    </nav>
-
     <div id="userInterface">
       <form id="appForm">
         <p>IP Address and Port</p>
@@ -76,20 +86,20 @@
         <p>Port Status</p>
 
         <div id="portStatusIcons">
-          <p type="success" id="ipAddressSuccess" class="hide">Connected</p>
-          <p type="failure" id="ipAddressFailure">Disconnected</p>
+          <p id="ipAddressSuccess" class="hide">Connected</p>
+          <p id="ipAddressFailure">Disconnected</p>
         </div>
 
         <p>Lock Position</p>
 
-        <select name="lockPosition" id="lockPosition" name="lockPosition">
+        <select name="lockPosition" id="lockPosition">
           <option value="left" selected>Left</option>
           <option value="right">Right</option>
         </select>
 
         <label for="cupSize">Cup Size</label>
 
-        <select name="cupSize" id="cupSize" name="cupSize">
+        <select name="cupSize" id="cupSize">
           <option value="93x38" selected>93 x 38</option>
           <!-- Place 30 mm above printer --->
           <option value="93x25">93 x 25</option>
@@ -98,7 +108,7 @@
 
         <label for="nozzleSize">Nozzle Size</label>
 
-        <select name="nozzleSize" id="nozzleSize" name="nozzleSize">
+        <select name="nozzleSize" id="nozzleSize">
           <option value="3">3mm</option>
           <option value="4">4mm</option>
           <option value="5" selected>5mm</option>
@@ -108,7 +118,7 @@
 
         <label for="layerHeight">Layer Height</label>
 
-        <select name="layerHeight" id="layerHeight" name="layerHeight">
+        <select name="layerHeight" id="layerHeight">
           <option value="0.5">0.5mm</option>
           <option value="1" selected>1mm</option>
           <option value="1.5">1.5mm</option>
@@ -117,9 +127,7 @@
 
         <label for="activeMaterialProfile">Material</label>
 
-        <div id="activeMaterialProfileContainer">
-          <select name="activeMaterialProfile" id="activeMaterialProfile" name="activeMaterialProfile"></select>
-        </div>
+        <select name="activeMaterialProfile" id="activeMaterialProfile" name="activeMaterialProfile"></select>
       </form>
 
       <div id="materialProfileDisplay">
@@ -133,49 +141,39 @@
 
         <label>Seconds Per Layer: </label><label id="secondsPerLayerDisplay">1</label>
       </div>
+    </div>
 
-      <div id="printActions">
-        <p style="margin: 10px 0px">Estimated Print Time:</p>
+    <div>
 
-        <p id="estimatedPrintTime"></p>
+      <div id="provelPrint">
+        <span id="activeFileName">No file selected</span>
+        <div id="estimatedPrintTime">
+          <p style="margin: 10px 0px">Estimated Print Time:</p>
 
-        <!-- <input type="button" value="Blend to Cup" class="button" id="mergeMeshes" disabled /> -->
-
-        <!-- <div></div> -->
-
-        <p>Generate G Code</p>
-
-        <div>
-          <input type="button" value="File" class="button" id="generateGCodeButton" />
-
-          <input type="button" value="Print" id="printerFileInput" name="printerFileInput" class="button" />
+          <p id="estimatedPrintTime"></p>
         </div>
+        <canvas id="3dViewer"></canvas>
       </div>
-    </div>
 
-    <div id="provelPrint">
-      <span id="activeFileName">No file selected</span>
-      <canvas id="3dViewer"></canvas>
-    </div>
-
-    <div id="editSocket">
-      <div id="rotateSocket">
-        <p>Rotate 90</p>
-        <input disabled id="coronalRotater" class="button" type="button" value="Coronal" />
-        <input disabled id="sagittalRotate" class="button" type="button" value="Sagittal" />
-        <input disabled id="transversalRotater" class="button" type="button" value="Transverse" />
-      </div>
-      <div id="changePosition">
-        <p>Translate</p>
-        <label for="horizontalTranslate">X
-          <input disabled id="horizontalTranslate" type="number" value="0" step="1" min="-100" max="100" />
-        </label>
-        <label for="depthTranslate">Y
-          <input disabled id="depthTranslate" type="number" value="0" step="1" min="-100" max="100" />
-        </label>
-        <label for="verticalTranslate">Z
-          <input disabled id="verticalTranslate" type="number" value="0" step="1" min="-25" max="25" />
-        </label>
+      <div id="editSocket">
+        <div id="rotateSocket">
+          <p>Rotate 90</p>
+          <button disabled id="coronalRotater" type="button">Coronal</button>
+          <button disabled id="sagittalRotate" type="button">Sagittal</button>
+          <button disabled id="transversalRotater" type="button">Transverse</button>
+        </div>
+        <div id="changePosition">
+          <p>Translate</p>
+          <label for="horizontalTranslate">X
+            <input disabled id="horizontalTranslate" type="number" value="0" step="1" min="-100" max="100" />
+          </label>
+          <label for="depthTranslate">Y
+            <input disabled id="depthTranslate" type="number" value="0" step="1" min="-100" max="100" />
+          </label>
+          <label for="verticalTranslate">Z
+            <input disabled id="verticalTranslate" type="number" value="0" step="1" min="-25" max="25" />
+          </label>
+        </div>
       </div>
     </div>
   </main>

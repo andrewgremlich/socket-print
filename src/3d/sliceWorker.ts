@@ -89,13 +89,13 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 		});
 
 		for (
-			let angle = angleIncrement - Math.PI;
-			angle < pi * 2 - Math.PI;
+			let angle = angleIncrement - pi;
+			angle < pi * 2 - pi;
 			angle += angleIncrement
 		) {
-			const height = heightPosition + (angle / (Math.PI * 2)) * layerHeight;
-			const xdirection = Math.cos(angle);
-			const zdirection = Math.sin(angle);
+			const height = heightPosition + (angle / (pi * 2)) * layerHeight;
+			const xdirection = cos(angle);
+			const zdirection = sin(angle);
 
 			direction.set(xdirection, 0, zdirection).normalize();
 			ray.origin.set(center.x, height, center.z);
