@@ -6,13 +6,13 @@
 
 html {
 	height: 100%;
+	background-color:#252525;
 }
 
 body {
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
 		Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
-	background-color: #333;
 	height: 100%;
 }
 
@@ -42,10 +42,11 @@ a {
 }
 
 main {
-	width: 100%;
-	height: 100%;
+	padding-top: 30px;
+	padding-bottom: 30px;
 	display: flex;
 	justify-content: center;
+	background-color: #333;
 }
 
 input {
@@ -96,7 +97,6 @@ button {
 #menuBar {
 	width: 100%;
 	height: 40px;
-	margin-bottom: 20px;
 	background-color: #444;
 	z-index: 9999;
 	display: flex;
