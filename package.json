@@ -34,8 +34,8 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.6",
 		"@tauri-apps/cli": "^2.6.2",
-		"@types/node": "^24.0.7",
-		"@types/three": "^0.177.0",
+		"@types/node": "^24.0.10",
+		"@types/three": "^0.178.0",
 		"@types/validator": "^13.15.2",
 		"@vitest/coverage-v8": "^3.2.4",
 		"browserslist": "^4.25.1",
@@ -46,7 +46,7 @@
 		"rimraf": "^6.0.1",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.8.3",
-		"vite": "^7.0.0",
+		"vite": "^7.0.2",
 		"vite-plugin-top-level-await": "^1.5.0",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4"
@@ -61,7 +61,7 @@
 		"crc-32": "^1.2.2",
 		"dexie": "^4.0.11",
 		"hotkeys-js": "^3.13.14",
-		"mathjs": "^14.5.2",
+		"mathjs": "^14.5.3",
 		"p-throttle": "^7.0.0",
 		"three": "^0.178.0",
 		"three-mesh-bvh": "^0.9.1",
