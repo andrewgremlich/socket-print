@@ -1,5 +1,20 @@
 {
-  "version": "4",
+  "version": "5",
+  "specifiers": {
+    "jsr:@std/async@0.224": "0.224.2",
+    "jsr:@std/http@0.224.0": "0.224.0"
+  },
+  "jsr": {
+    "@std/async@0.224.2": {
+      "integrity": "4d277d6e165df43d5e061ba0ef3edfddb8e8d558f5b920e3e6b1d2614b44d074"
+    },
+    "@std/http@0.224.0": {
+      "integrity": "fde48c9133d1d7bb94c134d8f0f01c1a737e6e3879f52580e9ca92217a011e82",
+      "dependencies": [
+        "jsr:@std/async"
+      ]
+    }
+  },
   "remote": {
     "https://deno.land/std@0.224.0/async/delay.ts": "f90dd685b97c2f142b8069082993e437b1602b8e2561134827eeb7c12b95c499",
     "https://deno.land/std@0.224.0/http/server.ts": "f9313804bf6467a1704f45f76cb6cd0a3396a3b31c316035e6a4c2035d1ea514"
@@ -7,36 +22,38 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
-        "npm:@biomejs/biome@^1.9.4",
-        "npm:@tauri-apps/api@^2.4.1",
-        "npm:@tauri-apps/cli@^2.4.1",
-        "npm:@tauri-apps/plugin-dialog@^2.2.1",
-        "npm:@tauri-apps/plugin-fs@^2.2.1",
-        "npm:@tauri-apps/plugin-updater@^2.7.0",
-        "npm:@types/node@^22.14.0",
-        "npm:@types/three@0.175",
-        "npm:@vitest/coverage-v8@^3.1.1",
-        "npm:browserslist@^4.24.4",
+        "npm:@biomejs/biome@^2.0.6",
+        "npm:@tauri-apps/api@^2.6.0",
+        "npm:@tauri-apps/cli@^2.6.2",
+        "npm:@tauri-apps/plugin-dialog@^2.3.0",
+        "npm:@tauri-apps/plugin-fs@^2.4.0",
+        "npm:@tauri-apps/plugin-log@^2.6.0",
+        "npm:@tauri-apps/plugin-process@^2.3.0",
+        "npm:@tauri-apps/plugin-updater@^2.9.0",
+        "npm:@types/node@^24.0.10",
+        "npm:@types/three@0.178",
+        "npm:@types/validator@^13.15.2",
+        "npm:@vitest/coverage-v8@^3.2.4",
+        "npm:browserslist@^4.25.1",
         "npm:crc-32@^1.2.2",
         "npm:dexie@^4.0.11",
-        "npm:hotkeys-js@^3.13.9",
+        "npm:hotkeys-js@^3.13.14",
         "npm:husky@^9.1.7",
-        "npm:jsdom@24",
-        "npm:lightningcss@^1.29.3",
-        "npm:lint-staged@^15.5.0",
-        "npm:mathjs@^14.4.0",
+        "npm:jsdom@^26.1.0",
+        "npm:lightningcss@^1.30.1",
+        "npm:lint-staged@^16.1.2",
+        "npm:mathjs@^14.5.3",
         "npm:p-throttle@7",
         "npm:rimraf@^6.0.1",
-        "npm:three-csg-ts@^3.2.0",
-        "npm:three-mesh-bvh@0.9",
-        "npm:three@0.175",
+        "npm:three-mesh-bvh@~0.9.1",
+        "npm:three@0.178",
         "npm:ts-node@^10.9.2",
         "npm:typescript@^5.8.3",
-        "npm:vite-plugin-pwa@1",
+        "npm:validator@^13.15.15",
         "npm:vite-plugin-top-level-await@^1.5.0",
         "npm:vite-tsconfig-paths@^5.1.4",
-        "npm:vite@^6.2.6",
-        "npm:vitest@^3.1.1"
+        "npm:vite@^7.0.2",
+        "npm:vitest@^3.2.4"
       ]
     }
   }
