@@ -32,9 +32,9 @@ export default defineConfig({
 				help: resolve(__dirname, "help.html"),
 			},
 			output: {
-				entryFileNames: "assets/[name].js",
-				chunkFileNames: "assets/[name].js",
-				assetFileNames: "assets/[name][extname]",
+				entryFileNames: "assets/[name].[hash].js",
+				chunkFileNames: "assets/[name].[hash].js",
+				assetFileNames: "assets/[name].[hash][extname]",
 				manualChunks(id) {
 					if (id.includes("node_modules/three/")) {
 						return "three";
