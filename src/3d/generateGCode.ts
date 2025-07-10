@@ -83,7 +83,7 @@ export async function generateGCode(
 		"G1 X39 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
 		"G1 E20 E300 ;extruder a bit to prevent a small gap at the start/end.",
 		" ;Extrude in a circle A",
-		"G3 X39 Y0 I-39 J0 E1030 F600 ; Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
+		"G3 X39 Y0 I-39 J0 E1030 F600 ; Counter-Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
 
 		";#End of start gcode sequence for cup print#",
 		";##Spiral vase mode socket print to start immediately following this.",

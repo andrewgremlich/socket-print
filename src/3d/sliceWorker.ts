@@ -94,8 +94,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			angle += angleIncrement
 		) {
 			const height = heightPosition + (angle / (pi * 2)) * layerHeight;
-			const xdirection = cos(angle);
-			const zdirection = sin(angle);
+			const xdirection = cos(-angle);
+			const zdirection = sin(-angle);
 
 			direction.set(xdirection, 0, zdirection).normalize();
 			ray.origin.set(center.x, height, center.z);
