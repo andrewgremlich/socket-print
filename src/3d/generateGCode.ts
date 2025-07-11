@@ -67,14 +67,15 @@ export async function generateGCode(
 		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
 
 		";##cup heater removal sequence##",
-		'M98 P"0:/sys/provel/prime.g"   ;prime extruder', //?
 		"M140 P1 S0 ;cup heater off",
-		"G1 Z70 F2250; Z moves up to pick up cup heater",
-		"G1 X120 F6000; X right to park cup heater",
-		"G1 Z17 F2250; Z down to place cup heater on bed",
-		"G1 X90 F2250; X left to disengage cup heater",
+		"G1 Z70 F1500; Z moves up to pick up cup heater",
+		"G1 X120 F2000; X right to park cup heater",
+		"G1 Z17 F2000; Z down to place cup heater on bed",
+		"G1 X90 F2000; X left to disengage cup heater",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
-		`G1 Z${socketHeight} F2250; Z up to CH + 5 for groove fill`,
+		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
+		"G4 S2 ; pause for 2 seconds for prime to finish",
+		`G1 Z${socketHeight} F2000; Z up to CH + 5 for groove fill`,
 
 		// Groove fill was removed because the cups do not require it anymore.
 		";##Groove fill",
