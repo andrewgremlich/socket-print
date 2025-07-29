@@ -6,6 +6,7 @@ import "@/utils/events";
 import "@/utils/updater";
 
 import { ceil } from "mathjs";
+import type { Mesh } from "three";
 
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendHardEdges } from "@/3d/blendHardEdges";
@@ -40,11 +41,26 @@ if (!window.Worker) {
 const app = new Application();
 const ring = new Ring();
 const mergeCup = new MergeCup();
+const removeMeshes = (socketMesh: Mesh, mergeCupMesh: Mesh) => {
+	console.log("removed", socketMesh, mergeCupMesh);
+	app.removeMeshFromScene(socketMesh);
+	app.removeMeshFromScene(mergeCupMesh);
+
+	horizontalTranslate.value = "0";
+	depthTranslate.value = "0";
+	verticalTranslate.value = "0";
+	activeFileName.textContent = "";
+
+	estimatedPrintTime.textContent = "0m 0s";
+
+	socket.clearData();
+	app.resetCameraPosition();
+};
 const socket = new Socket({
-	socketCallback: ({ mesh, maxDimension }) => {
+	socketCallback: ({ maxDimension }) => {
 		app.camera.position.set(0, 200, -maxDimension);
 		app.controls.target.set(0, 100, 0);
-		app.addToScene(mesh);
+		app.addToScene(socket.mesh);
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
@@ -56,20 +72,9 @@ const socket = new Socket({
 
 app.addToScene(ring.mesh);
 
-clearModelButton.addEventListener("click", () => {
-	app.removeMeshFromScene(socket.mesh);
-	app.removeMeshFromScene(mergeCup.mesh);
-
-	horizontalTranslate.value = "0";
-	depthTranslate.value = "0";
-	verticalTranslate.value = "0";
-	activeFileName.textContent = "";
-
-	estimatedPrintTime.textContent = "0m 0s";
-
-	socket.clearData();
-	app.resetCameraPosition();
-});
+clearModelButton.addEventListener("click", () =>
+	removeMeshes(socket.mesh, mergeCup.mesh),
+);
 
 export async function slicingAction(sendToFile: boolean) {
 	mergeCup.setHeight(socket.boundingBox.max.y);

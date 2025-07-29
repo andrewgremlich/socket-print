@@ -28,11 +28,7 @@ import {
 import { AppObject } from "./AppObject";
 import type { Ring } from "./Ring";
 
-type SocketCallback = (params: {
-	mesh: Mesh;
-	maxDimension: number;
-	boundingBox: Box3;
-}) => void;
+type SocketCallback = (params: { maxDimension: number }) => void;
 
 type SocketProps = { socketCallback: SocketCallback };
 
@@ -133,9 +129,6 @@ export class Socket extends AppObject {
 			this.mesh.position.set(0, this.size.y / 2 - this.lockDepth, 0);
 			this.updateMatrixWorld();
 
-			verticalTranslate.max = `${this.size.y * 0.6}`;
-			verticalTranslate.min = `-${this.size.y * 0.6}`;
-
 			this.setPosition = {
 				x: this.mesh.position.x,
 				y: this.mesh.position.y,
@@ -143,9 +136,7 @@ export class Socket extends AppObject {
 			};
 
 			this.socketCallback({
-				mesh: this.mesh,
 				maxDimension: max(this.size.x, this.size.y, this.size.z),
-				boundingBox: this.boundingBox,
 			});
 
 			this.toggleInput(false);
@@ -234,6 +225,7 @@ export class Socket extends AppObject {
 
 	verticalChange = (evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
+		console.log("verticalChange", targetValue);
 		const numVal = Number.parseInt(targetValue);
 
 		this.mesh.position.y = this.setPosition.y + numVal;
