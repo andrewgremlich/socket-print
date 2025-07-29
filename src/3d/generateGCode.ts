@@ -146,14 +146,16 @@ export async function generateGCode(
 		}
 	}
 
-	gcode.push(";# END GCODE SEQUENCE FOR CUP PRINT#;");
-	gcode.push("M107");
-	gcode.push("set global.pelletFeedOn = false");
-	gcode.push("G4 S1 ; pause for 1 second to stop extrudate");
-	gcode.push('M98 P"0:/sys/provel/purge.g"');
-	gcode.push("M106 S0; turn the blowers and fan off");
-	gcode.push("M140 S0 ; set bed temperature");
-	gcode.push('M98 P"0:/sys/provel/end.g"');
+	gcode.push(
+		";# END GCODE SEQUENCE FOR CUP PRINT#;",
+		"M107",
+		"set global.pelletFeedOn = false",
+		"G4 S1 ; pause for 1 second to stop extrudate",
+		'M98 P"0:/sys/provel/purge.g"',
+		"M106 S0; turn the blowers and fan off",
+		"M140 S0 ; set bed temperature",
+		'M98 P"0:/sys/provel/end.g"',
+	);
 
 	return gcode.join("\n");
 }
