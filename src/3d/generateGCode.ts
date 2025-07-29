@@ -5,12 +5,14 @@ import {
 	getActiveMaterialProfile,
 	getCupSize,
 	getCupSizeHeight,
+	getLayerHeight,
 	getLockPosition,
 	getNozzleSize,
 } from "@/db/keyValueSettings";
 import {
 	getActiveMaterialProfileNozzleTemp,
 	getActiveMaterialProfileOutputFactor,
+	getActiveMaterialProfileSecondsPerLayer,
 } from "@/db/materialProfiles";
 
 import type { RawPoint } from "./blendHardEdges";
@@ -20,8 +22,6 @@ export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 }
 
 interface GCodeOptions {
-	extrusionFactor?: number; // Factor for extrusion
-	layerHeight?: number; // Layer height in mm
 	estimatedTime?: string; // Estimated printing time
 }
 
@@ -37,6 +37,8 @@ export async function generateGCode(
 	const nozzleSize = await getNozzleSize();
 	const cupSize = await getCupSize();
 	const lockPosition = await getLockPosition();
+	const secondsPerLayer = await getActiveMaterialProfileSecondsPerLayer();
+	const layerHeight = await getLayerHeight();
 	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
 	const socketHeight = (await getCupSizeHeight()) + 5;
 	const gcode = [
@@ -46,8 +48,10 @@ export async function generateGCode(
 		`;estimated printing time (normal mode)=${estimatedTime}`,
 		`;customInfo material="${activeMaterialProfile}"`,
 		`;customInfo nozzleSize="${nozzleSize}mm"`,
+		`;customInfo secondsPerLayer="${secondsPerLayer}"`,
 		`;customInfo cupSize="${cupSize} ${lockPosition === "left" ? "L" : "R"}"`,
 		`;customInfo nozzleTemp="${nozzleTemp}C"`,
+		`;customInfo layerHeight="${layerHeight ?? "1"}mm"`,
 		";# START GCODE SEQUENCE FOR CUP PRINT#;",
 
 		"G21 ; Set units to millimeters",
@@ -68,23 +72,24 @@ export async function generateGCode(
 
 		";##cup heater removal sequence##",
 		"M140 P1 S0 ;cup heater off",
-		"G1 Z70 F2250; Z moves up to pick up cup heater",
-		"G1 X120 F6000; X right to park cup heater",
-		"G1 Z17 F2250; Z down to place cup heater on bed",
-		"G1 X90 F2250; X left to disengage cup heater",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
+		"G1 Z70 F6000; Z moves up to pick up cup heater",
+		"G1 X120 F6000; X right to park cup heater",
+		"G1 Z15 F6000; Z down to place cup heater on bed",
+		"G1 X90 F6000; X left to disengage cup heater",
+		`G1 Z${socketHeight} F6000; Z up to CH + 5 for groove fill`,
 		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 		"G4 S2 ; pause for 2 seconds for prime to finish",
-		`G1 Z${socketHeight} F2000; Z up to CH + 5 for groove fill`,
 
 		// Groove fill was removed because the cups do not require it anymore.
 		";##Groove fill",
-		"G1 X50 Y0 F2250 ; Move to start of pre groove fill extrusion",
+		"G1 X50 Y0 F6000 ; Move to start of pre groove fill extrusion",
 		"G1 E15 E300 ; extrude a bit to make up for any ooze",
-		"G1 X39 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
-		"G1 E20 E300 ;extruder a bit to prevent a small gap at the start/end.",
+		"G1 X36 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
+		// "G1 E20 E300 ;extruder a bit to prevent a small gap at the start/end.",
 		" ;Extrude in a circle A",
-		"G3 X39 Y0 I-39 J0 E1030 F600 ; Counter-Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
+		"G1 X38.5 F2250 	     		; 7.16.25 move back to cup",
+		"G3 X38.5 Y0 I-38.5 J0 E255 F1200 ; Counter-Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete groove fill).",
 
 		";#End of start gcode sequence for cup print#",
 		";##Spiral vase mode socket print to start immediately following this.",
@@ -92,7 +97,7 @@ export async function generateGCode(
 		";--------print file in here--------",
 	];
 
-	let previousPoint: RawPoint = { x: 39, y: 0, z: socketHeight }; // hardcoded start point... see from gcode
+	let previousPoint: RawPoint = { x: 38.5, y: 0.0, z: socketHeight }; // hardcoded start point... see from gcode
 
 	gcode.push(
 		`G1 X${previousPoint.x.toFixed(2)} Y${previousPoint.y.toFixed(
