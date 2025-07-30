@@ -26,44 +26,53 @@
   <div id="app">
     <div id="menuBar">
       <div>
-        <nav>
+        <nav role="menubar">
           <h1><a href="/">ProvelPrint</a></h1>
 
           <div class="menuBarButtonContainer">
-            <button class="menuBarButton">File</button>
+            <button role="menuitem" aria-haspopup="true" class="menuBarButton">File</button>
 
-            <div class="menuBarDropdown">
+            <div class="menuBarDropdown" role="menu">
               <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
                 id="stlFileInputLabel">
                 Open STL file
-                <input type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput" />
+                <input role="menuitem" type="file" accept=".stl" id="stlFileInput" name="stlFileInput"
+                  class="fileInput" />
               </label>
 
-              <button class="menuBarDropdownButton" id="restoreDefaultsButton" type="button">Restore Defaults</button>
+              <button role="menuitem" class="menuBarDropdownButton" id="restoreDefaultsButton" type="button">Restore
+                Defaults</button>
 
-              <button class="menuBarDropdownButton" id="clearModelButton" type="button">Clear model</button>
+              <button role="menuitem" class="menuBarDropdownButton" id="clearModelButton" type="button">Clear
+                model</button>
 
-              <button class="menuBarDropdownButton" id="addTestStlButton" type="button">Load Test STL</button>
+              <button role="menuitem" class="menuBarDropdownButton" id="addTestStlButton" type="button">Load Test
+                STL</button>
 
-              <a download href="/test_cylinder.gcode" class="menuBarDropdownButton">Get Test Cylinder GCode</a>
+              <a role="menuitem" download href="/test_cylinder.gcode" class="menuBarDropdownButton">Get Test Cylinder
+                GCode</a>
             </div>
           </div>
 
           <div class="menuBarButtonContainer">
-            <button class="menuBarButton">Edit</button>
+            <button role="menuitem" aria-haspopup="true" class="menuBarButton">Edit</button>
 
-            <div class="menuBarDropdown">
-              <button class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material Profile</button>
-              <button class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit Active Material
+            <div class="menuBarDropdown" role="menu">
+              <button role="menuitem" class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material
                 Profile</button>
-              <button class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete Active Material
+              <button role="menuitem" class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit
+                Active Material
+                Profile</button>
+              <button role="menuitem" class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete
+                Active Material
                 Profile</button>
             </div>
           </div>
 
-          <a class="menuBarButton noDropdown" href="/help.html">Help</a>
+          <a role="menuitem" class="menuBarButton noDropdown" href="/help.html">Help</a>
 
-          <button id="activateInfoDialog" class="menuBarButton noDropdown" type="button">Info</button>
+          <button role="menuitem" aria-haspopup="true" id="activateInfoDialog" class="menuBarButton noDropdown"
+            type="button">Info</button>
         </nav>
 
         <div id="printActions">
@@ -76,67 +85,90 @@
 
     <main>
       <div id="userInterface">
-        <form id="appForm">
-          <label for="ipAddressInput">IP Address and Port</label>
-          <div id="ipAddress">
-            <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress"
-              value="" placeholder="192.168.X.XXX" />
+        <form id="appForm" aria-labelledby="appFormTitle">
+          <h2 id="appFormTitle" class="hide">Socket Print Settings</h2>
+          <div class="form-group">
+            <label for="ipAddressInput">IP Address and Port</label>
+            <div id="ipAddress">
+              <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress"
+                value="" placeholder="192.168.X.XXX:xxxx" aria-required="true" aria-label="IP Address and Port" />
+            </div>
           </div>
 
-          <label>Port Status</label>
-          <div id="portStatusIcons">
-            <p id="ipAddressSuccess" class="hide">Connected</p>
-            <p id="ipAddressFailure">Disconnected</p>
+          <div aria-describedby="portStatusIcons">
+            <span>Port Status</span>
+            <div id="portStatusIcons" aria-live="polite">
+              <p id="ipAddressSuccess" class="hide">Connected</p>
+              <p id="ipAddressFailure">Disconnected</p>
+            </div>
           </div>
 
-          <label for="lockPosition">Lock Position</label>
-          <select name="lockPosition" id="lockPosition">
-            <option value="left" selected>Left</option>
-            <option value="right">Right</option>
-          </select>
+          <div class="form-group">
+            <label for="lockPosition">Lock Position</label>
+            <select name="lockPosition" id="lockPosition" aria-label="Lock Position">
+              <option value="left" selected>Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
 
-          <label for="cupSize">Cup Size</label>
-          <select name="cupSize" id="cupSize">
-            <option value="93x38" selected>93 x 38</option>
-            <option value="93x25">93 x 25</option>
-          </select>
+          <div class="form-group">
+            <label for="cupSize">Cup Size</label>
+            <select name="cupSize" id="cupSize" aria-label="Cup Size">
+              <option value="93x38" selected>93 x 38</option>
+              <option value="93x25">93 x 25</option>
+            </select>
+          </div>
 
-          <label for="nozzleSize">Nozzle Size</label>
-          <select name="nozzleSize" id="nozzleSize">
-            <option value="3">3mm</option>
-            <option value="4">4mm</option>
-            <option value="5" selected>5mm</option>
-            <option value="6">6mm</option>
-            <option value="7">7mm</option>
-          </select>
+          <div class="form-group">
+            <label for="nozzleSize">Nozzle Size</label>
+            <select name="nozzleSize" id="nozzleSize" aria-label="Nozzle Size">
+              <option value="3">3mm</option>
+              <option value="4">4mm</option>
+              <option value="5" selected>5mm</option>
+              <option value="6">6mm</option>
+              <option value="7">7mm</option>
+            </select>
+          </div>
 
-          <label for="layerHeight">Layer Height</label>
-          <select name="layerHeight" id="layerHeight">
-            <option value="0.5">0.5mm</option>
-            <option value="1" selected>1mm</option>
-            <option value="1.5">1.5mm</option>
-            <option value="2">2mm</option>
-          </select>
+          <div class="form-group">
+            <label for="layerHeight">Layer Height</label>
+            <select name="layerHeight" id="layerHeight" aria-label="Layer Height">
+              <option value="0.5">0.5mm</option>
+              <option value="1" selected>1mm</option>
+              <option value="1.5">1.5mm</option>
+              <option value="2">2mm</option>
+            </select>
+          </div>
 
-          <label for="activeMaterialProfile">Material</label>
-          <select name="activeMaterialProfile" id="activeMaterialProfile" name="activeMaterialProfile"></select>
+          <div class="form-group">
+            <label for="activeMaterialProfile">Material</label>
+            <select name="activeMaterialProfile" id="activeMaterialProfile" aria-label="Material"></select>
+          </div>
+
+          <div>
+            <span>Nozzle Temp (C): </span><span id="nozzleTempDisplay">200</span>
+          </div>
+
+          <div>
+            <span>Cup Temp (C): </span><span id="cupTempDisplay">130</span>
+          </div>
+
+          <div>
+            <span>Shrink Factor (%): </span><span id="shrinkFactorDisplay">2.6</span>
+          </div>
+
+          <div>
+            <span>Output Factor: </span><span id="outputFactorDisplay">1</span>
+          </div>
+
+          <div>
+            <span>Seconds Per Layer: </span><span id="secondsPerLayerDisplay">1</span>
+          </div>
         </form>
-
-        <div id="materialProfileDisplay">
-          <span>Nozzle Temp (C): </span><span id="nozzleTempDisplay">200</span>
-
-          <span>Cup Temp (C): </span><span id="cupTempDisplay">130</span>
-
-          <span>Shrink Factor (%): </span><span id="shrinkFactorDisplay">2.6</span>
-
-          <span>Output Factor: </span><span id="outputFactorDisplay">1</span>
-
-          <span>Seconds Per Layer: </span><span id="secondsPerLayerDisplay">1</span>
-        </div>
       </div>
 
       <div id="secondaryInterface">
-        <div id="provelPrint">
+        <div id="provelPrint" aria-label="3D Print Preview Area">
           <span id="activeFileName">No file selected</span>
           <div id="estimatedPrintTime">
             <p style="margin: 10px 0px">Estimated Print Time:</p>
@@ -146,15 +178,15 @@
           <canvas id="3dViewer"></canvas>
         </div>
 
-        <div id="editSocket">
+        <div id="editSocket" aria-label="Socket Edit Controls">
           <div id="rotateSocket">
-            <p>Rotate 90</p>
+            <span>Rotate 90</span>
             <button disabled id="coronalRotater" type="button">Coronal</button>
             <button disabled id="sagittalRotate" type="button">Sagittal</button>
             <button disabled id="transversalRotater" type="button">Transverse</button>
           </div>
           <div id="changePosition">
-            <p>Translate</p>
+            <span>Translate</span>
             <label for="horizontalTranslate">X
               <input disabled id="horizontalTranslate" type="number" value="0" step="1" min="-100" max="100" />
             </label>
@@ -174,13 +206,13 @@
 
   <app-info></app-info>
 
-  <div id="progressBarDiv">
+  <div id="progressBarDiv" aria-live="polite" aria-label="Progress Bar">
     <icon-element type="loader"></icon-element>
     <label for="progressBar" id="progressBarLabel">0%</label>
     <progress id="progressBar" value="0" max="100"></progress>
   </div>
 
-  <div id="loading">
+  <div id="loading" aria-live="assertive" aria-label="Loading Spinner">
     <icon-element type="loader"></icon-element>
   </div>
 
