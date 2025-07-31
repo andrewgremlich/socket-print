@@ -88,12 +88,20 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			data: heightPosition / maxHeight,
 		});
 
+		const startAngle = pi;
 		for (
-			let angle = angleIncrement - pi;
-			angle < pi * 2 - pi;
+			let angle = startAngle;
+			angle < startAngle + pi * 2;
 			angle += angleIncrement
 		) {
 			const height = heightPosition + (angle / (pi * 2)) * layerHeight;
+
+			console.log({
+				heightPosition,
+				angle: angle,
+				height: layerHeight,
+			});
+
 			const xdirection = cos(-angle);
 			const zdirection = sin(-angle);
 
@@ -104,6 +112,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 
 			if (intersects.length > 0) {
 				const intersection = intersects[intersects.length - 1].point;
+
 				intersection.add(new Vector3(0, socketHeight, 0));
 				pointLevel.push(intersection);
 			} else {

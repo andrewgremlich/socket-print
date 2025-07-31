@@ -114,8 +114,8 @@
           <div class="form-group">
             <label for="cupSize">Cup Size</label>
             <select name="cupSize" id="cupSize" aria-label="Cup Size">
-              <option value="93x38" selected>93 x 38</option>
-              <option value="93x25">93 x 25</option>
+              <option value="84x38" selected>84 x 38</option>
+              <option value="84x25">84 x 25</option>
             </select>
           </div>
 
@@ -170,10 +170,9 @@
       <div id="secondaryInterface">
         <div id="provelPrint" aria-label="3D Print Preview Area">
           <span id="activeFileName">No file selected</span>
-          <div id="estimatedPrintTime">
-            <p style="margin: 10px 0px">Estimated Print Time:</p>
-
-            <p id="estimatedPrintTime"></p>
+          <div id="estimatedPrintTimeContainer" aria-label="Estimated Print Time">
+            <span>Estimated Print Time:</span>
+            <span id="estimatedPrintTime">0m 0s</span>
           </div>
           <canvas id="3dViewer"></canvas>
         </div>

@@ -21,19 +21,17 @@ export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
 }
 
-interface GCodeOptions {
-	estimatedTime?: string; // Estimated printing time
-}
-
 export async function generateGCode(
 	pointGatherer: RawPoint[][],
 	feedratePerLevel: number[],
 	verticalAxis: "y" | "z" = "y",
-	options: GCodeOptions = {},
+	options: {
+		estimatedTime?: string;
+	} = {},
 ): Promise<string> {
 	const { estimatedTime = "0m 0s" } = options;
 	const activeMaterialProfile = await getActiveMaterialProfile();
-	const extrusionFactor = await getActiveMaterialProfileOutputFactor();
+	const outputFactor = await getActiveMaterialProfileOutputFactor();
 	const nozzleSize = await getNozzleSize();
 	const cupSize = await getCupSize();
 	const lockPosition = await getLockPosition();
@@ -129,10 +127,12 @@ export async function generateGCode(
 			const dx = point.x - previousPoint.x;
 			const dy = point.y - previousPoint.y;
 			const dz = point.z - previousPoint.z;
-			const extrusionMultiplier =
-				j === 0 ? extrusionFactor : extrusionFactor * 0.77;
-			extrusion =
-				(sqrt(dx * dx + dy * dy + dz * dz) as number) * extrusionMultiplier;
+			const distance = sqrt(dx * dx + dy * dy + dz * dz) as number;
+			const extrusionVolume =
+				distance * Number(layerHeight) * Number(nozzleSize);
+			const extrusionMultiplier = j === 0 ? outputFactor : outputFactor * 0.77;
+
+			extrusion = extrusionVolume * extrusionMultiplier;
 
 			if (i === 0) {
 				extrusion = extrusion * ((j + 1) / pointLevel.length);
@@ -148,6 +148,7 @@ export async function generateGCode(
 
 	gcode.push(
 		";# END GCODE SEQUENCE FOR CUP PRINT#;",
+		// "G1 Z3 F6000 ; move up 3mm before purge",
 		"M107",
 		"set global.pelletFeedOn = false",
 		"G4 S1 ; pause for 1 second to stop extrudate",

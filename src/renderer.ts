@@ -42,8 +42,8 @@ if (!window.Worker) {
 const app = new Application();
 const ring = new Ring();
 const mergeCup = new MergeCup();
-const removeMeshes = (socketMesh: Mesh) => {
-	app.removeMeshFromScene(socketMesh);
+const removeMeshes = (socketMeshes: Mesh[]) => {
+	socketMeshes.forEach((mesh) => app.removeMeshFromScene(mesh));
 
 	horizontalTranslate.value = "0";
 	depthTranslate.value = "0";
@@ -83,7 +83,7 @@ const socket = new Socket({
 app.addToScene(ring.mesh);
 
 clearModelButton.addEventListener("click", async () => {
-	removeMeshes(socket.mesh);
+	removeMeshes([socket.mesh, mergeCup.mesh]);
 	await deleteAllFiles();
 });
 

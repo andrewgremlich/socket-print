@@ -15,7 +15,7 @@ import { EntityEnum, type FormValues, type ProvelPrintSettings } from "./types";
 const defaultFormValues: FormValues = {
 	ipAddress: "",
 	lockPosition: "right",
-	cupSize: "93x25",
+	cupSize: "84x25",
 	nozzleSize: 5,
 	layerHeight: 1,
 	activeMaterialProfile: "cp1",

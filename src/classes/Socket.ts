@@ -1,6 +1,5 @@
 import { abs, max, pi } from "mathjs";
 import {
-	type Box3,
 	type BufferGeometry,
 	DoubleSide,
 	Mesh,
@@ -26,7 +25,6 @@ import {
 	verticalTranslate,
 } from "@/utils/htmlElements";
 import { AppObject } from "./AppObject";
-import type { Ring } from "./Ring";
 
 type SocketCallback = (params: { maxDimension: number }) => void;
 
