@@ -5,7 +5,7 @@ import {
 	makeDefaultsKeyValues,
 	makeMaterialProfileDefaults,
 } from "./dbDefaults";
-import { resetAllDefaultKeyValues } from "./keyValueSettings";
+import { setFormValues } from "./keyValueSettings";
 import {
 	loadActiveMaterialProfile,
 	loadMainDataForm,
@@ -42,7 +42,6 @@ const initData = async () => {
 await initData();
 
 restoreDefaultsButton.addEventListener("click", async () => {
-	console.log("Restoring defaults...");
 	await makeDefaultsKeyValues(EntityEnum.formValues, defaultFormValues, true);
 	await initData();
 });
@@ -50,12 +49,14 @@ restoreDefaultsButton.addEventListener("click", async () => {
 appForm.addEventListener("change", async (event) => {
 	event.preventDefault();
 
+	console.log("Form changed, saving settings...");
+
 	const storeForm = new FormData(appForm);
 	const storeFormEntries = Object.fromEntries(
 		storeForm.entries(),
 	) as unknown as ProvelPrintSettings;
 
-	await resetAllDefaultKeyValues(EntityEnum.formValues, storeFormEntries);
+	await setFormValues(storeFormEntries);
 
 	const name = (event.target as HTMLInputElement).name;
 

@@ -33,6 +33,7 @@ import {
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
+import { deleteAllFiles } from "./db/file";
 
 if (!window.Worker) {
 	throw new Error("Web Worker not supported");
@@ -41,10 +42,8 @@ if (!window.Worker) {
 const app = new Application();
 const ring = new Ring();
 const mergeCup = new MergeCup();
-const removeMeshes = (socketMesh: Mesh, mergeCupMesh: Mesh) => {
-	console.log("removed", socketMesh, mergeCupMesh);
+const removeMeshes = (socketMesh: Mesh) => {
 	app.removeMeshFromScene(socketMesh);
-	app.removeMeshFromScene(mergeCupMesh);
 
 	horizontalTranslate.value = "0";
 	depthTranslate.value = "0";
@@ -60,6 +59,17 @@ const socket = new Socket({
 	socketCallback: ({ maxDimension }) => {
 		app.camera.position.set(0, 200, -maxDimension);
 		app.controls.target.set(0, 100, 0);
+
+		const existingSockets = app.scene.children.filter(
+			(child) => child.type === "Mesh" && child.userData.isSocket,
+		);
+
+		if (existingSockets.length > 0) {
+			existingSockets.forEach((child) => {
+				app.removeMeshFromScene(child as Mesh);
+			});
+		}
+
 		app.addToScene(socket.mesh);
 
 		if (!loadingScreen) {
@@ -72,9 +82,10 @@ const socket = new Socket({
 
 app.addToScene(ring.mesh);
 
-clearModelButton.addEventListener("click", () =>
-	removeMeshes(socket.mesh, mergeCup.mesh),
-);
+clearModelButton.addEventListener("click", async () => {
+	removeMeshes(socket.mesh);
+	await deleteAllFiles();
+});
 
 export async function slicingAction(sendToFile: boolean) {
 	mergeCup.setHeight(socket.boundingBox.max.y);

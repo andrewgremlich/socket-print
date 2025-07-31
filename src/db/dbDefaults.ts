@@ -60,12 +60,19 @@ export async function makeDefaultsKeyValues(
 		}
 
 		await Promise.all(
-			missingKeys.map((name) =>
-				db[collection].add({
+			missingKeys.map((name) => {
+				if (collection === "savedFiles") {
+					// Provide a default Blob for missing files
+					return db[collection].add({
+						name,
+						file: new Blob([], { type: "application/octet-stream" }),
+					});
+				}
+				return db[collection].add({
 					name,
 					value: defaultValues[name],
-				}),
-			),
+				});
+			}),
 		);
 	}
 }

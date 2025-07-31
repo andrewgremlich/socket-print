@@ -16,6 +16,8 @@ export type MaterialProfile = {
 	secondsPerLayer: number;
 };
 
+export type SavedFile = { id: number; name: string; file: Blob };
+
 export type FormValues = {
 	ipAddress: string;
 	lockPosition: "left" | "right";
@@ -34,6 +36,7 @@ export type Entities = {
 	formValues: EntityTable<KeyValueSetting, "id">;
 	appSettings: EntityTable<KeyValueSetting, "id">;
 	materialProfiles: EntityTable<MaterialProfile, "id">;
+	savedFiles: EntityTable<SavedFile, "id">;
 };
 
 // Create an enum from the keys
@@ -41,6 +44,7 @@ export enum EntityEnum {
 	formValues = "formValues",
 	appSettings = "appSettings",
 	materialProfiles = "materialProfiles",
+	savedFiles = "savedFiles",
 }
 
 export type DefaultKeyValueCollectionNames = Exclude<

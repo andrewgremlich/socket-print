@@ -1,17 +1,12 @@
 import { getDb } from "./getDb";
-import type {
-	DefaultKeyValueCollectionNames,
-	DefaultKeyValueCollectionValues,
-	FormValues,
-} from "./types";
+import type { DefaultKeyValueCollectionValues, FormValues } from "./types";
 
 export const getFormKeyValues = async () => {
 	const db = await getDb();
 	return await db.formValues.toArray();
 };
 
-export const resetAllDefaultKeyValues = async (
-	collection: DefaultKeyValueCollectionNames,
+export const setFormValues = async (
 	settings: DefaultKeyValueCollectionValues,
 ) => {
 	const db = await getDb();
@@ -22,7 +17,7 @@ export const resetAllDefaultKeyValues = async (
 	}));
 
 	for (const setting of settingsArray) {
-		await db[collection]
+		await db.formValues
 			.where("name")
 			.equals(setting.name)
 			.modify({ value: setting.value });

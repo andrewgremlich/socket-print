@@ -11,6 +11,7 @@ export const getDb = async () => {
 			appSettings: "++id, name, value",
 			materialProfiles:
 				"++id, name, nozzleTemp, cupTemp, shrinkFactor, outputFactor, secondsPerLayer",
+			savedFiles: "++id, name, file",
 		});
 	}
 

@@ -11,6 +11,7 @@ import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import type { RawPoint } from "@/3d/blendHardEdges";
 import { ensureUV } from "@/3d/ensureUV";
+import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
 import { getLockDepth } from "@/db/keyValueSettings";
 import {
 	activeFileName,
@@ -24,7 +25,6 @@ import {
 	transversalRotater,
 	verticalTranslate,
 } from "@/utils/htmlElements";
-
 import { AppObject } from "./AppObject";
 import type { Ring } from "./Ring";
 
@@ -47,19 +47,33 @@ export class Socket extends AppObject {
 			throw new Error("STL File Input not found");
 		}
 
+		const setStlFileInputAndDispatch = (file: File) => {
+			const dataTransfer = new DataTransfer();
+			dataTransfer.items.add(file);
+			stlFileInput.files = dataTransfer.files;
+			const changeEvent = new Event("change", { bubbles: true });
+			stlFileInput.dispatchEvent(changeEvent);
+		};
+
+		getAllFiles().then((files) => {
+			if (files.length === 1) {
+				const { file, name } = files[0];
+				const stlFile = new File([file], name, {
+					type: "model/stl",
+				});
+				setStlFileInputAndDispatch(stlFile);
+			} else {
+				console.warn("No files found in the database.");
+			}
+		});
+
 		addTestStlButton?.addEventListener("click", async () => {
 			const response = await fetch("/test_stl_file.stl");
 			const arrayBuffer = await response.arrayBuffer();
 			const file = new File([arrayBuffer], "test_stl_file.stl", {
 				type: "model/stl",
 			});
-
-			const dataTransfer = new DataTransfer();
-			dataTransfer.items.add(file);
-			stlFileInput.files = dataTransfer.files;
-
-			const changeEvent = new Event("change", { bubbles: true });
-			stlFileInput.dispatchEvent(changeEvent);
+			setStlFileInputAndDispatch(file);
 		});
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
 		coronalRotater?.addEventListener("click", this.coronalRotate90);
@@ -76,13 +90,6 @@ export class Socket extends AppObject {
 		});
 	}
 
-	hasIntersection = (ring: Ring): boolean => {
-		return this.mesh.geometry.boundsTree.intersectsGeometry(
-			this.mesh.geometry,
-			ring.mesh.matrixWorld,
-		);
-	};
-
 	#onStlFileChange = async ({ target: inputFiles }: Event) => {
 		const file = (inputFiles as HTMLInputElement).files?.[0];
 
@@ -95,6 +102,12 @@ export class Socket extends AppObject {
 		}
 
 		if (file) {
+			await deleteAllFiles();
+			await setFileByName(file.name, {
+				name: file.name,
+				file: file,
+			});
+
 			loadingScreen.style.display = "flex";
 
 			const rawGeometry = await this.#readSTLFile(file);
@@ -116,6 +129,7 @@ export class Socket extends AppObject {
 			this.mesh.geometry.boundsTree = bvh;
 
 			this.mesh.name = file.name;
+			this.mesh.userData = { isSocket: true };
 			this.computeBoundingBox();
 			activeFileName.textContent = file.name;
 			this.lockDepth = await getLockDepth();

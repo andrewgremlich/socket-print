@@ -1,0 +1,7 @@
+{
+	"tasks": {
+		"mock-printer": {
+			"command": "deno run --allow-net mock-printer.ts"
+		}
+	}
+}

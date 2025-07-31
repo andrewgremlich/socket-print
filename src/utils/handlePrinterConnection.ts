@@ -14,7 +14,6 @@ let retryCount = 0;
 const MAX_RETRIES = 10;
 
 export const printerConnection = async () => {
-	console.log("Attempting to connect to printer...");
 	// Prevent concurrent connection attempts
 	if (isConnecting) {
 		return;
@@ -36,9 +35,6 @@ export const printerConnection = async () => {
 
 	try {
 		const { sessionTimeout } = await connectToPrinter(ipAddress);
-
-		console.log("Connected to printer at:", ipAddress);
-		console.log("Session timeout:", sessionTimeout);
 
 		// Reset retry count on successful connection
 		retryCount = 0;
