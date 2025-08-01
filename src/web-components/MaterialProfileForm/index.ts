@@ -40,7 +40,7 @@ export class MaterialProfileForm extends HTMLElement {
             <input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
             
             <label for="outputFactor">Output Factor</label>
-            <input type="number" step="0.1" value="1" name="outputFactor" id="outputFactor" required />
+            <input type="number" min="0.1" step="0.1" value="1" name="outputFactor" id="outputFactor" required />
 
             <label for="secondsPerLayer">Seconds Per Layer</label>
             <input type="number" value="8" name="secondsPerLayer" id="secondsPerLayer" required />

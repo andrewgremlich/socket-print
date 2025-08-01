@@ -74,7 +74,7 @@ export async function generateGCode(
 		"G1 Z70 F6000; Z moves up to pick up cup heater",
 		"G1 X120 F6000; X right to park cup heater",
 		"G1 Z15 F6000; Z down to place cup heater on bed",
-		"G1 X90 F6000; X left to disengage cup heater",
+		"G1 X95 F6000; X left to disengage cup heater",
 		`G1 Z${socketHeight} F6000; Z up to CH + 5 for groove fill`,
 		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 		"G4 S2 ; pause for 2 seconds for prime to finish",
