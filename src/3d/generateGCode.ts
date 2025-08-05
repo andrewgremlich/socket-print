@@ -1,4 +1,4 @@
-import { round, sqrt } from "mathjs";
+import { min, round, sqrt } from "mathjs";
 import pkg from "pkg";
 
 import {
@@ -128,15 +128,15 @@ export async function generateGCode(
 			const dy = point.y - previousPoint.y;
 			const dz = point.z - previousPoint.z;
 			const distance = sqrt(dx * dx + dy * dy + dz * dz) as number;
-			const extrusionVolume =
-				distance * Number(layerHeight) * Number(nozzleSize);
-			const extrusionMultiplier = j === 0 ? outputFactor : outputFactor * 0.77;
 
-			extrusion = extrusionVolume * extrusionMultiplier;
+			const lineWidth = nozzleSize * outputFactor;
+			const extrusionVolume = distance * layerHeight * lineWidth;
 
-			if (i === 0) {
-				extrusion = extrusion * ((j + 1) / pointLevel.length);
-			}
+			extrusion = extrusionVolume;
+
+			// if (i === 0) {
+			// 	extrusion = extrusion * ((j + 1) / pointLevel.length);
+			// }
 
 			previousPoint = point;
 			const flipHeight = flipVerticalAxis(verticalAxis);
