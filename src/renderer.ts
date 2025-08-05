@@ -135,6 +135,8 @@ export async function slicingAction(sendToFile: boolean) {
 		}
 	};
 
+	app.removeMeshFromScene(mergeCup.mesh);
+
 	return "";
 }
 

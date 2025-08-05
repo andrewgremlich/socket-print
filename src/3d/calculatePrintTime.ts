@@ -28,6 +28,15 @@ export async function calculatePrintTime(
 			}
 		}
 
+		if (feedratePerLevel[i] === 0) {
+			console.warn(
+				"Feedrate for layer",
+				i,
+				"is 0, skipping distance calculation",
+			);
+			continue;
+		}
+
 		totalDistance += layerDistance / feedratePerLevel[i];
 	}
 
@@ -46,6 +55,15 @@ export async function calculatePrintTime(
 				const dz = p2.z - p1.z;
 				layerDistance += sqrt(dx * dx + dy * dy + dz * dz) as number;
 			}
+		}
+
+		if (feedratePerLevel[i] === 0) {
+			console.warn(
+				"Feedrate for layer",
+				i,
+				"is 0, skipping distance calculation",
+			);
+			continue;
 		}
 
 		totalDistance += layerDistance / feedratePerLevel[i];
