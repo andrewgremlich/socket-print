@@ -128,7 +128,7 @@ export async function generateGCode(
 			const dz = round(point.z, 2) - round(previousPoint.z, 2);
 			const distance = sqrt(dx * dx + dy * dy + dz * dz) as number;
 
-			const lineWidth = nozzleSize * outputFactor;
+			const lineWidth = nozzleSize * (outputFactor / 100);
 			const extrusionVolume = distance * layerHeight * lineWidth;
 
 			extrusion = extrusionVolume;

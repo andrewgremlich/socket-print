@@ -30,17 +30,17 @@ export class MaterialProfileForm extends HTMLElement {
             <label for="materialProfileName">Material Profile Name</label>
             <input type="text" id="materialProfileName" name="materialProfileName" required />
             
-            <label for="nozzleTemp">Nozzle Temp in C</label>
+            <label for="nozzleTemp">Nozzle Temp (C)</label>
             <input type="number" value="200" name="nozzleTemp" id="nozzleTemp" required />
             
-            <label for="cupTemp">Cup Temp in C</label>
+            <label for="cupTemp">Cup Temp (C)</label>
             <input type="number" value="130" name="cupTemp" id="cupTemp" required />
             
-            <label for="shrinkFactor">Shrink Factor %</label>
+            <label for="shrinkFactor">Shrink Factor (%)</label>
             <input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
-            
-            <label for="outputFactor">Output Factor</label>
-            <input type="number" min="0.01" step="0.01" value="0.2" name="outputFactor" id="outputFactor" required />
+
+            <label for="outputFactor">Output Factor (%)</label>
+            <input type="number" min="1" step="1" value="20" name="outputFactor" id="outputFactor" required />
 
             <label for="secondsPerLayer">Seconds Per Layer</label>
             <input type="number" value="8" name="secondsPerLayer" id="secondsPerLayer" required />
