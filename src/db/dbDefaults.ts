@@ -10,7 +10,7 @@ const materialProfileDefaults: Omit<MaterialProfile, "id"> = {
 	nozzleTemp: 200,
 	cupTemp: 130,
 	shrinkFactor: 2.6,
-	outputFactor: 1.0,
+	outputFactor: 0.2,
 	secondsPerLayer: 8,
 };
 

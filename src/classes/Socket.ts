@@ -71,6 +71,7 @@ export class Socket extends AppObject {
 			const file = new File([arrayBuffer], "test_stl_file.stl", {
 				type: "model/stl",
 			});
+
 			setStlFileInputAndDispatch(file);
 		});
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
@@ -146,6 +147,10 @@ export class Socket extends AppObject {
 				y: this.mesh.position.y,
 				z: this.mesh.position.z,
 			};
+
+			horizontalTranslate.value = "0";
+			verticalTranslate.value = "0";
+			depthTranslate.value = "0";
 
 			this.socketCallback({
 				maxDimension: max(this.size.x, this.size.y, this.size.z),

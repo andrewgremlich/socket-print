@@ -1,5 +1,5 @@
 // NOTE: This only works in HTTPS
-const cacheName = "v9";
+const cacheName = "v10";
 
 const addResourcesToCache = async (resources) => {
 	const cache = await caches.open(cacheName);

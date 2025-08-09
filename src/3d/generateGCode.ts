@@ -1,4 +1,4 @@
-import { min, round, sqrt } from "mathjs";
+import { round, sqrt } from "mathjs";
 import pkg from "pkg";
 
 import {
@@ -65,24 +65,25 @@ export async function generateGCode(
 
 		";## move to prime position/ pickup cup heater start position ##",
 		"G1 Y0 Z48 F6000 ;Z down to cup height + 10 , Y moves back to cup center",
-		"G1 X-95 ; only once at correct Z height move in to register with cup heater for pickup",
+		"G1 X-90 ; only once at correct Z height move in to register with cup heater for pickup",
 		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
 
 		";##cup heater removal sequence##",
 		"M140 P1 S0 ;cup heater off",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
 		"G1 Z70 F6000; Z moves up to pick up cup heater",
-		"G1 X90 F6000; X right to park cup heater",
+		"G1 X120 F6000; X right to park cup heater",
 		"G1 Z15 F6000; Z down to place cup heater on bed",
 		"G1 X95 F6000; X left to disengage cup heater",
 		`G1 Z${socketHeight} F6000; Z up to CH + 5 for groove fill`,
 		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
-		"G4 S2 ; pause for 2 seconds for prime to finish",
+		// "G4 S2 ; pause for 2 seconds for prime to finish",
 
 		// Groove fill was removed because the cups do not require it anymore.
 		";##Groove fill",
 		"G1 X50 Y0 F6000 ; Move to start of pre groove fill extrusion",
-		"G1 E15 E300 ; extrude a bit to make up for any ooze",
+		// "G1 E15 E300 ; extrude a bit to make up for any ooze",
+		"G1 E15 ; extrude a bit to make up for any ooze",
 		"G1 X36 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
 		// "G1 E20 E300 ;extruder a bit to prevent a small gap at the start/end.",
 		" ;Extrude in a circle A",
@@ -95,12 +96,10 @@ export async function generateGCode(
 		";--------print file in here--------",
 	];
 
-	let previousPoint: RawPoint = { x: 38.5, y: 0.0, z: socketHeight }; // hardcoded start point... see from gcode
+	let previousPoint: RawPoint = { x: -38.5, y: socketHeight, z: 0.0 }; // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
 
 	gcode.push(
-		`G1 X${previousPoint.x.toFixed(2)} Y${previousPoint.y.toFixed(
-			2,
-		)} Z${previousPoint.z.toFixed(2)} F2250`,
+		`G1 X${-round(previousPoint.x, 2)} Y${round(previousPoint.z, 2)} Z${round(previousPoint.y, 2)} F2250`,
 	);
 
 	for (let i = 0; i < pointGatherer.length; i++) {
@@ -124,15 +123,33 @@ export async function generateGCode(
 			let extrusion = 0;
 
 			const point = pointLevel[j];
-			const dx = point.x - previousPoint.x;
-			const dy = point.y - previousPoint.y;
-			const dz = point.z - previousPoint.z;
+			const dx = round(point.x, 2) - round(previousPoint.x, 2);
+			const dy = round(point.y, 2) - round(previousPoint.y, 2);
+			const dz = round(point.z, 2) - round(previousPoint.z, 2);
 			const distance = sqrt(dx * dx + dy * dy + dz * dz) as number;
 
 			const lineWidth = nozzleSize * outputFactor;
 			const extrusionVolume = distance * layerHeight * lineWidth;
 
 			extrusion = extrusionVolume;
+
+			if (i === 0 && j === 0) {
+				console.log({
+					point: {
+						x: round(point.x, 2),
+						y: round(point.y, 2),
+						z: round(point.z, 2),
+					},
+					previousPoint,
+				});
+				console.log(`Extrusion for point ${j}: ${extrusion}`, {
+					nozzleSize,
+					outputFactor,
+					layerHeight,
+					distance,
+					lineWidth,
+				});
+			}
 
 			// if (i === 0) {
 			// 	extrusion = extrusion * ((j + 1) / pointLevel.length);

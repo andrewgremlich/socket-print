@@ -49,8 +49,6 @@ restoreDefaultsButton.addEventListener("click", async () => {
 appForm.addEventListener("change", async (event) => {
 	event.preventDefault();
 
-	console.log("Form changed, saving settings...");
-
 	const storeForm = new FormData(appForm);
 	const storeFormEntries = Object.fromEntries(
 		storeForm.entries(),
