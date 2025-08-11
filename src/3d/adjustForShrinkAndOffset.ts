@@ -23,23 +23,17 @@ export async function adjustForShrinkAndOffset(
 		const adjustedLayer: RawPoint[] = [];
 
 		for (const pt of layer) {
-			// Shift the point relative to the center
 			const dx = pt.x - center.x;
 			const dz = pt.z - center.z;
-
-			// Get polar coordinates from the shifted point (projected on X-Y plane)
 			const r = sqrt(dx * dx + dz * dz) as number;
 			const theta = atan2(dz, dx);
-
-			// Adjust radius: add nozzle size and apply shrink percentage adjustment
-			let adjustedR = r + nozzleSize / 2;
-			adjustedR = adjustedR * (1 - shrinkAllowance / 100);
+			const newRadius = r * (1 + shrinkAllowance / 100);
 
 			// Create new adjusted point and shift it back to the original coordinate system
 			adjustedLayer.push({
-				x: center.x + adjustedR * cos(theta),
+				x: center.x + newRadius * cos(theta),
 				y: pt.y,
-				z: center.z + adjustedR * sin(theta),
+				z: center.z + newRadius * sin(theta),
 			});
 		}
 		adjustedPoints.push(adjustedLayer);
