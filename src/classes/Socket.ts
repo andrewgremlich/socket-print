@@ -20,6 +20,7 @@ import {
 } from "@/db/keyValueSettings";
 import {
 	activeFileName,
+	addTestCylinderButton,
 	addTestStlButton,
 	coronalRotater,
 	depthTranslate,
@@ -78,6 +79,15 @@ export class Socket extends AppObject {
 			const response = await fetch("/test_stl_file.stl");
 			const arrayBuffer = await response.arrayBuffer();
 			const file = new File([arrayBuffer], "test_stl_file.stl", {
+				type: "model/stl",
+			});
+
+			setStlFileInputAndDispatch(file);
+		});
+		addTestCylinderButton?.addEventListener("click", async () => {
+			const response = await fetch("CylinderTest77x50.stl");
+			const arrayBuffer = await response.arrayBuffer();
+			const file = new File([arrayBuffer], "CylinderTest77x50.stl", {
 				type: "model/stl",
 			});
 

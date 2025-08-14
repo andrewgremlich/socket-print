@@ -49,6 +49,9 @@
               <button role="menuitem" class="menuBarDropdownButton" id="addTestStlButton" type="button">Load Test
                 Socket STL</button>
 
+              <button role="menuitem" class="menuBarDropdownButton" id="addTestCylinderButton" type="button">Load Test
+                Cylinder STL</button>
+
               <a role="menuitem" download href="/test_cylinder.gcode" class="menuBarDropdownButton">Get Test Cylinder
                 GCode</a>
             </div>
@@ -74,12 +77,6 @@
           <button role="menuitem" aria-haspopup="true" id="activateInfoDialog" class="menuBarButton noDropdown"
             type="button">Info</button>
         </nav>
-
-        <div id="printActions">
-          <button type="button" id="generateGCodeButton">File</button>
-
-          <button type="button" id="printerFileInput" name="printerFileInput">Print</button>
-        </div>
       </div>
     </div>
 
@@ -104,11 +101,17 @@
           </div>
 
           <div class="form-group">
-            <label for="lockPosition">Lock Position</label>
-            <select name="lockPosition" id="lockPosition" aria-label="Lock Position">
-              <option value="left" selected>Left</option>
-              <option value="right">Right</option>
-            </select>
+            <label>Lock Position</label>
+            <div id="lockPositionGroup" style="display: flex; gap: 20px; align-items: center;">
+              <label for="lockPositionLeft" style="display: flex; align-items: center; gap: 5px;">
+                <input type="radio" id="lockPositionLeft" name="lockPosition" value="left" checked />
+                Left
+              </label>
+              <label for="lockPositionRight" style="display: flex; align-items: center; gap: 5px;">
+                <input type="radio" id="lockPositionRight" name="lockPosition" value="right" />
+                Right
+              </label>
+            </div>
           </div>
 
           <div class="form-group">
@@ -164,6 +167,12 @@
             <span>Seconds Per Layer: </span><span id="secondsPerLayerDisplay">1</span>
           </div>
         </form>
+
+        <div id="printActions">
+          <button type="button" id="generateGCodeButton">File</button>
+
+          <button type="button" id="printerFileInput" name="printerFileInput">Print</button>
+        </div>
       </div>
 
       <div id="secondaryInterface">
