@@ -20,6 +20,10 @@ import { MergeCup } from "@/classes/MergeCup";
 import { Ring } from "@/classes/Ring";
 import { Socket } from "@/classes/Socket";
 import {
+	updateRotateValues,
+	updateTranslateValues,
+} from "@/db/keyValueSettings";
+import {
 	activeFileName,
 	clearModelButton,
 	depthTranslate,
@@ -42,19 +46,6 @@ if (!window.Worker) {
 const app = new Application();
 const ring = new Ring();
 const mergeCup = new MergeCup();
-const removeMeshes = (socketMeshes: Mesh[]) => {
-	socketMeshes.forEach((mesh) => app.removeMeshFromScene(mesh));
-
-	horizontalTranslate.value = "0";
-	depthTranslate.value = "0";
-	verticalTranslate.value = "0";
-	activeFileName.textContent = "";
-
-	estimatedPrintTime.textContent = "0m 0s";
-
-	socket.clearData();
-	app.resetCameraPosition();
-};
 const socket = new Socket({
 	socketCallback: ({ maxDimension }) => {
 		app.camera.position.set(0, 200, -maxDimension);
@@ -82,8 +73,28 @@ const socket = new Socket({
 
 app.addToScene(ring.mesh);
 
+const removeMeshes = async (socketMeshes: Mesh[]) => {
+	socketMeshes.forEach((mesh) => {
+		app.removeMeshFromScene(mesh);
+	});
+
+	horizontalTranslate.value = "0";
+	depthTranslate.value = "0";
+	verticalTranslate.value = "0";
+	activeFileName.textContent = "";
+
+	estimatedPrintTime.textContent = "0m 0s";
+
+	// Zero out rotate and translate values in IndexedDB
+	await updateRotateValues(0, 0, 0);
+	await updateTranslateValues(0, socket.offsetYPosition ?? 0, 0);
+
+	socket.clearData();
+	app.resetCameraPosition();
+};
+
 clearModelButton.addEventListener("click", async () => {
-	removeMeshes([socket.mesh, mergeCup.mesh]);
+	await removeMeshes([socket.mesh, mergeCup.mesh]);
 	await deleteAllFiles();
 });
 
@@ -136,8 +147,6 @@ export async function slicingAction(sendToFile: boolean) {
 	};
 
 	app.removeMeshFromScene(mergeCup.mesh);
-
-	return "";
 }
 
 generateGCodeButton.addEventListener("click", async () => {

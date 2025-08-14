@@ -116,18 +116,13 @@ export async function generateGCode(
 		// }
 
 		for (let j = 0; j < pointLevel.length; j++) {
-			let extrusion = 0;
-
 			const point = pointLevel[j];
 			const dx = round(point.x, 2) - round(previousPoint.x, 2);
 			const dy = round(point.y, 2) - round(previousPoint.y, 2);
 			const dz = round(point.z, 2) - round(previousPoint.z, 2);
 			const distance = sqrt(dx * dx + dy * dy + dz * dz) as number;
-
-			const lineWidth = nozzleSize * (outputFactor / 100);
-			const extrusionVolume = distance * layerHeight * lineWidth;
-
-			extrusion = extrusionVolume;
+			const extrusion =
+				distance * layerHeight * (nozzleSize * (outputFactor / 100));
 
 			// if (i === 0) {
 			// 	console.log(extrusion, extrusion + (extrusion * ((j + 1) / pointLevel.length)));

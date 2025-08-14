@@ -120,7 +120,9 @@ export class Application {
 		this.scene.add(object);
 	};
 
-	removeMeshFromScene = (mesh: Mesh) => this.scene.remove(mesh);
+	removeMeshFromScene = (mesh: Mesh) => {
+		this.scene.remove(mesh);
+	};
 
 	loadFont = () => {
 		const loader = new FontLoader();

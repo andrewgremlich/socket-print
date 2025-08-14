@@ -30,6 +30,12 @@ export type FormValues = {
 export type ProvelPrintSettings = {
 	lockDepth: number;
 	circularSegments: number;
+	translateX: number;
+	translateY: number;
+	translateZ: number;
+	rotateCoronal: number;
+	rotateSagittal: number;
+	rotateTransverse: number;
 };
 
 export type Entities = {

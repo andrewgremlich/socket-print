@@ -23,64 +23,76 @@
       program for modification. Once the necessary adjustments have been made, the shape is ready to open in
       ProvelPrint.
     </p>
-
     <h3>File</h3>
-    <p>Allows the user to navigate to and open a file.</p>
+    <p>Allows the user to open a file, restore ProvelPrint default settings, clear a model, load a sample socket, or a
+      test cylinder.</p>
 
     <h3>Edit</h3>
-    <p>Allows changing material profile values including: Nozzle Temp, Cup Temp, Shrink Factor, and Output Factor.</p>
+    <p>Allows changing material profile including: Name, Nozzle Temp, Cup Temp, Shrink Factor, and Output Factor, and
+      Seconds Per Layer. Changes to the material profile should be made with caution because they can affect the
+      accuracy and strength of the socket. Material profiles can also be added and deleted.</p>
 
-    <h3>IP Address and Port</h3>
-    <p>Allows the user to enter a port and the printer IP address to establish connection with the printer. Indicates
-      whether
-      the port is open or closed.</p>
+    <h3>Help</h3>
+    <p>Displays Help document.</p>
 
-    <h3>Lock</h3>
+    <h3>Info</h3>
+    <p>Displays the version number.</p>
+
+    <h3>IP Address</h3>
+    <p>Allows the user to enter the printer IP address to establish connection with the printer.</p>
+
+    <h3>Port Status</h3>
+    <p>Indicates whether the port is connected or disconnected.</p>
+
+    <h3>Lock Position</h3>
     <p>Indicates which side the release button hole in the cup should be on when loading the cup in the cup fixture.</p>
 
-    <h3>Cup</h3>
+    <h3>Cup Size</h3>
     <p>Allows selection of the correct cup diameter and height.</p>
 
     <h3>Nozzle Size</h3>
-    <p>Generally a 5 mm nozzle will be used to print adult sockets, but a smaller nozzle (4 mm) may be more typical for
-      a
-      juvenile or pediatric socket.</p>
+    <p>Generally a 5 mm nozzle will be used to print adult sockets.</p>
 
     <h3>Layer Height</h3>
-    <p>A layer height of 2.0 mm (.080") might be typical. But for abrupt contour changes, a thinner layer height will
-      allow
-      greater overlap and commensurate improvements in layer to layer adhesion. Thicker layer heights will usually print
-      faster.</p>
+    <p>A layer height of 1.0 mm (.040”) might be typical and will be better at handling abrupt contour changes. Thicker
+      layer heights will print faster.</p>
 
     <h3>Material</h3>
     <p>CP1 is the same polypropylene copolymer used to injection mold Provel Print Cups. This provides best adhesion
-      between
-      the cup and the socket. There is a long history in the industry of using polypropylene copolymer for thermoplastic
-      sockets.</p>
+      between the cup and the socket. Polypropylene has been widely used for thermoplastic sockets since the 1980’s. We
+      use the same material previously used in our thermoformer preforms.</p>
+
+    <h3>Nozzle Temp</h3>
+    <p>Nozzle temperature in °C. Excessive nozzle heat can result in reduced dimensional accuracy. Insufficient nozzle
+      temperature can cause poor layer to layer adhesion and reduced strength.</p>
+
+    <h3>Cup Temp</h3>
+    <p>Nozzle temperature in °C. Insufficient cup temperature can cause poor adhesion and reduced strength.</p>
 
     <h3>Shrink Factor</h3>
-    <p>Corrects for normal shrinkage during cooling. Can be edited in Material Profiles.</p>
+    <p>Corrects for normal shrinkage during cooling.</p>
 
     <h3>Output Factor</h3>
-    <p>This allows user correction for minor over or under extrusion while printing.</p>
+    <p>This allows user correction for minor over or under extrusion.</p>
+
+    <h3>Seconds Per Layer</h3>
+    <p>This allows adjustment in printing speed. Excessive speed can result in reduced dimensional accuracy.
+      Insufficient speed can cause poor layer to layer adhesion and reduced strength.</p>
 
     <h3>Print Time</h3>
     <p>Shows estimated print time.</p>
 
-    <h3>Conform End</h3>
-    <p>Blends the distal end of the socket shape to the groove in the top of the chosen cup size.</p>
-
-    <h3>Generate GCode / Send to Printer</h3>
-    <p>Sends the completed and sliced file to the printer.</p>
-
-    <h3>Generate GCode / Send to Folder</h3>
+    <h3>File</h3>
     <p>Sends the completed and sliced file to designated folder.</p>
 
-    <h3>Rotate</h3>
-    <p>Allows correct orientation of the socket.</p>
+    <h3>Print</h3>
+    <p>Sends the completed and sliced file to the printer.</p>
 
-    <h3>Vertical</h3>
-    <p>Allows the socket to be moved vertically.</p>
+    <h3>Rotate 90</h3>
+    <p>Allows rotation of the socket in Coronal, Sagittal, and Transverse orientations.</p>
+
+    <h3>Translate</h3>
+    <p>Allows translation of the socket in X (left/right), Y (forward/back), and Z (up/down).</p>
   </div>
 
   <app-info></app-info>

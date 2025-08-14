@@ -5,6 +5,20 @@ export async function loadMainDataForm() {
 	const appSettings = await getFormKeyValues();
 
 	for (const { name, value } of Object.values(appSettings)) {
+		if (name === "lockPosition") {
+			const leftRadio = document.getElementById(
+				"lockPositionLeft",
+			) as HTMLInputElement | null;
+			const rightRadio = document.getElementById(
+				"lockPositionRight",
+			) as HTMLInputElement | null;
+			if (leftRadio && rightRadio) {
+				leftRadio.checked = value === "left";
+				rightRadio.checked = value === "right";
+			}
+			continue;
+		}
+
 		const input = document.querySelector(
 			`[name="${name}"]`,
 		) as HTMLInputElement | null;

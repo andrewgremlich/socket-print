@@ -118,14 +118,4 @@ button {
 		display: flex;
 		align-items: center;
 	}
-
-	#printActions {
-		display: flex;
-		align-items: center;
-
-		& button {
-			margin-right: 10px;
-			padding: 2px 8px;
-		}
-	}
 }

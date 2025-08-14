@@ -37,6 +37,11 @@ export async function calculatePrintTime(
 			continue;
 		}
 
+		if (layerDistance === 0) {
+			console.warn("Layer", i, "has no distance, skipping");
+			continue;
+		}
+
 		totalDistance += layerDistance / feedratePerLevel[i];
 	}
 
@@ -63,6 +68,11 @@ export async function calculatePrintTime(
 				i,
 				"is 0, skipping distance calculation",
 			);
+			continue;
+		}
+
+		if (layerDistance === 0) {
+			console.warn("Layer", i, "has no distance, skipping");
 			continue;
 		}
 

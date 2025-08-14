@@ -31,19 +31,19 @@ export class MaterialProfileForm extends HTMLElement {
             <input type="text" id="materialProfileName" name="materialProfileName" required />
             
             <label for="nozzleTemp">Nozzle Temp (C)</label>
-            <input type="number" value="200" name="nozzleTemp" id="nozzleTemp" required />
+            <input type="number" min="40" value="200" name="nozzleTemp" id="nozzleTemp" required />
             
             <label for="cupTemp">Cup Temp (C)</label>
-            <input type="number" value="130" name="cupTemp" id="cupTemp" required />
+            <input type="number" min="40" value="130" name="cupTemp" id="cupTemp" required />
             
             <label for="shrinkFactor">Shrink Factor (%)</label>
-            <input type="number" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
+            <input type="number" min="0.1" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
 
-            <label for="outputFactor">Output Factor (%)</label>
-            <input type="number" min="1" step="1" value="20" name="outputFactor" id="outputFactor" required />
+            <label for="outputFactor">Output Factor</label>
+            <input type="number" min="0" step="1" value="15" name="outputFactor" id="outputFactor" required />
 
             <label for="secondsPerLayer">Seconds Per Layer</label>
-            <input type="number" value="8" name="secondsPerLayer" id="secondsPerLayer" required />
+            <input type="number" min="1" value="8" name="secondsPerLayer" id="secondsPerLayer" required />
 
             <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
             <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />

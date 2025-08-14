@@ -8,12 +8,18 @@ import {
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
-import type { RawPoint } from "@/3d/blendHardEdges";
 import { ensureUV } from "@/3d/ensureUV";
 import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
-import { getLockDepth } from "@/db/keyValueSettings";
+import {
+	getLockDepth,
+	getRotateValues,
+	getTranslateValues,
+	updateRotateValues,
+	updateTranslateValues,
+} from "@/db/keyValueSettings";
 import {
 	activeFileName,
+	addTestCylinderButton,
 	addTestStlButton,
 	coronalRotater,
 	depthTranslate,
@@ -32,9 +38,10 @@ type SocketProps = { socketCallback: SocketCallback };
 
 export class Socket extends AppObject {
 	adjustmentHeightForCup = 0;
-	setPosition: RawPoint | null = null;
 	socketCallback: SocketCallback;
 	lockDepth: number | null = null;
+	loadedStlFromIndex = false;
+	offsetYPosition: number | null = null;
 
 	constructor({ socketCallback }: SocketProps) {
 		super();
@@ -59,8 +66,10 @@ export class Socket extends AppObject {
 				const stlFile = new File([file], name, {
 					type: "model/stl",
 				});
+				this.loadedStlFromIndex = true;
 				setStlFileInputAndDispatch(stlFile);
 			} else {
+				this.loadedStlFromIndex = false;
 				console.warn("No files found in the database.");
 			}
 		});
@@ -69,6 +78,15 @@ export class Socket extends AppObject {
 			const response = await fetch("/test_stl_file.stl");
 			const arrayBuffer = await response.arrayBuffer();
 			const file = new File([arrayBuffer], "test_stl_file.stl", {
+				type: "model/stl",
+			});
+
+			setStlFileInputAndDispatch(file);
+		});
+		addTestCylinderButton?.addEventListener("click", async () => {
+			const response = await fetch("CylinderTest77x50.stl");
+			const arrayBuffer = await response.arrayBuffer();
+			const file = new File([arrayBuffer], "CylinderTest77x50.stl", {
 				type: "model/stl",
 			});
 
@@ -91,14 +109,6 @@ export class Socket extends AppObject {
 
 	#onStlFileChange = async ({ target: inputFiles }: Event) => {
 		const file = (inputFiles as HTMLInputElement).files?.[0];
-
-		if (!loadingScreen) {
-			throw new Error("Loading screen not found");
-		}
-
-		if (!stlFileInput) {
-			throw new Error("STL File Input not found");
-		}
 
 		if (file) {
 			await deleteAllFiles();
@@ -139,18 +149,41 @@ export class Socket extends AppObject {
 				-this.center.y,
 				-this.center.z,
 			);
-			this.mesh.position.set(0, this.size.y / 2 - this.lockDepth, 0);
-			this.updateMatrixWorld();
 
-			this.setPosition = {
-				x: this.mesh.position.x,
-				y: this.mesh.position.y,
-				z: this.mesh.position.z,
-			};
+			// Load and apply stored translate and rotate values
+			const translateValues = await getTranslateValues();
+			const rotateValues = await getRotateValues();
 
-			horizontalTranslate.value = "0";
-			verticalTranslate.value = "0";
-			depthTranslate.value = "0";
+			this.offsetYPosition = this.size.y / 2 - this.lockDepth;
+
+			if (this.loadedStlFromIndex) {
+				this.mesh.position.set(
+					translateValues.x,
+					translateValues.y,
+					translateValues.z,
+				);
+			} else {
+				this.mesh.position.set(0, this.offsetYPosition, 0);
+			}
+
+			this.mesh.rotation.set(
+				rotateValues.coronal,
+				rotateValues.sagittal,
+				rotateValues.transverse,
+			);
+			await updateRotateValues(
+				rotateValues.coronal,
+				rotateValues.sagittal,
+				rotateValues.transverse,
+			);
+
+			this.mesh.geometry.computeVertexNormals();
+
+			horizontalTranslate.value = (-this.mesh.position.x).toString();
+			verticalTranslate.value = (
+				this.mesh.position.y - this.offsetYPosition
+			).toString();
+			depthTranslate.value = (-this.mesh.position.z).toString();
 
 			this.socketCallback({
 				maxDimension: max(this.size.x, this.size.y, this.size.z),
@@ -170,6 +203,7 @@ export class Socket extends AppObject {
 		this.boundingBox = undefined;
 		this.center = undefined;
 		this.size = undefined;
+		this.loadedStlFromIndex = false;
 
 		this.toggleInput(true);
 	};
@@ -208,50 +242,65 @@ export class Socket extends AppObject {
 		if (minY < 0) {
 			this.mesh.position.y += abs(minY) - this.lockDepth;
 		}
-
-		this.updateMatrixWorld();
-
-		this.setPosition = {
-			x: this.mesh.position.x,
-			y: this.mesh.position.y,
-			z: this.mesh.position.z,
-		};
 	};
 
-	coronalRotate90 = () => {
-		this.mesh.rotateX(pi / 2);
+	handleRotationChange = async (axis: "x" | "y" | "z", amount: number) => {
+		switch (axis) {
+			case "x":
+				this.mesh.rotateX(amount);
+				break;
+			case "y":
+				this.mesh.rotateY(amount);
+				break;
+			case "z":
+				this.mesh.rotateZ(amount);
+				break;
+		}
 		this.autoAlignMesh();
+
+		// Save rotation values to IndexedDB
+		const currentRotateValues = await getRotateValues();
+		await updateRotateValues(
+			axis === "x"
+				? currentRotateValues.coronal + amount
+				: currentRotateValues.coronal,
+			axis === "z"
+				? currentRotateValues.sagittal + amount
+				: currentRotateValues.sagittal,
+			axis === "y"
+				? currentRotateValues.transverse + amount
+				: currentRotateValues.transverse,
+		);
 	};
 
-	sagittalRotate90 = () => {
-		this.mesh.rotateZ(pi / 2);
-		this.autoAlignMesh();
-	};
+	coronalRotate90 = () => this.handleRotationChange("x", pi / 2);
+	sagittalRotate90 = () => this.handleRotationChange("z", pi / 2);
+	transversalRotater90 = () => this.handleRotationChange("y", pi / 2);
 
-	transversalRotater90 = () => {
-		this.mesh.rotateY(pi / 2);
-		this.autoAlignMesh();
-	};
-
-	horizontalChange = (evt: Event) => {
+	handleTranslationChange = async (axis: "x" | "y" | "z", evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
-		const numVal = Number.parseInt(targetValue);
+		const numVal = Number.parseInt(targetValue, 10);
 
-		this.mesh.position.x = this.setPosition.x - numVal;
+		switch (axis) {
+			case "x":
+				this.mesh.position.setX(-numVal);
+				break;
+			case "y":
+				this.mesh.position.setY(numVal + this.offsetYPosition);
+				break;
+			case "z":
+				this.mesh.position.setZ(-numVal);
+				break;
+		}
+
+		await updateTranslateValues(
+			this.mesh.position.x,
+			this.mesh.position.y,
+			this.mesh.position.z,
+		);
 	};
 
-	verticalChange = (evt: Event) => {
-		const targetValue = (evt.target as HTMLInputElement).value;
-		console.log("verticalChange", targetValue);
-		const numVal = Number.parseInt(targetValue);
-
-		this.mesh.position.y = this.setPosition.y + numVal;
-	};
-
-	depthChange = (evt: Event) => {
-		const targetValue = (evt.target as HTMLInputElement).value;
-		const numVal = Number.parseInt(targetValue);
-
-		this.mesh.position.z = this.setPosition.z - numVal;
-	};
+	horizontalChange = (evt: Event) => this.handleTranslationChange("x", evt);
+	verticalChange = (evt: Event) => this.handleTranslationChange("y", evt);
+	depthChange = (evt: Event) => this.handleTranslationChange("z", evt);
 }
