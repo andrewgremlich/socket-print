@@ -24,6 +24,12 @@ const defaultFormValues: FormValues = {
 const defaultSettingNames: ProvelPrintSettings = {
 	lockDepth: 13,
 	circularSegments: 128,
+	translateX: 0,
+	translateY: 0,
+	translateZ: 0,
+	rotateCoronal: 0,
+	rotateSagittal: 0,
+	rotateTransverse: 0,
 };
 
 const initData = async () => {

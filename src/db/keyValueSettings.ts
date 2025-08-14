@@ -162,3 +162,93 @@ export const getCircularSegments = async () => {
 
 	return Number(circularSegments.value);
 };
+
+export const updateTranslateValues = async (
+	translateX: number,
+	translateY: number,
+	translateZ: number,
+) => {
+	const db = await getDb();
+
+	await Promise.all([
+		db.appSettings
+			.where("name")
+			.equals("translateX")
+			.modify({ value: translateX }),
+		db.appSettings
+			.where("name")
+			.equals("translateY")
+			.modify({ value: translateY }),
+		db.appSettings
+			.where("name")
+			.equals("translateZ")
+			.modify({ value: translateZ }),
+	]);
+};
+
+export const getTranslateValues = async () => {
+	const db = await getDb();
+	const translateX = await db.appSettings
+		.where("name")
+		.equals("translateX")
+		.first();
+	const translateY = await db.appSettings
+		.where("name")
+		.equals("translateY")
+		.first();
+	const translateZ = await db.appSettings
+		.where("name")
+		.equals("translateZ")
+		.first();
+
+	return {
+		x: Number(translateX.value),
+		y: Number(translateY.value),
+		z: Number(translateZ.value),
+	};
+};
+
+export const updateRotateValues = async (
+	rotateCoronal: number,
+	rotateSagittal: number,
+	rotateTransverse: number,
+) => {
+	const db = await getDb();
+
+	await Promise.all([
+		db.appSettings
+			.where("name")
+			.equals("rotateCoronal")
+			.modify({ value: rotateCoronal }),
+		db.appSettings
+			.where("name")
+			.equals("rotateSagittal")
+			.modify({ value: rotateSagittal }),
+		db.appSettings
+			.where("name")
+			.equals("rotateTransverse")
+			.modify({ value: rotateTransverse }),
+	]);
+};
+
+export const getRotateValues = async () => {
+	const db = await getDb();
+	const rotateCoronal = await db.appSettings
+		.where("name")
+		.equals("rotateCoronal")
+		.first();
+	const rotateSagittal = await db.appSettings
+		.where("name")
+		.equals("rotateSagittal")
+		.first();
+	const rotateTransverse = await db.appSettings
+		.where("name")
+		.equals("rotateTransverse")
+		.first();
+
+	return {
+		coronal: Number(rotateCoronal.value),
+		sagittal: Number(rotateSagittal.value),
+		transverse: Number(rotateTransverse.value),
+	};
+};

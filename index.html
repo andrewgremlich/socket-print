@@ -157,7 +157,7 @@
           </div>
 
           <div>
-            <span>Output Factor (%): </span><span id="outputFactorDisplay">2.0</span>
+            <span>Output Factor: </span><span id="outputFactorDisplay">2.0</span>
           </div>
 
           <div>
@@ -217,8 +217,6 @@
   <script type="module" src="./src/renderer.ts"></script>
 
   <script>
-    console.log();
-
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       navigator.serviceWorker.register('/sw.js')
     }
