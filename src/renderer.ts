@@ -74,7 +74,9 @@ const socket = new Socket({
 app.addToScene(ring.mesh);
 
 const removeMeshes = async (socketMeshes: Mesh[]) => {
-	socketMeshes.forEach((mesh) => app.removeMeshFromScene(mesh));
+	socketMeshes.forEach((mesh) => {
+		app.removeMeshFromScene(mesh);
+	});
 
 	horizontalTranslate.value = "0";
 	depthTranslate.value = "0";
@@ -85,7 +87,7 @@ const removeMeshes = async (socketMeshes: Mesh[]) => {
 
 	// Zero out rotate and translate values in IndexedDB
 	await updateRotateValues(0, 0, 0);
-	await updateTranslateValues(0, 0, 0);
+	await updateTranslateValues(0, socket.offsetYPosition ?? 0, 0);
 
 	socket.clearData();
 	app.resetCameraPosition();

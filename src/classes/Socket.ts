@@ -38,10 +38,10 @@ type SocketProps = { socketCallback: SocketCallback };
 
 export class Socket extends AppObject {
 	adjustmentHeightForCup = 0;
-	setPosition: RawPoint | null = null;
 	socketCallback: SocketCallback;
-	loadedStlFromIndex = false;
 	lockDepth: number | null = null;
+	loadedStlFromIndex = false;
+	offsetYPosition: number | null = null;
 
 	constructor({ socketCallback }: SocketProps) {
 		super();
@@ -101,14 +101,6 @@ export class Socket extends AppObject {
 	#onStlFileChange = async ({ target: inputFiles }: Event) => {
 		const file = (inputFiles as HTMLInputElement).files?.[0];
 
-		if (!loadingScreen) {
-			throw new Error("Loading screen not found");
-		}
-
-		if (!stlFileInput) {
-			throw new Error("STL File Input not found");
-		}
-
 		if (file) {
 			await deleteAllFiles();
 			await setFileByName(file.name, {
@@ -153,6 +145,8 @@ export class Socket extends AppObject {
 			const translateValues = await getTranslateValues();
 			const rotateValues = await getRotateValues();
 
+			this.offsetYPosition = this.size.y / 2 - this.lockDepth;
+
 			if (this.loadedStlFromIndex) {
 				this.mesh.position.set(
 					translateValues.x,
@@ -160,12 +154,7 @@ export class Socket extends AppObject {
 					translateValues.z,
 				);
 			} else {
-				this.mesh.position.set(0, this.size.y / 2 - this.lockDepth, 0);
-				await updateTranslateValues(
-					this.mesh.position.x,
-					this.mesh.position.y,
-					this.mesh.position.z,
-				);
+				this.mesh.position.set(0, this.offsetYPosition, 0);
 			}
 
 			this.mesh.rotation.set(
@@ -179,17 +168,13 @@ export class Socket extends AppObject {
 				rotateValues.transverse,
 			);
 
-			this.updateMatrixWorld();
+			this.mesh.geometry.computeVertexNormals();
 
-			this.setPosition = {
-				x: this.mesh.position.x,
-				y: this.mesh.position.y,
-				z: this.mesh.position.z,
-			};
-
-			horizontalTranslate.value = this.mesh.position.x.toString();
-			verticalTranslate.value = this.mesh.position.y.toString();
-			depthTranslate.value = this.mesh.position.z.toString();
+			horizontalTranslate.value = (-this.mesh.position.x).toString();
+			verticalTranslate.value = (
+				this.mesh.position.y - this.offsetYPosition
+			).toString();
+			depthTranslate.value = (-this.mesh.position.z).toString();
 
 			this.socketCallback({
 				maxDimension: max(this.size.x, this.size.y, this.size.z),
@@ -248,14 +233,6 @@ export class Socket extends AppObject {
 		if (minY < 0) {
 			this.mesh.position.y += abs(minY) - this.lockDepth;
 		}
-
-		this.updateMatrixWorld();
-
-		this.setPosition = {
-			x: this.mesh.position.x,
-			y: this.mesh.position.y,
-			z: this.mesh.position.z,
-		};
 	};
 
 	handleRotationChange = async (axis: "x" | "y" | "z", amount: number) => {
@@ -293,22 +270,20 @@ export class Socket extends AppObject {
 
 	handleTranslationChange = async (axis: "x" | "y" | "z", evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
-		const numVal = Number.parseInt(targetValue);
+		const numVal = Number.parseInt(targetValue, 10);
 
-		// Update mesh position based on axis
 		switch (axis) {
 			case "x":
-				this.mesh.position.x = this.setPosition.x - numVal;
+				this.mesh.position.setX(-numVal);
 				break;
 			case "y":
-				this.mesh.position.y = this.setPosition.y + numVal;
+				this.mesh.position.setY(numVal + this.offsetYPosition);
 				break;
 			case "z":
-				this.mesh.position.z = this.setPosition.z - numVal;
+				this.mesh.position.setZ(-numVal);
 				break;
 		}
 
-		// Save translation values to IndexedDB
 		await updateTranslateValues(
 			this.mesh.position.x,
 			this.mesh.position.y,
