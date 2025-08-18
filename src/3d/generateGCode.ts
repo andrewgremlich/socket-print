@@ -121,8 +121,9 @@ export async function generateGCode(
 			const dy = round(point.y, 2) - round(previousPoint.y, 2);
 			const dz = round(point.z, 2) - round(previousPoint.z, 2);
 			const distance = sqrt(dx * dx + dy * dy + dz * dz) as number;
+			const lineWidth = nozzleSize * 1.2;
 			const extrusion =
-				distance * layerHeight * (nozzleSize * (outputFactor / 100));
+				distance * layerHeight * lineWidth * (outputFactor / 100);
 
 			// https://3dprinting.stackexchange.com/questions/23929/how-to-calculate-e-value-for-a-pellet-extruder
 			// https://www.drdflo.com/pages/Guides/Extrusion.html
