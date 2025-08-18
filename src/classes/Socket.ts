@@ -40,7 +40,7 @@ export class Socket extends AppObject {
 	adjustmentHeightForCup = 0;
 	socketCallback: SocketCallback;
 	lockDepth: number | null = null;
-	loadedStlFromIndex = false;
+	loadedStlFromIndexedDb = false;
 	offsetYPosition = 0;
 	isTestSTLCylinder = false;
 
@@ -67,33 +67,32 @@ export class Socket extends AppObject {
 				const stlFile = new File([file], name, {
 					type: "model/stl",
 				});
-				this.loadedStlFromIndex = true;
+				this.loadedStlFromIndexedDb = true;
 				setStlFileInputAndDispatch(stlFile);
 			} else {
-				this.loadedStlFromIndex = false;
+				this.loadedStlFromIndexedDb = false;
 				console.warn("No files found in the database.");
 			}
 		});
 
-		addTestStlButton?.addEventListener("click", async () => {
-			const response = await fetch("/test_stl_file.stl");
+		const fetchStlFile = (name: string) => async () => {
+			const response = await fetch(name);
 			const arrayBuffer = await response.arrayBuffer();
-			const file = new File([arrayBuffer], "test_stl_file.stl", {
+			const file = new File([arrayBuffer], name, {
 				type: "model/stl",
 			});
 
 			setStlFileInputAndDispatch(file);
+		};
+
+		addTestStlButton?.addEventListener("click", async () => {
+			await this.clearData();
+			await fetchStlFile("test_stl_file.stl")();
 		});
 		addTestCylinderButton?.addEventListener("click", async () => {
-			const response = await fetch("test_cylinder.stl");
-			const arrayBuffer = await response.arrayBuffer();
-			const file = new File([arrayBuffer], "test_cylinder.stl", {
-				type: "model/stl",
-			});
-
+			await this.clearData();
 			this.isTestSTLCylinder = true;
-
-			setStlFileInputAndDispatch(file);
+			await fetchStlFile("test_cylinder.stl")();
 		});
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
 		coronalRotater?.addEventListener("click", this.coronalRotate90);
@@ -161,7 +160,7 @@ export class Socket extends AppObject {
 				? this.size.y / 2 - this.lockDepth
 				: this.size.y / 2;
 
-			if (this.loadedStlFromIndex) {
+			if (this.loadedStlFromIndexedDb) {
 				this.mesh.position.set(
 					translateValues.x,
 					translateValues.y,
@@ -176,6 +175,11 @@ export class Socket extends AppObject {
 				rotateValues.sagittal,
 				rotateValues.transverse,
 			);
+			await updateTranslateValues(
+				this.mesh.position.x,
+				this.mesh.position.y,
+				this.mesh.position.z,
+			);
 			await updateRotateValues(
 				rotateValues.coronal,
 				rotateValues.sagittal,
@@ -186,7 +190,8 @@ export class Socket extends AppObject {
 
 			horizontalTranslate.value = (-this.mesh.position.x).toString();
 			verticalTranslate.value = (
-				this.mesh.position.y - this.offsetYPosition
+				this.mesh.position.y -
+				(!this.isTestSTLCylinder ? this.offsetYPosition : 0)
 			).toString();
 			depthTranslate.value = (-this.mesh.position.z).toString();
 
@@ -198,7 +203,7 @@ export class Socket extends AppObject {
 		}
 	};
 
-	clearData = () => {
+	clearData = async () => {
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
 			this.mesh = undefined;
@@ -208,7 +213,11 @@ export class Socket extends AppObject {
 		this.boundingBox = undefined;
 		this.center = undefined;
 		this.size = undefined;
-		this.loadedStlFromIndex = false;
+		this.loadedStlFromIndexedDb = false;
+		this.isTestSTLCylinder = false;
+
+		await updateRotateValues(0, 0, 0);
+		await updateTranslateValues(0, 0, 0);
 
 		this.toggleInput(true);
 	};
