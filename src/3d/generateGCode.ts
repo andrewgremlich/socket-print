@@ -86,6 +86,13 @@ export async function generateGCode(
 		"G1 X38.5 F2250 	     		; 7.16.25 move back to cup",
 		"G3 X38.5 Y0 I-38.5 J0 E255 F1200 ; Counter-Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete cup layer 1).",
 
+		// ";##Cup Layer 2 - Special transition layer with doubling height and extrusion",
+		// `G1 Z${socketHeight + layerHeight} F6000 ; Move up to normal layer height`,
+		// "G1 X38.5 Y0 F2250 ; Position for start of transition layer",
+		// "G3 X38.5 Y0 I-38.5 J0 E255 F1200 ; First half - normal extrusion",
+		// `G1 Z${socketHeight + layerHeight * 2} F6000 ; Move up to double layer height`,
+		// "G3 X38.5 Y0 I-38.5 J0 E510 F1200 ; Second half - double extrusion for double height",
+
 		";#End of start gcode sequence for cup print#",
 		";##Spiral vase mode socket print to start immediately following this.",
 
@@ -93,6 +100,11 @@ export async function generateGCode(
 	];
 
 	let previousPoint: RawPoint = { x: -38.5, y: socketHeight, z: 0.0 }; // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
+	// let previousPoint: RawPoint = {
+	// 	x: -38.5,
+	// 	y: socketHeight + layerHeight * 2,
+	// 	z: 0.0,
+	// }; // adjusted start point for double layer height
 
 	gcode.push(
 		`G1 X${-round(previousPoint.x, 2)} Y${round(previousPoint.z, 2)} Z${round(previousPoint.y, 2)} F2250`,
