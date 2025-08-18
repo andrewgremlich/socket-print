@@ -129,8 +129,6 @@ export async function generateGCode(
 			// https://re3d.zendesk.com/hc/en-us/articles/4411545823764-Material-Testing-Procedure-for-Pellet-Extrusion
 			// https://dyzedesign.com/2024/05/flow-to-rpm-factor-optimize-your-3d-printing-with-pellet-extruders/
 
-			console.log({ nozzleSize, outputFactor });
-
 			previousPoint = point;
 			const flipHeight = flipVerticalAxis(verticalAxis);
 			gcode.push(
