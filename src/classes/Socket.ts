@@ -41,7 +41,8 @@ export class Socket extends AppObject {
 	socketCallback: SocketCallback;
 	lockDepth: number | null = null;
 	loadedStlFromIndex = false;
-	offsetYPosition: number | null = null;
+	offsetYPosition = 0;
+	isTestSTLCylinder = false;
 
 	constructor({ socketCallback }: SocketProps) {
 		super();
@@ -84,11 +85,13 @@ export class Socket extends AppObject {
 			setStlFileInputAndDispatch(file);
 		});
 		addTestCylinderButton?.addEventListener("click", async () => {
-			const response = await fetch("CylinderTest77x50.stl");
+			const response = await fetch("test_cylinder.stl");
 			const arrayBuffer = await response.arrayBuffer();
-			const file = new File([arrayBuffer], "CylinderTest77x50.stl", {
+			const file = new File([arrayBuffer], "test_cylinder.stl", {
 				type: "model/stl",
 			});
+
+			this.isTestSTLCylinder = true;
 
 			setStlFileInputAndDispatch(file);
 		});
@@ -154,7 +157,9 @@ export class Socket extends AppObject {
 			const translateValues = await getTranslateValues();
 			const rotateValues = await getRotateValues();
 
-			this.offsetYPosition = this.size.y / 2 - this.lockDepth;
+			this.offsetYPosition = !this.isTestSTLCylinder
+				? this.size.y / 2 - this.lockDepth
+				: this.size.y / 2;
 
 			if (this.loadedStlFromIndex) {
 				this.mesh.position.set(
