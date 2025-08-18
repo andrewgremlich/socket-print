@@ -18,6 +18,7 @@ import {
 	getCircularSegments,
 	getCupSizeHeight,
 	getLayerHeight,
+	getNozzleSize,
 } from "../db/keyValueSettings";
 import { ensureUV } from "./ensureUV";
 
@@ -31,7 +32,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const { positions } = event.data;
 	const layerHeight = await getLayerHeight();
 	const segments = await getCircularSegments();
-	const socketHeight = (await getCupSizeHeight()) + 5;
+	const nozzleSize = await getNozzleSize();
+	const socketHeight = (await getCupSizeHeight()) + nozzleSize;
 	const angleIncrement = (pi * 2) / segments;
 	const scene = new Scene();
 	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
