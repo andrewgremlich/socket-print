@@ -72,9 +72,9 @@ export async function generateGCode(
 		"M140 P1 S0 ;cup heater off",
 		"set global.pelletFeedOn = true  ; enable pellet feed",
 		"G1 Z70 F6000; Z moves up to pick up cup heater",
-		"G1 X120 F6000; X right to park cup heater",
+		"G1 X130 F6000; X right to park cup heater",
 		"G1 Z15 F6000; Z down to place cup heater on bed",
-		"G1 X95 F6000; X left to disengage cup heater",
+		"G1 X100 F6000; X left to disengage cup heater",
 		`G1 Z${socketHeight} F6000; Z up to CH + 5 for groove fill`,
 		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 
