@@ -1,5 +1,6 @@
-import { round, sqrt } from "mathjs";
+import { round } from "mathjs";
 import pkg from "pkg";
+import { Vector3 } from "three";
 
 import {
 	getActiveMaterialProfile,
@@ -15,14 +16,12 @@ import {
 	getActiveMaterialProfileSecondsPerLayer,
 } from "@/db/materialProfiles";
 
-import type { RawPoint } from "./blendHardEdges";
-
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
 }
 
 export async function generateGCode(
-	pointGatherer: RawPoint[][],
+	pointGatherer: Vector3[][],
 	feedratePerLevel: number[],
 	verticalAxis: "y" | "z" = "y",
 	options: {
@@ -99,12 +98,8 @@ export async function generateGCode(
 		";--------print file in here--------",
 	];
 
-	let previousPoint: RawPoint = { x: -38.5, y: socketHeight, z: 0.0 }; // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
-	// let previousPoint: RawPoint = {
-	// 	x: -38.5,
-	// 	y: socketHeight + layerHeight * 2,
-	// 	z: 0.0,
-	// }; // adjusted start point for double layer height
+	let previousPoint: Vector3 = new Vector3(-38.5, socketHeight, 0.0); // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
+	// let previousPoint = new Vector3(-38.5, socketHeight + layerHeight * 2, 0.0); // adjusted start point for double layer height
 
 	gcode.push(
 		`G1 X${-round(previousPoint.x, 2)} Y${round(previousPoint.z, 2)} Z${round(previousPoint.y, 2)} F2250`,
@@ -129,10 +124,7 @@ export async function generateGCode(
 
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j];
-			const dx = round(point.x, 2) - round(previousPoint.x, 2);
-			const dy = round(point.y, 2) - round(previousPoint.y, 2);
-			const dz = round(point.z, 2) - round(previousPoint.z, 2);
-			const distance = sqrt(dx * dx + dy * dy + dz * dz) as number;
+			const distance = previousPoint.distanceTo(point);
 			const lineWidth = nozzleSize * 1.2;
 			const extrusion =
 				distance * layerHeight * lineWidth * (outputFactor / 100);

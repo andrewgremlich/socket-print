@@ -1,9 +1,8 @@
-import { ceil, floor, sqrt } from "mathjs";
-
-import type { RawPoint } from "./blendHardEdges";
+import { ceil, floor } from "mathjs";
+import type { Vector3 } from "three";
 
 export async function calculatePrintTime(
-	levelsOfPoints: RawPoint[][],
+	levelsOfPoints: Vector3[][],
 	feedratePerLevel: number[],
 ): Promise<string> {
 	if (levelsOfPoints.length < 2) {
@@ -21,10 +20,7 @@ export async function calculatePrintTime(
 			const p1 = layer[j - 1];
 			const p2 = layer[j];
 			if (p1 && p2) {
-				const dx = p2.x - p1.x;
-				const dy = p2.y - p1.y;
-				const dz = p2.z - p1.z;
-				layerDistance += sqrt(dx * dx + dy * dy + dz * dz) as number;
+				layerDistance += p2.distanceTo(p1);
 			}
 		}
 
@@ -55,10 +51,7 @@ export async function calculatePrintTime(
 			const p1 = prevLayer[prevLayer.length - 1];
 			const p2 = currLayer[0];
 			if (p1 && p2) {
-				const dx = p2.x - p1.x;
-				const dy = p2.y - p1.y;
-				const dz = p2.z - p1.z;
-				layerDistance += sqrt(dx * dx + dy * dy + dz * dz) as number;
+				layerDistance += p2.distanceTo(p1);
 			}
 		}
 

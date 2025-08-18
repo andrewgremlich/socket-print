@@ -1,10 +1,10 @@
-import { round, sqrt } from "mathjs";
+import { round } from "mathjs";
+import type { Vector3 } from "three";
 import { getCircularSegments } from "@/db/keyValueSettings";
 import { getActiveMaterialProfileSecondsPerLayer } from "@/db/materialProfiles";
-import type { RawPoint } from "./blendHardEdges";
 
 const calculateDistancePerLevel = async (
-	points: RawPoint[][],
+	points: Vector3[][],
 ): Promise<number[]> => {
 	const distances: number[] = [];
 	const segments = await getCircularSegments();
@@ -16,16 +16,8 @@ const calculateDistancePerLevel = async (
 		for (let i = 1; i < level.length; i++) {
 			const prevPoint = level[i - 1];
 			const point = level[i];
-			const dx = point.x - prevPoint.x;
-			const dy = point.y - prevPoint.y;
-			const dz = point.z - prevPoint.z;
-
-			const segmentDistance = sqrt(dx * dx + dy * dy + dz * dz);
-
-			distance +=
-				typeof segmentDistance === "number"
-					? segmentDistance
-					: segmentDistance.re;
+			const segmentDistance = point.distanceTo(prevPoint);
+			distance += segmentDistance;
 		}
 
 		distances.push(distance * accomodateForFullRevolution);
@@ -34,7 +26,7 @@ const calculateDistancePerLevel = async (
 	return distances;
 };
 
-export const calculateFeedratePerLevel = async (points: RawPoint[][]) => {
+export const calculateFeedratePerLevel = async (points: Vector3[][]) => {
 	const distances = await calculateDistancePerLevel(points);
 	const feedratePerLevel: number[] = [];
 	const timePerLayer = await getActiveMaterialProfileSecondsPerLayer();

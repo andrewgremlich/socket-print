@@ -1,26 +1,27 @@
 import { atan2, cos, sin, sqrt } from "mathjs";
+import { Vector3 } from "three";
 
-import { getNozzleSize } from "@/db/keyValueSettings";
 import { getActiveMaterialProfile } from "@/db/materialProfiles";
 
-import type { RawPoint } from "./blendHardEdges";
+type RawPoint = { x: number; y: number; z: number };
 
 export async function adjustForShrinkAndOffset(
 	points: RawPoint[][],
-	center: RawPoint,
-) {
+	center: Vector3,
+): Promise<Vector3[][]> {
 	const activeMaterialProfile = await getActiveMaterialProfile();
-	const nozzleSize = await getNozzleSize();
 	const shrinkAllowance = activeMaterialProfile.shrinkFactor; // assumed to be in percentage
 
-	if (nozzleSize === 0 || shrinkAllowance === 0) {
-		return points;
+	if (shrinkAllowance === 0) {
+		return points.map((layer) =>
+			layer.map((pt) => new Vector3(pt.x, pt.y, pt.z)),
+		);
 	}
 
-	const adjustedPoints: RawPoint[][] = [];
+	const adjustedPoints: Vector3[][] = [];
 
 	for (const layer of points) {
-		const adjustedLayer: RawPoint[] = [];
+		const adjustedLayer: Vector3[] = [];
 
 		for (const pt of layer) {
 			const dx = pt.x - center.x;
@@ -30,11 +31,13 @@ export async function adjustForShrinkAndOffset(
 			const newRadius = r * (1 + shrinkAllowance / 100); // this math is probably right.
 
 			// Create new adjusted point and shift it back to the original coordinate system
-			adjustedLayer.push({
-				x: center.x + newRadius * cos(theta),
-				y: pt.y,
-				z: center.z + newRadius * sin(theta),
-			});
+			adjustedLayer.push(
+				new Vector3(
+					center.x + newRadius * cos(theta),
+					pt.y,
+					center.z + newRadius * sin(theta),
+				),
+			);
 		}
 		adjustedPoints.push(adjustedLayer);
 	}
