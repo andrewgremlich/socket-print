@@ -191,7 +191,7 @@ export class Socket extends AppObject {
 			horizontalTranslate.value = (-this.mesh.position.x).toString();
 			verticalTranslate.value = (
 				this.mesh.position.y -
-				(!this.isTestSTLCylinder ? this.offsetYPosition : 0)
+				(!this.isTestSTLCylinder ? this.offsetYPosition : this.mesh.position.y)
 			).toString();
 			depthTranslate.value = (-this.mesh.position.z).toString();
 
