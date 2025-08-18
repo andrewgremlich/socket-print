@@ -118,10 +118,6 @@ export async function generateGCode(
 			gcode.push("M106 P2 S0.5 ; set fan speed");
 		}
 
-		// if (i === 2) {
-		// 	gcode.push("M106 P2 S1 ; set fan speed");
-		// }
-
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j];
 			const distance = previousPoint.distanceTo(point);
@@ -144,7 +140,6 @@ export async function generateGCode(
 
 	gcode.push(
 		";# END GCODE SEQUENCE FOR CUP PRINT#;",
-		// "G1 Z3 F6000 ; move up 3mm before purge",
 		"M107",
 		"set global.pelletFeedOn = false",
 		"G4 S1 ; pause for 1 second to stop extrudate",
