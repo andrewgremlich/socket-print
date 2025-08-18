@@ -124,10 +124,12 @@ export async function generateGCode(
 			const extrusion =
 				distance * layerHeight * (nozzleSize * (outputFactor / 100));
 
-			// if (i === 0) {
-			// 	console.log(extrusion, extrusion + (extrusion * ((j + 1) / pointLevel.length)));
-			// extrusion = extrusion * ((j + 1) / pointLevel.length);
-			// }
+			// https://3dprinting.stackexchange.com/questions/23929/how-to-calculate-e-value-for-a-pellet-extruder
+			// https://www.drdflo.com/pages/Guides/Extrusion.html
+			// https://re3d.zendesk.com/hc/en-us/articles/4411545823764-Material-Testing-Procedure-for-Pellet-Extrusion
+			// https://dyzedesign.com/2024/05/flow-to-rpm-factor-optimize-your-3d-printing-with-pellet-extruders/
+
+			console.log({ nozzleSize, outputFactor });
 
 			previousPoint = point;
 			const flipHeight = flipVerticalAxis(verticalAxis);
