@@ -68,21 +68,6 @@ jobs:
           echo "CERT_ID=$CERT_ID" >> $GITHUB_ENV
           echo "Certificate imported."
 
-      - name: setup Azure Trusted Signing
-        if: matrix.platform == 'windows-latest'
-        uses: azure/trusted-signing-action@v0.3.20
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.TRUSTED_SIGNING_ENDPOINT }}
-          trusted-signing-account-name: ${{ secrets.TRUSTED_SIGNING_ACCOUNT_NAME }}
-          certificate-profile-name: ${{ secrets.CERTIFICATE_PROFILE_NAME }}
-
-      - name: install azuresigntool
-        if: matrix.platform == 'windows-latest'
-        run: dotnet tool install --global AzureSignTool
-
       - name: build and publish
         uses: tauri-apps/tauri-action@v0
         env:

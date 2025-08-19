@@ -15,3 +15,5 @@ Signing Windows
 - https://codesigningstore.com/azure-key-vault-set-up-and-code-signing-tutorial-with-faqs
 - https://dev.to/obinnaijoma/how-to-create-a-key-vault-and-add-key-secret-and-certificate-on-microsoft-azure-2fe5
 - https://tauri.app/distribute/sign/windows/#azure-code-signing
+- code signing on windows
+  - https://melatonin.dev/blog/code-signing-on-windows-with-azure-trusted-signing/
