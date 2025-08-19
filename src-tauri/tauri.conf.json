@@ -39,6 +39,9 @@
 		"createUpdaterArtifacts": true,
 		"active": true,
 		"targets": "all",
+		"windows": {
+			"signCommand": "azuresigntool sign -kvu \"$TRUSTED_SIGNING_ENDPOINT\" -kvi \"$AZURE_CLIENT_ID\" -kvs \"$AZURE_CLIENT_SECRET\" -kva \"$TRUSTED_SIGNING_ACCOUNT_NAME\" -kcn \"$CERTIFICATE_PROFILE_NAME\" -kvt \"$AZURE_TENANT_ID\" -tr http://timestamp.acs.microsoft.com -v \"$1\""
+		},
 		"macOS": {
 			"dmg": {
 				"appPosition": {
