@@ -15,6 +15,10 @@ import {
 	getActiveMaterialProfileOutputFactor,
 	getActiveMaterialProfileSecondsPerLayer,
 } from "@/db/materialProfiles";
+import {
+	getCirclePoints,
+	getTransitionLayer,
+} from "@/utils/cupTransitionLayer";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
@@ -94,6 +98,14 @@ export async function generateGCode(
 	];
 
 	let previousPoint: Vector3 = new Vector3(-38.5, startingHeight, 0.0); // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
+
+	const circlePoints = await getCirclePoints(
+		previousPoint,
+		new Vector3(0, 0, 0),
+	);
+	const transitionLayer = await getTransitionLayer(circlePoints);
+
+	console.log(transitionLayer);
 
 	gcode.push(
 		`G1 X${-round(previousPoint.x, 2)} Y${round(previousPoint.z, 2)} Z${round(previousPoint.y, 2)} F2250`,
