@@ -99,7 +99,7 @@ export async function generateGCode(
 		";--------print file in here--------",
 	];
 
-	let previousPoint: Vector3 = new Vector3(-38.5, startingHeight, 0.0); // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
+	let previousPoint: Vector3 = new Vector3(-38.5, startingHeight, 0); // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
 
 	const circlePoints = await getCirclePoints(previousPoint, {
 		segments,
@@ -114,7 +114,8 @@ export async function generateGCode(
 	});
 
 	gcode.push(";START TRANSITION LAYER");
-	console.log(transitionLayer);
+	console.log(circlePoints);
+	gcode.push(transitionLayer);
 	gcode.push(";END TRANSITION LAYER");
 
 	gcode.push(

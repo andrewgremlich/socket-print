@@ -7,19 +7,20 @@ export async function getCirclePoints(
 ): Promise<Vector3[]> {
 	const angleStep = (2 * Math.PI) / (options.segments ?? 36);
 
+	// Only use x and y for radius calculation (2D circle)
 	const dx = startingPoint.x - options.center.x;
-	const dy = startingPoint.y - options.center.y;
-	const r = Number(sqrt(dx * dx + dy * dy));
-	const theta0 = atan2(dy, dx);
+	const dz = startingPoint.z - options.center.z;
+	const r = Number(sqrt(dx * dx + dz * dz));
+	const theta0 = atan2(dz, dx);
 	const points: Vector3[] = [];
 
-	const dz = (options.layerHeight * 2) / (options.segments ?? 36);
+	const dy = (options.layerHeight * 2) / options.segments;
 
-	for (let i = 0; i < (options.segments ?? 36); i++) {
-		const theta = theta0 + i * angleStep;
+	for (let i = 0; i < options.segments; i++) {
+		const theta = theta0 - i * angleStep; // Subtract to rotate CCW
 		const x = options.center.x + r * cos(theta);
 		const y = options.center.y + r * sin(theta);
-		const z = startingPoint.z + i * dz;
+		const z = startingPoint.z + i * dy;
 
 		points.push(new Vector3(x, y, z));
 	}
@@ -67,7 +68,7 @@ export function getTransitionLayer(
 		}
 
 		transitionLayer.push(
-			`G1 X${-round(point.x, 2)} Y${round(point.z + offsetHeight, 2)} Z${round(point.y, 2)}${i > 0 ? ` E${round(extrusion, 2)}` : ""} F2250`,
+			`G1 X${-round(point.x, 2)} Y${round(point.y, 2)} Z${round(point.z + offsetHeight, 2)}${i > 0 ? ` E${round(extrusion, 2)}` : ""} F2250`,
 		);
 
 		previousPoint = point;
