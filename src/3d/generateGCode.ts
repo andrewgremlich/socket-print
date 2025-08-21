@@ -4,6 +4,7 @@ import { Vector3 } from "three";
 
 import {
 	getActiveMaterialProfile,
+	getCircularSegments,
 	getCupSize,
 	getCupSizeHeight,
 	getLayerHeight,
@@ -37,6 +38,7 @@ export async function generateGCode(
 	const outputFactor = await getActiveMaterialProfileOutputFactor();
 	const nozzleSize = await getNozzleSize();
 	const cupSize = await getCupSize();
+	const segments = await getCircularSegments();
 	const lockPosition = await getLockPosition();
 	const secondsPerLayer = await getActiveMaterialProfileSecondsPerLayer();
 	const layerHeight = await getLayerHeight();
@@ -99,13 +101,21 @@ export async function generateGCode(
 
 	let previousPoint: Vector3 = new Vector3(-38.5, startingHeight, 0.0); // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
 
-	const circlePoints = await getCirclePoints(
-		previousPoint,
-		new Vector3(0, 0, 0),
-	);
-	const transitionLayer = await getTransitionLayer(circlePoints);
+	const circlePoints = await getCirclePoints(previousPoint, {
+		segments,
+		center: new Vector3(0, 0, 0),
+		layerHeight,
+	});
+	const transitionLayer = await getTransitionLayer(circlePoints, {
+		nozzleSize,
+		layerHeight,
+		outputFactor,
+		offsetHeight: startingHeight,
+	});
 
+	gcode.push(";START TRANSITION LAYER");
 	console.log(transitionLayer);
+	gcode.push(";END TRANSITION LAYER");
 
 	gcode.push(
 		`G1 X${-round(previousPoint.x, 2)} Y${round(previousPoint.z, 2)} Z${round(previousPoint.y, 2)} F2250`,
@@ -135,6 +145,16 @@ export async function generateGCode(
 			// https://www.drdflo.com/pages/Guides/Extrusion.html
 			// https://re3d.zendesk.com/hc/en-us/articles/4411545823764-Material-Testing-Procedure-for-Pellet-Extrusion
 			// https://dyzedesign.com/2024/05/flow-to-rpm-factor-optimize-your-3d-printing-with-pellet-extruders/
+
+			// console.log({
+			// 	distance,
+			// 	layerHeight,
+			// 	lineWidth,
+			// 	output: outputFactor / 100,
+			// 	nozzleSize,
+			// 	extrusion,
+			// 	extrusion2: distance * layerHeight * lineWidth,
+			// });
 
 			previousPoint = point;
 			const flipHeight = flipVerticalAxis(verticalAxis);
