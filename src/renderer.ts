@@ -142,6 +142,7 @@ export async function slicingAction(sendToFile: boolean) {
 				await sendGCodeFile(new Blob([gcode]), filePathName);
 			}
 
+			progressBar.value = 0;
 			progressBarDiv.style.display = "none";
 		}
 	};
