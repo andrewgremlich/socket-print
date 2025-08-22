@@ -117,7 +117,7 @@ export async function generateGCode(
 		center: new Vector3(0, 0, 0),
 		layerHeight,
 	});
-	const transitionLayer = await getTransitionLayer(circlePoints, {
+	const transitionLayer = getTransitionLayer(circlePoints, {
 		nozzleSize,
 		layerHeight,
 		outputFactor,
@@ -155,7 +155,9 @@ export async function generateGCode(
 		}
 
 		for (let j = 0; j < pointLevel.length; j++) {
-			const point = pointLevel[j].add(new Vector3(0, layerHeight * 2, 0));
+			const point = pointLevel[j]
+				.clone()
+				.add(new Vector3(0, layerHeight * 2, 0));
 			const distance = previousPoint.distanceTo(point);
 			const lineWidth = nozzleSize * 1.2;
 			const extrusion =
