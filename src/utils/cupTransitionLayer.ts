@@ -7,7 +7,7 @@ export async function getCirclePoints(
 ): Promise<Vector3[]> {
 	const angleStep = (2 * Math.PI) / (options.segments ?? 36);
 
-	// Only use x and y for radius calculation (2D circle)
+	// X and Z are for the horizontal plane in ThreeJS
 	const dx = startingPoint.x - options.center.x;
 	const dz = startingPoint.z - options.center.z;
 	const r = Number(sqrt(dx * dx + dz * dz));
