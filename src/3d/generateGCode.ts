@@ -95,14 +95,12 @@ export async function generateGCode(
 		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 
 		// ";##Cup Layer 1",
-		// "G1 X50 Y0 F6000 ; Move to start of pre cup layer 1 extrusion",
-		// "G1 E15 ; extrude a bit to make up for any ooze",
-		// "G1 X36 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
+		"G1 X50 Y0 F6000 ; Move to start of pre cup layer 1 extrusion",
+		"G1 E15 ; extrude a bit to make up for any ooze",
+		"G1 X36 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
 		// ";Extrude in a circle A",
-		// "G1 X38.5 F2250 	     		; 7.16.25 move back to cup",
+		"G1 X38.5 F2250 	     		; 7.16.25 move back to cup",
 		// "G3 X38.5 Y0 I-38.5 J0 E255 F1200 ; Counter-Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete cup layer 1).",
-
-		// Generate a series of tiny arcs that gradually increase height and output for the special transition layer.
 
 		";#End of start gcode sequence for cup print#",
 		";##Spiral vase mode socket print to start immediately following this.",
@@ -137,10 +135,6 @@ export async function generateGCode(
 		`${makeGCodePoint(previousPoint, { flipHeight, verticalAxis })} E2 F2250`,
 	);
 
-	// gcode.push(
-	// 	`G1 X${-round(previousPoint.x, 2)} Y${round(previousPoint.z, 2)} Z${round(previousPoint.y, 2)} F2250`,
-	// );
-
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
 
@@ -161,22 +155,20 @@ export async function generateGCode(
 			const distance = previousPoint.distanceTo(point);
 			const lineWidth = nozzleSize * 1.2;
 			const extrusion =
-				distance * layerHeight * lineWidth * (outputFactor / 100);
+				((distance * layerHeight * lineWidth) / 7) * outputFactor;
 
 			// https://3dprinting.stackexchange.com/questions/23929/how-to-calculate-e-value-for-a-pellet-extruder
 			// https://www.drdflo.com/pages/Guides/Extrusion.html
 			// https://re3d.zendesk.com/hc/en-us/articles/4411545823764-Material-Testing-Procedure-for-Pellet-Extrusion
 			// https://dyzedesign.com/2024/05/flow-to-rpm-factor-optimize-your-3d-printing-with-pellet-extruders/
 
-			// console.log({
-			// 	distance,
-			// 	layerHeight,
-			// 	lineWidth,
-			// 	output: outputFactor / 100,
-			// 	nozzleSize,
-			// 	extrusion,
-			// 	extrusion2: distance * layerHeight * lineWidth * 1,
-			// });
+			console.log({
+				distance,
+				layerHeight,
+				lineWidth,
+				nozzleSize,
+				extrusion,
+			});
 
 			previousPoint = point;
 
