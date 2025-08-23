@@ -94,13 +94,13 @@ export async function generateGCode(
 		`G1 Z${startingHeight} F6000; Z up to cup height + nozzleSize for cup layer`,
 		'M98 P"0:/sys/provel/prime.g"   ;prime extruder',
 
-		";##Cup Layer 1",
-		"G1 X50 Y0 F6000 ; Move to start of pre cup layer 1 extrusion",
-		"G1 E15 ; extrude a bit to make up for any ooze",
-		"G1 X36 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
-		";Extrude in a circle A",
-		"G1 X38.5 F2250 	     		; 7.16.25 move back to cup",
-		"G3 X38.5 Y0 I-38.5 J0 E255 F1200 ; Counter-Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete cup layer 1).",
+		// ";##Cup Layer 1",
+		// "G1 X50 Y0 F6000 ; Move to start of pre cup layer 1 extrusion",
+		// "G1 E15 ; extrude a bit to make up for any ooze",
+		// "G1 X36 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
+		// ";Extrude in a circle A",
+		// "G1 X38.5 F2250 	     		; 7.16.25 move back to cup",
+		// "G3 X38.5 Y0 I-38.5 J0 E255 F1200 ; Counter-Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete cup layer 1).",
 
 		// Generate a series of tiny arcs that gradually increase height and output for the special transition layer.
 

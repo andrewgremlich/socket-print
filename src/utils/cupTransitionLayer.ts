@@ -7,7 +7,7 @@ export async function getCirclePoints(
 	startingPoint: Vector3,
 	options: { segments: number; center: Vector3; layerHeight: number },
 ): Promise<Vector3[]> {
-	const angleStep = (2 * Math.PI) / (options.segments ?? 36);
+	const angleStep = (2 * Math.PI) / options.segments;
 
 	// X and Z are for the horizontal plane in ThreeJS
 	const dx = startingPoint.x - options.center.x;
