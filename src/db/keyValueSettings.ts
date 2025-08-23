@@ -252,3 +252,21 @@ export const getRotateValues = async () => {
 		transverse: Number(rotateTransverse.value),
 	};
 };
+
+export const getIsTestSTLCylinder = async () => {
+	const db = await getDb();
+	const isTestSTLCylinder = await db.appSettings
+		.where("name")
+		.equals("isTestSTLCylinder")
+		.first();
+	return isTestSTLCylinder.value as boolean;
+};
+
+export const setIsTestSTLCylinder = async (isTestSTLCylinder: boolean) => {
+	const db = await getDb();
+
+	return await db.appSettings
+		.where("name")
+		.equals("isTestSTLCylinder")
+		.modify({ value: isTestSTLCylinder });
+};

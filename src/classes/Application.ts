@@ -58,24 +58,6 @@ export class Application {
 		directionalLight2.position.set(100, 150, 350);
 		directionalLight3.position.set(-400, 150, 100);
 
-		if (import.meta.env.MODE === "development") {
-			const directionalLightHelper1 = new DirectionalLightHelper(
-				directionalLight1,
-				10,
-			);
-			const directionalLightHelper2 = new DirectionalLightHelper(
-				directionalLight2,
-				10,
-			);
-			const directionalLightHelper3 = new DirectionalLightHelper(
-				directionalLight3,
-				10,
-			);
-			this.addToScene(directionalLightHelper3);
-			this.addToScene(directionalLightHelper1);
-			this.addToScene(directionalLightHelper2);
-		}
-
 		this.renderer.setSize(this.width, this.height);
 		this.renderer.setAnimationLoop(this.#animate);
 		this.renderer.setPixelRatio(window.devicePixelRatio);

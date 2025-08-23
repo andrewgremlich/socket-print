@@ -1,6 +1,8 @@
 import { atan2, cos, round, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 
+const MIN_EXTRUSION_Z_FACTOR = 1;
+
 export async function getCirclePoints(
 	startingPoint: Vector3,
 	options: { segments: number; center: Vector3; layerHeight: number },
@@ -59,7 +61,10 @@ export function getTransitionLayer(
 			const distance = previousPoint.distanceTo(point);
 			const lineWidth = nozzleSize * 1.2;
 
-			extrusion = ((distance * layerHeight * lineWidth) / 7) * outputFactor;
+			extrusion =
+				((distance * layerHeight * lineWidth) / 7) *
+				outputFactor *
+				(point.z < MIN_EXTRUSION_Z_FACTOR ? MIN_EXTRUSION_Z_FACTOR : point.z);
 		}
 
 		transitionLayer.push(

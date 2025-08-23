@@ -51,9 +51,9 @@ const socket = new Socket({
 		app.camera.position.set(0, 200, -maxDimension);
 		app.controls.target.set(0, 100, 0);
 
-		const existingSockets = app.scene.children.filter(
-			(child) => child.type === "Mesh" && child.userData.isSocket,
-		);
+		const existingSockets = app.scene.children.filter((child) => {
+			return child.type === "Mesh" && child.userData.isSocket;
+		});
 
 		if (existingSockets.length > 0) {
 			existingSockets.forEach((child) => {

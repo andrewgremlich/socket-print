@@ -1,4 +1,4 @@
-import { abs, max, pi } from "mathjs";
+import { abs, max, pi, round } from "mathjs";
 import {
 	type BufferGeometry,
 	DoubleSide,
@@ -11,9 +11,11 @@ import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 import { ensureUV } from "@/3d/ensureUV";
 import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
 import {
+	getIsTestSTLCylinder,
 	getLockDepth,
 	getRotateValues,
 	getTranslateValues,
+	setIsTestSTLCylinder,
 	updateRotateValues,
 	updateTranslateValues,
 } from "@/db/keyValueSettings";
@@ -42,7 +44,6 @@ export class Socket extends AppObject {
 	lockDepth: number | null = null;
 	loadedStlFromIndexedDb = false;
 	offsetYPosition = 0;
-	isTestSTLCylinder = false;
 
 	constructor({ socketCallback }: SocketProps) {
 		super();
@@ -91,7 +92,7 @@ export class Socket extends AppObject {
 		});
 		addTestCylinderButton?.addEventListener("click", async () => {
 			await this.clearData();
-			this.isTestSTLCylinder = true;
+			await setIsTestSTLCylinder(true);
 			await fetchStlFile("test_cylinder.stl")();
 		});
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
@@ -109,8 +110,15 @@ export class Socket extends AppObject {
 		});
 	}
 
-	#onStlFileChange = async ({ target: inputFiles }: Event) => {
+	#onStlFileChange = async (event: Event) => {
+		const { target: inputFiles } = event;
 		const file = (inputFiles as HTMLInputElement).files?.[0];
+
+		const isUserTriggered = event.isTrusted;
+
+		if (isUserTriggered) {
+			await setIsTestSTLCylinder(false);
+		}
 
 		if (file) {
 			await deleteAllFiles();
@@ -136,29 +144,27 @@ export class Socket extends AppObject {
 
 			this.mesh = mesh;
 			this.mesh.raycast = acceleratedRaycast;
-
 			this.mesh.geometry.boundsTree = bvh;
-
 			this.mesh.name = file.name;
 			this.mesh.userData = { isSocket: true };
 			this.computeBoundingBox();
-			activeFileName.textContent = file.name;
 			this.lockDepth = await getLockDepth();
 
-			// Set position and update matrix
+			activeFileName.textContent = file.name;
+
 			this.mesh.geometry.translate(
 				-this.center.x,
 				-this.center.y,
 				-this.center.z,
 			);
 
-			// Load and apply stored translate and rotate values
 			const translateValues = await getTranslateValues();
 			const rotateValues = await getRotateValues();
+			const isTestSTLCylinder = await getIsTestSTLCylinder();
 
-			this.offsetYPosition = !this.isTestSTLCylinder
-				? this.size.y / 2 - this.lockDepth
-				: this.size.y / 2;
+			this.offsetYPosition = isTestSTLCylinder
+				? this.size.y / 2
+				: this.size.y / 2 - this.lockDepth;
 
 			if (this.loadedStlFromIndexedDb) {
 				this.mesh.position.set(
@@ -175,6 +181,7 @@ export class Socket extends AppObject {
 				rotateValues.sagittal,
 				rotateValues.transverse,
 			);
+
 			await updateTranslateValues(
 				this.mesh.position.x,
 				this.mesh.position.y,
@@ -189,9 +196,9 @@ export class Socket extends AppObject {
 			this.mesh.geometry.computeVertexNormals();
 
 			horizontalTranslate.value = (-this.mesh.position.x).toString();
-			verticalTranslate.value = (
-				this.mesh.position.y -
-				(!this.isTestSTLCylinder ? this.offsetYPosition : this.mesh.position.y)
+			verticalTranslate.value = round(
+				this.mesh.position.y - this.offsetYPosition,
+				0,
 			).toString();
 			depthTranslate.value = (-this.mesh.position.z).toString();
 
@@ -214,8 +221,8 @@ export class Socket extends AppObject {
 		this.center = undefined;
 		this.size = undefined;
 		this.loadedStlFromIndexedDb = false;
-		this.isTestSTLCylinder = false;
 
+		await setIsTestSTLCylinder(false);
 		await updateRotateValues(0, 0, 0);
 		await updateTranslateValues(0, 0, 0);
 

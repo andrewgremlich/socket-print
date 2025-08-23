@@ -28,6 +28,7 @@ export type FormValues = {
 };
 
 export type ProvelPrintSettings = {
+	isTestSTLCylinder: boolean;
 	lockDepth: number;
 	circularSegments: number;
 	translateX: number;
