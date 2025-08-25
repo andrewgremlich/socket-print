@@ -1,5 +1,6 @@
 import { atan2, cos, round, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
+import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 
 const MIN_EXTRUSION_Z_FACTOR = 1;
 
@@ -16,7 +17,8 @@ export async function getCirclePoints(
 	const theta0 = atan2(dz, dx);
 	const points: Vector3[] = [];
 
-	const dy = (options.layerHeight * 2) / options.segments;
+	// The Z should rise by exactly one layerHeight from start to end
+	const dy = options.layerHeight / (options.segments - 1);
 
 	for (let i = 0; i < options.segments; i++) {
 		const theta = theta0 - i * angleStep; // Subtract to rotate CCW
@@ -36,7 +38,7 @@ export async function getCirclePoints(
  * @param points - Array of Vector3 points (in order)
  * @param options - nozzleSize (mm), layerHeight (mm), outputFactor (percent, e.g. 2.1 for 2.1%)
  */
-export function getTransitionLayer(
+export async function getTransitionLayer(
 	points: Vector3[],
 	{
 		nozzleSize,
@@ -49,8 +51,10 @@ export function getTransitionLayer(
 		outputFactor: number;
 		offsetHeight: number;
 	},
-): string {
+): Promise<string> {
 	const transitionLayer: string[] = [];
+	const feedrate = await calculateFeedratePerLevel([points]);
+
 	let previousPoint: Vector3 | undefined;
 
 	for (let i = 0; i < points.length; i++) {
@@ -68,7 +72,7 @@ export function getTransitionLayer(
 		}
 
 		transitionLayer.push(
-			`G1 X${-round(point.x, 2)} Y${round(point.y, 2)} Z${round(point.z + offsetHeight, 2)}${i > 0 ? ` E${round(extrusion, 2)}` : ""} F2250`,
+			`G1 X${-round(point.x, 2)} Y${round(point.y, 2)} Z${round(point.z + offsetHeight, 2)}${i > 0 ? ` E${round(extrusion, 2)}` : ""} F${feedrate}`,
 		);
 
 		previousPoint = point;

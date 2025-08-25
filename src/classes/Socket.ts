@@ -34,7 +34,9 @@ import {
 } from "@/utils/htmlElements";
 import { AppObject } from "./AppObject";
 
-type SocketCallback = (params: { maxDimension: number }) => void;
+type SocketCallback = (params: {
+	size: { x: number; y: number; z: number };
+}) => void;
 
 type SocketProps = { socketCallback: SocketCallback };
 
@@ -202,8 +204,14 @@ export class Socket extends AppObject {
 			).toString();
 			depthTranslate.value = (-this.mesh.position.z).toString();
 
+			console.log();
+
 			this.socketCallback({
-				maxDimension: max(this.size.x, this.size.y, this.size.z),
+				size: {
+					y: this.size.y,
+					x: this.size.x,
+					z: this.size.z,
+				},
 			});
 
 			this.toggleInput(false);

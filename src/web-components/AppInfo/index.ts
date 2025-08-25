@@ -1,4 +1,4 @@
-import { version } from "package.json";
+import { version } from "pkg";
 
 export class AppInfo extends HTMLElement {
 	dialog: HTMLDialogElement;

@@ -47,9 +47,9 @@ const app = new Application();
 const ring = new Ring();
 const mergeCup = new MergeCup();
 const socket = new Socket({
-	socketCallback: ({ maxDimension }) => {
-		app.camera.position.set(0, 200, -maxDimension);
-		app.controls.target.set(0, 100, 0);
+	socketCallback: ({ size: { x, y, z } }) => {
+		app.camera.position.set(0, y, -z * 1.25);
+		app.controls.target.set(0, y * 0.5, 0);
 
 		const existingSockets = app.scene.children.filter((child) => {
 			return child.type === "Mesh" && child.userData.isSocket;
