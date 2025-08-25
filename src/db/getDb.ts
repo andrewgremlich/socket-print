@@ -1,5 +1,4 @@
 import { Dexie } from "dexie";
-import { version } from "pkg";
 import type { Entities } from "./types";
 
 let db: Dexie & Entities;
@@ -7,7 +6,7 @@ let db: Dexie & Entities;
 export const getDb = async () => {
 	if (!db) {
 		db = new Dexie("ProvelPrintDatabase") as Dexie & Entities;
-		db.version(+version.replace("v", "").replace(/\./g, "")).stores({
+		db.version(15).stores({
 			formValues: "++id, name, value",
 			appSettings: "++id, name, value",
 			materialProfiles:
