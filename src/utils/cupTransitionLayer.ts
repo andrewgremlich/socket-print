@@ -68,7 +68,7 @@ export async function getTransitionLayer(
 			extrusion =
 				((distance * layerHeight * lineWidth) / 7) *
 				outputFactor *
-				(point.z < MIN_EXTRUSION_Z_FACTOR ? MIN_EXTRUSION_Z_FACTOR : point.z);
+				(point.z + layerHeight);
 		}
 
 		transitionLayer.push(
