@@ -131,10 +131,6 @@ export async function generateGCode(
 		new Vector3(0, startingHeight, 0),
 	);
 
-	gcode.push(
-		`${makeGCodePoint(previousPoint, { flipHeight, verticalAxis })} E2 F2250`,
-	);
-
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
 
@@ -154,19 +150,6 @@ export async function generateGCode(
 			const lineWidth = nozzleSize * 1.2;
 			const extrusion =
 				((distance * layerHeight * lineWidth) / 7) * outputFactor;
-
-			// https://3dprinting.stackexchange.com/questions/23929/how-to-calculate-e-value-for-a-pellet-extruder
-			// https://www.drdflo.com/pages/Guides/Extrusion.html
-			// https://re3d.zendesk.com/hc/en-us/articles/4411545823764-Material-Testing-Procedure-for-Pellet-Extrusion
-			// https://dyzedesign.com/2024/05/flow-to-rpm-factor-optimize-your-3d-printing-with-pellet-extruders/
-
-			// console.log({
-			// 	distance,
-			// 	layerHeight,
-			// 	lineWidth,
-			// 	nozzleSize,
-			// 	extrusion,
-			// });
 
 			previousPoint = point;
 

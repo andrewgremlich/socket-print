@@ -96,7 +96,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 			angle < startAngle + pi * 2;
 			angle += angleIncrement
 		) {
-			const height = heightPosition + (angle / (pi * 2)) * layerHeight;
+			const height =
+				heightPosition + ((angle - startAngle) / (pi * 2)) * layerHeight;
 
 			const xdirection = cos(-angle);
 			const zdirection = sin(-angle);
