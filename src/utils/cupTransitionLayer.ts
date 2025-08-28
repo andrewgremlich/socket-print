@@ -2,7 +2,7 @@ import { atan2, cos, round, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 
-const MIN_EXTRUSION_Z_FACTOR = 1;
+const MIN_EXTRUSION_Z_FACTOR = 2;
 
 export async function getCirclePoints(
 	startingPoint: Vector3,
@@ -68,7 +68,7 @@ export async function getTransitionLayer(
 			extrusion =
 				((distance * layerHeight * lineWidth) / 7) *
 				outputFactor *
-				(point.z + layerHeight);
+				(point.z + MIN_EXTRUSION_Z_FACTOR);
 		}
 
 		transitionLayer.push(
