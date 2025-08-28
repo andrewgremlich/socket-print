@@ -1,7 +1,7 @@
 import { max } from "mathjs";
 import { isFQDN, isIP } from "validator";
 import { connectToPrinter } from "@/3d/sendGCodeFile";
-import { getIpAddress } from "@/db/keyValueSettings";
+import { getIpAddress } from "@/db/formValuesDbActions";
 import {
 	ipAddressFailure,
 	ipAddressInput,

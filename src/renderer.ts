@@ -22,7 +22,7 @@ import { Socket } from "@/classes/Socket";
 import {
 	updateRotateValues,
 	updateTranslateValues,
-} from "@/db/keyValueSettings";
+} from "@/db/appSettingsDbActions";
 import {
 	activeFileName,
 	clearModelButton,

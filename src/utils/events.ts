@@ -1,18 +1,19 @@
 import hotkeys from "hotkeys-js";
 
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
-import { saveActiveMaterialProfile } from "@/db/keyValueSettings";
-import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
+import { saveActiveMaterialProfile } from "@/db/formValuesDbActions";
+import { loadActiveMaterialProfileForm } from "@/db/loadDataIntoForms";
 import {
 	deleteActiveMaterialProfile,
 	getMaterialProfiles,
-} from "@/db/materialProfiles";
+} from "@/db/materialProfilesDbActions";
 import {
 	handleIpAddressChange,
 	printerConnection,
 } from "./handlePrinterConnection";
 import {
 	activateInfoDialog,
+	activateSettingsDialog,
 	addMaterialProfile,
 	appInfo,
 	deleteMaterialProfileButton,
@@ -21,6 +22,7 @@ import {
 	materialProfileForm,
 	menuBar,
 	menuBarDropdowns,
+	settingsDialog,
 } from "./htmlElements";
 
 hotkeys("ctrl+shift+r", (_event, handler) => {
@@ -64,6 +66,8 @@ setTimeout(async () => await printerConnection(), 1000);
 
 activateInfoDialog.addEventListener("click", () => appInfo.show());
 
+activateSettingsDialog.addEventListener("click", () => settingsDialog.show());
+
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),
 );
@@ -79,5 +83,5 @@ deleteMaterialProfileButton.addEventListener("click", async () => {
 
 	await saveActiveMaterialProfile(materialProfiles[0].name);
 	await appendMaterialProfiles();
-	await loadActiveMaterialProfile();
+	await loadActiveMaterialProfileForm();
 });

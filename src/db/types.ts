@@ -37,6 +37,9 @@ export type ProvelPrintSettings = {
 	rotateCoronal: number;
 	rotateSagittal: number;
 	rotateTransverse: number;
+	startingCupLayerHeight: number;
+	extrusionAdjustment: number;
+	lineWidthAdjustment: number;
 };
 
 export type Entities = {

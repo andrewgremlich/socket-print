@@ -1,30 +1,24 @@
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
-import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
+import { loadActiveMaterialProfileForm } from "@/db/loadDataIntoForms";
 import {
 	addNewMaterialProfile,
 	getActiveMaterialProfile,
 	updateMaterialProfile,
-} from "@/db/materialProfiles";
+} from "@/db/materialProfilesDbActions";
 import type { MaterialProfile } from "@/db/types";
-import { formContainerStyle } from "./style";
+import { Dialog } from "../Dialog";
 
-export class MaterialProfileForm extends HTMLElement {
-	dialog: HTMLDialogElement;
-	form: HTMLFormElement;
+export class MaterialProfileForm extends Dialog {
 	formTitle: HTMLElement;
 	cancelButton: HTMLElement;
 	host: Element;
-
 	editMaterialProfile: MaterialProfile;
 
 	constructor() {
 		super();
-		this.attachShadow({ mode: "open" });
-		this.shadowRoot.innerHTML = `
-      <style>
-          ${formContainerStyle}
-      </style>
-      <dialog id="materialDialog">
+		this.id = "materialDialog";
+		this.attachHTML`
+      <dialog id="${this.id}">
         <h3 id="formTitle"></h3>
         <form id="materialForm" method="dialog">
             <label for="materialProfileName">Material Profile Name</label>
@@ -51,9 +45,6 @@ export class MaterialProfileForm extends HTMLElement {
       </dialog>
     `;
 
-		this.dialog = this.shadowRoot.getElementById(
-			"materialDialog",
-		) as HTMLDialogElement;
 		this.form = this.shadowRoot.getElementById(
 			"materialForm",
 		) as HTMLFormElement;
@@ -61,9 +52,11 @@ export class MaterialProfileForm extends HTMLElement {
 		this.cancelButton = this.shadowRoot.getElementById(
 			"cancelMaterialProfile",
 		) as HTMLElement;
+
+		this.dialogEvents();
 	}
 
-	connectedCallback() {
+	dialogEvents() {
 		this.form.addEventListener("submit", () => this.saveProfile());
 
 		this.cancelButton.addEventListener("click", () => this.hideForm());
@@ -137,7 +130,7 @@ export class MaterialProfileForm extends HTMLElement {
 		}
 
 		await appendMaterialProfiles();
-		await loadActiveMaterialProfile();
+		await loadActiveMaterialProfileForm();
 	}
 
 	hideForm() {

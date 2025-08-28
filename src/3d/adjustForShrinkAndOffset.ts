@@ -1,7 +1,7 @@
 import { atan2, cos, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 
-import { getActiveMaterialProfile } from "@/db/materialProfiles";
+import { getActiveMaterialProfile } from "@/db/materialProfilesDbActions";
 
 type RawPoint = { x: number; y: number; z: number };
 

@@ -2,20 +2,20 @@ import { round } from "mathjs";
 import pkg from "pkg";
 import { Vector3 } from "three";
 
+import { getCircularSegments } from "@/db/appSettingsDbActions";
 import {
-	getActiveMaterialProfile,
-	getCircularSegments,
 	getCupSize,
 	getCupSizeHeight,
 	getLayerHeight,
 	getLockPosition,
 	getNozzleSize,
-} from "@/db/keyValueSettings";
+} from "@/db/formValuesDbActions";
 import {
+	getActiveMaterialProfile,
 	getActiveMaterialProfileNozzleTemp,
 	getActiveMaterialProfileOutputFactor,
 	getActiveMaterialProfileSecondsPerLayer,
-} from "@/db/materialProfiles";
+} from "@/db/materialProfilesDbActions";
 import {
 	getCirclePoints,
 	getTransitionLayer,

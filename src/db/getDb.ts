@@ -6,7 +6,7 @@ let db: Dexie & Entities;
 export const getDb = async () => {
 	if (!db) {
 		db = new Dexie("ProvelPrintDatabase") as Dexie & Entities;
-		db.version(15).stores({
+		db.version(16).stores({
 			formValues: "++id, name, value",
 			appSettings: "++id, name, value",
 			materialProfiles:

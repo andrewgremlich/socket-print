@@ -1,5 +1,6 @@
 import type { AppInfo } from "@/web-components/AppInfo";
 import type { MaterialProfileForm } from "@/web-components/MaterialProfileForm";
+import type { Settings } from "@/web-components/Settings";
 
 export const loadingScreen = document.getElementById("loading");
 
@@ -108,3 +109,9 @@ export const appInfo = document.querySelector("app-info") as AppInfo;
 export const activateInfoDialog = document.getElementById(
 	"activateInfoDialog",
 ) as HTMLInputElement;
+export const activateSettingsDialog = document.getElementById(
+	"activateSettingsDialog",
+) as HTMLInputElement;
+export const settingsDialog = document.querySelector(
+	"app-settings",
+) as Settings;

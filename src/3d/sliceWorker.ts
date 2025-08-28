@@ -15,11 +15,11 @@ import {
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 import {
-	getCircularSegments,
 	getCupSizeHeight,
 	getLayerHeight,
 	getNozzleSize,
-} from "../db/keyValueSettings";
+} from "@/db/formValuesDbActions";
+import { getCircularSegments } from "../db/appSettingsDbActions";
 import { ensureUV } from "./ensureUV";
 
 Mesh.prototype.raycast = acceleratedRaycast;

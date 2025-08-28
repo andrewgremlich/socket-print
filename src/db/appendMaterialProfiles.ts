@@ -1,6 +1,6 @@
 import { activeMaterialProfileSelect } from "@/utils/htmlElements";
 
-import { getMaterialProfiles } from "./materialProfiles";
+import { getMaterialProfiles } from "./materialProfilesDbActions";
 
 export const appendMaterialProfiles = async () => {
 	const materialProfiles = await getMaterialProfiles();

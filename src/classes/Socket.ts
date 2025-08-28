@@ -1,4 +1,4 @@
-import { abs, max, pi, round } from "mathjs";
+import { abs, pi, round } from "mathjs";
 import {
 	type BufferGeometry,
 	DoubleSide,
@@ -9,7 +9,6 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import { ensureUV } from "@/3d/ensureUV";
-import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
 import {
 	getIsTestSTLCylinder,
 	getLockDepth,
@@ -18,7 +17,8 @@ import {
 	setIsTestSTLCylinder,
 	updateRotateValues,
 	updateTranslateValues,
-} from "@/db/keyValueSettings";
+} from "@/db/appSettingsDbActions";
+import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
 import {
 	activeFileName,
 	addTestCylinderButton,

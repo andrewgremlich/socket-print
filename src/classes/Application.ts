@@ -3,7 +3,6 @@ import {
 	AmbientLight,
 	type BufferGeometry,
 	DirectionalLight,
-	DirectionalLightHelper,
 	GridHelper,
 	Mesh,
 	MeshBasicMaterial,

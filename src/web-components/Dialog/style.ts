@@ -38,5 +38,21 @@ dialog label, dialog h3 {
   margin-bottom: 5px;
   padding: 0;
   color: #fff;
+}   
+
+dialog p {
+  color: #ccc;
+}
+
+dialog a {
+  color: #1e90ff;
+  text-underline-offset: 5px;
+  text-underline-thickness: 2px;
+  text-decoration-style: dashed;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #fff;
+  }
 }
 `;
