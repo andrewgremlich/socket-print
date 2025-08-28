@@ -117,7 +117,6 @@ export async function generateGCode(
 	});
 	const transitionLayer = await getTransitionLayer(circlePoints, {
 		nozzleSize,
-		layerHeight,
 		outputFactor,
 		offsetHeight: startingHeight,
 	});
@@ -126,7 +125,7 @@ export async function generateGCode(
 	gcode.push(transitionLayer);
 	gcode.push(";END TRANSITION LAYER");
 
-	const tempPoint = circlePoints[circlePoints.length - 1];
+	const tempPoint = circlePoints[circlePoints.length - 1].point;
 	previousPoint = new Vector3(tempPoint.x, tempPoint.z, tempPoint.y).add(
 		new Vector3(0, startingHeight, 0),
 	);

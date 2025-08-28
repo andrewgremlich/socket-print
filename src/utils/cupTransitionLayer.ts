@@ -1,24 +1,27 @@
-import { atan2, cos, round, sin, sqrt } from "mathjs";
+import { atan2, cos, floor, round, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 
 const MIN_EXTRUSION_Z_FACTOR = 2;
+const EXTRUSION_ADJUSTMENT = 7;
+const LINE_WIDTH_ADJUSTMENT = 1.2;
 
 export async function getCirclePoints(
 	startingPoint: Vector3,
 	options: { segments: number; center: Vector3; layerHeight: number },
-): Promise<Vector3[]> {
+): Promise<{ point: Vector3; calculatedLayerHeight: number }[]> {
 	const angleStep = (2 * Math.PI) / options.segments;
 
-	// X and Z are for the horizontal plane in ThreeJS
+	// NOTE: X and Z are for the horizontal plane in ThreeJS
 	const dx = startingPoint.x - options.center.x;
 	const dz = startingPoint.z - options.center.z;
 	const r = Number(sqrt(dx * dx + dz * dz));
 	const theta0 = atan2(dz, dx);
-	const points: Vector3[] = [];
-
-	// The Z should rise by exactly one layerHeight from start to end
-	const dy = options.layerHeight / (options.segments - 1);
+	const points: { point: Vector3; calculatedLayerHeight: number }[] = [];
+	const endingHeight = options.layerHeight + MIN_EXTRUSION_Z_FACTOR;
+	const startingHeight = MIN_EXTRUSION_Z_FACTOR;
+	const heightDiff = endingHeight - startingHeight;
+	const dy = heightDiff / (options.segments - 1);
 
 	for (let i = 0; i < options.segments; i++) {
 		const theta = theta0 - i * angleStep; // Subtract to rotate CCW
@@ -26,7 +29,10 @@ export async function getCirclePoints(
 		const y = options.center.y + r * sin(theta);
 		const z = startingPoint.z + i * dy;
 
-		points.push(new Vector3(x, y, z));
+		points.push({
+			point: new Vector3(x, y, z),
+			calculatedLayerHeight: startingHeight + dy * i,
+		});
 	}
 
 	return points;
@@ -39,41 +45,40 @@ export async function getCirclePoints(
  * @param options - nozzleSize (mm), layerHeight (mm), outputFactor (percent, e.g. 2.1 for 2.1%)
  */
 export async function getTransitionLayer(
-	points: Vector3[],
+	points: { point: Vector3; calculatedLayerHeight: number }[],
 	{
 		nozzleSize,
-		layerHeight,
 		outputFactor,
 		offsetHeight,
 	}: {
 		nozzleSize: number;
-		layerHeight: number;
 		outputFactor: number;
 		offsetHeight: number;
 	},
 ): Promise<string> {
 	const transitionLayer: string[] = [];
-	const feedrate = await calculateFeedratePerLevel([points]);
+	const feedrate = await calculateFeedratePerLevel([
+		points.map((p) => p.point),
+	]);
 
 	let previousPoint: Vector3 | undefined;
 
 	for (let i = 0; i < points.length; i++) {
-		const point = points[i];
-		let extrusion = 0;
+		const point = points[i].point;
+		const layerHeight = points[i].calculatedLayerHeight;
 
 		if (previousPoint) {
 			const distance = previousPoint.distanceTo(point);
-			const lineWidth = nozzleSize * 1.2;
+			const lineWidth = nozzleSize * LINE_WIDTH_ADJUSTMENT;
 
-			extrusion =
-				((distance * layerHeight * lineWidth) / 7) *
-				outputFactor *
-				(point.z + MIN_EXTRUSION_Z_FACTOR);
+			const extrusion =
+				((distance * layerHeight * lineWidth) / EXTRUSION_ADJUSTMENT) *
+				outputFactor;
+
+			transitionLayer.push(
+				`G1 X${-round(point.x, 2)} Y${round(point.y, 2)} Z${floor(point.z + offsetHeight, 2)} E${round(extrusion, 2)} F${feedrate}`,
+			);
 		}
-
-		transitionLayer.push(
-			`G1 X${-round(point.x, 2)} Y${round(point.y, 2)} Z${round(point.z + offsetHeight, 2)}${i > 0 ? ` E${round(extrusion, 2)}` : ""} F${feedrate}`,
-		);
 
 		previousPoint = point;
 	}
