@@ -48,7 +48,7 @@ const ring = new Ring();
 const mergeCup = new MergeCup();
 const socket = new Socket({
 	socketCallback: ({ size: { y } }) => {
-		app.camera.position.set(0, y, -200);
+		app.camera.position.set(0, y + 50, -200);
 		app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
 
 		const existingSockets = app.scene.children.filter((child) => {
