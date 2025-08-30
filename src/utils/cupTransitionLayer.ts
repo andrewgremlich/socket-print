@@ -2,9 +2,9 @@ import { atan2, cos, floor, round, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 
-const MIN_EXTRUSION_Z_FACTOR = 2;
-const EXTRUSION_ADJUSTMENT = 7;
-const LINE_WIDTH_ADJUSTMENT = 1.2;
+export const MIN_EXTRUSION_Z_FACTOR = 2;
+export const EXTRUSION_ADJUSTMENT = 7.7;
+export const LINE_WIDTH_ADJUSTMENT = 1.2;
 
 export async function getCirclePoints(
 	startingPoint: Vector3,

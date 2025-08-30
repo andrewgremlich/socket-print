@@ -17,8 +17,10 @@ import {
 	getActiveMaterialProfileSecondsPerLayer,
 } from "@/db/materialProfilesDbActions";
 import {
+	EXTRUSION_ADJUSTMENT,
 	getCirclePoints,
 	getTransitionLayer,
+	LINE_WIDTH_ADJUSTMENT,
 } from "@/utils/cupTransitionLayer";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
@@ -146,9 +148,10 @@ export async function generateGCode(
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j].clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(point);
-			const lineWidth = nozzleSize * 1.2;
+			const lineWidth = nozzleSize * LINE_WIDTH_ADJUSTMENT;
 			const extrusion =
-				((distance * layerHeight * lineWidth) / 7) * outputFactor;
+				((distance * layerHeight * lineWidth) / EXTRUSION_ADJUSTMENT) *
+				outputFactor;
 
 			previousPoint = point;
 
