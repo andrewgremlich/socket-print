@@ -1,5 +1,5 @@
-import { getFormKeyValues } from "./keyValueSettings";
-import { getActiveMaterialProfile } from "./materialProfiles";
+import { getFormKeyValues } from "./formValuesDbActions";
+import { getActiveMaterialProfile } from "./materialProfilesDbActions";
 
 export async function loadMainDataForm() {
 	const appSettings = await getFormKeyValues();
@@ -33,7 +33,7 @@ export async function loadMainDataForm() {
 	}
 }
 
-export async function loadActiveMaterialProfile() {
+export async function loadActiveMaterialProfileForm() {
 	const activeMaterialProfile = await getActiveMaterialProfile();
 
 	for (const key of Object.keys(activeMaterialProfile)) {

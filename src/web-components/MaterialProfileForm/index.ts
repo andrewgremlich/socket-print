@@ -1,30 +1,25 @@
 import { appendMaterialProfiles } from "@/db/appendMaterialProfiles";
-import { loadActiveMaterialProfile } from "@/db/loadMainDataForm";
+import { loadActiveMaterialProfileForm } from "@/db/loadDataIntoForms";
 import {
 	addNewMaterialProfile,
 	getActiveMaterialProfile,
 	updateMaterialProfile,
-} from "@/db/materialProfiles";
+} from "@/db/materialProfilesDbActions";
 import type { MaterialProfile } from "@/db/types";
-import { formContainerStyle } from "./style";
+import { Dialog } from "../Dialog";
 
-export class MaterialProfileForm extends HTMLElement {
-	dialog: HTMLDialogElement;
-	form: HTMLFormElement;
+export class MaterialProfileForm extends Dialog {
 	formTitle: HTMLElement;
 	cancelButton: HTMLElement;
 	host: Element;
-
 	editMaterialProfile: MaterialProfile;
+	materialProfileName: HTMLInputElement;
 
 	constructor() {
 		super();
-		this.attachShadow({ mode: "open" });
-		this.shadowRoot.innerHTML = `
-      <style>
-          ${formContainerStyle}
-      </style>
-      <dialog id="materialDialog">
+		this.id = "materialDialog";
+		this.attachHTML`
+      <dialog id="${this.id}">
         <h3 id="formTitle"></h3>
         <form id="materialForm" method="dialog">
             <label for="materialProfileName">Material Profile Name</label>
@@ -51,9 +46,6 @@ export class MaterialProfileForm extends HTMLElement {
       </dialog>
     `;
 
-		this.dialog = this.shadowRoot.getElementById(
-			"materialDialog",
-		) as HTMLDialogElement;
 		this.form = this.shadowRoot.getElementById(
 			"materialForm",
 		) as HTMLFormElement;
@@ -61,20 +53,19 @@ export class MaterialProfileForm extends HTMLElement {
 		this.cancelButton = this.shadowRoot.getElementById(
 			"cancelMaterialProfile",
 		) as HTMLElement;
+		this.materialProfileName = this.shadowRoot.getElementById(
+			"materialProfileName",
+		) as HTMLInputElement;
+
+		this.dialogEvents();
 	}
 
-	connectedCallback() {
+	dialogEvents() {
 		this.form.addEventListener("submit", () => this.saveProfile());
 
-		this.cancelButton.addEventListener("click", () => this.hideForm());
+		this.cancelButton.addEventListener("click", () => this.hide());
 
-		this.dialog.addEventListener("close", () => this.hideForm());
-
-		this.dialog.addEventListener("click", ({ target, currentTarget }) => {
-			if (target === currentTarget) {
-				this.hideForm();
-			}
-		});
+		this.dialog.addEventListener("close", () => this.hide());
 	}
 
 	async showForm(type: "new" | "edit") {
@@ -83,7 +74,10 @@ export class MaterialProfileForm extends HTMLElement {
 
 		if (type === "edit") {
 			const profile = await getActiveMaterialProfile();
+
+			this.materialProfileName.disabled = true;
 			this.editMaterialProfile = profile;
+
 			(
 				this.form.elements.namedItem("materialProfileName") as HTMLInputElement
 			).value = profile.name;
@@ -99,6 +93,7 @@ export class MaterialProfileForm extends HTMLElement {
 				this.form.elements.namedItem("secondsPerLayer") as HTMLInputElement
 			).value = profile.secondsPerLayer.toString();
 		} else {
+			this.materialProfileName.disabled = false;
 			this.form.reset();
 		}
 
@@ -137,15 +132,7 @@ export class MaterialProfileForm extends HTMLElement {
 		}
 
 		await appendMaterialProfiles();
-		await loadActiveMaterialProfile();
-	}
-
-	hideForm() {
-		this.form.reset();
-
-		if (this.dialog.open) {
-			this.dialog.close();
-		}
+		await loadActiveMaterialProfileForm();
 	}
 }
 

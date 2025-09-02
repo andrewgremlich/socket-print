@@ -1,7 +1,7 @@
 import { round } from "mathjs";
 import type { Vector3 } from "three";
-import { getCircularSegments } from "@/db/keyValueSettings";
-import { getActiveMaterialProfileSecondsPerLayer } from "@/db/materialProfiles";
+import { getCircularSegments } from "@/db/appSettingsDbActions";
+import { getActiveMaterialProfileSecondsPerLayer } from "@/db/materialProfilesDbActions";
 
 const calculateDistancePerLevel = async (
 	points: Vector3[][],

@@ -5,11 +5,11 @@ import {
 	makeDefaultsKeyValues,
 	makeMaterialProfileDefaults,
 } from "./dbDefaults";
-import { setFormValues } from "./keyValueSettings";
+import { setFormValues } from "./formValuesDbActions";
 import {
-	loadActiveMaterialProfile,
+	loadActiveMaterialProfileForm,
 	loadMainDataForm,
-} from "./loadMainDataForm";
+} from "./loadDataIntoForms";
 import { EntityEnum, type FormValues, type ProvelPrintSettings } from "./types";
 
 const defaultFormValues: FormValues = {
@@ -31,6 +31,9 @@ const defaultSettingNames: ProvelPrintSettings = {
 	rotateCoronal: 0,
 	rotateSagittal: 0,
 	rotateTransverse: 0,
+	startingCupLayerHeight: 2,
+	extrusionAdjustment: 7.7,
+	lineWidthAdjustment: 1.2,
 };
 
 const initData = async () => {
@@ -42,7 +45,7 @@ const initData = async () => {
 	await Promise.all([
 		appendMaterialProfiles(),
 		loadMainDataForm(),
-		loadActiveMaterialProfile(),
+		loadActiveMaterialProfileForm(),
 	]);
 };
 
@@ -66,6 +69,6 @@ appForm.addEventListener("change", async (event) => {
 	const name = (event.target as HTMLInputElement).name;
 
 	if (name === "activeMaterialProfile") {
-		await loadActiveMaterialProfile();
+		await loadActiveMaterialProfileForm();
 	}
 });

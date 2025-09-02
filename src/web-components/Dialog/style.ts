@@ -18,6 +18,7 @@ dialog form {
   column-gap: 50px;
   grid-template-columns: 1fr 1fr;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 dialog form > * {
@@ -33,10 +34,32 @@ dialog input {
   cursor: pointer;
 }
 
-dialog label, dialog h3 {
+dialog input:disabled {
+  background-color: #eee;
+  color: #999;
+  cursor: not-allowed;
+}
+
+dialog label, dialog h2, dialog h3, dialog h4 {
   margin: 0;
   margin-bottom: 5px;
   padding: 0;
   color: #fff;
+}   
+
+dialog p {
+  color: #ccc;
+}
+
+dialog a {
+  color: #1e90ff;
+  text-underline-offset: 5px;
+  text-underline-thickness: 2px;
+  text-decoration-style: dashed;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #fff;
+  }
 }
 `;

@@ -1,5 +1,5 @@
 import crc32 from "crc-32";
-import { getIpAddress } from "@/db/keyValueSettings";
+import { getIpAddress } from "@/db/formValuesDbActions";
 
 type UploadResponse = {
 	err: 0 | 1 | 2;
