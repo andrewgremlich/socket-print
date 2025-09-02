@@ -13,6 +13,7 @@ export class MaterialProfileForm extends Dialog {
 	cancelButton: HTMLElement;
 	host: Element;
 	editMaterialProfile: MaterialProfile;
+	materialProfileName: HTMLInputElement;
 
 	constructor() {
 		super();
@@ -52,6 +53,9 @@ export class MaterialProfileForm extends Dialog {
 		this.cancelButton = this.shadowRoot.getElementById(
 			"cancelMaterialProfile",
 		) as HTMLElement;
+		this.materialProfileName = this.shadowRoot.getElementById(
+			"materialProfileName",
+		) as HTMLInputElement;
 
 		this.dialogEvents();
 	}
@@ -70,7 +74,10 @@ export class MaterialProfileForm extends Dialog {
 
 		if (type === "edit") {
 			const profile = await getActiveMaterialProfile();
+
+			this.materialProfileName.disabled = true;
 			this.editMaterialProfile = profile;
+
 			(
 				this.form.elements.namedItem("materialProfileName") as HTMLInputElement
 			).value = profile.name;
@@ -86,6 +93,7 @@ export class MaterialProfileForm extends Dialog {
 				this.form.elements.namedItem("secondsPerLayer") as HTMLInputElement
 			).value = profile.secondsPerLayer.toString();
 		} else {
+			this.materialProfileName.disabled = false;
 			this.form.reset();
 		}
 

@@ -34,6 +34,12 @@ dialog input {
   cursor: pointer;
 }
 
+dialog input:disabled {
+  background-color: #eee;
+  color: #999;
+  cursor: not-allowed;
+}
+
 dialog label, dialog h2, dialog h3, dialog h4 {
   margin: 0;
   margin-bottom: 5px;
