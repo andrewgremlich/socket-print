@@ -33,12 +33,12 @@ export class Dialog extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.shadowRoot
-			.querySelector("dialog")
-			.addEventListener("click", ({ target }) => {
+		if (this.dialog) {
+			this.dialog.addEventListener("click", ({ target }) => {
 				if (this.dialog.open && target === this.dialog) {
 					this.dialog.close();
 				}
 			});
+		}
 	}
 }
