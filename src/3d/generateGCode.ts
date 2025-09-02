@@ -66,7 +66,7 @@ export async function generateGCode(
 		";TYPE:Custom",
 		";metadata",
 		`;estimated printing time (normal mode)=${estimatedTime}`,
-		`;customInfo material="${activeMaterialProfile}"`,
+		`;customInfo material="${activeMaterialProfile.name}"`,
 		`;customInfo nozzleSize="${nozzleSize}mm"`,
 		`;customInfo secondsPerLayer="${secondsPerLayer}"`,
 		`;customInfo cupSize="${cupSize} ${lockPosition === "left" ? "L" : "R"}"`,
