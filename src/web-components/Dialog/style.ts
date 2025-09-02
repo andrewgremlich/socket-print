@@ -18,6 +18,7 @@ dialog form {
   column-gap: 50px;
   grid-template-columns: 1fr 1fr;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 dialog form > * {
@@ -33,7 +34,7 @@ dialog input {
   cursor: pointer;
 }
 
-dialog label, dialog h3 {
+dialog label, dialog h2, dialog h3, dialog h4 {
   margin: 0;
   margin-bottom: 5px;
   padding: 0;

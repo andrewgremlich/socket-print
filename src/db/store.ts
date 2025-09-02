@@ -32,7 +32,7 @@ const defaultSettingNames: ProvelPrintSettings = {
 	rotateSagittal: 0,
 	rotateTransverse: 0,
 	startingCupLayerHeight: 2,
-	extrusionAdjustment: 7,
+	extrusionAdjustment: 7.7,
 	lineWidthAdjustment: 1.2,
 };
 

@@ -59,15 +59,9 @@ export class MaterialProfileForm extends Dialog {
 	dialogEvents() {
 		this.form.addEventListener("submit", () => this.saveProfile());
 
-		this.cancelButton.addEventListener("click", () => this.hideForm());
+		this.cancelButton.addEventListener("click", () => this.hide());
 
-		this.dialog.addEventListener("close", () => this.hideForm());
-
-		this.dialog.addEventListener("click", ({ target, currentTarget }) => {
-			if (target === currentTarget) {
-				this.hideForm();
-			}
-		});
+		this.dialog.addEventListener("close", () => this.hide());
 	}
 
 	async showForm(type: "new" | "edit") {
@@ -131,14 +125,6 @@ export class MaterialProfileForm extends Dialog {
 
 		await appendMaterialProfiles();
 		await loadActiveMaterialProfileForm();
-	}
-
-	hideForm() {
-		this.form.reset();
-
-		if (this.dialog.open) {
-			this.dialog.close();
-		}
 	}
 }
 

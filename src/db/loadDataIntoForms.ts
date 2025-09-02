@@ -36,6 +36,9 @@ export async function loadMainDataForm() {
 export async function loadActiveMaterialProfileForm() {
 	const activeMaterialProfile = await getActiveMaterialProfile();
 
+	// BUG: changing the name of the active profile causes undefined.
+	// console.log("Active Material Profile:", activeMaterialProfile);
+
 	for (const key of Object.keys(activeMaterialProfile)) {
 		const input = document.querySelector(`#${key}Display`);
 

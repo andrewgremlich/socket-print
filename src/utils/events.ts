@@ -12,10 +12,8 @@ import {
 	printerConnection,
 } from "./handlePrinterConnection";
 import {
-	activateInfoDialog,
 	activateSettingsDialog,
 	addMaterialProfile,
-	appInfo,
 	deleteMaterialProfileButton,
 	editActiveMaterialProfile,
 	ipAddressInput,
@@ -63,8 +61,6 @@ window.addEventListener("click", (evt) => {
 
 ipAddressInput.addEventListener("input", handleIpAddressChange);
 setTimeout(async () => await printerConnection(), 1000);
-
-activateInfoDialog.addEventListener("click", () => appInfo.show());
 
 activateSettingsDialog.addEventListener("click", () => settingsDialog.show());
 

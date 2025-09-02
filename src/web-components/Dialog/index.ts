@@ -26,11 +26,19 @@ export class Dialog extends HTMLElement {
 		}
 	}
 
+	hide() {
+		if (this.dialog.open) {
+			this.dialog.close();
+		}
+	}
+
 	connectedCallback() {
-		this.addEventListener("click", () => {
-			if (this.dialog.open) {
-				this.dialog.close();
-			}
-		});
+		this.shadowRoot
+			.querySelector("dialog")
+			.addEventListener("click", ({ target }) => {
+				if (this.dialog.open && target === this.dialog) {
+					this.dialog.close();
+				}
+			});
 	}
 }
