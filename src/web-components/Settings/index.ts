@@ -62,8 +62,6 @@ export class Settings extends Dialog {
 		const formData = new FormData(this.form);
 		const settings = Object.fromEntries(formData.entries());
 
-		console.log("SAVE SETTINGS", settings);
-
 		// Save settings to the database
 		await Promise.all([
 			setStartingCupLayerHeight(+settings.startingCupLayerHeight),
