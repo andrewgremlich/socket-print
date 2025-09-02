@@ -78,11 +78,15 @@ export class Settings extends Dialog {
 				getExtrusionAdjustment(),
 			]);
 
-		const formData = new FormData(this.form);
+		const settingKeys = [
+			"startingCupLayerHeight",
+			"lineWidthAdjustment",
+			"extrusionAdjustment",
+		];
 
-		for (const [key] of formData.entries()) {
+		for (const key of settingKeys) {
 			const input = this.form.elements.namedItem(key) as HTMLInputElement;
-
+			if (!input) continue;
 			switch (key) {
 				case "startingCupLayerHeight":
 					input.value = startingCupLayerHeight.toString();
