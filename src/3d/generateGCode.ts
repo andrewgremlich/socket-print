@@ -2,7 +2,11 @@ import { round } from "mathjs";
 import pkg from "pkg";
 import { Vector3 } from "three";
 
-import { getCircularSegments } from "@/db/appSettingsDbActions";
+import {
+	getCircularSegments,
+	getExtrusionAdjustment,
+	getLineWidthAdjustment,
+} from "@/db/appSettingsDbActions";
 import {
 	getCupSize,
 	getCupSizeHeight,
@@ -17,10 +21,8 @@ import {
 	getActiveMaterialProfileSecondsPerLayer,
 } from "@/db/materialProfilesDbActions";
 import {
-	EXTRUSION_ADJUSTMENT,
 	getCirclePoints,
 	getTransitionLayer,
-	LINE_WIDTH_ADJUSTMENT,
 } from "@/utils/cupTransitionLayer";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
@@ -53,6 +55,8 @@ export async function generateGCode(
 	const segments = await getCircularSegments();
 	const lockPosition = await getLockPosition();
 	const secondsPerLayer = await getActiveMaterialProfileSecondsPerLayer();
+	const extrusionAdjustment = await getExtrusionAdjustment();
+	const lineWidthAdjustment = await getLineWidthAdjustment();
 	const layerHeight = await getLayerHeight();
 	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
 	const startingHeight = (await getCupSizeHeight()) + nozzleSize;
@@ -148,9 +152,9 @@ export async function generateGCode(
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j].clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(point);
-			const lineWidth = nozzleSize * LINE_WIDTH_ADJUSTMENT;
+			const lineWidth = nozzleSize * lineWidthAdjustment;
 			const extrusion =
-				((distance * layerHeight * lineWidth) / EXTRUSION_ADJUSTMENT) *
+				((distance * layerHeight * lineWidth) / extrusionAdjustment) *
 				outputFactor;
 
 			previousPoint = point;

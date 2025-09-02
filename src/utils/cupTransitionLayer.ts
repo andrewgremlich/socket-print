@@ -1,10 +1,11 @@
 import { atan2, cos, floor, round, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
-
-export const MIN_EXTRUSION_Z_FACTOR = 2;
-export const EXTRUSION_ADJUSTMENT = 7.7;
-export const LINE_WIDTH_ADJUSTMENT = 1.2;
+import {
+	getExtrusionAdjustment,
+	getLineWidthAdjustment,
+	getStartingCupLayerHeight,
+} from "@/db/appSettingsDbActions";
 
 export async function getCirclePoints(
 	startingPoint: Vector3,
@@ -18,8 +19,8 @@ export async function getCirclePoints(
 	const r = Number(sqrt(dx * dx + dz * dz));
 	const theta0 = atan2(dz, dx);
 	const points: { point: Vector3; calculatedLayerHeight: number }[] = [];
-	const endingHeight = options.layerHeight + MIN_EXTRUSION_Z_FACTOR;
-	const startingHeight = MIN_EXTRUSION_Z_FACTOR;
+	const startingHeight = await getStartingCupLayerHeight();
+	const endingHeight = options.layerHeight + startingHeight;
 	const heightDiff = endingHeight - startingHeight;
 	const dy = heightDiff / (options.segments - 1);
 
@@ -57,6 +58,8 @@ export async function getTransitionLayer(
 	},
 ): Promise<string> {
 	const transitionLayer: string[] = [];
+	const lineWidthAdjustment = await getLineWidthAdjustment();
+	const extrusionAdjustment = await getExtrusionAdjustment();
 	const feedrate = await calculateFeedratePerLevel([
 		points.map((p) => p.point),
 	]);
@@ -69,10 +72,10 @@ export async function getTransitionLayer(
 
 		if (previousPoint) {
 			const distance = previousPoint.distanceTo(point);
-			const lineWidth = nozzleSize * LINE_WIDTH_ADJUSTMENT;
+			const lineWidth = nozzleSize * lineWidthAdjustment;
 
 			const extrusion =
-				((distance * layerHeight * lineWidth) / EXTRUSION_ADJUSTMENT) *
+				((distance * layerHeight * lineWidth) / extrusionAdjustment) *
 				outputFactor;
 
 			transitionLayer.push(
