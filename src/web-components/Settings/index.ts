@@ -46,7 +46,6 @@ export class Settings extends Dialog {
 			"cancelSettings",
 		) as HTMLButtonElement;
 
-		this.loadDataIntoForm();
 		this.dialogEvents();
 	}
 

@@ -34,7 +34,7 @@ dialog input {
   cursor: pointer;
 }
 
-dialog input:disabled {
+dialog input:disabled, dialog input[readonly] {
   background-color: #eee;
   color: #999;
   cursor: not-allowed;

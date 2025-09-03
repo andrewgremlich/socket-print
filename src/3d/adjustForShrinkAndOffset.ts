@@ -1,7 +1,7 @@
 import { atan2, cos, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 
-import { getActiveMaterialProfile } from "@/db/materialProfilesDbActions";
+import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 
 type RawPoint = { x: number; y: number; z: number };
 
@@ -9,8 +9,7 @@ export async function adjustForShrinkAndOffset(
 	points: RawPoint[][],
 	center: Vector3,
 ): Promise<Vector3[][]> {
-	const activeMaterialProfile = await getActiveMaterialProfile();
-	const shrinkAllowance = activeMaterialProfile.shrinkFactor; // assumed to be in percentage
+	const shrinkAllowance = await getActiveMaterialProfileShrinkFactor();
 
 	if (shrinkAllowance === 0) {
 		return points.map((layer) =>

@@ -15,7 +15,7 @@ import {
 	getNozzleSize,
 } from "@/db/formValuesDbActions";
 import {
-	getActiveMaterialProfile,
+	getActiveMaterialProfileName,
 	getActiveMaterialProfileNozzleTemp,
 	getActiveMaterialProfileOutputFactor,
 	getActiveMaterialProfileSecondsPerLayer,
@@ -48,7 +48,7 @@ export async function generateGCode(
 	} = {},
 ): Promise<string> {
 	const { estimatedTime = "0m 0s" } = options;
-	const activeMaterialProfile = await getActiveMaterialProfile();
+	const activeMaterialProfileName = await getActiveMaterialProfileName();
 	const outputFactor = await getActiveMaterialProfileOutputFactor();
 	const nozzleSize = await getNozzleSize();
 	const cupSize = await getCupSize();
@@ -66,7 +66,7 @@ export async function generateGCode(
 		";TYPE:Custom",
 		";metadata",
 		`;estimated printing time (normal mode)=${estimatedTime}`,
-		`;customInfo material="${activeMaterialProfile.name}"`,
+		`;customInfo material="${activeMaterialProfileName}"`,
 		`;customInfo nozzleSize="${nozzleSize}mm"`,
 		`;customInfo secondsPerLayer="${secondsPerLayer}"`,
 		`;customInfo cupSize="${cupSize} ${lockPosition === "left" ? "L" : "R"}"`,

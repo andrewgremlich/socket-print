@@ -1,4 +1,8 @@
-import { appForm, restoreDefaultsButton } from "@/utils/htmlElements";
+import {
+	appForm,
+	restoreDefaultsButton,
+	settingsDialog,
+} from "@/utils/htmlElements";
 
 import { appendMaterialProfiles } from "./appendMaterialProfiles";
 import {
@@ -37,16 +41,14 @@ const defaultSettingNames: ProvelPrintSettings = {
 };
 
 const initData = async () => {
-	await Promise.all([
-		makeMaterialProfileDefaults(),
-		makeDefaultsKeyValues(EntityEnum.formValues, defaultFormValues),
-		makeDefaultsKeyValues(EntityEnum.appSettings, defaultSettingNames),
-	]);
-	await Promise.all([
-		appendMaterialProfiles(),
-		loadMainDataForm(),
-		loadActiveMaterialProfileForm(),
-	]);
+	await makeMaterialProfileDefaults();
+	await makeDefaultsKeyValues(EntityEnum.formValues, defaultFormValues);
+	await makeDefaultsKeyValues(EntityEnum.appSettings, defaultSettingNames);
+	await appendMaterialProfiles();
+	await loadMainDataForm();
+	await loadActiveMaterialProfileForm();
+
+	await settingsDialog.loadDataIntoForm();
 };
 
 await initData();

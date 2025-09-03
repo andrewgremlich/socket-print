@@ -22,6 +22,8 @@ export class MaterialProfileForm extends Dialog {
       <dialog id="${this.id}">
         <h3 id="formTitle"></h3>
         <form id="materialForm" method="dialog">
+						<input type="hidden" name="materialProfileId" placeholder="Material Profile ID" />
+
             <label for="materialProfileName">Material Profile Name</label>
             <input type="text" id="materialProfileName" name="materialProfileName" required />
             
@@ -75,7 +77,7 @@ export class MaterialProfileForm extends Dialog {
 		if (type === "edit") {
 			const profile = await getActiveMaterialProfile();
 
-			this.materialProfileName.disabled = true;
+			this.materialProfileName.readOnly = true;
 			this.editMaterialProfile = profile;
 
 			(
@@ -92,8 +94,11 @@ export class MaterialProfileForm extends Dialog {
 			(
 				this.form.elements.namedItem("secondsPerLayer") as HTMLInputElement
 			).value = profile.secondsPerLayer.toString();
+			(
+				this.form.elements.namedItem("materialProfileId") as HTMLInputElement
+			).value = profile.id.toString();
 		} else {
-			this.materialProfileName.disabled = false;
+			this.materialProfileName.readOnly = false;
 			this.form.reset();
 		}
 
@@ -105,6 +110,7 @@ export class MaterialProfileForm extends Dialog {
 	async saveProfile() {
 		const materialProfileDisplay = new FormData(this.form);
 		const {
+			materialProfileId,
 			materialProfileName,
 			nozzleTemp,
 			cupTemp,
@@ -114,6 +120,7 @@ export class MaterialProfileForm extends Dialog {
 		} = Object.fromEntries(materialProfileDisplay.entries());
 
 		const profile = {
+			id: +materialProfileId,
 			name: materialProfileName as string,
 			nozzleTemp: Number.parseFloat(nozzleTemp as string),
 			cupTemp: Number.parseFloat(cupTemp as string),

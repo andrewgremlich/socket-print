@@ -26,25 +26,17 @@ export const getActiveMaterialProfile = async () => {
 	return activeProfile;
 };
 
-export const addNewMaterialProfile = async (
-	profile: Omit<MaterialProfile, "id">,
-) => {
+export const addNewMaterialProfile = async (profile: MaterialProfile) => {
 	const db = await getDb();
-	await db.materialProfiles.add(profile);
+	const { id, ...rest } = profile;
+	await db.materialProfiles.add({ ...rest });
 };
 
 export const deleteActiveMaterialProfile = async () => {
 	await (await getActiveProfile()).delete();
 };
 
-export const updateMaterialProfile = async (profile: {
-	id: number;
-	name: string;
-	nozzleTemp: number;
-	cupTemp: number;
-	shrinkFactor: number;
-	outputFactor: number;
-}) => {
+export const updateMaterialProfile = async (profile: MaterialProfile) => {
 	const db = await getDb();
 	await db.materialProfiles.update(profile.id, profile);
 };
@@ -63,4 +55,8 @@ export const getActiveMaterialProfileOutputFactor = async () => {
 
 export const getActiveMaterialProfileSecondsPerLayer = async () => {
 	return (await getActiveMaterialProfile()).secondsPerLayer;
+};
+
+export const getActiveMaterialProfileName = async () => {
+	return (await getActiveMaterialProfile()).name;
 };
