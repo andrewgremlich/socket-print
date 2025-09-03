@@ -34,7 +34,7 @@ export class MaterialProfileForm extends Dialog {
             <input type="number" min="40" value="130" name="cupTemp" id="cupTemp" required />
             
             <label for="shrinkFactor">Shrink Factor (%)</label>
-            <input type="number" min="0.1" max="7.6" step="0.1" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
+            <input type="number" min="0.1" max="7.6" step="0.01" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
 
             <label for="outputFactor">Output Factor</label>
             <input type="number" min="0.8" max="1.2" step="0.01" value="1" name="outputFactor" id="outputFactor" required />
