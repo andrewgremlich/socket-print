@@ -99,6 +99,7 @@ export class MaterialProfileForm extends Dialog {
 			).value = profile.id.toString();
 		} else {
 			this.materialProfileName.readOnly = false;
+			this.editMaterialProfile = null;
 			this.form.reset();
 		}
 
@@ -128,6 +129,9 @@ export class MaterialProfileForm extends Dialog {
 			outputFactor: Number.parseFloat(outputFactor as string),
 			secondsPerLayer: Number.parseFloat(secondsPerLayer as string),
 		};
+
+		console.log("PROFILE", profile);
+		console.log("EDIT PROFILE", this.editMaterialProfile);
 
 		if (this.editMaterialProfile) {
 			await updateMaterialProfile({

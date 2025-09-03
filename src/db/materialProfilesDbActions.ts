@@ -29,6 +29,9 @@ export const getActiveMaterialProfile = async () => {
 export const addNewMaterialProfile = async (profile: MaterialProfile) => {
 	const db = await getDb();
 	const { id, ...rest } = profile;
+
+	console.log("Adding new material profile:", { ...rest });
+
 	await db.materialProfiles.add({ ...rest });
 };
 
