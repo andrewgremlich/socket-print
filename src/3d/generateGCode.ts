@@ -88,7 +88,8 @@ export async function generateGCode(
 		";## move to prime position/ pickup cup heater start position ##",
 		"G1 Y0 Z48 F6000 ;Z down to cup height + 10 , Y moves back to cup center",
 		"G1 X-90 ; only once at correct Z height move in to register with cup heater for pickup",
-		"M116 S10 ; wait for temperatures to be reached +/-10C (including cup heater)",
+		"M116 P0 S5 ; wait for nozzle temperature to be reached +/-5C",
+		"M116 H2 S2 ; wait for cup temperature to be reached +/-2C",
 
 		";##cup heater removal sequence##",
 		"M140 P1 S0 ;cup heater off",
