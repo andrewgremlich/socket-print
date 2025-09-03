@@ -1,4 +1,4 @@
-import { round } from "mathjs";
+import { floor } from "mathjs";
 import pkg from "pkg";
 import { Vector3 } from "three";
 
@@ -36,7 +36,7 @@ function makeGCodePoint(
 		verticalAxis: "y" | "z";
 	},
 ): string {
-	return `G1 X${-round(point.x, 2)} Y${round(point[opts.flipHeight], 2)} Z${round(point[opts.verticalAxis], 2)}`;
+	return `G1 X${-floor(point.x, 2)} Y${floor(point[opts.flipHeight], 2)} Z${floor(point[opts.verticalAxis], 2)}`;
 }
 
 export async function generateGCode(
@@ -161,7 +161,7 @@ export async function generateGCode(
 			previousPoint = point;
 
 			gcode.push(
-				`${makeGCodePoint(point, { flipHeight, verticalAxis })} E${round(extrusion, 2)} F${feedratePerLevel[i]}`,
+				`${makeGCodePoint(point, { flipHeight, verticalAxis })} E${floor(extrusion, 2)} F${feedratePerLevel[i]}`,
 			);
 		}
 	}

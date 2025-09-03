@@ -25,9 +25,9 @@ export async function adjustForShrinkAndOffset(
 		for (const pt of layer) {
 			const dx = pt.x - center.x;
 			const dz = pt.z - center.z;
-			const r = sqrt(dx * dx + dz * dz) as number;
+			const distance = sqrt(dx * dx + dz * dz) as number;
 			const theta = atan2(dz, dx);
-			const newRadius = r * (1 + shrinkAllowance / 100); // this math is probably right.
+			const newRadius = distance * (1 + shrinkAllowance / 100); // this math is probably right.
 
 			// Create new adjusted point and shift it back to the original coordinate system
 			adjustedLayer.push(

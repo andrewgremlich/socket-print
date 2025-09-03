@@ -1,4 +1,4 @@
-import { cos, pi, sin } from "mathjs";
+import { cos, max, pi, sin } from "mathjs";
 import {
 	Box3,
 	BufferAttribute,
@@ -77,6 +77,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const raycaster = new Raycaster();
 	const direction = new Vector3();
 	const ray = raycaster.ray;
+
+	console.log({ maxHeight });
 
 	for (
 		let heightPosition = 0;
