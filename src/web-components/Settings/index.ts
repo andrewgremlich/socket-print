@@ -49,6 +49,11 @@ export class Settings extends Dialog {
 		this.dialogEvents();
 	}
 
+	async showSettings() {
+		await this.loadDataIntoForm();
+		this.show();
+	}
+
 	dialogEvents() {
 		this.form.addEventListener("submit", () => this.saveSettings());
 

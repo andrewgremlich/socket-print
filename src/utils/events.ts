@@ -62,7 +62,10 @@ window.addEventListener("click", (evt) => {
 ipAddressInput.addEventListener("input", handleIpAddressChange);
 setTimeout(async () => await printerConnection(), 1000);
 
-activateSettingsDialog.addEventListener("click", () => settingsDialog.show());
+activateSettingsDialog.addEventListener(
+	"click",
+	async () => await settingsDialog.showSettings(),
+);
 
 addMaterialProfile.addEventListener("click", () =>
 	materialProfileForm.showForm("new"),
