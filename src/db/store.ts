@@ -41,14 +41,12 @@ const defaultSettingNames: ProvelPrintSettings = {
 };
 
 const initData = async () => {
-	console.log("Initializing data...");
 	await makeMaterialProfileDefaults();
 	await makeDefaultsKeyValues(EntityEnum.formValues, defaultFormValues);
 	await makeDefaultsKeyValues(EntityEnum.appSettings, defaultSettingNames);
 	await appendMaterialProfiles();
 	await loadMainDataForm();
 	await loadActiveMaterialProfileForm();
-	console.log("Data initialization complete.");
 };
 
 await initData();

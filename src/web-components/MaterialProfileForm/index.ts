@@ -130,9 +130,6 @@ export class MaterialProfileForm extends Dialog {
 			secondsPerLayer: Number.parseFloat(secondsPerLayer as string),
 		};
 
-		console.log("PROFILE", profile);
-		console.log("EDIT PROFILE", this.editMaterialProfile);
-
 		if (this.editMaterialProfile) {
 			await updateMaterialProfile({
 				...this.editMaterialProfile,
