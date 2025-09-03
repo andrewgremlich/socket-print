@@ -1,4 +1,4 @@
-import { max } from "mathjs";
+import { max, min } from "mathjs";
 import { isFQDN, isIP } from "validator";
 import { connectToPrinter } from "@/3d/sendGCodeFile";
 import { getIpAddress } from "@/db/formValuesDbActions";
@@ -60,7 +60,7 @@ export const printerConnection = async () => {
 
 		// Exponential backoff with max retries
 		if (retryCount <= MAX_RETRIES) {
-			const backoffDelay = Math.min(1000 * 2 ** (retryCount - 1), 30000); // Cap at 30 seconds
+			const backoffDelay = min(1000 * 2 ** (retryCount - 1), 30000); // Cap at 30 seconds
 			console.log(
 				`Retrying connection in ${backoffDelay}ms (attempt ${retryCount}/${MAX_RETRIES})`,
 			);

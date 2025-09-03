@@ -132,7 +132,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 			estimatedPrintTime.textContent = printTime;
 
-			const gcode = await generateGCode(adjustedDim, feedratePerLevel, "y", {
+			const gcode = await generateGCode(blended, feedratePerLevel, "y", {
 				estimatedTime: printTime,
 			});
 			const filePathName = `${socket.mesh?.name}.gcode`;

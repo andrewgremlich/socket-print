@@ -1,4 +1,4 @@
-import { floor } from "mathjs";
+import { floor, sqrt } from "mathjs";
 import { Vector3 } from "three";
 
 // Utility to calculate distance along the X-Z plane
@@ -13,10 +13,10 @@ function getPointAtDistance(
 ): Vector3 {
 	const dx = higherPoint.x - lowerPoint.x;
 	const dz = higherPoint.z - lowerPoint.z;
-	const distance = Math.sqrt(dx * dx + dz * dz);
+	const distance = sqrt(dx * dx + dz * dz);
 	if (distance === 0) return lowerPoint.clone();
-	const unitX = dx / distance;
-	const unitZ = dz / distance;
+	const unitX = dx / Number(distance);
+	const unitZ = dz / Number(distance);
 	return new Vector3(
 		higherPoint.x - distanceToChange * unitX,
 		lowerPoint.y,
