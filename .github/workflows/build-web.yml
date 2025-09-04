@@ -103,7 +103,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy files via SSH
+      - name: Copy files via SCP
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.VPS_IP }}
