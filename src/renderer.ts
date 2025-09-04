@@ -100,11 +100,11 @@ clearModelButton.addEventListener("click", async () => {
 });
 
 export async function slicingAction(sendToFile: boolean) {
+	socket.updateMatrixWorld();
+
 	mergeCup.setHeight(socket.boundingBox.max.y);
 
 	app.addToScene(mergeCup.mesh);
-
-	socket.updateMatrixWorld();
 
 	const allGeometries = app.collectAllGeometries();
 

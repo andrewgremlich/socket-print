@@ -37,7 +37,11 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const angleIncrement = (pi * 2) / segments;
 	const scene = new Scene();
 	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
+	const camera = new PerspectiveCamera(75, 1, 0.1, 1000);
 	const rawgeometry = new BufferGeometry();
+
+	camera.position.set(0, 0, 10);
+	renderer.render(scene, camera);
 
 	rawgeometry.setAttribute(
 		"position",
@@ -64,11 +68,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const boundingBox = new Box3().setFromObject(mesh);
 	const center = boundingBox.getCenter(new Vector3());
 	const maxHeight = boundingBox.max.y;
-	const camera = new PerspectiveCamera(75, 1, 0.1, 1000);
 
-	camera.position.set(0, 0, 10);
 	camera.lookAt(center);
-	renderer.render(scene, camera);
 	scene.add(mesh);
 	mesh.geometry.boundsTree = bvh;
 	mesh.updateMatrixWorld(true);

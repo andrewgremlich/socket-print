@@ -1,6 +1,7 @@
 import { atan2, cos, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 
+import { getNozzleSize } from "@/db/formValuesDbActions";
 import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 
 type RawPoint = { x: number; y: number; z: number };
@@ -10,6 +11,7 @@ export async function adjustForShrinkAndOffset(
 	center: Vector3,
 ): Promise<Vector3[][]> {
 	const shrinkAllowance = await getActiveMaterialProfileShrinkFactor();
+	const nozzleSize = await getNozzleSize();
 
 	if (shrinkAllowance === 0) {
 		return points.map((layer) =>
@@ -27,7 +29,8 @@ export async function adjustForShrinkAndOffset(
 			const dz = pt.z - center.z;
 			const distance = sqrt(dx * dx + dz * dz) as number;
 			const theta = atan2(dz, dx);
-			const newRadius = distance * (1 + shrinkAllowance / 100); // this math is probably right.
+			const newRadius =
+				(distance + nozzleSize / 2) * (1 + shrinkAllowance / 100); // this math is probably right.
 
 			// Create new adjusted point and shift it back to the original coordinate system
 			adjustedLayer.push(
