@@ -7,7 +7,7 @@ import {
 
 import { AppObject } from "./AppObject";
 
-export class MergeCup extends AppObject {
+export class MergeCylinder extends AppObject {
 	#radialSegments = 128;
 	#radius = 78 / 2;
 	height: number;

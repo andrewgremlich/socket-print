@@ -17,9 +17,9 @@ import { generateGCode, writeGCodeFile } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import { Application } from "@/classes/Application";
-import { MergeCup } from "@/classes/MergeCup";
+import { MergeCylinder } from "@/classes/MergeCylinder";
+import { PrintObject } from "@/classes/PrintObject";
 import { Ring } from "@/classes/Ring";
-import { Socket } from "@/classes/Socket";
 import {
 	updateRotateValues,
 	updateTranslateValues,
@@ -46,9 +46,9 @@ if (!window.Worker) {
 
 const app = new Application();
 const ring = new Ring();
-const mergeCup = new MergeCup();
-const socket = new Socket({
-	socketCallback: ({ size: { y } }) => {
+const mergeCylinder = new MergeCylinder();
+const socket = new PrintObject({
+	callback: ({ size: { y } }) => {
 		app.camera.position.set(0, y + 50, -200);
 		app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
 
@@ -95,16 +95,16 @@ const removeMeshes = async (socketMeshes: Mesh[]) => {
 };
 
 clearModelButton.addEventListener("click", async () => {
-	await removeMeshes([socket.mesh, mergeCup.mesh]);
+	await removeMeshes([socket.mesh, mergeCylinder.mesh]);
 	await deleteAllFiles();
 });
 
 export async function slicingAction(sendToFile: boolean) {
 	socket.updateMatrixWorld();
 
-	mergeCup.setHeight(socket.boundingBox.max.y);
+	mergeCylinder.setHeight(socket.boundingBox.max.y);
 
-	app.addToScene(mergeCup.mesh);
+	app.addToScene(mergeCylinder.mesh);
 
 	const allGeometries = app.collectAllGeometries();
 
@@ -148,7 +148,7 @@ export async function slicingAction(sendToFile: boolean) {
 		}
 	};
 
-	app.removeMeshFromScene(mergeCup.mesh);
+	app.removeMeshFromScene(mergeCylinder.mesh);
 }
 
 generateGCodeButton.addEventListener("click", async () => {
