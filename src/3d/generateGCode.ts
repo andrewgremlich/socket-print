@@ -77,6 +77,7 @@ export async function generateGCode(
 		"G21 ; Set units to millimeters",
 		"G90 ; Use absolute positioning",
 		"M83 ; use relative distances for extrusion",
+		"T0 ;select tool 0",
 
 		";## Set temperatures ##",
 		"M568 P0 S200 ; set temperature for barrel to 200;",
