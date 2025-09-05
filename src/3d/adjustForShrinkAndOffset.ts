@@ -1,3 +1,4 @@
+import Clipper2Z from "clipper2z"; //"clipper2-wasm"
 import { atan2, cos, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
 
@@ -5,6 +6,40 @@ import { getNozzleSize } from "@/db/formValuesDbActions";
 import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 
 type RawPoint = { x: number; y: number; z: number };
+
+// example https://eriksom.github.io/Clipper2-WASM/clipper2-wasm/examples/es/offset.html
+export async function clipper2Offset() {
+	const { MakePath64, Paths64, InflatePaths64, JoinType, EndType } =
+		await Clipper2Z();
+
+	const subject = new Paths64();
+
+	subject.push_back(MakePath64([150, 100, 60, 129, 115, 52, 115, 148, 60, 71]));
+
+	console.log("SUBJECT", subject);
+
+	const inflated = InflatePaths64(
+		subject,
+		10,
+		JoinType.Square,
+		EndType.Polygon,
+		2,
+		0,
+	);
+
+	console.log("INFLATED", inflated);
+
+	const size = inflated.size();
+
+	for (let i = 0; i < size; i++) {
+		const point = inflated.get(i);
+
+		const x = Number(point.x);
+		const y = Number(point.y);
+
+		console.log(`POINT ${i}`, x, y);
+	}
+}
 
 export async function adjustForShrinkAndOffset(
 	points: RawPoint[][],

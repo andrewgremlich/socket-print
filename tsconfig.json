@@ -1,22 +1,23 @@
 {
-	"compilerOptions": {
-		"target": "ES2022",
-		"module": "ES2022",
-		"allowJs": true,
-		"skipLibCheck": true,
-		"esModuleInterop": true,
-		"noImplicitAny": true,
-		"sourceMap": true,
-		"outDir": "dist",
-		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
-		"baseUrl": "./",
-		"types": ["vitest"],
-		"paths": {
-			"@/*": ["./src/*"],
-			"pkg": ["package.json"]
-		}
-	},
-	"include": ["src"],
-	"exclude": ["node_modules", "**/*.spec.ts"]
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "types": ["vitest"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "pkg": ["package.json"],
+      "clipper2z": ["./clipper2-wasm/clipper2z.js"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

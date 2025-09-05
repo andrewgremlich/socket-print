@@ -146,6 +146,8 @@ export class PrintObject extends AppObject {
 			rawGeometry.rotateY(pi);
 			ensureUV(rawGeometry);
 
+			rawGeometry.computeVertexNormals();
+
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
 				side: DoubleSide,
@@ -200,8 +202,6 @@ export class PrintObject extends AppObject {
 				rotateValues.sagittal,
 				rotateValues.transverse,
 			);
-
-			this.mesh.geometry.computeVertexNormals();
 
 			horizontalTranslate.value = (-this.mesh.position.x).toString();
 			verticalTranslate.value = round(
