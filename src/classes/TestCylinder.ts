@@ -14,7 +14,7 @@ export class TestCylinder extends AppObject {
 	constructor() {
 		super();
 
-		const height = 100;
+		const height = 50;
 
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,

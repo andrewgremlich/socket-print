@@ -97,6 +97,8 @@ export class PrintObject extends AppObject {
 			const testCylinder = new TestCylinder();
 
 			this.mesh = testCylinder.mesh;
+			this.mesh.name = "test_cylinder";
+			activeFileName.textContent = "test_cylinder";
 
 			this.callback({
 				size: {

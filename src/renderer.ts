@@ -9,10 +9,7 @@ import "@/utils/updater";
 import { ceil } from "mathjs";
 import type { Mesh } from "three";
 
-import {
-	adjustForShrinkAndOffset,
-	clipper2Offset,
-} from "@/3d/adjustForShrinkAndOffset";
+import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendHardEdges } from "@/3d/blendHardEdges";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
@@ -132,8 +129,6 @@ export async function slicingAction(sendToFile: boolean) {
 			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === "done") {
-			await clipper2Offset();
-
 			const adjustedDim = await adjustForShrinkAndOffset(
 				data,
 				printObject.center,
@@ -148,6 +143,8 @@ export async function slicingAction(sendToFile: boolean) {
 				estimatedTime: printTime,
 			});
 			const filePathName = `${printObject.mesh?.name}.gcode`;
+
+			console.log(filePathName);
 
 			if (sendToFile) {
 				await writeGCodeFile(gcode, filePathName);
