@@ -10,7 +10,6 @@ import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import { ensureUV } from "@/3d/ensureUV";
 import {
-	getIsTestSTLCylinder,
 	getLockDepth,
 	getRotateValues,
 	getTranslateValues,
@@ -33,24 +32,23 @@ import {
 	verticalTranslate,
 } from "@/utils/htmlElements";
 import { AppObject } from "./AppObject";
+import { TestCylinder } from "./TestCylinder";
 
-type SocketCallback = (params: {
-	size: { x: number; y: number; z: number };
-}) => void;
+type Callback = (params: { size: { x: number; y: number; z: number } }) => void;
 
-type SocketProps = { socketCallback: SocketCallback };
+type PrintObjectProps = { callback: Callback };
 
-export class Socket extends AppObject {
+export class PrintObject extends AppObject {
 	adjustmentHeightForCup = 0;
-	socketCallback: SocketCallback;
+	callback: Callback;
 	lockDepth: number | null = null;
 	loadedStlFromIndexedDb = false;
 	offsetYPosition = 0;
 
-	constructor({ socketCallback }: SocketProps) {
+	constructor({ callback }: PrintObjectProps) {
 		super();
 
-		this.socketCallback = socketCallback;
+		this.callback = callback;
 
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
@@ -95,7 +93,20 @@ export class Socket extends AppObject {
 		addTestCylinderButton?.addEventListener("click", async () => {
 			await this.clearData();
 			await setIsTestSTLCylinder(true);
-			await fetchStlFile("test_cylinder.stl")();
+
+			const testCylinder = new TestCylinder();
+
+			this.mesh = testCylinder.mesh;
+			this.mesh.name = "test_cylinder";
+			activeFileName.textContent = "test_cylinder";
+
+			this.callback({
+				size: {
+					x: testCylinder.size.x,
+					y: testCylinder.size.y,
+					z: testCylinder.size.z,
+				},
+			});
 		});
 		stlFileInput?.addEventListener("change", this.#onStlFileChange);
 		coronalRotater?.addEventListener("click", this.coronalRotate90);
@@ -137,6 +148,8 @@ export class Socket extends AppObject {
 			rawGeometry.rotateY(pi);
 			ensureUV(rawGeometry);
 
+			rawGeometry.computeVertexNormals();
+
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
 				side: DoubleSide,
@@ -162,11 +175,8 @@ export class Socket extends AppObject {
 
 			const translateValues = await getTranslateValues();
 			const rotateValues = await getRotateValues();
-			const isTestSTLCylinder = await getIsTestSTLCylinder();
 
-			this.offsetYPosition = isTestSTLCylinder
-				? this.size.y / 2
-				: this.size.y / 2 - this.lockDepth;
+			this.offsetYPosition = this.size.y / 2 - this.lockDepth;
 
 			if (this.loadedStlFromIndexedDb) {
 				this.mesh.position.set(
@@ -195,8 +205,6 @@ export class Socket extends AppObject {
 				rotateValues.transverse,
 			);
 
-			this.mesh.geometry.computeVertexNormals();
-
 			horizontalTranslate.value = (-this.mesh.position.x).toString();
 			verticalTranslate.value = round(
 				this.mesh.position.y - this.offsetYPosition,
@@ -206,7 +214,7 @@ export class Socket extends AppObject {
 
 			console.log();
 
-			this.socketCallback({
+			this.callback({
 				size: {
 					y: this.size.y,
 					x: this.size.x,

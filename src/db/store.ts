@@ -1,8 +1,4 @@
-import {
-	appForm,
-	restoreDefaultsButton,
-	settingsDialog,
-} from "@/utils/htmlElements";
+import { appForm, restoreDefaultsButton } from "@/utils/htmlElements";
 
 import { appendMaterialProfiles } from "./appendMaterialProfiles";
 import {

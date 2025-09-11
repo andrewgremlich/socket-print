@@ -28,6 +28,7 @@ export const getActiveMaterialProfile = async () => {
 
 export const addNewMaterialProfile = async (profile: MaterialProfile) => {
 	const db = await getDb();
+	// biome-ignore lint/correctness/noUnusedVariables: this is to pull the id out.
 	const { id, ...rest } = profile;
 
 	await db.materialProfiles.add({ ...rest });

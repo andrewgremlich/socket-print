@@ -17,10 +17,11 @@ import { generateGCode, writeGCodeFile } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import { Application } from "@/classes/Application";
-import { MergeCup } from "@/classes/MergeCup";
+import { MergeCylinder } from "@/classes/MergeCylinder";
+import { PrintObject } from "@/classes/PrintObject";
 import { Ring } from "@/classes/Ring";
-import { Socket } from "@/classes/Socket";
 import {
+	getIsTestSTLCylinder,
 	updateRotateValues,
 	updateTranslateValues,
 } from "@/db/appSettingsDbActions";
@@ -46,23 +47,23 @@ if (!window.Worker) {
 
 const app = new Application();
 const ring = new Ring();
-const mergeCup = new MergeCup();
-const socket = new Socket({
-	socketCallback: ({ size: { y } }) => {
+const mergeCylinder = new MergeCylinder();
+const printObject = new PrintObject({
+	callback: ({ size: { y } }) => {
 		app.camera.position.set(0, y + 50, -200);
 		app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
 
-		const existingSockets = app.scene.children.filter((child) => {
+		const existingMeshes = app.scene.children.filter((child) => {
 			return child.type === "Mesh" && child.userData.isSocket;
 		});
 
-		if (existingSockets.length > 0) {
-			existingSockets.forEach((child) => {
+		if (existingMeshes.length > 0) {
+			existingMeshes.forEach((child) => {
 				app.removeMeshFromScene(child as Mesh);
 			});
 		}
 
-		app.addToScene(socket.mesh);
+		app.addToScene(printObject.mesh);
 
 		if (!loadingScreen) {
 			throw new Error("Loading screen not found");
@@ -74,8 +75,8 @@ const socket = new Socket({
 
 app.addToScene(ring.mesh);
 
-const removeMeshes = async (socketMeshes: Mesh[]) => {
-	socketMeshes.forEach((mesh) => {
+const removeMeshes = async (meshes: Mesh[]) => {
+	meshes.forEach((mesh) => {
 		app.removeMeshFromScene(mesh);
 	});
 
@@ -88,23 +89,26 @@ const removeMeshes = async (socketMeshes: Mesh[]) => {
 
 	// Zero out rotate and translate values in IndexedDB
 	await updateRotateValues(0, 0, 0);
-	await updateTranslateValues(0, socket.offsetYPosition ?? 0, 0);
+	await updateTranslateValues(0, printObject.offsetYPosition ?? 0, 0);
 
-	socket.clearData();
+	printObject.clearData();
 	app.resetCameraPosition();
 };
 
 clearModelButton.addEventListener("click", async () => {
-	await removeMeshes([socket.mesh, mergeCup.mesh]);
+	await removeMeshes([printObject.mesh, mergeCylinder.mesh]);
 	await deleteAllFiles();
 });
 
 export async function slicingAction(sendToFile: boolean) {
-	socket.updateMatrixWorld();
+	const isTestSTLCylinder = await getIsTestSTLCylinder();
 
-	mergeCup.setHeight(socket.boundingBox.max.y);
+	printObject.updateMatrixWorld();
 
-	app.addToScene(mergeCup.mesh);
+	if (!isTestSTLCylinder) {
+		mergeCylinder.setHeight(printObject.boundingBox.max.y);
+		app.addToScene(mergeCylinder.mesh);
+	}
 
 	const allGeometries = app.collectAllGeometries();
 
@@ -125,7 +129,10 @@ export async function slicingAction(sendToFile: boolean) {
 			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === "done") {
-			const adjustedDim = await adjustForShrinkAndOffset(data, socket.center);
+			const adjustedDim = await adjustForShrinkAndOffset(
+				data,
+				printObject.center,
+			);
 			const blended = await blendHardEdges(adjustedDim, 1);
 			const feedratePerLevel = await calculateFeedratePerLevel(blended);
 			const printTime = await calculatePrintTime(blended, feedratePerLevel);
@@ -135,7 +142,9 @@ export async function slicingAction(sendToFile: boolean) {
 			const gcode = await generateGCode(blended, feedratePerLevel, "y", {
 				estimatedTime: printTime,
 			});
-			const filePathName = `${socket.mesh?.name}.gcode`;
+			const filePathName = `${printObject.mesh?.name}.gcode`;
+
+			console.log(filePathName);
 
 			if (sendToFile) {
 				await writeGCodeFile(gcode, filePathName);
@@ -148,7 +157,7 @@ export async function slicingAction(sendToFile: boolean) {
 		}
 	};
 
-	app.removeMeshFromScene(mergeCup.mesh);
+	app.removeMeshFromScene(mergeCylinder.mesh);
 }
 
 generateGCodeButton.addEventListener("click", async () => {

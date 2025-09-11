@@ -17,3 +17,12 @@ Signing Windows
 - https://tauri.app/distribute/sign/windows/#azure-code-signing
 - code signing on windows
   - https://melatonin.dev/blog/code-signing-on-windows-with-azure-trusted-signing/
+
+## Clipping Library
+
+https://www.npmjs.com/search?q=clipper-lib
+
+https://www.npmjs.com/package/clipper-lib
+
+https://github.com/junmer/clipper-lib?tab=readme-ov-file
+
