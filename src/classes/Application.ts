@@ -45,7 +45,10 @@ export class Application {
 			0.1,
 			1000,
 		);
-		this.renderer = new WebGLRenderer({ canvas: threeDViewer });
+		this.renderer = new WebGLRenderer({
+			canvas: threeDViewer,
+			antialias: true,
+		});
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.gridHelper = new GridHelper(200, 50);
 		const ambientLight = new AmbientLight(0xffffff, 1);
