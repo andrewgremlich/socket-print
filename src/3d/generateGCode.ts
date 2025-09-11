@@ -77,8 +77,10 @@ export async function generateGCode(
 		"G21 ; Set units to millimeters",
 		"G90 ; Use absolute positioning",
 		"M83 ; use relative distances for extrusion",
+		"T0 ;select tool 0",
 
 		";## Set temperatures ##",
+		"M106 P0 S0 H3 L0.15 X0.25 T20:40",
 		"M568 P0 S200 ; set temperature for barrel to 200;",
 		"M140 P1 S160  ; set cup heater temperature to 160 and continue",
 
