@@ -9,6 +9,7 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import { ensureUV } from "@/3d/ensureUV";
+import { applyOffset } from "@/3d/generateOffsetWithNormal";
 import {
 	getLockDepth,
 	getRotateValues,
@@ -148,11 +149,10 @@ export class PrintObject extends AppObject {
 			rawGeometry.rotateY(pi);
 			ensureUV(rawGeometry);
 
-			rawGeometry.computeVertexNormals();
-
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
 				side: DoubleSide,
+				wireframe: true,
 			});
 			const mesh = new Mesh(rawGeometry, material);
 			const bvh = new MeshBVH(mesh.geometry);
@@ -212,7 +212,11 @@ export class PrintObject extends AppObject {
 			).toString();
 			depthTranslate.value = (-this.mesh.position.z).toString();
 
-			console.log();
+			this.updateMatrixWorld();
+
+			this.mesh = await applyOffset(this.mesh, 2.0);
+
+			ensureUV(this.mesh.geometry);
 
 			this.callback({
 				size: {

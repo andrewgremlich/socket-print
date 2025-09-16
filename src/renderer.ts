@@ -8,7 +8,7 @@ import "@/utils/updater";
 
 import { ceil } from "mathjs";
 import type { Mesh } from "three";
-
+import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
 import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
 import { blendHardEdges } from "@/3d/blendHardEdges";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
@@ -50,6 +50,12 @@ const ring = new Ring();
 const mergeCylinder = new MergeCylinder();
 const printObject = new PrintObject({
 	callback: ({ size: { y } }) => {
+		if (import.meta.env.MODE === "development") {
+			// const helper = new VertexNormalsHelper(printObject.mesh, 5, 0x00ff00);
+			// helper.visible = true;
+			// printObject.mesh.add(helper);
+		}
+
 		app.camera.position.set(0, y + 50, -200);
 		app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
 
@@ -64,10 +70,6 @@ const printObject = new PrintObject({
 		}
 
 		app.addToScene(printObject.mesh);
-
-		if (!loadingScreen) {
-			throw new Error("Loading screen not found");
-		}
 
 		loadingScreen.style.display = "none";
 	},

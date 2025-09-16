@@ -1,7 +1,8 @@
 import { pi } from "mathjs";
 import {
 	AmbientLight,
-	type BufferGeometry,
+	BufferAttribute,
+	BufferGeometry,
 	DirectionalLight,
 	GridHelper,
 	Mesh,
@@ -79,6 +80,7 @@ export class Application {
 
 	collectAllGeometries = () => {
 		const geometries: BufferGeometry[] = [];
+		let anyHasColor = false;
 
 		this.scene.traverse((object) => {
 			if (
@@ -87,11 +89,39 @@ export class Application {
 				!(object.geometry instanceof RingGeometry)
 			) {
 				const cloned = object.geometry.clone();
-				// Ensure all geometries are non-indexed for merging
-				const nonIndexed = cloned.index ? cloned.toNonIndexed() : cloned;
-				geometries.push(nonIndexed);
+				const geom = cloned.index ? cloned.toNonIndexed() : cloned;
+				// Track if any geometry already has color attribute
+				if (geom.getAttribute("color")) anyHasColor = true;
+				// Ensure normals exist
+				if (!geom.getAttribute("normal")) {
+					geom.computeVertexNormals();
+				}
+				geometries.push(geom);
 			}
 		});
+
+		// Normalize color attribute presence across all geometries
+		if (anyHasColor) {
+			for (const g of geometries) {
+				if (!g.getAttribute("color")) {
+					const position = g.getAttribute("position");
+					if (!position) continue; // safety
+					const count = position.count;
+					const colorArray = new Uint8Array(count * 3);
+					colorArray.fill(255);
+					g.setAttribute("color", new BufferAttribute(colorArray, 3, true));
+				}
+			}
+		} else {
+			// Strip stray color attributes if none were supposed to have them
+			for (const g of geometries) {
+				if (g.getAttribute("color")) g.deleteAttribute("color");
+			}
+		}
+
+		if (geometries.length === 0) {
+			return new BufferGeometry();
+		}
 
 		return BufferGeometryUtils.mergeGeometries(geometries, false);
 	};
