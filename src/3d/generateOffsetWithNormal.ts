@@ -5,21 +5,20 @@ import {
 	DynamicDrawUsage,
 	Mesh,
 	MeshStandardMaterial,
+	Vector3,
 } from "three";
 import { STLExporter } from "three/examples/jsm/exporters/STLExporter.js";
 import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
-type Vec3 = [number, number, number];
-
 interface Facet {
 	face: number;
-	normal: number[]; // flattened normal components (length 3)
-	vertices: Vec3[]; // three vertices
+	normal: Vector3;
+	vertices: Vector3[]; // length 3
 }
 
 interface VertexUsageInfo {
 	face: number;
-	normal: number[]; // source face normal (length 3)
+	normal: Vector3; // source face normal
 	vertexPositionInTheObject: number; // 0..2
 }
 
@@ -30,19 +29,16 @@ function parseASCII(data: string): FacetCollection {
 	const patternFace = /facet([\s\S]*?)endfacet/g;
 	const patternFloat = /[\s]+([+-]?(?:\d*)(?:\.\d*)?(?:[eE][+-]?\d+)?)/.source;
 	const patternVertex = new RegExp(
-		"vertex" + patternFloat + patternFloat + patternFloat,
+		`vertex${patternFloat}${patternFloat}${patternFloat}`,
 		"g",
 	);
 	const patternNormal = new RegExp(
-		"normal" + patternFloat + patternFloat + patternFloat,
+		`normal${patternFloat}${patternFloat}${patternFloat}`,
 		"g",
 	);
 
 	const facets: FacetCollection = [];
-	let m: RegExpExecArray | null;
-
-	// iterate solids
-	m = patternSolid.exec(data);
+	let m: RegExpExecArray | null = patternSolid.exec(data);
 	while (m !== null) {
 		const solid = m[0];
 		let faceNumber = 0;
@@ -50,28 +46,24 @@ function parseASCII(data: string): FacetCollection {
 		while (faceMatch !== null) {
 			const text = faceMatch[0];
 			faceNumber++;
-			const normalValues: number[] = [];
-			const vertices: Vec3[] = [];
-
+			const normalsFound: Vector3[] = [];
+			const vertices: Vector3[] = [];
 			let nm: RegExpExecArray | null = patternNormal.exec(text);
 			while (nm !== null) {
-				normalValues.push(
-					parseFloat(nm[1]),
-					parseFloat(nm[2]),
-					parseFloat(nm[3]),
+				normalsFound.push(
+					new Vector3(parseFloat(nm[1]), parseFloat(nm[2]), parseFloat(nm[3])),
 				);
 				nm = patternNormal.exec(text);
 			}
 			let vm: RegExpExecArray | null = patternVertex.exec(text);
 			while (vm !== null) {
-				vertices.push([
-					parseFloat(vm[1]),
-					parseFloat(vm[2]),
-					parseFloat(vm[3]),
-				]);
+				vertices.push(
+					new Vector3(parseFloat(vm[1]), parseFloat(vm[2]), parseFloat(vm[3])),
+				);
 				vm = patternVertex.exec(text);
 			}
-			facets.push({ face: faceNumber, normal: normalValues, vertices });
+			const faceNormalVec = normalsFound[0] ?? new Vector3();
+			facets.push({ face: faceNumber, normal: faceNormalVec, vertices });
 			faceMatch = patternFace.exec(solid);
 		}
 		m = patternSolid.exec(data);
@@ -79,8 +71,8 @@ function parseASCII(data: string): FacetCollection {
 	return facets;
 }
 
-function vertexKey(v: Vec3): string {
-	return `${v[0].toFixed(6)},${v[1].toFixed(6)},${v[2].toFixed(6)}`;
+function vertexKey(v: Vector3): string {
+	return `${v.x.toFixed(6)},${v.y.toFixed(6)},${v.z.toFixed(6)}`;
 }
 
 function buildVertexUsageMap(
@@ -103,32 +95,27 @@ function buildVertexUsageMap(
 	return map;
 }
 
-function calcNormalsSum(list: VertexUsageInfo[]): Vec3 {
-	let sx = 0,
-		sy = 0,
-		sz = 0;
-	for (const item of list) {
-		sx += item.normal[0];
-		sy += item.normal[1];
-		sz += item.normal[2];
-	}
-	return [sx, sy, sz];
+function calcNormalsSum(list: VertexUsageInfo[]): Vector3 {
+	const sum = new Vector3();
+	for (const item of list) sum.add(item.normal);
+	return sum;
 }
 
-function normalize(v: Vec3): Vec3 {
-	const len = Math.hypot(v[0], v[1], v[2]) || 1;
-	return [v[0] / len, v[1] / len, v[2] / len];
+function offsetPosition(offset: number, n: Vector3, v: Vector3): Vector3 {
+	return new Vector3(
+		v.x + offset * n.x,
+		v.y + offset * n.y,
+		v.z + offset * n.z,
+	);
 }
 
-function offsetPosition(offset: number, n: Vec3, v: Vec3): Vec3 {
-	return [v[0] + offset * n[0], v[1] + offset * n[1], v[2] + offset * n[2]];
-}
-
-function faceNormal(a: Vec3, b: Vec3, c: Vec3): Vec3 {
-	const nx = (b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1]);
-	const ny = -((b[0] - a[0]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[0] - a[0]));
-	const nz = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
-	return normalize([nx, ny, nz]);
+const _ab = new Vector3();
+const _ac = new Vector3();
+function faceNormal(a: Vector3, b: Vector3, c: Vector3): Vector3 {
+	_ab.subVectors(b, a);
+	_ac.subVectors(c, a);
+	const normal = new Vector3().crossVectors(_ab, _ac).normalize();
+	return normal;
 }
 
 function buildOffsetFacetSet(
@@ -138,15 +125,17 @@ function buildOffsetFacetSet(
 	const usageMap = buildVertexUsageMap(facets);
 	const updated: FacetCollection = facets.map((f) => ({
 		face: f.face,
-		normal: [] as number[],
-		vertices: [] as Vec3[],
+		normal: new Vector3(),
+		vertices: [] as Vector3[],
 	}));
 
-	usageMap.forEach((usages, key) => {
-		const summed = normalize(calcNormalsSum(usages));
-		const originalVertex = key.split(",").map(Number) as Vec3;
-		const newPos = offsetPosition(offset, summed, originalVertex);
+	usageMap.forEach((usages) => {
+		const summed = calcNormalsSum(usages).normalize();
 		for (const u of usages) {
+			const sourceFacet = facets.find((f) => f.face === u.face);
+			if (!sourceFacet) continue;
+			const originalVertex = sourceFacet.vertices[u.vertexPositionInTheObject];
+			const newPos = offsetPosition(offset, summed, originalVertex);
 			const target = updated.find((f) => f.face === u.face);
 			if (target) target.vertices[u.vertexPositionInTheObject] = newPos;
 		}
@@ -158,12 +147,12 @@ function buildOffsetFacetSet(
 			facet.vertices[1],
 			facet.vertices[2],
 		);
-		facet.normal = [n[0], n[1], n[2]];
+		facet.normal.copy(n);
 	}
 	return updated;
 }
 
-export function createOffsetMesh(
+export function createOffsetFacets(
 	stlAscii: string,
 	offset: number,
 ): FacetCollection {
@@ -184,24 +173,22 @@ export async function createMeshFromObject(
 		wireframe: true,
 	});
 
-	const normals: number[] = [];
-	const vertices: number[] = [];
+	const faceCount = object.length;
+	const verticesPosition = new Float32Array(faceCount * 9); // 3 verts * 3 comps
+	const normalsPosition = new Float32Array(faceCount * 9);
+	let ptr = 0;
 	for (const facet of object) {
-		for (const v of facet.vertices) {
-			normals.push(facet.normal[0], facet.normal[1], facet.normal[2]);
-			vertices.push(v[0], v[1], v[2]);
+		for (let i = 0; i < 3; i++) {
+			const v = facet.vertices[i];
+			const n = facet.normal; // flat shading per face
+			verticesPosition[ptr] = v.x;
+			verticesPosition[ptr + 1] = v.y;
+			verticesPosition[ptr + 2] = v.z;
+			normalsPosition[ptr] = n.x;
+			normalsPosition[ptr + 1] = n.y;
+			normalsPosition[ptr + 2] = n.z;
+			ptr += 3;
 		}
-	}
-
-	const normalsPosition = new Float32Array(object.length * 3 * 3);
-	const verticesPosition = new Float32Array(object.length * 3 * 3);
-	for (let i = 0; i < normals.length; i += 3) {
-		normalsPosition[i] = normals[i];
-		normalsPosition[i + 1] = normals[i + 1];
-		normalsPosition[i + 2] = normals[i + 2];
-		verticesPosition[i] = vertices[i];
-		verticesPosition[i + 1] = vertices[i + 1];
-		verticesPosition[i + 2] = vertices[i + 2];
 	}
 
 	geometry.setAttribute("position", new BufferAttribute(verticesPosition, 3));
@@ -226,7 +213,7 @@ export async function applyOffset(
 ): Promise<Mesh> {
 	const exporter = new STLExporter();
 	const stlAscii = exporter.parse(meshToOffset, { binary: false }) as string;
-	const offsetFacets = createOffsetMesh(stlAscii, offset);
+	const offsetFacets = createOffsetFacets(stlAscii, offset);
 	const meshOffset = await createMeshFromObject(offsetFacets);
 	meshOffset.name = "offset";
 	return meshOffset;
