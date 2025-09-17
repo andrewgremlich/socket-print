@@ -19,6 +19,7 @@ import {
 	updateTranslateValues,
 } from "@/db/appSettingsDbActions";
 import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
+import { getNozzleSize } from "@/db/formValuesDbActions";
 import {
 	activeFileName,
 	addTestCylinderButton,
@@ -157,9 +158,9 @@ export class PrintObject extends AppObject {
 			});
 			const mesh = new Mesh(rawGeometry, material);
 			const bvh = new MeshBVH(mesh.geometry);
+			const nozzleSize = await getNozzleSize();
 
-			this.mesh = await applyOffset(mesh, 12.0);
-			// this.mesh = mesh;
+			this.mesh = await applyOffset(mesh, nozzleSize / 2);
 			this.mesh.raycast = acceleratedRaycast;
 			this.mesh.geometry.boundsTree = bvh;
 			this.mesh.name = file.name;
