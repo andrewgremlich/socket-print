@@ -148,16 +148,18 @@ export class PrintObject extends AppObject {
 			rawGeometry.rotateX(-pi / 2);
 			rawGeometry.rotateY(pi);
 			ensureUV(rawGeometry);
+			rawGeometry.computeVertexNormals();
 
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
 				side: DoubleSide,
-				wireframe: true,
+				wireframe: false,
 			});
 			const mesh = new Mesh(rawGeometry, material);
 			const bvh = new MeshBVH(mesh.geometry);
 
-			this.mesh = mesh;
+			this.mesh = await applyOffset(mesh, 2.0);
+			// this.mesh = mesh;
 			this.mesh.raycast = acceleratedRaycast;
 			this.mesh.geometry.boundsTree = bvh;
 			this.mesh.name = file.name;
@@ -213,10 +215,6 @@ export class PrintObject extends AppObject {
 			depthTranslate.value = (-this.mesh.position.z).toString();
 
 			this.updateMatrixWorld();
-
-			this.mesh = await applyOffset(this.mesh, 2.0);
-
-			ensureUV(this.mesh.geometry);
 
 			this.callback({
 				size: {

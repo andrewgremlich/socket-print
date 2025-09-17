@@ -7,9 +7,7 @@ import "@/utils/events";
 import "@/utils/updater";
 
 import { ceil } from "mathjs";
-import type { Mesh } from "three";
-import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
-import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
+import { type Mesh, Vector3 } from "three";
 import { blendHardEdges } from "@/3d/blendHardEdges";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
@@ -50,12 +48,6 @@ const ring = new Ring();
 const mergeCylinder = new MergeCylinder();
 const printObject = new PrintObject({
 	callback: ({ size: { y } }) => {
-		if (import.meta.env.MODE === "development") {
-			// const helper = new VertexNormalsHelper(printObject.mesh, 5, 0x00ff00);
-			// helper.visible = true;
-			// printObject.mesh.add(helper);
-		}
-
 		app.camera.position.set(0, y + 50, -200);
 		app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
 
@@ -131,11 +123,16 @@ export async function slicingAction(sendToFile: boolean) {
 			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === "done") {
-			const adjustedDim = await adjustForShrinkAndOffset(
-				data,
-				printObject.center,
-			);
-			const blended = await blendHardEdges(adjustedDim, 1);
+			const vectors: Vector3[][] = [];
+			for (const level of data) {
+				const levelVectors: Vector3[] = [];
+				for (const point of level) {
+					levelVectors.push(new Vector3(point.x, point.y, point.z));
+				}
+				vectors.push(levelVectors);
+			}
+
+			const blended = await blendHardEdges(vectors, 1);
 			const feedratePerLevel = await calculateFeedratePerLevel(blended);
 			const printTime = await calculatePrintTime(blended, feedratePerLevel);
 
@@ -145,8 +142,6 @@ export async function slicingAction(sendToFile: boolean) {
 				estimatedTime: printTime,
 			});
 			const filePathName = `${printObject.mesh?.name}.gcode`;
-
-			console.log(filePathName);
 
 			if (sendToFile) {
 				await writeGCodeFile(gcode, filePathName);

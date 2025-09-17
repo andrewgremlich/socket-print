@@ -2,13 +2,13 @@ import {
 	BufferAttribute,
 	BufferGeometry,
 	DoubleSide,
-	DynamicDrawUsage,
 	Mesh,
 	MeshStandardMaterial,
 	Vector3,
 } from "three";
 import { STLExporter } from "three/examples/jsm/exporters/STLExporter.js";
 import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { ensureUV } from "./ensureUV";
 
 interface Facet {
 	face: number;
@@ -165,12 +165,12 @@ export async function createMeshFromObject(
 ): Promise<Mesh> {
 	const geometry = new BufferGeometry();
 	const material = new MeshStandardMaterial({
-		color: 0x0000ff,
-		opacity: 0.2,
-		transparent: true,
+		color: 0xffffff,
+		opacity: 1,
+		transparent: false,
 		side: DoubleSide,
-		vertexColors: true,
-		wireframe: true,
+		vertexColors: false,
+		wireframe: false,
 	});
 
 	const faceCount = object.length;
@@ -197,11 +197,7 @@ export async function createMeshFromObject(
 	const newGeometry = mergeVertices(geometry);
 	newGeometry.computeVertexNormals();
 
-	const colorArray = new Uint8Array(newGeometry.attributes.position.count * 3);
-	colorArray.fill(255);
-	const colorAttr = new BufferAttribute(colorArray, 3, true);
-	colorAttr.setUsage(DynamicDrawUsage);
-	newGeometry.setAttribute("color", colorAttr);
+	ensureUV(newGeometry);
 
 	const mesh = new Mesh(newGeometry, material);
 	return mesh;
