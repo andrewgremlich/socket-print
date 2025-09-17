@@ -158,7 +158,7 @@ export class PrintObject extends AppObject {
 			const mesh = new Mesh(rawGeometry, material);
 			const bvh = new MeshBVH(mesh.geometry);
 
-			this.mesh = await applyOffset(mesh, 2.0);
+			this.mesh = await applyOffset(mesh, 12.0);
 			// this.mesh = mesh;
 			this.mesh.raycast = acceleratedRaycast;
 			this.mesh.geometry.boundsTree = bvh;
@@ -213,8 +213,6 @@ export class PrintObject extends AppObject {
 				0,
 			).toString();
 			depthTranslate.value = (-this.mesh.position.z).toString();
-
-			this.updateMatrixWorld();
 
 			this.callback({
 				size: {
