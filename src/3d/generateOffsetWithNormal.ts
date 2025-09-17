@@ -6,70 +6,21 @@ import {
 	MeshStandardMaterial,
 	Vector3,
 } from "three";
-import { STLExporter } from "three/examples/jsm/exporters/STLExporter.js";
-import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { ensureUV } from "./ensureUV";
 
 interface Facet {
-	face: number;
-	normal: Vector3;
+	face: number; // index of the facet (triangle)
+	normal: Vector3; // face normal
 	vertices: Vector3[]; // length 3
 }
 
 interface VertexUsageInfo {
-	face: number;
+	facetIndex: number; // which facet uses this vertex
 	normal: Vector3; // source face normal
-	vertexPositionInTheObject: number; // 0..2
+	vertexPositionInTheObject: number; // 0..2 within the triangle
 }
 
 type FacetCollection = Facet[];
-
-function parseASCII(data: string): FacetCollection {
-	const patternSolid = /solid([\s\S]*?)endsolid/g;
-	const patternFace = /facet([\s\S]*?)endfacet/g;
-	const patternFloat = /[\s]+([+-]?(?:\d*)(?:\.\d*)?(?:[eE][+-]?\d+)?)/.source;
-	const patternVertex = new RegExp(
-		`vertex${patternFloat}${patternFloat}${patternFloat}`,
-		"g",
-	);
-	const patternNormal = new RegExp(
-		`normal${patternFloat}${patternFloat}${patternFloat}`,
-		"g",
-	);
-
-	const facets: FacetCollection = [];
-	let m: RegExpExecArray | null = patternSolid.exec(data);
-	while (m !== null) {
-		const solid = m[0];
-		let faceNumber = 0;
-		let faceMatch: RegExpExecArray | null = patternFace.exec(solid);
-		while (faceMatch !== null) {
-			const text = faceMatch[0];
-			faceNumber++;
-			const normalsFound: Vector3[] = [];
-			const vertices: Vector3[] = [];
-			let nm: RegExpExecArray | null = patternNormal.exec(text);
-			while (nm !== null) {
-				normalsFound.push(
-					new Vector3(parseFloat(nm[1]), parseFloat(nm[2]), parseFloat(nm[3])),
-				);
-				nm = patternNormal.exec(text);
-			}
-			let vm: RegExpExecArray | null = patternVertex.exec(text);
-			while (vm !== null) {
-				vertices.push(
-					new Vector3(parseFloat(vm[1]), parseFloat(vm[2]), parseFloat(vm[3])),
-				);
-				vm = patternVertex.exec(text);
-			}
-			const faceNormalVec = normalsFound[0] ?? new Vector3();
-			facets.push({ face: faceNumber, normal: faceNormalVec, vertices });
-			faceMatch = patternFace.exec(solid);
-		}
-		m = patternSolid.exec(data);
-	}
-	return facets;
-}
 
 function vertexKey(v: Vector3): string {
 	return `${v.x.toFixed(6)},${v.y.toFixed(6)},${v.z.toFixed(6)}`;
@@ -79,19 +30,19 @@ function buildVertexUsageMap(
 	facets: FacetCollection,
 ): Map<string, VertexUsageInfo[]> {
 	const map = new Map<string, VertexUsageInfo[]>();
-	for (const facet of facets) {
+	facets.forEach((facet, facetIndex) => {
 		facet.vertices.forEach((v, idx) => {
 			const key = vertexKey(v);
 			const entry = map.get(key);
 			const info: VertexUsageInfo = {
-				face: facet.face,
+				facetIndex,
 				normal: facet.normal,
 				vertexPositionInTheObject: idx,
 			};
 			if (entry) entry.push(info);
 			else map.set(key, [info]);
 		});
-	}
+	});
 	return map;
 }
 
@@ -118,13 +69,42 @@ function faceNormal(a: Vector3, b: Vector3, c: Vector3): Vector3 {
 	return normal;
 }
 
+function extractFacetsFromGeometry(geometry: BufferGeometry): FacetCollection {
+	const positionAttr = geometry.getAttribute("position") as BufferAttribute;
+	if (!positionAttr) return [];
+	const positions = positionAttr.array as Float32Array;
+	const facets: FacetCollection = [];
+	const triCount = positions.length / 9; // 3 verts * 3 comps
+	for (let t = 0; t < triCount; t++) {
+		const base = t * 9;
+		const a = new Vector3(
+			positions[base],
+			positions[base + 1],
+			positions[base + 2],
+		);
+		const b = new Vector3(
+			positions[base + 3],
+			positions[base + 4],
+			positions[base + 5],
+		);
+		const c = new Vector3(
+			positions[base + 6],
+			positions[base + 7],
+			positions[base + 8],
+		);
+		const n = faceNormal(a, b, c);
+		facets.push({ face: t, normal: n, vertices: [a, b, c] });
+	}
+	return facets;
+}
+
 function buildOffsetFacetSet(
 	facets: FacetCollection,
 	offset: number,
 ): FacetCollection {
 	const usageMap = buildVertexUsageMap(facets);
-	const updated: FacetCollection = facets.map((f) => ({
-		face: f.face,
+	const updated: FacetCollection = facets.map((_, idx) => ({
+		face: idx,
 		normal: new Vector3(),
 		vertices: [] as Vector3[],
 	}));
@@ -132,12 +112,12 @@ function buildOffsetFacetSet(
 	usageMap.forEach((usages) => {
 		const summed = calcNormalsSum(usages).normalize();
 		for (const u of usages) {
-			const sourceFacet = facets.find((f) => f.face === u.face);
+			const sourceFacet = facets[u.facetIndex];
 			if (!sourceFacet) continue;
 			const originalVertex = sourceFacet.vertices[u.vertexPositionInTheObject];
 			const newPos = offsetPosition(offset, summed, originalVertex);
-			const target = updated.find((f) => f.face === u.face);
-			if (target) target.vertices[u.vertexPositionInTheObject] = newPos;
+			const target = updated[u.facetIndex];
+			target.vertices[u.vertexPositionInTheObject] = newPos;
 		}
 	});
 
@@ -152,11 +132,14 @@ function buildOffsetFacetSet(
 	return updated;
 }
 
-export function createOffsetFacets(
-	stlAscii: string,
+function createOffsetFacetsFromGeometry(
+	geometry: BufferGeometry,
 	offset: number,
 ): FacetCollection {
-	const facets = parseASCII(stlAscii);
+	// Ensure we have a non-indexed (triangle soup) geometry so that shared vertices are duplicated;
+	// we'll still merge via spatial key for smooth-ish offset where coordinates match.
+	const working = geometry.index ? geometry.toNonIndexed() : geometry;
+	const facets = extractFacetsFromGeometry(working);
 	return buildOffsetFacetSet(facets, offset);
 }
 
@@ -194,12 +177,13 @@ export async function createMeshFromObject(
 	geometry.setAttribute("position", new BufferAttribute(verticesPosition, 3));
 	geometry.setAttribute("normal", new BufferAttribute(normalsPosition, 3));
 
-	const newGeometry = mergeVertices(geometry);
-	newGeometry.computeVertexNormals();
+	geometry.computeBoundingBox();
+	geometry.computeBoundingSphere();
+	geometry.computeVertexNormals(); // optional smoothing; we still keep flat normals array
 
-	ensureUV(newGeometry);
+	ensureUV(geometry);
 
-	const mesh = new Mesh(newGeometry, material);
+	const mesh = new Mesh(geometry, material);
 	return mesh;
 }
 
@@ -207,9 +191,8 @@ export async function applyOffset(
 	meshToOffset: Mesh,
 	offset: number,
 ): Promise<Mesh> {
-	const exporter = new STLExporter();
-	const stlAscii = exporter.parse(meshToOffset, { binary: false }) as string;
-	const offsetFacets = createOffsetFacets(stlAscii, offset);
+	const baseGeometry = meshToOffset.geometry as BufferGeometry;
+	const offsetFacets = createOffsetFacetsFromGeometry(baseGeometry, offset);
 	const meshOffset = await createMeshFromObject(offsetFacets);
 	meshOffset.name = "offset";
 	return meshOffset;

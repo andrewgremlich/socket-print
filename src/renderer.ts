@@ -100,7 +100,7 @@ export async function slicingAction(sendToFile: boolean) {
 	printObject.updateMatrixWorld();
 
 	if (!isTestSTLCylinder) {
-		mergeCylinder.setHeight(printObject.boundingBox.max.y);
+		mergeCylinder.setHeight(printObject.boundingBox.max.y / 2);
 		app.addToScene(mergeCylinder.mesh);
 	}
 
