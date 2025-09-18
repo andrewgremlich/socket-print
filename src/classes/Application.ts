@@ -1,12 +1,11 @@
 import { pi } from "mathjs";
+import type { BufferGeometry, Object3D } from "three";
 import {
 	AmbientLight,
-	type BufferGeometry,
 	DirectionalLight,
 	GridHelper,
 	Mesh,
 	MeshBasicMaterial,
-	type Object3D,
 	PerspectiveCamera,
 	RingGeometry,
 	Scene,
@@ -86,7 +85,10 @@ export class Application {
 				!(object.geometry instanceof TextGeometry) &&
 				!(object.geometry instanceof RingGeometry)
 			) {
+				// Clone geometry and apply the object's full world transform so slicing
+				// sees the final, transformed vertices (scale, rotation, translation).
 				const cloned = object.geometry.clone();
+				cloned.applyMatrix4(object.matrixWorld);
 				// Ensure all geometries are non-indexed for merging
 				const nonIndexed = cloned.index ? cloned.toNonIndexed() : cloned;
 				geometries.push(nonIndexed);

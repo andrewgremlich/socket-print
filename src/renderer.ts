@@ -7,9 +7,7 @@ import "@/utils/events";
 import "@/utils/updater";
 
 import { ceil } from "mathjs";
-import type { Mesh } from "three";
-
-import { adjustForShrinkAndOffset } from "@/3d/adjustForShrinkAndOffset";
+import { type Mesh, Vector3 } from "three";
 import { blendHardEdges } from "@/3d/blendHardEdges";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
@@ -65,10 +63,6 @@ const printObject = new PrintObject({
 
 		app.addToScene(printObject.mesh);
 
-		if (!loadingScreen) {
-			throw new Error("Loading screen not found");
-		}
-
 		loadingScreen.style.display = "none";
 	},
 });
@@ -106,7 +100,7 @@ export async function slicingAction(sendToFile: boolean) {
 	printObject.updateMatrixWorld();
 
 	if (!isTestSTLCylinder) {
-		mergeCylinder.setHeight(printObject.boundingBox.max.y);
+		mergeCylinder.setHeight(printObject.boundingBox.max.y / 2);
 		app.addToScene(mergeCylinder.mesh);
 	}
 
@@ -129,11 +123,16 @@ export async function slicingAction(sendToFile: boolean) {
 			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === "done") {
-			const adjustedDim = await adjustForShrinkAndOffset(
-				data,
-				printObject.center,
-			);
-			const blended = await blendHardEdges(adjustedDim, 1);
+			const vectors: Vector3[][] = [];
+			for (const level of data) {
+				const levelVectors: Vector3[] = [];
+				for (const point of level) {
+					levelVectors.push(new Vector3(point.x, point.y, point.z));
+				}
+				vectors.push(levelVectors);
+			}
+
+			const blended = await blendHardEdges(vectors, 1);
 			const feedratePerLevel = await calculateFeedratePerLevel(blended);
 			const printTime = await calculatePrintTime(blended, feedratePerLevel);
 
@@ -143,8 +142,6 @@ export async function slicingAction(sendToFile: boolean) {
 				estimatedTime: printTime,
 			});
 			const filePathName = `${printObject.mesh?.name}.gcode`;
-
-			console.log(filePathName);
 
 			if (sendToFile) {
 				await writeGCodeFile(gcode, filePathName);

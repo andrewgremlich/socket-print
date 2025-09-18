@@ -9,6 +9,7 @@ import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoade
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 
 import { ensureUV } from "@/3d/ensureUV";
+import { applyOffset } from "@/3d/generateOffsetWithNormal";
 import {
 	getLockDepth,
 	getRotateValues,
@@ -18,6 +19,8 @@ import {
 	updateTranslateValues,
 } from "@/db/appSettingsDbActions";
 import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
+import { getNozzleSize } from "@/db/formValuesDbActions";
+import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 import {
 	activeFileName,
 	addTestCylinderButton,
@@ -147,17 +150,20 @@ export class PrintObject extends AppObject {
 			rawGeometry.rotateX(-pi / 2);
 			rawGeometry.rotateY(pi);
 			ensureUV(rawGeometry);
-
 			rawGeometry.computeVertexNormals();
 
 			const material = new MeshStandardMaterial({
 				color: 0xffffff,
 				side: DoubleSide,
+				wireframe: false,
 			});
 			const mesh = new Mesh(rawGeometry, material);
 			const bvh = new MeshBVH(mesh.geometry);
+			const nozzleSize = await getNozzleSize();
+			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
+			const shrinkScale = 1 / (1 - shrinkFactor / 100);
 
-			this.mesh = mesh;
+			this.mesh = await applyOffset(mesh, nozzleSize / 2);
 			this.mesh.raycast = acceleratedRaycast;
 			this.mesh.geometry.boundsTree = bvh;
 			this.mesh.name = file.name;
@@ -177,6 +183,8 @@ export class PrintObject extends AppObject {
 			const rotateValues = await getRotateValues();
 
 			this.offsetYPosition = this.size.y / 2 - this.lockDepth;
+
+			this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
 
 			if (this.loadedStlFromIndexedDb) {
 				this.mesh.position.set(
@@ -211,8 +219,6 @@ export class PrintObject extends AppObject {
 				0,
 			).toString();
 			depthTranslate.value = (-this.mesh.position.z).toString();
-
-			console.log();
 
 			this.callback({
 				size: {
