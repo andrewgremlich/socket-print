@@ -20,6 +20,7 @@ import {
 } from "@/db/appSettingsDbActions";
 import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
 import { getNozzleSize } from "@/db/formValuesDbActions";
+import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 import {
 	activeFileName,
 	addTestCylinderButton,
@@ -169,6 +170,11 @@ export class PrintObject extends AppObject {
 			this.lockDepth = await getLockDepth();
 
 			activeFileName.textContent = file.name;
+
+			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
+			const shrinkScale = 1 / (1 - shrinkFactor / 100);
+
+			this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
 
 			this.mesh.geometry.translate(
 				-this.center.x,
