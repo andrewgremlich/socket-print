@@ -160,6 +160,8 @@ export class PrintObject extends AppObject {
 			const mesh = new Mesh(rawGeometry, material);
 			const bvh = new MeshBVH(mesh.geometry);
 			const nozzleSize = await getNozzleSize();
+			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
+			const shrinkScale = 1 / (1 - shrinkFactor / 100);
 
 			this.mesh = await applyOffset(mesh, nozzleSize / 2);
 			this.mesh.raycast = acceleratedRaycast;
@@ -171,11 +173,6 @@ export class PrintObject extends AppObject {
 
 			activeFileName.textContent = file.name;
 
-			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
-			const shrinkScale = 1 / (1 - shrinkFactor / 100);
-
-			this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
-
 			this.mesh.geometry.translate(
 				-this.center.x,
 				-this.center.y,
@@ -186,6 +183,8 @@ export class PrintObject extends AppObject {
 			const rotateValues = await getRotateValues();
 
 			this.offsetYPosition = this.size.y / 2 - this.lockDepth;
+
+			this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
 
 			if (this.loadedStlFromIndexedDb) {
 				this.mesh.position.set(

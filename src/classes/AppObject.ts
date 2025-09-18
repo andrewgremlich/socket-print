@@ -7,17 +7,11 @@ export class AppObject {
 	center: Vector3 | null = null;
 
 	updateMatrixWorld = () => {
-		if (this.mesh) {
-			this.mesh.updateMatrix();
-			this.mesh.updateMatrixWorld(true);
-			this.mesh.geometry.applyMatrix4(this.mesh.matrixWorld);
-
-			this.mesh.rotation.set(0, 0, 0);
-			this.mesh.position.set(0, 0, 0);
-
-			this.mesh.geometry.computeVertexNormals();
-			this.computeBoundingBox();
-		}
+		if (!this.mesh) return;
+		// Non-destructive: just ensure matrices & bounding info are current.
+		this.mesh.updateMatrix();
+		this.mesh.updateMatrixWorld(true);
+		this.computeBoundingBox();
 	};
 
 	computeBoundingBox = () => {

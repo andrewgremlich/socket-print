@@ -22,8 +22,10 @@ interface VertexUsageInfo {
 
 type FacetCollection = Facet[];
 
+const VERTEX_PRECISION = 6;
+
 function vertexKey(v: Vector3): string {
-	return `${v.x.toFixed(6)},${v.y.toFixed(6)},${v.z.toFixed(6)}`;
+	return `${v.x.toFixed(VERTEX_PRECISION)},${v.y.toFixed(VERTEX_PRECISION)},${v.z.toFixed(VERTEX_PRECISION)}`;
 }
 
 function buildVertexUsageMap(
@@ -179,7 +181,7 @@ export async function createMeshFromObject(
 
 	geometry.computeBoundingBox();
 	geometry.computeBoundingSphere();
-	geometry.computeVertexNormals(); // optional smoothing; we still keep flat normals array
+	geometry.computeVertexNormals();
 
 	ensureUV(geometry);
 
