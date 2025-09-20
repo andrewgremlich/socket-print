@@ -94,14 +94,23 @@ export class PrintObject extends AppObject {
 			await fetchStlFile("test_stl_file.stl")();
 		});
 		addTestCylinderButton?.addEventListener("click", async () => {
+			const nozzleSize = await getNozzleSize();
+			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
+			const shrinkScale = 1 / (1 - shrinkFactor / 100);
+
 			await this.clearData();
 			await setIsTestSTLCylinder(true);
 
 			const testCylinder = new TestCylinder();
 
-			this.mesh = testCylinder.mesh;
+			this.mesh = await applyOffset(testCylinder.mesh, nozzleSize / 2);
 			this.mesh.name = "test_cylinder";
 			activeFileName.textContent = "test_cylinder";
+
+			this.computeBoundingBox();
+
+			this.mesh.position.set(0, this.size.y / 2, 0);
+			this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
 
 			this.callback({
 				size: {
