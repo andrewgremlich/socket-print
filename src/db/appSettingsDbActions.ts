@@ -19,6 +19,15 @@ export const getCircularSegments = async () => {
 	return Number(circularSegments.value);
 };
 
+export const setCircularSegments = async (circularSegments: number) => {
+	const db = await getDb();
+
+	return await db.appSettings
+		.where("name")
+		.equals("circularSegments")
+		.modify({ value: circularSegments });
+};
+
 export const updateTranslateValues = async (
 	translateX: number,
 	translateY: number,

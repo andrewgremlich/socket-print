@@ -16,6 +16,7 @@ import {
 	addMaterialProfile,
 	deleteMaterialProfileButton,
 	editActiveMaterialProfile,
+	helpButton,
 	ipAddressInput,
 	materialProfileForm,
 	menuBar,
@@ -83,4 +84,8 @@ deleteMaterialProfileButton.addEventListener("click", async () => {
 	await saveActiveMaterialProfile(materialProfiles[0].name);
 	await appendMaterialProfiles();
 	await loadActiveMaterialProfileForm();
+});
+
+helpButton.addEventListener("click", () => {
+	window.open("/help.html", "_self");
 });

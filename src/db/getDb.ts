@@ -17,3 +17,11 @@ export const getDb = async () => {
 
 	return db;
 };
+
+export const deleteDb = async () => {
+	if (db) {
+		db.close();
+	}
+	await Dexie.delete("ProvelPrintDatabase");
+	db = null as any;
+};

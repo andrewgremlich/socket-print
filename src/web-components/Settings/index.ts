@@ -1,21 +1,36 @@
 import { version } from "pkg";
 import {
+	getCircularSegments,
 	getExtrusionAdjustment,
 	getLineWidthAdjustment,
 	getStartingCupLayerHeight,
+	setCircularSegments,
 	setExtrusionAdjustment,
 	setLineWidthAdjustment,
 	setStartingCupLayerHeight,
 } from "@/db/appSettingsDbActions";
+import { deleteDb } from "@/db/getDb";
+
 import { Dialog } from "../Dialog";
 
 export class Settings extends Dialog {
 	cancelButton: HTMLButtonElement;
+	resetButton: HTMLButtonElement;
 
 	constructor() {
 		super();
 		this.id = "settingsDialog";
 		this.attachHTML`
+			<style>
+				#resetAppContainer {
+					margin-top: 2rem;
+					margin-bottom: 2rem;
+
+					& h4 {
+						margin-bottom: 0.5rem;
+					}
+				}
+			</style>
 		  <dialog id="${this.id}">
 		    <h3>Settings</h3>
         	<form id="settingsForm" method="dialog">
@@ -28,9 +43,16 @@ export class Settings extends Dialog {
             <label for="lineWidthAdjustment">Line Width Adjustment</label>
             <input type="number" id="lineWidthAdjustment" name="lineWidthAdjustment" step="0.1" min="1" max="2" />
 
+						<label for="circularResolution">Circular Resolution</label>
+						<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />
+
             <input type="submit" value="Save" class="button" id="saveSettings" />
             <input type="button" value="Cancel" class="button" id="cancelSettings" />
 					</form>
+					<div id="resetAppContainer">
+						<h4>Reset Application</h4>
+						<input type="button" class="button" id="resetApp" value="Reset Application" />
+					</div>
 					<div id="appInfo">
 						<h4>Application Info</h4>
 						<p>Version: ${version}</p>
@@ -44,6 +66,9 @@ export class Settings extends Dialog {
 		) as HTMLFormElement;
 		this.cancelButton = this.shadowRoot.getElementById(
 			"cancelSettings",
+		) as HTMLButtonElement;
+		this.resetButton = this.shadowRoot.getElementById(
+			"resetApp",
 		) as HTMLButtonElement;
 
 		this.dialogEvents();
@@ -60,6 +85,19 @@ export class Settings extends Dialog {
 		this.cancelButton.addEventListener("click", () => this.hide());
 
 		this.dialog.addEventListener("close", () => this.hide());
+
+		this.resetButton.addEventListener("click", () => this.resetApplication());
+	}
+
+	async resetApplication() {
+		if (
+			confirm(
+				"Are you sure you want to reset the application? This will delete all your data and settings!",
+			)
+		) {
+			await deleteDb();
+			location.reload();
+		}
 	}
 
 	async saveSettings() {
@@ -71,21 +109,28 @@ export class Settings extends Dialog {
 			setStartingCupLayerHeight(+settings.startingCupLayerHeight),
 			setLineWidthAdjustment(+settings.lineWidthAdjustment),
 			setExtrusionAdjustment(+settings.extrusionAdjustment),
+			setCircularSegments(+settings.circularResolution),
 		]);
 	}
 
 	async loadDataIntoForm() {
-		const [startingCupLayerHeight, lineWidthAdjustment, extrusionAdjustment] =
-			await Promise.all([
-				getStartingCupLayerHeight(),
-				getLineWidthAdjustment(),
-				getExtrusionAdjustment(),
-			]);
+		const [
+			startingCupLayerHeight,
+			lineWidthAdjustment,
+			extrusionAdjustment,
+			circularSegments,
+		] = await Promise.all([
+			getStartingCupLayerHeight(),
+			getLineWidthAdjustment(),
+			getExtrusionAdjustment(),
+			getCircularSegments(),
+		]);
 
 		const settingKeys = [
 			"startingCupLayerHeight",
 			"lineWidthAdjustment",
 			"extrusionAdjustment",
+			"circularResolution",
 		];
 
 		for (const key of settingKeys) {
@@ -100,6 +145,9 @@ export class Settings extends Dialog {
 					break;
 				case "extrusionAdjustment":
 					input.value = extrusionAdjustment.toString();
+					break;
+				case "circularResolution":
+					input.value = circularSegments.toString();
 					break;
 			}
 		}
