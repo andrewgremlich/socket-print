@@ -34,6 +34,8 @@ const defaultSettingNames: ProvelPrintSettings = {
 	startingCupLayerHeight: 2,
 	extrusionAdjustment: 7.7,
 	lineWidthAdjustment: 1.2,
+	testCylinderHeight: 50,
+	testCylinderDiameter: 75,
 };
 
 const initData = async () => {

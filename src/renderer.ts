@@ -44,8 +44,14 @@ if (!window.Worker) {
 }
 
 const app = new Application();
-const ring = new Ring();
-const mergeCylinder = new MergeCylinder();
+// Async init wrapper to allow awaiting creation of procedural objects
+let ring: Ring; // populated in init()
+let mergeCylinder: MergeCylinder; // populated in init()
+await (async function initProcedurals() {
+	ring = await Ring.create();
+	mergeCylinder = await MergeCylinder.create();
+	app.addToScene(ring.mesh);
+})();
 const printObject = new PrintObject({
 	callback: ({ size: { y } }) => {
 		app.camera.position.set(0, y + 50, -200);
@@ -67,7 +73,7 @@ const printObject = new PrintObject({
 	},
 });
 
-app.addToScene(ring.mesh);
+// ring is added in async init above
 
 const removeMeshes = async (meshes: Mesh[]) => {
 	meshes.forEach((mesh) => {

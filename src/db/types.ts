@@ -40,6 +40,8 @@ export type ProvelPrintSettings = {
 	startingCupLayerHeight: number;
 	extrusionAdjustment: number;
 	lineWidthAdjustment: number;
+	testCylinderHeight: number;
+	testCylinderDiameter: number;
 };
 
 export type Entities = {

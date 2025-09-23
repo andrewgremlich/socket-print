@@ -191,3 +191,39 @@ export const setLineWidthAdjustment = async (lineWidthAdjustment: number) => {
 		.equals("lineWidthAdjustment")
 		.modify({ value: lineWidthAdjustment });
 };
+
+export const getTestCylinderHeight = async () => {
+	const db = await getDb();
+	const testCylinderHeight = await db.appSettings
+		.where("name")
+		.equals("testCylinderHeight")
+		.first();
+	return Number(testCylinderHeight.value);
+};
+
+export const setTestCylinderHeight = async (testCylinderHeight: number) => {
+	const db = await getDb();
+
+	return await db.appSettings
+		.where("name")
+		.equals("testCylinderHeight")
+		.modify({ value: testCylinderHeight });
+};
+
+export const getTestCylinderDiameter = async () => {
+	const db = await getDb();
+	const testCylinderDiameter = await db.appSettings
+		.where("name")
+		.equals("testCylinderDiameter")
+		.first();
+	return Number(testCylinderDiameter.value);
+};
+
+export const setTestCylinderDiameter = async (testCylinderDiameter: number) => {
+	const db = await getDb();
+
+	return await db.appSettings
+		.where("name")
+		.equals("testCylinderDiameter")
+		.modify({ value: testCylinderDiameter });
+};

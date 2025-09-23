@@ -4,18 +4,23 @@ import {
 	getExtrusionAdjustment,
 	getLineWidthAdjustment,
 	getStartingCupLayerHeight,
+	getTestCylinderDiameter,
+	getTestCylinderHeight,
 	setCircularSegments,
 	setExtrusionAdjustment,
 	setLineWidthAdjustment,
 	setStartingCupLayerHeight,
+	setTestCylinderDiameter,
+	setTestCylinderHeight,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/getDb";
 
 import { Dialog } from "../Dialog";
 
 export class Settings extends Dialog {
-	cancelButton: HTMLButtonElement;
 	resetButton: HTMLButtonElement;
+	testCylinderForm: HTMLFormElement;
+	closeButton: HTMLButtonElement;
 
 	constructor() {
 		super();
@@ -46,8 +51,17 @@ export class Settings extends Dialog {
 						<label for="circularResolution">Circular Resolution</label>
 						<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />
 
-            <input type="submit" value="Save" class="button" id="saveSettings" />
-            <input type="button" value="Cancel" class="button" id="cancelSettings" />
+					<input type="submit" value="Save" class="button" id="saveSettings" />
+					</form>
+					<h4>Test Cylinder Dimensions</h4>
+					<form id="testCylinderSettings">
+						<label for="testCylinderHeight">Test Cylinder Height</label>
+						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" />
+
+						<label for="testCylinderDiameter">Test Cylinder Diameter</label>
+						<input type="number" id="testCylinderDiameter" name="testCylinderDiameter" step="1" />
+
+						<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
 					</form>
 					<div id="resetAppContainer">
 						<h4>Reset Application</h4>
@@ -58,17 +72,23 @@ export class Settings extends Dialog {
 						<p>Version: ${version}</p>
 						<p>Made by <strong><a href="https://gremlich.xyz" target="_blank">Andrew Gremlich</a></strong></p>
 					</div>
+					<div id="closeContainer" style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
+						<input type="button" class="button" id="closeSettings" value="Close" />
+					</div>
 		  </dialog>
 		`;
 
 		this.form = this.shadowRoot.getElementById(
 			"settingsForm",
 		) as HTMLFormElement;
-		this.cancelButton = this.shadowRoot.getElementById(
-			"cancelSettings",
-		) as HTMLButtonElement;
 		this.resetButton = this.shadowRoot.getElementById(
 			"resetApp",
+		) as HTMLButtonElement;
+		this.testCylinderForm = this.shadowRoot.getElementById(
+			"testCylinderSettings",
+		) as HTMLFormElement;
+		this.closeButton = this.shadowRoot.getElementById(
+			"closeSettings",
 		) as HTMLButtonElement;
 
 		this.dialogEvents();
@@ -81,11 +101,13 @@ export class Settings extends Dialog {
 
 	dialogEvents() {
 		this.form.addEventListener("submit", () => this.saveSettings());
+		// Separate form for test cylinder dimensions; prevent full dialog close
+		this.testCylinderForm.addEventListener("submit", (evt) =>
+			this.saveTestCylinderSettings(evt),
+		);
 
-		this.cancelButton.addEventListener("click", () => this.hide());
-
+		this.closeButton.addEventListener("click", () => this.hide());
 		this.dialog.addEventListener("close", () => this.hide());
-
 		this.resetButton.addEventListener("click", () => this.resetApplication());
 	}
 
@@ -103,13 +125,21 @@ export class Settings extends Dialog {
 	async saveSettings() {
 		const formData = new FormData(this.form);
 		const settings = Object.fromEntries(formData.entries());
-
-		// Save settings to the database
 		await Promise.all([
 			setStartingCupLayerHeight(+settings.startingCupLayerHeight),
 			setLineWidthAdjustment(+settings.lineWidthAdjustment),
 			setExtrusionAdjustment(+settings.extrusionAdjustment),
 			setCircularSegments(+settings.circularResolution),
+		]);
+	}
+
+	async saveTestCylinderSettings(evt: Event) {
+		evt.preventDefault();
+		const formData = new FormData(this.testCylinderForm);
+		const settings = Object.fromEntries(formData.entries());
+		await Promise.all([
+			setTestCylinderHeight(+settings.testCylinderHeight),
+			setTestCylinderDiameter(+settings.testCylinderDiameter),
 		]);
 	}
 
@@ -119,38 +149,41 @@ export class Settings extends Dialog {
 			lineWidthAdjustment,
 			extrusionAdjustment,
 			circularSegments,
+			testCylinderHeight,
+			testCylinderDiameter,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
 			getLineWidthAdjustment(),
 			getExtrusionAdjustment(),
 			getCircularSegments(),
+			getTestCylinderHeight(),
+			getTestCylinderDiameter(),
 		]);
 
-		const settingKeys = [
-			"startingCupLayerHeight",
-			"lineWidthAdjustment",
-			"extrusionAdjustment",
-			"circularResolution",
-		];
+		const mainSettingMap: Record<string, number> = {
+			startingCupLayerHeight,
+			lineWidthAdjustment,
+			extrusionAdjustment,
+			circularResolution: circularSegments,
+		};
 
-		for (const key of settingKeys) {
-			const input = this.form.elements.namedItem(key) as HTMLInputElement;
-			if (!input) continue;
-			switch (key) {
-				case "startingCupLayerHeight":
-					input.value = startingCupLayerHeight.toString();
-					break;
-				case "lineWidthAdjustment":
-					input.value = lineWidthAdjustment.toString();
-					break;
-				case "extrusionAdjustment":
-					input.value = extrusionAdjustment.toString();
-					break;
-				case "circularResolution":
-					input.value = circularSegments.toString();
-					break;
-			}
-		}
+		Object.entries(mainSettingMap).forEach(([key, value]) => {
+			const input = this.form.elements.namedItem(
+				key,
+			) as HTMLInputElement | null;
+			if (input) input.value = value.toString();
+		});
+
+		// Test cylinder form inputs
+		const testHeightInput = this.testCylinderForm.elements.namedItem(
+			"testCylinderHeight",
+		) as HTMLInputElement | null;
+		const testDiameterInput = this.testCylinderForm.elements.namedItem(
+			"testCylinderDiameter",
+		) as HTMLInputElement | null;
+		if (testHeightInput) testHeightInput.value = testCylinderHeight.toString();
+		if (testDiameterInput)
+			testDiameterInput.value = testCylinderDiameter.toString();
 	}
 }
 

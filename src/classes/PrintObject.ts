@@ -101,7 +101,7 @@ export class PrintObject extends AppObject {
 			await this.clearData();
 			await setIsTestSTLCylinder(true);
 
-			const testCylinder = new TestCylinder();
+			const testCylinder = await TestCylinder.create();
 
 			this.mesh = await applyOffset(testCylinder.mesh, nozzleSize / 2);
 			this.mesh.name = "test_cylinder";
