@@ -1,9 +1,7 @@
 name: "Publish Desktop ProvelPrint Apps"
 
 on:
-  push:
-    tags:
-      - 'App v*'
+  workflow_dispatch:
 
 jobs:
   publish-tauri:
