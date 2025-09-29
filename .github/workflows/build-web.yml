@@ -2,10 +2,10 @@ name: Build and Zip Vite Web Project
 
 on:
   push:
-    # tags:
-    #   - 'v*.*.*'  # Trigger on version tags like v1.2.3
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'  # Trigger on version tags like v1.2.3
+    # branches:
+    #   - main
 
 permissions:
   contents: write
@@ -69,14 +69,14 @@ jobs:
           zip -r ../socket-print-v${{ steps.get_version.outputs.version }}.zip .
         if: ${{ success() }}
 
-      # - name: Validate tag matches package version
-      #   run: |
-      #     echo "Git ref name: ${GITHUB_REF_NAME}"
-      #     echo "Package version: v${{ steps.get_version.outputs.version }}"
-      #     if [ "v${{ steps.get_version.outputs.version }}" != "${GITHUB_REF_NAME}" ]; then
-      #       echo "::error::Pushed tag (${GITHUB_REF_NAME}) does not match package.json version (v${{ steps.get_version.outputs.version }}).";
-      #       exit 1;
-      #     fi
+      - name: Validate tag matches package version
+        run: |
+          echo "Git ref name: ${GITHUB_REF_NAME}"
+          echo "Package version: v${{ steps.get_version.outputs.version }}"
+          if [ "v${{ steps.get_version.outputs.version }}" != "${GITHUB_REF_NAME}" ]; then
+            echo "::error::Pushed tag (${GITHUB_REF_NAME}) does not match package.json version (v${{ steps.get_version.outputs.version }}).";
+            exit 1;
+          fi
 
       - name: Generate checksum
         id: checksum
