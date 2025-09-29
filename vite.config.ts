@@ -30,6 +30,7 @@ export default defineConfig({
 			input: {
 				main: resolve(__dirname, "index.html"),
 				help: resolve(__dirname, "help.html"),
+				licenses: resolve(__dirname, "licenses.html"),
 			},
 			output: {
 				entryFileNames: "assets/[name].[hash].js",

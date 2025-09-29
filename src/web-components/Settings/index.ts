@@ -71,6 +71,7 @@ export class Settings extends Dialog {
 						<h4>Application Info</h4>
 						<p>Version: ${version}</p>
 						<p>Software Engineer: <strong><a href="https://gremlich.xyz" target="_blank">Andrew Gremlich</a></strong></p>
+						<p><a href="/licenses" target="_blank">License Info</a></p>
 					</div>
 					<div id="closeContainer" style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
 						<input type="button" class="button" id="closeSettings" value="Close" />
