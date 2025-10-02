@@ -26,6 +26,7 @@ export default defineConfig({
 	build: {
 		minify: true,
 		target: "es2022",
+		// modulePreload: false,
 		rollupOptions: {
 			input: {
 				main: resolve(__dirname, "index.html"),
@@ -36,14 +37,14 @@ export default defineConfig({
 				entryFileNames: "assets/[name].[hash].js",
 				chunkFileNames: "assets/[name].[hash].js",
 				assetFileNames: "assets/[name].[hash][extname]",
-				manualChunks(id) {
-					if (id.includes("node_modules/three/")) {
-						return "three";
-					}
-					if (id.includes("node_modules/three-mesh-bvh/")) {
-						return "three-mesh-bvh";
-					}
-				},
+				// manualChunks(id) {
+				// 	if (id.includes("node_modules/three/")) {
+				// 		return "three";
+				// 	}
+				// 	if (id.includes("node_modules/three-mesh-bvh/")) {
+				// 		return "three-mesh-bvh";
+				// 	}
+				// },
 			},
 		},
 	},

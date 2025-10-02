@@ -20,9 +20,12 @@ export const printerConnection = async () => {
 	}
 
 	const storedIpAddress = await getIpAddress();
-	const ipAddress = ipAddressInput.value || storedIpAddress;
+	const ipAddress = (ipAddressInput.value || storedIpAddress).trim();
+	const [ipAddressOriginal, _port] = ipAddress.split(":");
 	const isValid =
-		isIP(ipAddress) || isFQDN(ipAddress) || ipAddress.includes("localhost");
+		isIP(ipAddressOriginal) ||
+		isFQDN(ipAddressOriginal) ||
+		ipAddressOriginal.includes("localhost");
 
 	if (!isValid) {
 		console.warn("Invalid IP address or FQDN:", ipAddress);

@@ -21,8 +21,16 @@ const getActiveProfile = async () => {
 	return activeProfile;
 };
 
+let activeProfileCache: MaterialProfile | null = null;
+
 export const getActiveMaterialProfile = async () => {
+	if (activeProfileCache) {
+		return activeProfileCache;
+	}
+
 	const activeProfile = await (await getActiveProfile()).first();
+	activeProfileCache = activeProfile;
+
 	return activeProfile;
 };
 
@@ -45,6 +53,10 @@ export const updateMaterialProfile = async (profile: MaterialProfile) => {
 
 export const getActiveMaterialProfileShrinkFactor = async () => {
 	return (await getActiveMaterialProfile()).shrinkFactor;
+};
+
+export const getActiveMaterialProfileCupTemp = async () => {
+	return (await getActiveMaterialProfile()).cupTemp;
 };
 
 export const getActiveMaterialProfileNozzleTemp = async () => {
