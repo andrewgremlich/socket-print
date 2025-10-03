@@ -2,11 +2,7 @@ import { floor } from "mathjs";
 import pkg from "pkg";
 import { Vector3 } from "three";
 
-import {
-	getCircularSegments,
-	getExtrusionAdjustment,
-	getLineWidthAdjustment,
-} from "@/db/appSettingsDbActions";
+import { getCircularSegments } from "@/db/appSettingsDbActions";
 import {
 	getCupSize,
 	getCupSizeHeight,
@@ -18,13 +14,13 @@ import {
 	getActiveMaterialProfileCupTemp,
 	getActiveMaterialProfileName,
 	getActiveMaterialProfileNozzleTemp,
-	getActiveMaterialProfileOutputFactor,
 	getActiveMaterialProfileSecondsPerLayer,
 } from "@/db/materialProfilesDbActions";
 import {
 	getCirclePoints,
 	getTransitionLayer,
 } from "@/utils/cupTransitionLayer";
+import { getExtrusionCalculation } from "@/utils/getExtrusionCalculation";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
@@ -50,14 +46,11 @@ export async function generateGCode(
 ): Promise<string> {
 	const { estimatedTime = "0m 0s" } = options;
 	const activeMaterialProfileName = await getActiveMaterialProfileName();
-	const outputFactor = await getActiveMaterialProfileOutputFactor();
 	const nozzleSize = await getNozzleSize();
 	const cupSize = await getCupSize();
 	const segments = await getCircularSegments();
 	const lockPosition = await getLockPosition();
 	const secondsPerLayer = await getActiveMaterialProfileSecondsPerLayer();
-	const extrusionAdjustment = await getExtrusionAdjustment();
-	const lineWidthAdjustment = await getLineWidthAdjustment();
 	const cupHeight = await getCupSizeHeight();
 	const layerHeight = await getLayerHeight();
 	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
@@ -131,7 +124,6 @@ export async function generateGCode(
 	});
 	const transitionLayer = await getTransitionLayer(circlePoints, {
 		nozzleSize,
-		outputFactor,
 		offsetHeight: startingHeight,
 	});
 
@@ -160,10 +152,11 @@ export async function generateGCode(
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j].clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(point);
-			const lineWidth = nozzleSize * lineWidthAdjustment;
-			const extrusion =
-				((distance * layerHeight * lineWidth) / extrusionAdjustment) *
-				outputFactor;
+			const extrusion = getExtrusionCalculation({
+				distance,
+				nozzleSize,
+				layerHeight,
+			});
 
 			previousPoint = point;
 
