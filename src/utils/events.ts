@@ -12,11 +12,13 @@ import {
 	printerConnection,
 } from "./handlePrinterConnection";
 import {
+	activateInfoDialog,
 	activateSettingsDialog,
 	addMaterialProfile,
 	deleteMaterialProfileButton,
 	editActiveMaterialProfile,
 	helpButton,
+	infoDialog,
 	ipAddressInput,
 	materialProfileForm,
 	menuBar,
@@ -66,6 +68,11 @@ setTimeout(async () => await printerConnection(), 1000);
 activateSettingsDialog.addEventListener(
 	"click",
 	async () => await settingsDialog.showSettings(),
+);
+
+activateInfoDialog.addEventListener(
+	"click",
+	async () => await infoDialog.showSettings(),
 );
 
 addMaterialProfile.addEventListener("click", () =>

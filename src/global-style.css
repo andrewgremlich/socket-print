@@ -116,7 +116,24 @@ button {
 	}
 
 	nav {
+		width: 100%;
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
+
+		& > div {
+			display: flex;
+			align-items: center;
+		}
+	}
+}
+
+#activateSettingsDialog,
+#activateInfoDialog {
+	color: #565656ff;
+
+	&:hover {
+		color: #ffffff;
+		transition: color 0.3s ease;
 	}
 }

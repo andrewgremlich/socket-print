@@ -6,6 +6,7 @@ import {
 	getCircularSegments,
 	getExtrusionAdjustment,
 	getLineWidthAdjustment,
+	getSecondsPerLayer,
 } from "@/db/appSettingsDbActions";
 import {
 	getCupSize,
@@ -19,7 +20,6 @@ import {
 	getActiveMaterialProfileName,
 	getActiveMaterialProfileNozzleTemp,
 	getActiveMaterialProfileOutputFactor,
-	getActiveMaterialProfileSecondsPerLayer,
 } from "@/db/materialProfilesDbActions";
 import {
 	getCirclePoints,
@@ -55,7 +55,7 @@ export async function generateGCode(
 	const cupSize = await getCupSize();
 	const segments = await getCircularSegments();
 	const lockPosition = await getLockPosition();
-	const secondsPerLayer = await getActiveMaterialProfileSecondsPerLayer();
+	const secondsPerLayer = await getSecondsPerLayer();
 	const extrusionAdjustment = await getExtrusionAdjustment();
 	const lineWidthAdjustment = await getLineWidthAdjustment();
 	const cupHeight = await getCupSizeHeight();

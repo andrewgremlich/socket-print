@@ -18,52 +18,72 @@
     <div id="menuBar">
       <div>
         <nav role="menubar">
-          <h1><a href="/">ProvelPrint</a></h1>
+          <div>
 
-          <div class="menuBarButtonContainer">
-            <button role="menuitem" aria-haspopup="true" class="menuBarButton">File</button>
+            <h1><a href="/">ProvelPrint</a></h1>
 
-            <div class="menuBarDropdown" role="menu">
-              <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
-                id="stlFileInputLabel">
-                Open STL file
-                <input role="menuitem" type="file" accept=".stl" id="stlFileInput" name="stlFileInput"
-                  class="fileInput" />
-              </label>
+            <div class="menuBarButtonContainer">
+              <button role="menuitem" aria-haspopup="true" class="menuBarButton">File</button>
 
-              <button role="menuitem" class="menuBarDropdownButton" id="restoreDefaultsButton" type="button">Restore
-                Defaults</button>
+              <div class="menuBarDropdown" role="menu">
+                <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
+                  id="stlFileInputLabel">
+                  Open STL file
+                  <input role="menuitem" type="file" accept=".stl" id="stlFileInput" name="stlFileInput"
+                    class="fileInput" />
+                </label>
 
-              <button role="menuitem" class="menuBarDropdownButton" id="clearModelButton" type="button">Clear
-                model</button>
+                <button role="menuitem" class="menuBarDropdownButton" id="restoreDefaultsButton" type="button">Restore
+                  Defaults</button>
 
-              <button role="menuitem" class="menuBarDropdownButton" id="addTestStlButton" type="button">Load Test
-                Socket STL</button>
+                <button role="menuitem" class="menuBarDropdownButton" id="clearModelButton" type="button">Clear
+                  model</button>
 
-              <button role="menuitem" class="menuBarDropdownButton" id="addTestCylinderButton" type="button">Load Test
-                Cylinder STL</button>
+                <button role="menuitem" class="menuBarDropdownButton" id="addTestStlButton" type="button">Load Test
+                  Socket STL</button>
+
+                <button role="menuitem" class="menuBarDropdownButton" id="addTestCylinderButton" type="button">Load Test
+                  Cylinder STL</button>
+              </div>
             </div>
+
+            <div class="menuBarButtonContainer">
+              <button role="menuitem" aria-haspopup="true" class="menuBarButton">Edit</button>
+
+              <div class="menuBarDropdown" role="menu">
+                <button role="menuitem" class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material
+                  Profile</button>
+                <button role="menuitem" class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit
+                  Active Material
+                  Profile</button>
+                <button role="menuitem" class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete
+                  Active Material
+                  Profile</button>
+              </div>
+            </div>
+
+            <button role="menuitem" class="menuBarButton noDropdown" id="helpButton" type="button">Help</button>
           </div>
 
-          <div class="menuBarButtonContainer">
-            <button role="menuitem" aria-haspopup="true" class="menuBarButton">Edit</button>
+          <div>
+            <button role="menuitem" aria-haspopup="true" id="activateSettingsDialog" class="menuBarButton noDropdown"
+              type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg></button>
 
-            <div class="menuBarDropdown" role="menu">
-              <button role="menuitem" class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material
-                Profile</button>
-              <button role="menuitem" class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit
-                Active Material
-                Profile</button>
-              <button role="menuitem" class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete
-                Active Material
-                Profile</button>
-            </div>
+            <button role="menuitem" aria-haspopup="true" id="activateInfoDialog" class="menuBarButton noDropdown"
+              type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg></button>
           </div>
-
-          <button role="menuitem" class="menuBarButton noDropdown" id="helpButton" type="button">Help</button>
-
-          <button role="menuitem" aria-haspopup="true" id="activateSettingsDialog" class="menuBarButton noDropdown"
-            type="button">Settings</button>
         </nav>
       </div>
     </div>
@@ -190,6 +210,8 @@
   <app-info></app-info>
 
   <app-settings></app-settings>
+
+  <app-info></app-info>
 
   <div id="progressBarDiv" aria-live="polite" aria-label="Progress Bar">
     <icon-element type="loader"></icon-element>

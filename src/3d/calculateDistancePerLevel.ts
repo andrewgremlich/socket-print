@@ -1,7 +1,9 @@
 import { round } from "mathjs";
 import type { Vector3 } from "three";
-import { getCircularSegments } from "@/db/appSettingsDbActions";
-import { getActiveMaterialProfileSecondsPerLayer } from "@/db/materialProfilesDbActions";
+import {
+	getCircularSegments,
+	getSecondsPerLayer,
+} from "@/db/appSettingsDbActions";
 
 const calculateDistancePerLevel = async (
 	points: Vector3[][],
@@ -29,7 +31,7 @@ const calculateDistancePerLevel = async (
 export const calculateFeedratePerLevel = async (points: Vector3[][]) => {
 	const distances = await calculateDistancePerLevel(points);
 	const feedratePerLevel: number[] = [];
-	const timePerLayer = await getActiveMaterialProfileSecondsPerLayer();
+	const timePerLayer = await getSecondsPerLayer();
 
 	// distance in mm
 	// 8 seconds per layer (make programmable)

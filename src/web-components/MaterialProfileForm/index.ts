@@ -39,9 +39,6 @@ export class MaterialProfileForm extends Dialog {
             <label for="outputFactor">Output Factor</label>
             <input type="number" min="0.8" max="1.2" step="0.01" value="1" name="outputFactor" id="outputFactor" required />
 
-            <label for="secondsPerLayer">Seconds Per Layer</label>
-            <input type="number" min="1" value="8" name="secondsPerLayer" id="secondsPerLayer" required />
-
             <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
             <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
         </form>
@@ -92,9 +89,6 @@ export class MaterialProfileForm extends Dialog {
 			(this.form.elements.namedItem("outputFactor") as HTMLInputElement).value =
 				profile.outputFactor.toString();
 			(
-				this.form.elements.namedItem("secondsPerLayer") as HTMLInputElement
-			).value = profile.secondsPerLayer.toString();
-			(
 				this.form.elements.namedItem("materialProfileId") as HTMLInputElement
 			).value = profile.id.toString();
 		} else {
@@ -117,7 +111,6 @@ export class MaterialProfileForm extends Dialog {
 			cupTemp,
 			shrinkFactor,
 			outputFactor,
-			secondsPerLayer,
 		} = Object.fromEntries(materialProfileDisplay.entries());
 
 		const profile = {
@@ -127,7 +120,6 @@ export class MaterialProfileForm extends Dialog {
 			cupTemp: Number.parseFloat(cupTemp as string),
 			shrinkFactor: Number.parseFloat(shrinkFactor as string),
 			outputFactor: Number.parseFloat(outputFactor as string),
-			secondsPerLayer: Number.parseFloat(secondsPerLayer as string),
 		};
 
 		if (this.editMaterialProfile) {

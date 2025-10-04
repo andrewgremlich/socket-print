@@ -4,7 +4,7 @@ import {
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
-import { getCircularSegments } from "@/db/appSettingsDbActions";
+import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 
 export class MergeCylinder extends AppObject {
@@ -19,11 +19,7 @@ export class MergeCylinder extends AppObject {
 
 	static async create(options?: { height: number }): Promise<MergeCylinder> {
 		const instance = new MergeCylinder(options);
-		const circularSegmentsDb = await getCircularSegments();
-		const radialSegments =
-			Number.isFinite(circularSegmentsDb) && circularSegmentsDb >= 3
-				? Math.min(512, Math.max(3, Math.floor(circularSegmentsDb)))
-				: 128;
+		const radialSegments = await getRadialSegments();
 		instance.#radialSegments = radialSegments;
 
 		const material = new MeshStandardMaterial({

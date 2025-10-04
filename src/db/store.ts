@@ -36,6 +36,7 @@ const defaultSettingNames: ProvelPrintSettings = {
 	lineWidthAdjustment: 1.2,
 	testCylinderHeight: 50,
 	testCylinderDiameter: 68,
+	secondsPerLayer: 8,
 };
 
 const initData = async () => {

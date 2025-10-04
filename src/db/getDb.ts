@@ -6,7 +6,7 @@ let db: Dexie & Entities;
 export const getDb = async () => {
 	if (!db) {
 		db = new Dexie("ProvelPrintDatabase") as Dexie & Entities;
-		db.version(17).stores({
+		db.version(18).stores({
 			formValues: "++id, name, value",
 			appSettings: "++id, name, value",
 			materialProfiles:
@@ -23,5 +23,5 @@ export const deleteDb = async () => {
 		db.close();
 	}
 	await Dexie.delete("ProvelPrintDatabase");
-	db = null as any;
+	db = null;
 };
