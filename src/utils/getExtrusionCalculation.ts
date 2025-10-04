@@ -1,3 +1,5 @@
+import { pi } from "mathjs";
+
 /**
  * Calculates the G-code E value (in servo revolutions) required to extrude the
  * correct volume for a linear move of the provided distance, using the new
@@ -40,7 +42,7 @@ export function getExtrusionCalculation({
 	const SERVO_PER_SCREW_REV = 3.875; // servo revs per screw revolution
 
 	// Geometry
-	const nozzleArea = Math.PI * (nozzleSize / 2) ** 2; // mm^2
+	const nozzleArea = pi * (nozzleSize / 2) ** 2; // mm^2
 
 	// Extrudate length per screw revolution (mm of laid down path per screw rev)
 	const extrudateLengthPerScrewRev =
