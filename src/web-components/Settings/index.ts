@@ -1,14 +1,15 @@
-import { version } from "pkg";
 import {
 	getCircularSegments,
 	getExtrusionAdjustment,
 	getLineWidthAdjustment,
+	getSecondsPerLayer,
 	getStartingCupLayerHeight,
 	getTestCylinderDiameter,
 	getTestCylinderHeight,
 	setCircularSegments,
 	setExtrusionAdjustment,
 	setLineWidthAdjustment,
+	setSecondsPerLayer,
 	setStartingCupLayerHeight,
 	setTestCylinderDiameter,
 	setTestCylinderHeight,
@@ -51,6 +52,9 @@ export class Settings extends Dialog {
 						<label for="circularResolution">Circular Resolution</label>
 						<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />
 
+						<label for="secondsPerLayer">Seconds Per Layer</label>
+						<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="10" />
+
 					<input type="submit" value="Save" class="button" id="saveSettings" />
 					</form>
 					<h4>Test Cylinder Dimensions</h4>
@@ -66,13 +70,6 @@ export class Settings extends Dialog {
 					<div id="resetAppContainer">
 						<h4>Reset Application</h4>
 						<input type="button" class="button" id="resetApp" value="Reset Application" />
-					</div>
-					<div id="appInfo">
-						<h4>Application Info</h4>
-						<p>Version: ${version}</p>
-						<p>Software Engineer: <strong><a href="https://gremlich.xyz" target="_blank">Andrew Gremlich</a></strong></p>
-						<p>© Provel Inc 2025</p>
-						<p><a href="/licenses" target="_blank">License Info</a></p>
 					</div>
 					<div id="closeContainer" style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
 						<input type="button" class="button" id="closeSettings" value="Close" />
@@ -132,6 +129,7 @@ export class Settings extends Dialog {
 			setLineWidthAdjustment(+settings.lineWidthAdjustment),
 			setExtrusionAdjustment(+settings.extrusionAdjustment),
 			setCircularSegments(+settings.circularResolution),
+			setSecondsPerLayer(+settings.secondsPerLayer),
 		]);
 	}
 
@@ -153,6 +151,7 @@ export class Settings extends Dialog {
 			circularSegments,
 			testCylinderHeight,
 			testCylinderDiameter,
+			secondsPerLayer,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
 			getLineWidthAdjustment(),
@@ -160,6 +159,7 @@ export class Settings extends Dialog {
 			getCircularSegments(),
 			getTestCylinderHeight(),
 			getTestCylinderDiameter(),
+			getSecondsPerLayer(),
 		]);
 
 		const mainSettingMap: Record<string, number> = {
@@ -167,6 +167,7 @@ export class Settings extends Dialog {
 			lineWidthAdjustment,
 			extrusionAdjustment,
 			circularResolution: circularSegments,
+			secondsPerLayer,
 		};
 
 		Object.entries(mainSettingMap).forEach(([key, value]) => {

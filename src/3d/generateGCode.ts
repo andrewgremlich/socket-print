@@ -2,7 +2,12 @@ import { floor } from "mathjs";
 import pkg from "pkg";
 import { Vector3 } from "three";
 
-import { getCircularSegments } from "@/db/appSettingsDbActions";
+import {
+	getCircularSegments,
+	getExtrusionAdjustment,
+	getLineWidthAdjustment,
+	getSecondsPerLayer,
+} from "@/db/appSettingsDbActions";
 import {
 	getCupSize,
 	getCupSizeHeight,
@@ -14,7 +19,6 @@ import {
 	getActiveMaterialProfileCupTemp,
 	getActiveMaterialProfileName,
 	getActiveMaterialProfileNozzleTemp,
-	getActiveMaterialProfileSecondsPerLayer,
 } from "@/db/materialProfilesDbActions";
 import {
 	getCirclePoints,
@@ -50,7 +54,9 @@ export async function generateGCode(
 	const cupSize = await getCupSize();
 	const segments = await getCircularSegments();
 	const lockPosition = await getLockPosition();
-	const secondsPerLayer = await getActiveMaterialProfileSecondsPerLayer();
+	const secondsPerLayer = await getSecondsPerLayer();
+	const extrusionAdjustment = await getExtrusionAdjustment();
+	const lineWidthAdjustment = await getLineWidthAdjustment();
 	const cupHeight = await getCupSizeHeight();
 	const layerHeight = await getLayerHeight();
 	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
@@ -80,7 +86,7 @@ export async function generateGCode(
 		";## Set temperatures ##",
 		"M106 P0 S0 H3 L0.15 X0.25 T20:40",
 		"M568 P0 S200 ; set temperature for barrel to 200;",
-		"M140 P1 S160  ; set cup heater temperature to 160 and continue",
+		`M140 P1 S${cupTemp}  ; set cup heater temperature to ${cupTemp} and continue`,
 
 		";## Home ##",
 		";G28",

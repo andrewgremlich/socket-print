@@ -227,3 +227,21 @@ export const setTestCylinderDiameter = async (testCylinderDiameter: number) => {
 		.equals("testCylinderDiameter")
 		.modify({ value: testCylinderDiameter });
 };
+
+export const getSecondsPerLayer = async () => {
+	const db = await getDb();
+	const secondsPerLayer = await db.appSettings
+		.where("name")
+		.equals("secondsPerLayer")
+		.first();
+	return Number(secondsPerLayer.value);
+};
+
+export const setSecondsPerLayer = async (secondsPerLayer: number) => {
+	const db = await getDb();
+
+	return await db.appSettings
+		.where("name")
+		.equals("secondsPerLayer")
+		.modify({ value: secondsPerLayer });
+};

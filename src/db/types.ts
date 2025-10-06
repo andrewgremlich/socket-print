@@ -13,7 +13,6 @@ export type MaterialProfile = {
 	cupTemp: number;
 	shrinkFactor: number;
 	outputFactor: number;
-	secondsPerLayer: number;
 };
 
 export type SavedFile = { id: number; name: string; file: Blob };
@@ -42,6 +41,7 @@ export type ProvelPrintSettings = {
 	lineWidthAdjustment: number;
 	testCylinderHeight: number;
 	testCylinderDiameter: number;
+	secondsPerLayer: number;
 };
 
 export type Entities = {

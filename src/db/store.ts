@@ -1,4 +1,4 @@
-import { appForm, restoreDefaultsButton } from "@/utils/htmlElements";
+import { appForm } from "@/utils/htmlElements";
 
 import { appendMaterialProfiles } from "./appendMaterialProfiles";
 import {
@@ -36,6 +36,7 @@ const defaultSettingNames: ProvelPrintSettings = {
 	lineWidthAdjustment: 1.2,
 	testCylinderHeight: 50,
 	testCylinderDiameter: 68,
+	secondsPerLayer: 8,
 };
 
 const initData = async () => {
@@ -48,11 +49,6 @@ const initData = async () => {
 };
 
 await initData();
-
-restoreDefaultsButton.addEventListener("click", async () => {
-	await makeDefaultsKeyValues(EntityEnum.formValues, defaultFormValues, true);
-	await initData();
-});
 
 appForm.addEventListener("change", async (event) => {
 	event.preventDefault();

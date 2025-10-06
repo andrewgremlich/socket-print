@@ -1,3 +1,4 @@
+import type { Info } from "@/web-components/Info";
 import type { MaterialProfileForm } from "@/web-components/MaterialProfileForm";
 import type { Settings } from "@/web-components/Settings";
 
@@ -92,9 +93,6 @@ export const cancelMaterialProfileButton = document.getElementById(
 export const deleteMaterialProfileButton = document.getElementById(
 	"deleteMaterialProfile",
 ) as HTMLButtonElement;
-export const restoreDefaultsButton = document.getElementById(
-	"restoreDefaultsButton",
-) as HTMLButtonElement;
 export const clearModelButton = document.getElementById(
 	"clearModelButton",
 ) as HTMLButtonElement;
@@ -110,6 +108,10 @@ export const materialProfileForm = document.querySelector(
 export const activateSettingsDialog = document.getElementById(
 	"activateSettingsDialog",
 ) as HTMLInputElement;
+export const activateInfoDialog = document.getElementById(
+	"activateInfoDialog",
+) as HTMLInputElement;
 export const settingsDialog = document.querySelector(
 	"app-settings",
 ) as Settings;
+export const infoDialog = document.querySelector("app-info") as Info;

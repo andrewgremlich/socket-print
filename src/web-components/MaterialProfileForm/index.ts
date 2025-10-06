@@ -28,19 +28,16 @@ export class MaterialProfileForm extends Dialog {
             <input type="text" id="materialProfileName" name="materialProfileName" required />
             
             <label for="nozzleTemp">Nozzle Temp (C)</label>
-            <input type="number" min="40" value="200" name="nozzleTemp" id="nozzleTemp" required />
+            <input type="number" min="160" max="260" value="200" name="nozzleTemp" id="nozzleTemp" required />
             
             <label for="cupTemp">Cup Temp (C)</label>
-            <input type="number" min="40" value="130" name="cupTemp" id="cupTemp" required />
+            <input type="number" min="140" max="170" value="160" name="cupTemp" id="cupTemp" required />
             
             <label for="shrinkFactor">Shrink Factor (%)</label>
-            <input type="number" min="0.1" max="7.6" step="0.01" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
+            <input type="number" min="0.1" max="4.0" step="0.01" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
 
             <label for="outputFactor">Output Factor</label>
-            <input type="number" min="0.8" max="1.2" step="0.01" value="1" name="outputFactor" id="outputFactor" required />
-
-            <label for="secondsPerLayer">Seconds Per Layer</label>
-            <input type="number" min="1" value="8" name="secondsPerLayer" id="secondsPerLayer" required />
+            <input type="number" min="0.9" max="1.1" step="0.01" value="1" name="outputFactor" id="outputFactor" required />
 
             <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
             <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
@@ -92,9 +89,6 @@ export class MaterialProfileForm extends Dialog {
 			(this.form.elements.namedItem("outputFactor") as HTMLInputElement).value =
 				profile.outputFactor.toString();
 			(
-				this.form.elements.namedItem("secondsPerLayer") as HTMLInputElement
-			).value = profile.secondsPerLayer.toString();
-			(
 				this.form.elements.namedItem("materialProfileId") as HTMLInputElement
 			).value = profile.id.toString();
 		} else {
@@ -117,7 +111,6 @@ export class MaterialProfileForm extends Dialog {
 			cupTemp,
 			shrinkFactor,
 			outputFactor,
-			secondsPerLayer,
 		} = Object.fromEntries(materialProfileDisplay.entries());
 
 		const profile = {
@@ -127,7 +120,6 @@ export class MaterialProfileForm extends Dialog {
 			cupTemp: Number.parseFloat(cupTemp as string),
 			shrinkFactor: Number.parseFloat(shrinkFactor as string),
 			outputFactor: Number.parseFloat(outputFactor as string),
-			secondsPerLayer: Number.parseFloat(secondsPerLayer as string),
 		};
 
 		if (this.editMaterialProfile) {

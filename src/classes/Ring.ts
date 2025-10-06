@@ -1,7 +1,7 @@
 import { pi } from "mathjs";
 import { DoubleSide, Mesh, MeshStandardMaterial, RingGeometry } from "three";
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
-import { getCircularSegments } from "@/db/appSettingsDbActions";
+import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 
 export class Ring extends AppObject {
@@ -17,11 +17,7 @@ export class Ring extends AppObject {
 
 	static async create(): Promise<Ring> {
 		const instance = new Ring();
-		const circularSegmentsDb = await getCircularSegments();
-		const radialSegments =
-			Number.isFinite(circularSegmentsDb) && circularSegmentsDb >= 3
-				? Math.min(512, Math.max(3, Math.floor(circularSegmentsDb)))
-				: 128;
+		const radialSegments = await getRadialSegments();
 		instance.#radialSegments = radialSegments;
 
 		const material = new MeshStandardMaterial({
