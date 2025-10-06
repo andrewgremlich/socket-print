@@ -55,8 +55,6 @@ export async function generateGCode(
 	const segments = await getCircularSegments();
 	const lockPosition = await getLockPosition();
 	const secondsPerLayer = await getSecondsPerLayer();
-	const extrusionAdjustment = await getExtrusionAdjustment();
-	const lineWidthAdjustment = await getLineWidthAdjustment();
 	const cupHeight = await getCupSizeHeight();
 	const layerHeight = await getLayerHeight();
 	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
