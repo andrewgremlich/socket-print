@@ -128,8 +128,7 @@ button {
 	}
 }
 
-#activateSettingsDialog,
-#activateInfoDialog {
+#activateSettingsDialog {
 	color: #565656ff;
 
 	&:hover {

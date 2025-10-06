@@ -1,4 +1,4 @@
-import { appForm, restoreDefaultsButton } from "@/utils/htmlElements";
+import { appForm } from "@/utils/htmlElements";
 
 import { appendMaterialProfiles } from "./appendMaterialProfiles";
 import {
@@ -49,11 +49,6 @@ const initData = async () => {
 };
 
 await initData();
-
-restoreDefaultsButton.addEventListener("click", async () => {
-	await makeDefaultsKeyValues(EntityEnum.formValues, defaultFormValues, true);
-	await initData();
-});
 
 appForm.addEventListener("change", async (event) => {
 	event.preventDefault();

@@ -93,9 +93,6 @@ export const cancelMaterialProfileButton = document.getElementById(
 export const deleteMaterialProfileButton = document.getElementById(
 	"deleteMaterialProfile",
 ) as HTMLButtonElement;
-export const restoreDefaultsButton = document.getElementById(
-	"restoreDefaultsButton",
-) as HTMLButtonElement;
 export const clearModelButton = document.getElementById(
 	"clearModelButton",
 ) as HTMLButtonElement;

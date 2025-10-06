@@ -87,7 +87,7 @@ export async function generateGCode(
 		";## Set temperatures ##",
 		"M106 P0 S0 H3 L0.15 X0.25 T20:40",
 		"M568 P0 S200 ; set temperature for barrel to 200;",
-		"M140 P1 S160  ; set cup heater temperature to 160 and continue",
+		`M140 P1 S${cupTemp}  ; set cup heater temperature to ${cupTemp} and continue`,
 
 		";## Home ##",
 		";G28",
