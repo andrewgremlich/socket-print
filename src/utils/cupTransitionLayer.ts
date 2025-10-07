@@ -6,6 +6,7 @@ import {
 	getLineWidthAdjustment,
 	getStartingCupLayerHeight,
 } from "@/db/appSettingsDbActions";
+import { getExtrusionCalculation } from "./getExtrusionCalculation";
 
 export async function getCirclePoints(
 	startingPoint: Vector3,
@@ -74,9 +75,13 @@ export async function getTransitionLayer(
 			const distance = previousPoint.distanceTo(point);
 			const lineWidth = nozzleSize * lineWidthAdjustment;
 
-			const extrusion =
-				((distance * layerHeight * lineWidth) / extrusionAdjustment) *
-				outputFactor;
+			const extrusion = getExtrusionCalculation(
+				distance,
+				layerHeight,
+				lineWidth,
+				extrusionAdjustment,
+				outputFactor,
+			);
 
 			transitionLayer.push(
 				`G1 X${-round(point.x, 2)} Y${round(point.y, 2)} Z${floor(point.z + offsetHeight, 2)} E${round(extrusion, 2)} F${feedrate}`,

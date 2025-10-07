@@ -25,6 +25,7 @@ import {
 	getCirclePoints,
 	getTransitionLayer,
 } from "@/utils/cupTransitionLayer";
+import { getExtrusionCalculation } from "@/utils/getExtrusionCalculation";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
@@ -161,9 +162,13 @@ export async function generateGCode(
 			const point = pointLevel[j].clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(point);
 			const lineWidth = nozzleSize * lineWidthAdjustment;
-			const extrusion =
-				((distance * layerHeight * lineWidth) / extrusionAdjustment) *
-				outputFactor;
+			const extrusion = getExtrusionCalculation(
+				distance,
+				layerHeight,
+				lineWidth,
+				extrusionAdjustment,
+				outputFactor,
+			);
 
 			previousPoint = point;
 
