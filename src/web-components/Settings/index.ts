@@ -40,17 +40,17 @@ export class Settings extends Dialog {
 		  <dialog id="${this.id}">
 		    <h3>Settings</h3>
         	<form id="settingsForm" method="dialog">
-            <label for="startingCupLayerHeight">Starting Cup Layer Height</label>
-            <input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />
+            <!--<label for="startingCupLayerHeight">Starting Cup Layer Height</label>
+            <input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />-->
 
-            <label for="extrusionAdjustment">Extrusion Adjustment</label>
-            <input type="number" id="extrusionAdjustment" name="extrusionAdjustment" step="0.1" min="1" max="12" />
+            <!--<label for="extrusionAdjustment">Extrusion Adjustment</label>
+            <input type="number" id="extrusionAdjustment" name="extrusionAdjustment" step="0.1" min="1" max="12" />-->
 
-            <label for="lineWidthAdjustment">Line Width Adjustment</label>
-            <input type="number" id="lineWidthAdjustment" name="lineWidthAdjustment" step="0.1" min="1" max="2" />
+            <!--<label for="lineWidthAdjustment">Line Width Adjustment</label>
+            <input type="number" id="lineWidthAdjustment" name="lineWidthAdjustment" step="0.1" min="1" max="2" />-->
 
-						<label for="circularResolution">Circular Resolution</label>
-						<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />
+						<!--<label for="circularResolution">Circular Resolution</label>
+						<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />-->
 
 						<label for="secondsPerLayer">Seconds Per Layer</label>
 						<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="10" />

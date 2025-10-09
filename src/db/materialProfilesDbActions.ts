@@ -21,15 +21,8 @@ const getActiveProfile = async () => {
 	return activeProfile;
 };
 
-let activeProfileCache: MaterialProfile | null = null;
-
 export const getActiveMaterialProfile = async () => {
-	if (activeProfileCache) {
-		return activeProfileCache;
-	}
-
 	const activeProfile = await (await getActiveProfile()).first();
-	activeProfileCache = activeProfile;
 
 	return activeProfile;
 };
