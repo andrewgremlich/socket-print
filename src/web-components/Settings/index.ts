@@ -124,13 +124,37 @@ export class Settings extends Dialog {
 	async saveSettings() {
 		const formData = new FormData(this.form);
 		const settings = Object.fromEntries(formData.entries());
-		await Promise.all([
-			setStartingCupLayerHeight(+settings.startingCupLayerHeight),
-			setLineWidthAdjustment(+settings.lineWidthAdjustment),
-			setExtrusionAdjustment(+settings.extrusionAdjustment),
-			setCircularSegments(+settings.circularResolution),
-			setSecondsPerLayer(+settings.secondsPerLayer),
-		]);
+
+		const tasks: Promise<unknown>[] = [];
+
+		const startingCupLayerHeightVal = Number(settings.startingCupLayerHeight);
+		if (!Number.isNaN(startingCupLayerHeightVal)) {
+			tasks.push(setStartingCupLayerHeight(startingCupLayerHeightVal));
+		}
+
+		const lineWidthAdjustmentVal = Number(settings.lineWidthAdjustment);
+		if (!Number.isNaN(lineWidthAdjustmentVal)) {
+			tasks.push(setLineWidthAdjustment(lineWidthAdjustmentVal));
+		}
+
+		const extrusionAdjustmentVal = Number(settings.extrusionAdjustment);
+		if (!Number.isNaN(extrusionAdjustmentVal)) {
+			tasks.push(setExtrusionAdjustment(extrusionAdjustmentVal));
+		}
+
+		const circularSegmentsVal = Number(settings.circularResolution);
+		if (!Number.isNaN(circularSegmentsVal)) {
+			tasks.push(setCircularSegments(circularSegmentsVal));
+		}
+
+		const secondsPerLayerVal = Number(settings.secondsPerLayer);
+		if (!Number.isNaN(secondsPerLayerVal)) {
+			tasks.push(setSecondsPerLayer(secondsPerLayerVal));
+		}
+
+		if (tasks.length) {
+			await Promise.all(tasks);
+		}
 	}
 
 	async saveTestCylinderSettings(evt: Event) {

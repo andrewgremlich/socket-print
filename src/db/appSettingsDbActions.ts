@@ -228,7 +228,7 @@ export const setTestCylinderDiameter = async (testCylinderDiameter: number) => {
 		.modify({ value: testCylinderDiameter });
 };
 
-export const getSecondsPerLayer = async () => {
+export const getSecondsPerLayer = async (): Promise<number> => {
 	const db = await getDb();
 	const secondsPerLayer = await db.appSettings
 		.where("name")
