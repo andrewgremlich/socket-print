@@ -8,7 +8,7 @@ import type {
 const materialProfileDefaults: Omit<MaterialProfile, "id"> = {
 	name: "cp1",
 	nozzleTemp: 200,
-	cupTemp: 160,
+	cupTemp: 170,
 	shrinkFactor: 2.6,
 	outputFactor: 1,
 };
