@@ -5,9 +5,9 @@ import {
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
+import { STLExporter } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
-
 import { ensureUV } from "@/3d/ensureUV";
 import { applyOffset } from "@/3d/generateOffsetWithNormal";
 import {
@@ -93,6 +93,7 @@ export class PrintObject extends AppObject {
 			await this.clearData();
 			await fetchStlFile("test_stl_file.stl")();
 		});
+
 		addTestCylinderButton?.addEventListener("click", async () => {
 			const nozzleSize = await getNozzleSize();
 			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
@@ -106,6 +107,19 @@ export class PrintObject extends AppObject {
 			this.mesh = await applyOffset(testCylinder.mesh, nozzleSize / 2);
 			this.mesh.name = "test_cylinder";
 			activeFileName.textContent = "test_cylinder";
+
+			// const stlExporter = new STLExporter();
+			// const stlString = stlExporter.parse(testCylinder.mesh);
+			// const stlArrayBuffer = new TextEncoder().encode(stlString).buffer;
+
+			// const cylinderFile = new File([stlArrayBuffer], "test_cylinder.stl", {
+			// 	type: "model/stl",
+			// });
+			// await deleteAllFiles();
+			// await setFileByName("test_cylinder.stl", {
+			// 	name: "test_cylinder.stl",
+			// 	file: cylinderFile,
+			// });
 
 			this.computeBoundingBox();
 
