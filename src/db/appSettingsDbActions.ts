@@ -145,15 +145,6 @@ export const getStartingCupLayerHeight = async () => {
 	return Number(startingCupLayerHeight.value);
 };
 
-export const getExtrusionAdjustment = async () => {
-	const db = await getDb();
-	const extrusionAdjustment = await db.appSettings
-		.where("name")
-		.equals("extrusionAdjustment")
-		.first();
-	return Number(extrusionAdjustment.value);
-};
-
 export const getLineWidthAdjustment = async () => {
 	const db = await getDb();
 	const lineWidthAdjustment = await db.appSettings
@@ -172,15 +163,6 @@ export const setStartingCupLayerHeight = async (
 		.where("name")
 		.equals("startingCupLayerHeight")
 		.modify({ value: startingCupLayerHeight });
-};
-
-export const setExtrusionAdjustment = async (extrusionAdjustment: number) => {
-	const db = await getDb();
-
-	return await db.appSettings
-		.where("name")
-		.equals("extrusionAdjustment")
-		.modify({ value: extrusionAdjustment });
 };
 
 export const setLineWidthAdjustment = async (lineWidthAdjustment: number) => {
@@ -244,4 +226,22 @@ export const setSecondsPerLayer = async (secondsPerLayer: number) => {
 		.where("name")
 		.equals("secondsPerLayer")
 		.modify({ value: secondsPerLayer });
+};
+
+export const getEPerRevolution = async (): Promise<number> => {
+	const db = await getDb();
+	const ePerRevolution = await db.appSettings
+		.where("name")
+		.equals("ePerRevolution")
+		.first();
+	return Number(ePerRevolution.value);
+};
+
+export const setEPerRevolution = async (ePerRevolution: number) => {
+	const db = await getDb();
+
+	return await db.appSettings
+		.where("name")
+		.equals("ePerRevolution")
+		.modify({ value: ePerRevolution });
 };

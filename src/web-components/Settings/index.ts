@@ -1,13 +1,13 @@
 import {
 	getCircularSegments,
-	getExtrusionAdjustment,
+	getEPerRevolution,
 	getLineWidthAdjustment,
 	getSecondsPerLayer,
 	getStartingCupLayerHeight,
 	getTestCylinderDiameter,
 	getTestCylinderHeight,
 	setCircularSegments,
-	setExtrusionAdjustment,
+	setEPerRevolution,
 	setLineWidthAdjustment,
 	setSecondsPerLayer,
 	setStartingCupLayerHeight,
@@ -43,14 +43,14 @@ export class Settings extends Dialog {
             <!--<label for="startingCupLayerHeight">Starting Cup Layer Height</label>
             <input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />-->
 
-            <!--<label for="extrusionAdjustment">Extrusion Adjustment</label>
-            <input type="number" id="extrusionAdjustment" name="extrusionAdjustment" step="0.1" min="1" max="12" />-->
-
             <!--<label for="lineWidthAdjustment">Line Width Adjustment</label>
             <input type="number" id="lineWidthAdjustment" name="lineWidthAdjustment" step="0.1" min="1" max="2" />-->
 
 						<!--<label for="circularResolution">Circular Resolution</label>
 						<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />-->
+
+						<label for="ePerRevolution">E Per Revolution</label>
+						<input type="number" id="ePerRevolution" name="ePerRevolution" step="0.1" />
 
 						<label for="secondsPerLayer">Seconds Per Layer</label>
 						<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="10" />
@@ -137,11 +137,6 @@ export class Settings extends Dialog {
 			tasks.push(setLineWidthAdjustment(lineWidthAdjustmentVal));
 		}
 
-		const extrusionAdjustmentVal = Number(settings.extrusionAdjustment);
-		if (!Number.isNaN(extrusionAdjustmentVal)) {
-			tasks.push(setExtrusionAdjustment(extrusionAdjustmentVal));
-		}
-
 		const circularSegmentsVal = Number(settings.circularResolution);
 		if (!Number.isNaN(circularSegmentsVal)) {
 			tasks.push(setCircularSegments(circularSegmentsVal));
@@ -150,6 +145,11 @@ export class Settings extends Dialog {
 		const secondsPerLayerVal = Number(settings.secondsPerLayer);
 		if (!Number.isNaN(secondsPerLayerVal)) {
 			tasks.push(setSecondsPerLayer(secondsPerLayerVal));
+		}
+
+		const ePerRevolutionVal = Number(settings.ePerRevolution);
+		if (!Number.isNaN(ePerRevolutionVal)) {
+			tasks.push(setEPerRevolution(ePerRevolutionVal));
 		}
 
 		if (tasks.length) {
@@ -171,27 +171,27 @@ export class Settings extends Dialog {
 		const [
 			startingCupLayerHeight,
 			lineWidthAdjustment,
-			extrusionAdjustment,
 			circularSegments,
 			testCylinderHeight,
 			testCylinderDiameter,
 			secondsPerLayer,
+			ePerRevolution,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
 			getLineWidthAdjustment(),
-			getExtrusionAdjustment(),
 			getCircularSegments(),
 			getTestCylinderHeight(),
 			getTestCylinderDiameter(),
 			getSecondsPerLayer(),
+			getEPerRevolution(),
 		]);
 
 		const mainSettingMap: Record<string, number> = {
 			startingCupLayerHeight,
 			lineWidthAdjustment,
-			extrusionAdjustment,
 			circularResolution: circularSegments,
 			secondsPerLayer,
+			ePerRevolution,
 		};
 
 		Object.entries(mainSettingMap).forEach(([key, value]) => {

@@ -11,6 +11,8 @@ const materialProfileDefaults: Omit<MaterialProfile, "id"> = {
 	cupTemp: 170,
 	shrinkFactor: 2.6,
 	outputFactor: 1,
+	gramsPerRevolution: 0.2,
+	density: 0.0009,
 };
 
 export async function makeMaterialProfileDefaults() {

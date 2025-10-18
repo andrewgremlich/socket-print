@@ -4,7 +4,7 @@ import { Vector3 } from "three";
 
 import {
 	getCircularSegments,
-	getExtrusionAdjustment,
+	getEPerRevolution,
 	getLineWidthAdjustment,
 	getSecondsPerLayer,
 } from "@/db/appSettingsDbActions";
@@ -17,6 +17,8 @@ import {
 } from "@/db/formValuesDbActions";
 import {
 	getActiveMaterialProfileCupTemp,
+	getActiveMaterialProfileDensity,
+	getActiveMaterialProfileGramsPerRevolution,
 	getActiveMaterialProfileName,
 	getActiveMaterialProfileNozzleTemp,
 	getActiveMaterialProfileOutputFactor,
@@ -50,19 +52,41 @@ export async function generateGCode(
 	} = {},
 ): Promise<string> {
 	const { estimatedTime = "0m 0s" } = options;
-	const activeMaterialProfileName = await getActiveMaterialProfileName();
-	const outputFactor = await getActiveMaterialProfileOutputFactor();
-	const nozzleSize = await getNozzleSize();
-	const cupSize = await getCupSize();
-	const segments = await getCircularSegments();
-	const lockPosition = await getLockPosition();
-	const secondsPerLayer = await getSecondsPerLayer();
-	const extrusionAdjustment = await getExtrusionAdjustment();
-	const lineWidthAdjustment = await getLineWidthAdjustment();
-	const cupHeight = await getCupSizeHeight();
-	const layerHeight = await getLayerHeight();
-	const nozzleTemp = (await getActiveMaterialProfileNozzleTemp()) ?? "195";
-	const cupTemp = (await getActiveMaterialProfileCupTemp()) ?? "160";
+	const [
+		activeMaterialProfileName,
+		outputFactor,
+		nozzleSize,
+		cupSize,
+		segments,
+		lockPosition,
+		secondsPerLayer,
+		lineWidthAdjustment,
+		cupHeight,
+		layerHeight,
+		nozzleTempRaw,
+		cupTempRaw,
+		density,
+		gramsPerRevolution,
+		ePerRevolution,
+	] = await Promise.all([
+		getActiveMaterialProfileName(),
+		getActiveMaterialProfileOutputFactor(),
+		getNozzleSize(),
+		getCupSize(),
+		getCircularSegments(),
+		getLockPosition(),
+		getSecondsPerLayer(),
+		getLineWidthAdjustment(),
+		getCupSizeHeight(),
+		getLayerHeight(),
+		getActiveMaterialProfileNozzleTemp(),
+		getActiveMaterialProfileCupTemp(),
+		getActiveMaterialProfileDensity(),
+		getActiveMaterialProfileGramsPerRevolution(),
+		getEPerRevolution(),
+	]);
+	const nozzleTemp = nozzleTempRaw ?? "195";
+	const cupTemp = cupTempRaw ?? "160";
 	const startingHeight = cupHeight + nozzleSize;
 	const flipHeight = flipVerticalAxis(verticalAxis);
 
@@ -134,6 +158,9 @@ export async function generateGCode(
 		nozzleSize,
 		outputFactor,
 		offsetHeight: startingHeight,
+		gramsPerRevolution,
+		density,
+		ePerRevolution,
 	});
 
 	gcode.push(";START TRANSITION LAYER");
@@ -162,13 +189,15 @@ export async function generateGCode(
 			const point = pointLevel[j].clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(point);
 			const lineWidth = nozzleSize * lineWidthAdjustment;
-			const extrusion = getExtrusionCalculation(
+			const extrusion = getExtrusionCalculation({
 				distance,
 				layerHeight,
 				lineWidth,
-				extrusionAdjustment,
+				gramsPerRevolution,
+				density,
+				ePerRevolution,
 				outputFactor,
-			);
+			});
 
 			previousPoint = point;
 

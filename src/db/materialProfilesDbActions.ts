@@ -63,3 +63,11 @@ export const getActiveMaterialProfileOutputFactor = async () => {
 export const getActiveMaterialProfileName = async () => {
 	return (await getActiveMaterialProfile()).name;
 };
+
+export const getActiveMaterialProfileGramsPerRevolution = async () => {
+	return (await getActiveMaterialProfile()).gramsPerRevolution;
+};
+
+export const getActiveMaterialProfileDensity = async () => {
+	return (await getActiveMaterialProfile()).density;
+};

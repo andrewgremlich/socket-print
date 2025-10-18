@@ -36,6 +36,12 @@ export class MaterialProfileForm extends Dialog {
             <label for="shrinkFactor">Shrink Factor (%)</label>
             <input type="number" min="0.1" max="4.0" step="0.01" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
 
+						<label for="gramsPerRevolution">Grams Per Revolution</label>
+            <input type="number" step="0.01" name="gramsPerRevolution" id="gramsPerRevolution" required />
+
+						<label for="density">Density (g/cm³)</label>
+            <input type="number" step="0.0001" name="density" id="density" required />
+
             <label for="outputFactor">Output Factor</label>
             <input type="number" min="0.9" max="1.1" step="0.01" value="1" name="outputFactor" id="outputFactor" required />
 
@@ -91,6 +97,11 @@ export class MaterialProfileForm extends Dialog {
 			(
 				this.form.elements.namedItem("materialProfileId") as HTMLInputElement
 			).value = profile.id.toString();
+			(
+				this.form.elements.namedItem("gramsPerRevolution") as HTMLInputElement
+			).value = profile.gramsPerRevolution.toString();
+			(this.form.elements.namedItem("density") as HTMLInputElement).value =
+				profile.density.toString();
 		} else {
 			this.materialProfileName.readOnly = false;
 			this.editMaterialProfile = null;
@@ -111,6 +122,8 @@ export class MaterialProfileForm extends Dialog {
 			cupTemp,
 			shrinkFactor,
 			outputFactor,
+			gramsPerRevolution,
+			density,
 		} = Object.fromEntries(materialProfileDisplay.entries());
 
 		const profile = {
@@ -120,6 +133,8 @@ export class MaterialProfileForm extends Dialog {
 			cupTemp: Number.parseFloat(cupTemp as string),
 			shrinkFactor: Number.parseFloat(shrinkFactor as string),
 			outputFactor: Number.parseFloat(outputFactor as string),
+			gramsPerRevolution: Number.parseFloat(gramsPerRevolution as string),
+			density: Number.parseFloat(density as string),
 		};
 
 		if (this.editMaterialProfile) {

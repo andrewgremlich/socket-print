@@ -32,11 +32,11 @@ const defaultSettingNames: ProvelPrintSettings = {
 	rotateSagittal: 0,
 	rotateTransverse: 0,
 	startingCupLayerHeight: 2,
-	extrusionAdjustment: 7.7,
 	lineWidthAdjustment: 1.2,
 	testCylinderHeight: 50,
 	testCylinderDiameter: 70,
 	secondsPerLayer: 8,
+	ePerRevolution: 31.3,
 };
 
 const initData = async () => {
