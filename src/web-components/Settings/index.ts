@@ -50,7 +50,7 @@ export class Settings extends Dialog {
 						<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />-->
 
 						<label for="ePerRevolution">E Per Revolution</label>
-						<input type="number" id="ePerRevolution" name="ePerRevolution" step="0.1" />
+						<input type="number" id="ePerRevolution" name="ePerRevolution" step="0.1" min="10" max="50" />
 
 						<label for="secondsPerLayer">Seconds Per Layer</label>
 						<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="10" />
@@ -60,10 +60,10 @@ export class Settings extends Dialog {
 					<h4>Test Cylinder Dimensions</h4>
 					<form id="testCylinderSettings">
 						<label for="testCylinderHeight">Test Cylinder Height</label>
-						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" />
+						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
 
 						<label for="testCylinderDiameter">Test Cylinder Diameter</label>
-						<input type="number" id="testCylinderDiameter" name="testCylinderDiameter" step="1" />
+						<input type="number" id="testCylinderDiameter" name="testCylinderDiameter" step="1" min="67" max="70" />
 
 						<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
 					</form>

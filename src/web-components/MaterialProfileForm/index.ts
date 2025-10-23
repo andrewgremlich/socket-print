@@ -31,16 +31,16 @@ export class MaterialProfileForm extends Dialog {
             <input type="number" min="160" max="260" value="200" name="nozzleTemp" id="nozzleTemp" required />
             
             <label for="cupTemp">Cup Temp (C)</label>
-            <input type="number" min="140" max="170" value="160" name="cupTemp" id="cupTemp" required />
+            <input type="number" min="140" max="190" value="160" name="cupTemp" id="cupTemp" required />
             
             <label for="shrinkFactor">Shrink Factor (%)</label>
             <input type="number" min="0.1" max="4.0" step="0.01" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
 
 						<label for="gramsPerRevolution">Grams Per Revolution</label>
-            <input type="number" step="0.01" name="gramsPerRevolution" id="gramsPerRevolution" required />
+            <input type="number" step="0.01" name="gramsPerRevolution" id="gramsPerRevolution" required min="0.1" max="0.3" />
 
 						<label for="density">Density (g/cm³)</label>
-            <input type="number" step="0.0001" name="density" id="density" required />
+            <input type="number" step="0.0001" name="density" id="density" required min="0.0005" max="0.0020" />
 
             <label for="outputFactor">Output Factor</label>
             <input type="number" min="0.9" max="1.1" step="0.01" value="1" name="outputFactor" id="outputFactor" required />
