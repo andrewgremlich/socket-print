@@ -6,12 +6,12 @@ let db: Dexie & Entities;
 export const getDb = async () => {
 	if (!db) {
 		db = new Dexie("ProvelPrintDatabase") as Dexie & Entities;
-		db.version(20).stores({
+		db.version(21).stores({
 			formValues: "++id, name, value",
 			appSettings: "++id, name, value",
 			materialProfiles:
 				"++id, name, nozzleTemp, cupTemp, shrinkFactor, outputFactor, secondsPerLayer",
-			savedFiles: "++id, name, file",
+			savedFiles: "++id, name, file, type",
 		});
 	}
 

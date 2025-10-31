@@ -1,8 +1,9 @@
 import { getDb } from "./getDb";
-import type {
-	DefaultKeyValueCollectionNames,
-	DefaultKeyValueCollectionValues,
-	MaterialProfile,
+import {
+	type DefaultKeyValueCollectionNames,
+	type DefaultKeyValueCollectionValues,
+	type MaterialProfile,
+	PrintObjectType,
 } from "./types";
 
 const materialProfileDefaults: Omit<MaterialProfile, "id"> = {
@@ -66,6 +67,7 @@ export async function makeDefaultsKeyValues(
 					// Provide a default Blob for missing files
 					return db[collection].add({
 						name,
+						type: PrintObjectType.Socket,
 						file: new Blob([], { type: "application/octet-stream" }),
 					});
 				}

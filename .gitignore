@@ -36,3 +36,4 @@ Certificates.p12
 notary.sh
 apple_envs.sh
 export-env.ps1
+target/

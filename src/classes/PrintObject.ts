@@ -14,13 +14,13 @@ import {
 	getLockDepth,
 	getRotateValues,
 	getTranslateValues,
-	setIsTestSTLCylinder,
 	updateRotateValues,
 	updateTranslateValues,
 } from "@/db/appSettingsDbActions";
-import { deleteAllFiles, getAllFiles, setFileByName } from "@/db/file";
+import { getAllFiles, setFileByName } from "@/db/file";
 import { getNozzleSize } from "@/db/formValuesDbActions";
 import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
+import { PrintObjectType } from "@/db/types";
 import {
 	activeFileName,
 	addTestCylinderButton,
@@ -34,21 +34,20 @@ import {
 	transversalRotater,
 	verticalTranslate,
 } from "@/utils/htmlElements";
+import { fetchStlFile, setStlFileInputAndDispatch } from "@/utils/printObject";
 import { AppObject } from "./AppObject";
 import { TestCylinder } from "./TestCylinder";
 
 type Callback = (params: { size: { x: number; y: number; z: number } }) => void;
 
-type PrintObjectProps = { callback: Callback };
-
 export class PrintObject extends AppObject {
-	adjustmentHeightForCup = 0;
 	callback: Callback;
 	lockDepth: number | null = null;
 	loadedStlFromIndexedDb = false;
 	offsetYPosition = 0;
+	currentType: PrintObjectType = undefined;
 
-	constructor({ callback }: PrintObjectProps) {
+	constructor({ callback }: { callback: Callback }) {
 		super();
 
 		this.callback = callback;
@@ -57,84 +56,45 @@ export class PrintObject extends AppObject {
 			throw new Error("STL File Input not found");
 		}
 
-		const setStlFileInputAndDispatch = (file: File) => {
-			const dataTransfer = new DataTransfer();
-			dataTransfer.items.add(file);
-			stlFileInput.files = dataTransfer.files;
-			const changeEvent = new Event("change", { bubbles: true });
-			stlFileInput.dispatchEvent(changeEvent);
-		};
-
 		getAllFiles().then((files) => {
 			if (files.length === 1) {
-				const { file, name } = files[0];
+				const { file, name, type } = files[0];
 				const stlFile = new File([file], name, {
 					type: "model/stl",
 				});
+
+				this.currentType = type;
 				this.loadedStlFromIndexedDb = true;
+
 				setStlFileInputAndDispatch(stlFile);
 			} else {
 				this.loadedStlFromIndexedDb = false;
-				console.warn("No files found in the database.");
 			}
 		});
 
-		const fetchStlFile = (name: string) => async () => {
-			const response = await fetch(name);
-			const arrayBuffer = await response.arrayBuffer();
-			const file = new File([arrayBuffer], name, {
-				type: "model/stl",
-			});
-
-			setStlFileInputAndDispatch(file);
-		};
-
 		addTestStlButton?.addEventListener("click", async () => {
 			await this.clearData();
+			this.currentType = PrintObjectType.Socket;
 			await fetchStlFile("test_stl_file.stl")();
 		});
-
 		addTestCylinderButton?.addEventListener("click", async () => {
-			const nozzleSize = await getNozzleSize();
-			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
-			const shrinkScale = 1 / (1 - shrinkFactor / 100);
-
 			await this.clearData();
-			await setIsTestSTLCylinder(true);
-
-			const testCylinder = await TestCylinder.create();
-
-			this.mesh = await applyOffset(testCylinder.mesh, nozzleSize / 2);
-			this.mesh.name = "test_cylinder";
-			activeFileName.textContent = "test_cylinder";
-
-			// const stlExporter = new STLExporter();
-			// const stlString = stlExporter.parse(testCylinder.mesh);
-			// const stlArrayBuffer = new TextEncoder().encode(stlString).buffer;
-
-			// const cylinderFile = new File([stlArrayBuffer], "test_cylinder.stl", {
-			// 	type: "model/stl",
-			// });
-			// await deleteAllFiles();
-			// await setFileByName("test_cylinder.stl", {
-			// 	name: "test_cylinder.stl",
-			// 	file: cylinderFile,
-			// });
-
-			this.computeBoundingBox();
-
-			this.mesh.position.set(0, this.size.y / 2, 0);
-			this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
-
-			this.callback({
-				size: {
-					x: testCylinder.size.x,
-					y: testCylinder.size.y,
-					z: testCylinder.size.z,
-				},
-			});
+			this.currentType = PrintObjectType.TestCylinder;
+			await this.#handleTestCylinder();
 		});
-		stlFileInput?.addEventListener("change", this.#onStlFileChange);
+
+		stlFileInput?.addEventListener("change", async (evt) => {
+			if (evt.isTrusted) {
+				await this.clearData();
+			}
+
+			this.currentType = evt.isTrusted
+				? PrintObjectType.Socket
+				: this.currentType;
+
+			this.#onStlFileChange(evt);
+		});
+
 		coronalRotater?.addEventListener("click", this.coronalRotate90);
 		sagittalRotate?.addEventListener("click", this.sagittalRotate90);
 		transversalRotater?.addEventListener("click", this.transversalRotater90);
@@ -149,125 +109,184 @@ export class PrintObject extends AppObject {
 		});
 	}
 
+	getShrinkScale = async (mesh: Mesh) => {
+		const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
+		const shrinkScale = 1 / (1 - shrinkFactor / 100);
+
+		mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
+
+		return shrinkScale;
+	};
+
+	applyNozzleSizeOffset = async (printObjectMesh: Mesh) => {
+		const nozzleSize = await getNozzleSize();
+		this.mesh = await applyOffset(printObjectMesh, nozzleSize / 2);
+	};
+
+	useCallback = ({ x, y, z }: { x: number; y: number; z: number }) => {
+		this.callback({
+			size: {
+				x,
+				y,
+				z,
+			},
+		});
+	};
+
+	#exportTestCylinder = async (mesh: Mesh) => {
+		const stlExporter = new STLExporter();
+		const stlString = stlExporter.parse(mesh);
+		const stlArrayBuffer = new TextEncoder().encode(stlString).buffer;
+
+		const cylinderFile = new File([stlArrayBuffer], "test_cylinder.stl", {
+			type: "model/stl",
+		});
+		await setFileByName(cylinderFile.name, {
+			name: cylinderFile.name,
+			type: PrintObjectType.TestCylinder,
+			file: cylinderFile,
+		});
+	};
+
+	#handleTestCylinder = async () => {
+		const testCylinder = await TestCylinder.create();
+
+		await this.getShrinkScale(testCylinder.mesh);
+		await this.applyNozzleSizeOffset(testCylinder.mesh);
+
+		this.mesh.name = "test_cylinder";
+		activeFileName.textContent = "test_cylinder";
+
+		this.#exportTestCylinder(this.mesh);
+
+		this.computeBoundingBox();
+
+		this.mesh.position.set(0, this.size.y / 2, 0);
+
+		this.useCallback({
+			x: testCylinder.size.x,
+			y: testCylinder.size.y,
+			z: testCylinder.size.z,
+		});
+	};
+
+	#handleSocket = async (file: File) => {
+		await setFileByName(file.name, {
+			name: file.name,
+			type: PrintObjectType.Socket,
+			file: file,
+		});
+
+		loadingScreen.style.display = "flex";
+
+		const rawGeometry = await this.#readSTLFile(file);
+
+		rawGeometry.rotateX(-pi / 2);
+		rawGeometry.rotateY(pi);
+		ensureUV(rawGeometry);
+		rawGeometry.computeVertexNormals();
+
+		const material = new MeshStandardMaterial({
+			color: 0xffffff,
+			side: DoubleSide,
+			wireframe: false,
+		});
+		const mesh = new Mesh(rawGeometry, material);
+		const bvh = new MeshBVH(mesh.geometry);
+
+		await this.getShrinkScale(mesh);
+		await this.applyNozzleSizeOffset(mesh);
+
+		this.mesh.raycast = acceleratedRaycast;
+		this.mesh.geometry.boundsTree = bvh;
+		this.mesh.name = file.name;
+		this.mesh.userData = { isSocket: true };
+		this.computeBoundingBox();
+		this.lockDepth = await getLockDepth();
+
+		activeFileName.textContent = file.name;
+
+		this.mesh.geometry.translate(
+			-this.center.x,
+			-this.center.y,
+			-this.center.z,
+		);
+
+		const translateValues = await getTranslateValues();
+		const rotateValues = await getRotateValues();
+
+		this.offsetYPosition = this.size.y / 2 - this.lockDepth;
+
+		if (this.loadedStlFromIndexedDb) {
+			this.mesh.position.set(
+				translateValues.x,
+				translateValues.y,
+				translateValues.z,
+			);
+		} else {
+			this.mesh.position.set(0, this.offsetYPosition, 0);
+		}
+
+		this.mesh.rotation.set(
+			rotateValues.coronal,
+			rotateValues.sagittal,
+			rotateValues.transverse,
+		);
+
+		await updateTranslateValues(
+			this.mesh.position.x,
+			this.mesh.position.y,
+			this.mesh.position.z,
+		);
+		await updateRotateValues(
+			rotateValues.coronal,
+			rotateValues.sagittal,
+			rotateValues.transverse,
+		);
+
+		horizontalTranslate.value = (-this.mesh.position.x).toString();
+		verticalTranslate.value = round(
+			this.mesh.position.y - this.offsetYPosition,
+			0,
+		).toString();
+		depthTranslate.value = (-this.mesh.position.z).toString();
+
+		this.useCallback({
+			x: this.size.x,
+			y: this.size.y,
+			z: this.size.z,
+		});
+
+		this.toggleInput(false);
+	};
+
 	#onStlFileChange = async (event: Event) => {
 		const { target: inputFiles } = event;
 		const file = (inputFiles as HTMLInputElement).files?.[0];
 
-		const isUserTriggered = event.isTrusted;
-
-		if (isUserTriggered) {
-			await setIsTestSTLCylinder(false);
-		}
-
-		if (file) {
-			await deleteAllFiles();
-			await setFileByName(file.name, {
-				name: file.name,
-				file: file,
-			});
-
-			loadingScreen.style.display = "flex";
-
-			const rawGeometry = await this.#readSTLFile(file);
-
-			rawGeometry.rotateX(-pi / 2);
-			rawGeometry.rotateY(pi);
-			ensureUV(rawGeometry);
-			rawGeometry.computeVertexNormals();
-
-			const material = new MeshStandardMaterial({
-				color: 0xffffff,
-				side: DoubleSide,
-				wireframe: false,
-			});
-			const mesh = new Mesh(rawGeometry, material);
-			const bvh = new MeshBVH(mesh.geometry);
-			const nozzleSize = await getNozzleSize();
-			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
-			const shrinkScale = 1 / (1 - shrinkFactor / 100);
-
-			this.mesh = await applyOffset(mesh, nozzleSize / 2);
-			this.mesh.raycast = acceleratedRaycast;
-			this.mesh.geometry.boundsTree = bvh;
-			this.mesh.name = file.name;
-			this.mesh.userData = { isSocket: true };
-			this.computeBoundingBox();
-			this.lockDepth = await getLockDepth();
-
-			activeFileName.textContent = file.name;
-
-			this.mesh.geometry.translate(
-				-this.center.x,
-				-this.center.y,
-				-this.center.z,
-			);
-
-			const translateValues = await getTranslateValues();
-			const rotateValues = await getRotateValues();
-
-			this.offsetYPosition = this.size.y / 2 - this.lockDepth;
-
-			this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
-
-			if (this.loadedStlFromIndexedDb) {
-				this.mesh.position.set(
-					translateValues.x,
-					translateValues.y,
-					translateValues.z,
-				);
-			} else {
-				this.mesh.position.set(0, this.offsetYPosition, 0);
-			}
-
-			this.mesh.rotation.set(
-				rotateValues.coronal,
-				rotateValues.sagittal,
-				rotateValues.transverse,
-			);
-
-			await updateTranslateValues(
-				this.mesh.position.x,
-				this.mesh.position.y,
-				this.mesh.position.z,
-			);
-			await updateRotateValues(
-				rotateValues.coronal,
-				rotateValues.sagittal,
-				rotateValues.transverse,
-			);
-
-			horizontalTranslate.value = (-this.mesh.position.x).toString();
-			verticalTranslate.value = round(
-				this.mesh.position.y - this.offsetYPosition,
-				0,
-			).toString();
-			depthTranslate.value = (-this.mesh.position.z).toString();
-
-			this.callback({
-				size: {
-					y: this.size.y,
-					x: this.size.x,
-					z: this.size.z,
-				},
-			});
-
-			this.toggleInput(false);
+		switch (this.currentType) {
+			case PrintObjectType.Socket:
+				await this.#handleSocket(file);
+				break;
+			case PrintObjectType.TestCylinder:
+				await this.#handleTestCylinder();
+				break;
 		}
 	};
 
 	clearData = async () => {
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
+			this.mesh.removeFromParent();
 			this.mesh = undefined;
 		}
 
-		stlFileInput.value = "";
 		this.boundingBox = undefined;
 		this.center = undefined;
 		this.size = undefined;
 		this.loadedStlFromIndexedDb = false;
+		this.currentType = undefined;
 
-		await setIsTestSTLCylinder(false);
 		await updateRotateValues(0, 0, 0);
 		await updateTranslateValues(0, 0, 0);
 

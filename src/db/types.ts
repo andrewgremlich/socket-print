@@ -17,7 +17,17 @@ export type MaterialProfile = {
 	density: number;
 };
 
-export type SavedFile = { id: number; name: string; file: Blob };
+export enum PrintObjectType {
+	TestCylinder = "TestCylinder",
+	Socket = "Socket",
+}
+
+export type SavedFile = {
+	id: number;
+	name: string;
+	type: PrintObjectType;
+	file: Blob;
+};
 
 export type FormValues = {
 	ipAddress: string;
@@ -29,7 +39,6 @@ export type FormValues = {
 };
 
 export type ProvelPrintSettings = {
-	isTestSTLCylinder: boolean;
 	lockDepth: number;
 	circularSegments: number;
 	translateX: number;

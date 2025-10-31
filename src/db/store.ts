@@ -22,7 +22,6 @@ const defaultFormValues: FormValues = {
 };
 
 const defaultSettingNames: ProvelPrintSettings = {
-	isTestSTLCylinder: false,
 	lockDepth: 13,
 	circularSegments: 128,
 	translateX: 0,

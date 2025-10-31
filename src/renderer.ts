@@ -19,7 +19,6 @@ import { MergeCylinder } from "@/classes/MergeCylinder";
 import { PrintObject } from "@/classes/PrintObject";
 import { Ring } from "@/classes/Ring";
 import {
-	getIsTestSTLCylinder,
 	updateRotateValues,
 	updateTranslateValues,
 } from "@/db/appSettingsDbActions";
@@ -38,6 +37,7 @@ import {
 	verticalTranslate,
 } from "@/utils/htmlElements";
 import { deleteAllFiles } from "./db/file";
+import { PrintObjectType } from "./db/types";
 
 if (!window.Worker) {
 	throw new Error("Web Worker not supported");
@@ -103,11 +103,9 @@ clearModelButton.addEventListener("click", async () => {
 });
 
 export async function slicingAction(sendToFile: boolean) {
-	const isTestSTLCylinder = await getIsTestSTLCylinder();
-
 	printObject.updateMatrixWorld();
 
-	if (!isTestSTLCylinder) {
+	if (printObject.currentType === PrintObjectType.Socket) {
 		mergeCylinder.setHeight(printObject.boundingBox.max.y / 2);
 		app.addToScene(mergeCylinder.mesh);
 	}

@@ -13,20 +13,6 @@ export async function getFileByName(
 	return await db.savedFiles.where("name").equals(name).first();
 }
 
-export async function setFileByName(
-	name: string,
-	file: Omit<SavedFile, "id">,
-): Promise<void> {
-	const db = await getDb();
-	const existingFile = await getFileByName(name);
-
-	if (existingFile) {
-		await db.savedFiles.update(existingFile.id, file);
-	} else {
-		await db.savedFiles.add({ ...file, name });
-	}
-}
-
 export async function deleteFileByName(name: string): Promise<void> {
 	const db = await getDb();
 	const file = await getFileByName(name);
@@ -39,4 +25,20 @@ export async function deleteFileByName(name: string): Promise<void> {
 export async function deleteAllFiles(): Promise<void> {
 	const db = await getDb();
 	await db.savedFiles.clear();
+}
+
+export async function setFileByName(
+	name: string,
+	file: Omit<SavedFile, "id">,
+): Promise<void> {
+	await deleteAllFiles();
+
+	const db = await getDb();
+	const existingFile = await getFileByName(name);
+
+	if (existingFile) {
+		await db.savedFiles.update(existingFile.id, file);
+	} else {
+		await db.savedFiles.add({ ...file, name });
+	}
 }
