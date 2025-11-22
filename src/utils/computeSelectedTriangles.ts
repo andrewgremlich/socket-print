@@ -1,8 +1,9 @@
 import * as THREE from "three";
-import { CONTAINED, INTERSECTED, NOT_INTERSECTED } from "../..";
-import { getConvexHull } from "../utils/math/getConvexHull.js";
-import { lineCrossesLine } from "../utils/math/lineCrossesLine.js";
-import { isPointInsidePolygon } from "../utils/math/pointRayCrossesSegments.js";
+import type { MeshBVH } from "three-mesh-bvh";
+import { CONTAINED, INTERSECTED, NOT_INTERSECTED } from "three-mesh-bvh";
+import { getConvexHull } from "./math/getConvexHull";
+import { lineCrossesLine } from "./math/lineCrossesLine";
+import { isPointInsidePolygon } from "./math/pointRayCrossesSegments";
 
 /**
  * Compute selected triangles:
@@ -14,7 +15,27 @@ import { isPointInsidePolygon } from "../utils/math/pointRayCrossesSegments.js";
  *
  * @see https://github.com/gkjohnson/three-mesh-bvh/issues/166#issuecomment-752194034
  */
-export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
+export interface SelectionToolLike {
+	points: number[];
+}
+
+export interface SelectionParams {
+	selectionMode: "intersection" | "centroid" | "centroid-visible";
+	useBoundsTree: boolean;
+	selectWholeModel: boolean; // if true returns early selecting entire model
+}
+
+export function computeSelectedTriangles(
+	mesh: THREE.Mesh,
+	camera: THREE.Camera,
+	selectionTool: SelectionToolLike,
+	params: Partial<SelectionParams> = {},
+): number[] {
+	const resolvedParams: SelectionParams = {
+		selectionMode: params.selectionMode || "intersection",
+		useBoundsTree: params.useBoundsTree ?? true,
+		selectWholeModel: params.selectWholeModel ?? false,
+	};
 	// TODO: Possible improvements
 	// - Correctly handle the camera near clip
 	// - Improve line line intersect performance?
@@ -34,24 +55,26 @@ export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
 		convertTripletsToPoints(selectionTool.points),
 	);
 
-	/**
-	 * Per-depth cache of lasso segments that were filtered to be to the right of a box for that depth.
-	 * @type {Array<Array<THREE.Line3>>}
-	 */
-	const perBoundsSegmentCache = [];
+	// Caches and results
+	const perBoundsSegmentCache: THREE.Line3[][] = [];
+	const indices: number[] = [];
 
-	/**
-	 * Array of triplets representing indices of vertices of selected triangles.
-	 * @type {Array<number>}
-	 */
-	const indices = [];
+	interface BoundsTreeGeometry extends THREE.BufferGeometry {
+		boundsTree: MeshBVH;
+	}
+	const geom = mesh.geometry as BoundsTreeGeometry;
 
 	// find all the triangles in the mesh that intersect the lasso
-	mesh.geometry.boundsTree.shapecast({
-		intersectsBounds: (box, isLeaf, score, depth) => {
+	geom.boundsTree.shapecast({
+		intersectsBounds: (
+			box: THREE.Box3,
+			_isLeaf: boolean,
+			_score: number,
+			depth: number,
+		) => {
 			// check if the bounds are intersected or contained by the lasso region to narrow down on the triangles
 
-			if (!params.useBoundsTree) {
+			if (!resolvedParams.useBoundsTree) {
 				return INTERSECTED;
 			}
 
@@ -72,7 +95,7 @@ export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
 			// we don't need the ones on the left because the point-in-polygon ray casting algorithm casts rays to the right.
 			// cache the filtered segments in the above array for subsequent child checks to use.
 			const parentSegments = perBoundsSegmentCache[depth - 1] || lassoSegments;
-			const segmentsToCheck = parentSegments.filter((segment) =>
+			const segmentsToCheck = parentSegments.filter((segment: THREE.Line3) =>
 				isSegmentToTheRight(segment, minX, minY, maxY),
 			);
 			perBoundsSegmentCache[depth] = segmentsToCheck;
@@ -105,7 +128,12 @@ export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
 				: NOT_INTERSECTED;
 		},
 
-		intersectsTriangle: (tri, index, contained, depth) => {
+		intersectsTriangle: (
+			tri: THREE.Triangle,
+			index: number,
+			contained: boolean,
+			depth: number,
+		) => {
 			// if the box containing this triangle was intersected or contained, check if the triangle itself should be selected
 
 			const i3 = index * 3;
@@ -114,12 +142,12 @@ export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
 			const c = i3 + 2;
 
 			// check all the segments if using no bounds tree
-			const segmentsToCheck = params.useBoundsTree
+			const segmentsToCheck = resolvedParams.useBoundsTree
 				? perBoundsSegmentCache[depth]
 				: lassoSegments;
 			if (
-				params.selectionMode === "centroid" ||
-				params.selectionMode === "centroid-visible"
+				resolvedParams.selectionMode === "centroid" ||
+				resolvedParams.selectionMode === "centroid-visible"
 			) {
 				// get the center of the triangle
 				centroid
@@ -135,7 +163,7 @@ export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
 				) {
 					// if we're only selecting visible faces then perform a ray check to ensure the centroid
 					// is visible.
-					if (params.selectionMode === "centroid-visible") {
+					if (resolvedParams.selectionMode === "centroid-visible") {
 						tri.getNormal(faceNormal);
 						tempRay.origin.copy(centroid).addScaledVector(faceNormal, 1e-6);
 						tempRay.direction.subVectors(camLocalPosition, centroid);
@@ -150,13 +178,14 @@ export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
 					}
 
 					indices.push(a, b, c);
-					return params.selectWholeModel;
+					return resolvedParams.selectWholeModel;
 				}
-			} else if (params.selectionMode === "intersection") {
+			} else if (resolvedParams.selectionMode === "intersection") {
+				// intersection selection mode
 				// if the parent bounds were marked as contained then we contain all the triangles within
 				if (contained) {
 					indices.push(a, b, c);
-					return params.selectWholeModel;
+					return resolvedParams.selectWholeModel;
 				}
 
 				// check if any of the projected vertices are inside the selection and if so then the triangle is selected
@@ -166,7 +195,7 @@ export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
 				for (const point of projectedTriangle) {
 					if (isPointInsidePolygon(point, segmentsToCheck)) {
 						indices.push(a, b, c);
-						return params.selectWholeModel;
+						return resolvedParams.selectWholeModel;
 					}
 				}
 
@@ -180,7 +209,7 @@ export function computeSelectedTriangles(mesh, camera, selectionTool, params) {
 					for (const selectionSegment of segmentsToCheck) {
 						if (lineCrossesLine(segment, selectionSegment)) {
 							indices.push(a, b, c);
-							return params.selectWholeModel;
+							return resolvedParams.selectWholeModel;
 						}
 					}
 				}
@@ -200,8 +229,14 @@ const centroid = new THREE.Vector3();
 const screenCentroid = new THREE.Vector3();
 const faceNormal = new THREE.Vector3();
 const toScreenSpaceMatrix = new THREE.Matrix4();
-const boxPoints = new Array(8).fill().map(() => new THREE.Vector3());
-const boxLines = new Array(12).fill().map(() => new THREE.Line3());
+const boxPoints: THREE.Vector3[] = Array.from(
+	{ length: 8 },
+	() => new THREE.Vector3(),
+);
+const boxLines: THREE.Line3[] = Array.from(
+	{ length: 12 },
+	() => new THREE.Line3(),
+);
 
 /**
  * Produce a list of 3D points representing vertices of the box.
@@ -210,7 +245,10 @@ const boxLines = new Array(12).fill().map(() => new THREE.Line3());
  * @param {Array<THREE.Vector3>} target Array of 8 vectors to write to
  * @returns {Array<THREE.Vector3>}
  */
-function extractBoxVertices(box, target) {
+function extractBoxVertices(
+	box: THREE.Box3,
+	target: THREE.Vector3[],
+): THREE.Vector3[] {
 	const { min, max } = box;
 	let index = 0;
 
@@ -238,7 +276,12 @@ function extractBoxVertices(box, target) {
  * @param {number} maxY The topmost Y coordinate of the box
  * @returns {boolean}
  */
-function isSegmentToTheRight(segment, minX, minY, maxY) {
+function isSegmentToTheRight(
+	segment: THREE.Line3,
+	minX: number,
+	minY: number,
+	maxY: number,
+): boolean {
 	const sx = segment.start.x;
 	const sy = segment.start.y;
 	const ex = segment.end.x;
@@ -258,14 +301,15 @@ function isSegmentToTheRight(segment, minX, minY, maxY) {
  * @param {Array<THREE.Line3> | null} target Array of the same length as `points` of lines to write to
  * @returns {Array<THREE.Line3>}
  */
-function connectPointsWithLines(points, target = null) {
-	if (target === null) {
-		target = new Array(points.length).fill(null).map(() => new THREE.Line3());
-	}
-
+function connectPointsWithLines(
+	points: THREE.Vector3[],
+	target: THREE.Line3[] | null = null,
+): THREE.Line3[] {
+	const lines: THREE.Line3[] =
+		target ?? Array.from({ length: points.length }, () => new THREE.Line3());
 	return points.map((p, i) => {
 		const nextP = points[(i + 1) % points.length];
-		const line = target[i];
+		const line = lines[i];
 		line.start.copy(p);
 		line.end.copy(nextP);
 		return line;
@@ -277,11 +321,10 @@ function connectPointsWithLines(points, target = null) {
  * @param {Array<number>} array Array of points in the form [x0, y0, z0, x1, y1, z1, …]
  * @returns {Array<THREE.Vector3>}
  */
-function convertTripletsToPoints(array) {
-	const points = [];
+function convertTripletsToPoints(array: number[]): THREE.Vector3[] {
+	const points: THREE.Vector3[] = [];
 	for (let i = 0; i < array.length; i += 3) {
 		points.push(new THREE.Vector3(array[i], array[i + 1], array[i + 2]));
 	}
-
 	return points;
 }

@@ -1,4 +1,5 @@
 import { abs, pi, round } from "mathjs";
+import type { Camera } from "three";
 import {
 	type BufferGeometry,
 	DoubleSide,
@@ -9,6 +10,10 @@ import { STLExporter } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 import { ensureUV } from "@/3d/ensureUV";
+import {
+	filterGeometryByVertexIndices,
+	toTriangleIndexSet,
+} from "@/3d/filterGeometryByVertexIndices";
 import { applyOffset } from "@/3d/generateOffsetWithNormal";
 import {
 	getLockDepth,
@@ -21,6 +26,7 @@ import { getAllFiles, setFileByName } from "@/db/file";
 import { getNozzleSize } from "@/db/formValuesDbActions";
 import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 import { PrintObjectType } from "@/db/types";
+import { computeSelectedTriangles } from "@/utils/computeSelectedTriangles";
 import {
 	activeFileName,
 	addTestCylinderButton,
@@ -36,6 +42,7 @@ import {
 } from "@/utils/htmlElements";
 import { fetchStlFile, setStlFileInputAndDispatch } from "@/utils/printObject";
 import { AppObject } from "./AppObject";
+import type { BoxSelection, LassoSelection } from "./Selection";
 import { TestCylinder } from "./TestCylinder";
 
 // TODO: Implement a selection tool to select parts of the mesh for printing a cut
@@ -49,6 +56,8 @@ export class PrintObject extends AppObject {
 	loadedStlFromIndexedDb = false;
 	offsetYPosition = 0;
 	currentType: PrintObjectType = undefined;
+	originalGeometry: BufferGeometry | null = null;
+	excludedVertexIndices: number[] = [];
 
 	constructor({ callback }: { callback: Callback }) {
 		super();
@@ -261,6 +270,75 @@ export class PrintObject extends AppObject {
 		});
 
 		this.toggleInput(false);
+	};
+
+	/**
+	 * Apply a cut line using a selection tool. Selected triangles are removed from the mesh
+	 * so they will not be included in downstream print generation.
+	 * Pass in the active camera and the selection tool containing normalized screen points.
+	 */
+	applyCutLine = async (
+		selectionTool: LassoSelection | BoxSelection,
+		camera: Camera,
+		params: {
+			selectionMode?: "intersection" | "centroid" | "centroid-visible";
+			useBoundsTree?: boolean;
+			selectWholeModel?: boolean;
+		} = {},
+	) => {
+		if (!this.mesh) return;
+		// Preserve the original geometry on first cut for potential reset
+		if (!this.originalGeometry) {
+			this.originalGeometry = this.mesh.geometry.clone();
+		}
+
+		const selectionParams = {
+			selectionMode: params.selectionMode || "intersection",
+			useBoundsTree: params.useBoundsTree ?? true,
+			selectWholeModel: params.selectWholeModel ?? false,
+		};
+
+		// Compute selected vertex indices (flat list of triplets)
+		const selected = computeSelectedTriangles(
+			this.mesh,
+			camera,
+			selectionTool,
+			selectionParams,
+		);
+
+		if (!selected.length) return; // nothing selected
+
+		// Merge with any existing cuts (store unique vertex indices)
+		this.excludedVertexIndices.push(...selected);
+		const removalSet = toTriangleIndexSet(this.excludedVertexIndices);
+
+		// Filter geometry
+		const newGeom = filterGeometryByVertexIndices(
+			this.mesh.geometry,
+			removalSet,
+		);
+		this.mesh.geometry.dispose();
+		this.mesh.geometry = newGeom;
+		this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
+		this.computeBoundingBox();
+
+		// Re-align after geometry change
+		this.autoAlignMesh();
+
+		// Update size callback after cut
+		this.useCallback({ x: this.size.x, y: this.size.y, z: this.size.z });
+	};
+
+	/** Restore the geometry and clear all cuts. */
+	resetCut = () => {
+		if (!this.originalGeometry || !this.mesh) return;
+		this.mesh.geometry.dispose();
+		this.mesh.geometry = this.originalGeometry.clone();
+		this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
+		this.excludedVertexIndices = [];
+		this.computeBoundingBox();
+		this.autoAlignMesh();
+		this.useCallback({ x: this.size.x, y: this.size.y, z: this.size.z });
 	};
 
 	#onStlFileChange = async (event: Event) => {
