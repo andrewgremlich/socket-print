@@ -38,6 +38,9 @@ import { fetchStlFile, setStlFileInputAndDispatch } from "@/utils/printObject";
 import { AppObject } from "./AppObject";
 import { TestCylinder } from "./TestCylinder";
 
+// TODO: Implement a selection tool to select parts of the mesh for printing a cut
+// https://github.com/gkjohnson/three-mesh-bvh/blob/master/example/selection.js
+
 type Callback = (params: { size: { x: number; y: number; z: number } }) => void;
 
 export class PrintObject extends AppObject {
