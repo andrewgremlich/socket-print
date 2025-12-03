@@ -11,6 +11,10 @@ main {
 	}
 }
 
+.cutLineToolCursor {
+	cursor: crosshair;
+}
+
 .show {
 	display: block !important;
 }

@@ -15,6 +15,7 @@ import {
 	activateInfoDialog,
 	activateSettingsDialog,
 	addMaterialProfile,
+	cutLineToolButton,
 	deleteMaterialProfileButton,
 	editActiveMaterialProfile,
 	helpButton,
@@ -95,4 +96,9 @@ deleteMaterialProfileButton.addEventListener("click", async () => {
 
 helpButton.addEventListener("click", () => {
 	window.open("/help.html", "_self");
+});
+
+cutLineToolButton.addEventListener("click", () => {
+	console.log("Cut Line Tool Clicked");
+	document.body.classList.toggle("cutLineToolCursor");
 });

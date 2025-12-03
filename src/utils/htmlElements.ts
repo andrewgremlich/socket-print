@@ -22,6 +22,9 @@ export const clearModelButton = document.getElementById(
 export const helpButton = document.getElementById(
 	"helpButton",
 ) as HTMLButtonElement;
+export const cutLineToolButton = document.getElementById(
+	"cutLineToolButton",
+) as HTMLButtonElement;
 
 export const stlFileInput = document.getElementById(
 	"stlFileInput",
