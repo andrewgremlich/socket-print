@@ -163,6 +163,26 @@ main {
 			height: 400px;
 		}
 
+		& #toolbar {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			z-index: 10;
+
+			& button {
+				background-color: #ffffffcc;
+				color: #fff;
+				border: none;
+				padding: 5px 5px 0px 5px;
+				cursor: pointer;
+				border-radius: 5px;
+
+				&:hover {
+					background-color: #ffffff;
+				}
+			}
+		}
+
 		& #activeFileName {
 			position: absolute;
 			top: 10px;

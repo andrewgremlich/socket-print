@@ -10,6 +10,19 @@ export const addTestStlButton = document.getElementById(
 export const addTestCylinderButton = document.getElementById(
 	"addTestCylinderButton",
 ) as HTMLButtonElement;
+export const cancelMaterialProfileButton = document.getElementById(
+	"cancelMaterialProfile",
+) as HTMLButtonElement;
+export const deleteMaterialProfileButton = document.getElementById(
+	"deleteMaterialProfile",
+) as HTMLButtonElement;
+export const clearModelButton = document.getElementById(
+	"clearModelButton",
+) as HTMLButtonElement;
+export const helpButton = document.getElementById(
+	"helpButton",
+) as HTMLButtonElement;
+
 export const stlFileInput = document.getElementById(
 	"stlFileInput",
 ) as HTMLInputElement;
@@ -74,6 +87,10 @@ export const addMaterialProfile = document.getElementById(
 export const newMaterialProfile = document.getElementById(
 	"makeNewMaterialProfile",
 ) as HTMLDivElement;
+export const editActiveMaterialProfile = document.getElementById(
+	"editActiveMaterialProfile",
+) as HTMLDivElement;
+
 export const estimatedPrintTime = document.getElementById(
 	"estimatedPrintTime",
 ) as HTMLParagraphElement;
@@ -83,22 +100,6 @@ export const ipAddressFailure = document.getElementById(
 export const ipAddressSuccess = document.getElementById(
 	"ipAddressSuccess",
 ) as IconElement;
-
-export const editActiveMaterialProfile = document.getElementById(
-	"editActiveMaterialProfile",
-) as HTMLDivElement;
-export const cancelMaterialProfileButton = document.getElementById(
-	"cancelMaterialProfile",
-) as HTMLButtonElement;
-export const deleteMaterialProfileButton = document.getElementById(
-	"deleteMaterialProfile",
-) as HTMLButtonElement;
-export const clearModelButton = document.getElementById(
-	"clearModelButton",
-) as HTMLButtonElement;
-export const helpButton = document.getElementById(
-	"helpButton",
-) as HTMLButtonElement;
 
 export const appForm = document.getElementById("appForm") as HTMLFormElement;
 
