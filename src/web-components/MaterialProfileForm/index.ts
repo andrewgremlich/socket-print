@@ -31,7 +31,7 @@ export class MaterialProfileForm extends Dialog {
             <input type="number" min="160" max="260" value="200" name="nozzleTemp" id="nozzleTemp" required />
             
             <label for="cupTemp">Cup Temp (C)</label>
-            <input type="number" min="140" max="190" value="160" name="cupTemp" id="cupTemp" required />
+            <input type="number" min="140" max="220" value="160" name="cupTemp" id="cupTemp" required />
             
             <label for="shrinkFactor">Shrink Factor (%)</label>
             <input type="number" min="0.1" max="4.0" step="0.01" value="2.6" name="shrinkFactor" id="shrinkFactor" required />

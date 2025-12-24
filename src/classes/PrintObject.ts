@@ -120,7 +120,7 @@ export class PrintObject extends AppObject {
 
 	applyNozzleSizeOffset = async (printObjectMesh: Mesh) => {
 		const nozzleSize = await getNozzleSize();
-		this.mesh = await applyOffset(printObjectMesh, nozzleSize / 2);
+		this.mesh = await applyOffset(printObjectMesh, nozzleSize / 2); // TODO: confirm the offset width? Test cylinder inner diameter is 66.8mm and 67mm
 	};
 
 	useCallback = ({ x, y, z }: { x: number; y: number; z: number }) => {
