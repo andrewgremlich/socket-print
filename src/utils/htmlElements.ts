@@ -55,7 +55,7 @@ export const progressBarLabel = document.getElementById(
 	"progressBarLabel",
 ) as HTMLLabelElement;
 export const threeDViewer = document.getElementById(
-	"3dViewer",
+	"modelViewer",
 ) as HTMLCanvasElement;
 export const activeFileName = document.getElementById(
 	"activeFileName",

@@ -59,7 +59,8 @@ export class Application {
 		directionalLight2.position.set(100, 150, 350);
 		directionalLight3.position.set(-400, 150, 100);
 
-		this.renderer.setSize(this.width, this.height);
+		// Update only the drawing buffer size; let CSS control canvas size
+		this.renderer.setSize(this.width, this.height, false);
 		this.renderer.setAnimationLoop(this.#animate);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -138,14 +139,17 @@ export class Application {
 	};
 
 	#onWindowResize = () => {
+		console.log("Window resized", this.#provelPrintView);
+
 		if (this.#provelPrintView) {
 			this.width = this.#provelPrintView.clientWidth;
 			this.height = this.#provelPrintView.clientHeight;
 
+			console.log("New size:", this.width, this.height);
+
 			this.camera.aspect = this.width / this.height;
 			this.camera.updateProjectionMatrix();
-			this.renderer.setSize(this.width, this.height);
-			this.renderer.setPixelRatio(window.devicePixelRatio);
+			this.renderer.setSize(this.width, this.height, false);
 		}
 	};
 }
