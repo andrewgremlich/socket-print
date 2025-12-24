@@ -50,7 +50,7 @@ export type ProvelPrintSettings = {
 	startingCupLayerHeight: number;
 	lineWidthAdjustment: number;
 	testCylinderHeight: number;
-	testCylinderDiameter: number;
+	testCylinderInnerDiameter: number;
 	secondsPerLayer: number;
 	ePerRevolution: number;
 };

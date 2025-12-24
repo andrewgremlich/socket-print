@@ -7,8 +7,8 @@ import {
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 import { ensureUV } from "@/3d/ensureUV";
 import {
-	getTestCylinderDiameter,
 	getTestCylinderHeight,
+	getTestCylinderInnerDiameter,
 } from "@/db/appSettingsDbActions";
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
@@ -27,7 +27,7 @@ export class TestCylinder extends AppObject {
 		// Fetch dimensions + radial segment count from IndexedDB, fall back if invalid.
 		const [heightDb, diameterDb] = await Promise.all([
 			getTestCylinderHeight(),
-			getTestCylinderDiameter(),
+			getTestCylinderInnerDiameter(),
 		]);
 
 		const height = Number.isFinite(heightDb) && heightDb > 0 ? heightDb : 50;

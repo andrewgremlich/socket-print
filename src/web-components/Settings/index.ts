@@ -4,15 +4,15 @@ import {
 	getLineWidthAdjustment,
 	getSecondsPerLayer,
 	getStartingCupLayerHeight,
-	getTestCylinderDiameter,
 	getTestCylinderHeight,
+	getTestCylinderInnerDiameter,
 	setCircularSegments,
 	setEPerRevolution,
 	setLineWidthAdjustment,
 	setSecondsPerLayer,
 	setStartingCupLayerHeight,
-	setTestCylinderDiameter,
 	setTestCylinderHeight,
+	setTestCylinderInnerDiameter,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/getDb";
 
@@ -62,8 +62,8 @@ export class Settings extends Dialog {
 						<label for="testCylinderHeight">Test Cylinder Height</label>
 						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
 
-						<label for="testCylinderDiameter">Test Cylinder Diameter</label>
-						<input type="number" id="testCylinderDiameter" name="testCylinderDiameter" step="1" min="67" max="70" />
+						<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter</label>
+						<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="67" max="70" />
 
 						<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
 					</form>
@@ -163,7 +163,7 @@ export class Settings extends Dialog {
 		const settings = Object.fromEntries(formData.entries());
 		await Promise.all([
 			setTestCylinderHeight(+settings.testCylinderHeight),
-			setTestCylinderDiameter(+settings.testCylinderDiameter),
+			setTestCylinderInnerDiameter(+settings.testCylinderInnerDiameter),
 		]);
 	}
 
@@ -173,7 +173,7 @@ export class Settings extends Dialog {
 			lineWidthAdjustment,
 			circularSegments,
 			testCylinderHeight,
-			testCylinderDiameter,
+			testCylinderInnerDiameter,
 			secondsPerLayer,
 			ePerRevolution,
 		] = await Promise.all([
@@ -181,7 +181,7 @@ export class Settings extends Dialog {
 			getLineWidthAdjustment(),
 			getCircularSegments(),
 			getTestCylinderHeight(),
-			getTestCylinderDiameter(),
+			getTestCylinderInnerDiameter(),
 			getSecondsPerLayer(),
 			getEPerRevolution(),
 		]);
@@ -205,12 +205,12 @@ export class Settings extends Dialog {
 		const testHeightInput = this.testCylinderForm.elements.namedItem(
 			"testCylinderHeight",
 		) as HTMLInputElement | null;
-		const testDiameterInput = this.testCylinderForm.elements.namedItem(
-			"testCylinderDiameter",
+		const testInnerDiameterInput = this.testCylinderForm.elements.namedItem(
+			"testCylinderInnerDiameter",
 		) as HTMLInputElement | null;
 		if (testHeightInput) testHeightInput.value = testCylinderHeight.toString();
-		if (testDiameterInput)
-			testDiameterInput.value = testCylinderDiameter.toString();
+		if (testInnerDiameterInput)
+			testInnerDiameterInput.value = testCylinderInnerDiameter.toString();
 	}
 }
 
