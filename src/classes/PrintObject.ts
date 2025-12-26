@@ -120,17 +120,7 @@ export class PrintObject extends AppObject {
 
 	applyNozzleSizeOffset = async (printObjectMesh: Mesh) => {
 		const nozzleSize = await getNozzleSize();
-		this.mesh = await applyOffset(printObjectMesh, nozzleSize / 2); // TODO: confirm the offset width? Test cylinder inner diameter is 66.8mm and 67mm
-	};
-
-	useCallback = ({ x, y, z }: { x: number; y: number; z: number }) => {
-		this.callback({
-			size: {
-				x,
-				y,
-				z,
-			},
-		});
+		this.mesh = await applyOffset(printObjectMesh, nozzleSize); // TODO: this was previously (nozzleSize / 2), but it seemed to be consistently ~2mm too small. NozzleSize value would be 5mm.
 	};
 
 	#exportTestCylinder = async (mesh: Mesh) => {
@@ -163,10 +153,12 @@ export class PrintObject extends AppObject {
 
 		this.mesh.position.set(0, this.size.y / 2, 0);
 
-		this.useCallback({
-			x: testCylinder.size.x,
-			y: testCylinder.size.y,
-			z: testCylinder.size.z,
+		this.callback({
+			size: {
+				x: testCylinder.size.x,
+				y: testCylinder.size.y,
+				z: testCylinder.size.z,
+			},
 		});
 	};
 
@@ -251,10 +243,12 @@ export class PrintObject extends AppObject {
 		).toString();
 		depthTranslate.value = (-this.mesh.position.z).toString();
 
-		this.useCallback({
-			x: this.size.x,
-			y: this.size.y,
-			z: this.size.z,
+		this.callback({
+			size: {
+				x: this.size.x,
+				y: this.size.y,
+				z: this.size.z,
+			},
 		});
 
 		this.toggleInput(false);
