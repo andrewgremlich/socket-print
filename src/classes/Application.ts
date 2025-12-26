@@ -65,6 +65,10 @@ export class Application {
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 
 		this.camera.position.set(0, 100, -200);
+
+		this.controls.minDistance = 200;
+		this.controls.maxDistance = 500;
+		// this.controls.maxPolarAngle = pi / 2; // limit to horizontal view
 		this.controls.enableDamping = true;
 
 		this.addToScene(this.gridHelper);

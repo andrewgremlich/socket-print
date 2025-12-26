@@ -54,6 +54,7 @@ await (async function initProcedurals() {
 	app.addToScene(ring.mesh);
 })();
 
+// TODO: pass in Ring position and let PrintObject determine intersection.
 const printObject = new PrintObject({
 	callback: ({ size: { y } }) => {
 		app.camera.position.set(0, y + 50, -200);
