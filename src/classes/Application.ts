@@ -66,10 +66,12 @@ export class Application {
 
 		this.camera.position.set(0, 100, -200);
 
-		this.controls.minDistance = 200;
-		this.controls.maxDistance = 500;
-		// this.controls.maxPolarAngle = pi / 2; // limit to horizontal view
-		this.controls.enableDamping = true;
+		if (import.meta.env.PROD) {
+			this.controls.minDistance = 200;
+			this.controls.maxDistance = 500;
+			this.controls.enableDamping = true;
+			// this.controls.maxPolarAngle = pi / 2; // limit to horizontal view
+		}
 
 		this.addToScene(this.gridHelper);
 		this.addToScene(ambientLight);
@@ -143,14 +145,9 @@ export class Application {
 	};
 
 	#onWindowResize = () => {
-		console.log("Window resized", this.#provelPrintView);
-
 		if (this.#provelPrintView) {
 			this.width = this.#provelPrintView.clientWidth;
 			this.height = this.#provelPrintView.clientHeight;
-
-			console.log("New size:", this.width, this.height);
-
 			this.camera.aspect = this.width / this.height;
 			this.camera.updateProjectionMatrix();
 			this.renderer.setSize(this.width, this.height, false);

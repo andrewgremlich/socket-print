@@ -1,12 +1,17 @@
 import { pi } from "mathjs";
 import { DoubleSide, Mesh, MeshStandardMaterial, RingGeometry } from "three";
-import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
+import {
+	acceleratedRaycast,
+	computeBoundsTree,
+	disposeBoundsTree,
+	MeshBVH,
+} from "three-mesh-bvh";
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 
 export class Ring extends AppObject {
 	#radialSegments = 128; // default, replaced from DB
-	#innerRadius = 78 / 2;
+	#innerRadius = 78 / 2; // TODO: 78 represents the inner diameter of the cup?
 	#thickness = 10;
 	height: number;
 
@@ -23,6 +28,7 @@ export class Ring extends AppObject {
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
 			side: DoubleSide,
+			wireframe: false,
 		});
 		const geometry = new RingGeometry(
 			instance.#innerRadius,
@@ -31,6 +37,9 @@ export class Ring extends AppObject {
 		);
 		const mesh = new Mesh(geometry, material);
 		const bvh = new MeshBVH(mesh.geometry);
+
+		geometry.computeBoundsTree = computeBoundsTree;
+		geometry.disposeBoundsTree = disposeBoundsTree;
 
 		instance.mesh = mesh;
 		instance.mesh.raycast = acceleratedRaycast;

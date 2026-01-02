@@ -2,12 +2,18 @@ import { abs, pi, round } from "mathjs";
 import {
 	type BufferGeometry,
 	DoubleSide,
+	Matrix4,
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
 import { STLExporter } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
-import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
+import {
+	acceleratedRaycast,
+	computeBoundsTree,
+	disposeBoundsTree,
+	MeshBVH,
+} from "three-mesh-bvh";
 import { ensureUV } from "@/3d/ensureUV";
 import { applyOffset } from "@/3d/generateOffsetWithNormal";
 import {
@@ -25,10 +31,13 @@ import {
 	activeFileName,
 	addTestCylinderButton,
 	addTestStlButton,
+	collisionWarning,
 	coronalRotater,
 	depthTranslate,
+	generateGCodeButton,
 	horizontalTranslate,
 	loadingScreen,
+	printerFileInput,
 	sagittalRotate,
 	stlFileInput,
 	transversalRotater,
@@ -37,6 +46,7 @@ import {
 import { fetchStlFile, setStlFileInputAndDispatch } from "@/utils/printObject";
 import { AppObject } from "./AppObject";
 import { TestCylinder } from "./TestCylinder";
+import type { Tube } from "./Tube";
 
 type Callback = (params: { size: { x: number; y: number; z: number } }) => void;
 
@@ -46,11 +56,14 @@ export class PrintObject extends AppObject {
 	loadedStlFromIndexedDb = false;
 	offsetYPosition = 0;
 	currentType: PrintObjectType = undefined;
+	tube: Tube;
+	isCollidingWithTube: boolean = false;
 
-	constructor({ callback }: { callback: Callback }) {
+	constructor({ callback, tube }: { callback: Callback; tube: Tube }) {
 		super();
 
 		this.callback = callback;
+		this.tube = tube;
 
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
@@ -181,16 +194,19 @@ export class PrintObject extends AppObject {
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
 			side: DoubleSide,
-			wireframe: false,
 		});
 		const mesh = new Mesh(rawGeometry, material);
-		const bvh = new MeshBVH(mesh.geometry);
 
 		await this.getShrinkScale(mesh);
 		await this.applyNozzleSizeOffset(mesh);
 
+		(this.mesh.material as MeshStandardMaterial).wireframe =
+			import.meta.env.DEV;
+
 		this.mesh.raycast = acceleratedRaycast;
-		this.mesh.geometry.boundsTree = bvh;
+		this.mesh.geometry.computeBoundsTree = computeBoundsTree;
+		this.mesh.geometry.disposeBoundsTree = disposeBoundsTree;
+		this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
 		this.mesh.name = file.name;
 		this.mesh.userData = { isSocket: true };
 		this.computeBoundingBox();
@@ -266,6 +282,8 @@ export class PrintObject extends AppObject {
 				await this.#handleTestCylinder();
 				break;
 		}
+
+		this.isIntersectingWithTube();
 	};
 
 	clearData = async () => {
@@ -323,6 +341,35 @@ export class PrintObject extends AppObject {
 		}
 	};
 
+	isIntersectingWithTube = () => {
+		if (!this.mesh || !this.tube?.mesh) return;
+
+		this.mesh.updateMatrixWorld();
+		this.tube.mesh.updateMatrixWorld();
+
+		const transformMatrix = new Matrix4()
+			.copy(this.tube.mesh.matrixWorld)
+			.invert()
+			.multiply(this.mesh.matrixWorld);
+
+		const hit = this.tube.mesh.geometry.boundsTree.intersectsGeometry(
+			this.mesh.geometry,
+			transformMatrix,
+		);
+
+		if (hit) {
+			collisionWarning.style.display = "block";
+			generateGCodeButton.disabled = true;
+			printerFileInput.disabled = true;
+		} else {
+			collisionWarning.style.display = "none";
+			generateGCodeButton.disabled = false;
+			printerFileInput.disabled = false;
+		}
+
+		this.isCollidingWithTube = hit;
+	};
+
 	handleRotationChange = async (axis: "x" | "y" | "z", amount: number) => {
 		switch (axis) {
 			case "x":
@@ -350,6 +397,8 @@ export class PrintObject extends AppObject {
 				? currentRotateValues.transverse + amount
 				: currentRotateValues.transverse,
 		);
+
+		this.isIntersectingWithTube();
 	};
 
 	coronalRotate90 = () => this.handleRotationChange("x", pi / 2);
@@ -377,6 +426,8 @@ export class PrintObject extends AppObject {
 			this.mesh.position.y,
 			this.mesh.position.z,
 		);
+
+		this.isIntersectingWithTube();
 	};
 
 	horizontalChange = (evt: Event) => this.handleTranslationChange("x", evt);

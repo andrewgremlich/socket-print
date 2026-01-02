@@ -60,6 +60,9 @@ export const threeDViewer = document.getElementById(
 export const activeFileName = document.getElementById(
 	"activeFileName",
 ) as HTMLSpanElement;
+export const collisionWarning = document.getElementById(
+	"collisionWarning",
+) as HTMLSpanElement;
 
 export const menuBar = document.getElementById("menuBar") as HTMLDivElement;
 export const menuBarDropdowns = document.querySelectorAll(

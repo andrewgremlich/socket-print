@@ -178,6 +178,15 @@ main {
 			font-size: 16px;
 		}
 
+		& #collisionWarning {
+			display: none;
+			position: absolute;
+			bottom: 10px;
+			right: 10px;
+			color: #ff2d2d;
+			font-size: 16px;
+		}
+
 		& #estimatedPrintTimeContainer {
 			position: absolute;
 			bottom: 10px;

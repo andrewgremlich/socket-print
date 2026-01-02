@@ -17,7 +17,6 @@ import sliceWorker from "@/3d/sliceWorker?worker";
 import { Application } from "@/classes/Application";
 import { MergeCylinder } from "@/classes/MergeCylinder";
 import { PrintObject } from "@/classes/PrintObject";
-import { Ring } from "@/classes/Ring";
 import {
 	updateRotateValues,
 	updateTranslateValues,
@@ -36,6 +35,7 @@ import {
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
+import { Tube } from "./classes/Tube";
 import { deleteAllFiles } from "./db/file";
 import { PrintObjectType } from "./db/types";
 
@@ -44,18 +44,15 @@ if (!window.Worker) {
 }
 
 const app = new Application();
-// Async init wrapper to allow awaiting creation of procedural objects
-let ring: Ring; // populated in init()
-let mergeCylinder: MergeCylinder; // populated in init()
+const tube = await Tube.create();
+const mergeCylinder = await MergeCylinder.create();
 
-await (async function initProcedurals() {
-	ring = await Ring.create();
-	mergeCylinder = await MergeCylinder.create();
-	app.addToScene(ring.mesh);
-})();
+// app.addToScene(ring.mesh);
+app.addToScene(tube.mesh);
 
 // TODO: pass in Ring position and let PrintObject determine intersection.
 const printObject = new PrintObject({
+	tube,
 	callback: ({ size: { y } }) => {
 		app.camera.position.set(0, y + 50, -200);
 		app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
@@ -139,7 +136,7 @@ export async function slicingAction(sendToFile: boolean) {
 				vectors.push(levelVectors);
 			}
 
-			const blended = await blendHardEdges(vectors, 1);
+			const blended = blendHardEdges(vectors, 1);
 			const feedratePerLevel = await calculateFeedratePerLevel(blended);
 			const printTime = await calculatePrintTime(blended, feedratePerLevel);
 

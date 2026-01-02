@@ -13,7 +13,12 @@ import {
 	WebGLRenderer,
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
-import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
+import {
+	acceleratedRaycast,
+	computeBoundsTree,
+	disposeBoundsTree,
+	MeshBVH,
+} from "three-mesh-bvh";
 import { getCircularSegments } from "../db/appSettingsDbActions";
 import {
 	getCupSizeHeight,
@@ -71,6 +76,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 
 	camera.lookAt(center);
 	scene.add(mesh);
+	mesh.geometry.computeBoundsTree = computeBoundsTree;
+	mesh.geometry.disposeBoundsTree = disposeBoundsTree;
 	mesh.geometry.boundsTree = bvh;
 	mesh.updateMatrixWorld(true);
 

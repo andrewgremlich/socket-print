@@ -25,15 +25,14 @@ export class TestCylinder extends AppObject {
 		const instance = new TestCylinder();
 
 		// Fetch dimensions + radial segment count from IndexedDB, fall back if invalid.
-		const [heightDb, diameterDb] = await Promise.all([
+		const [heightDb, diameterDb, radialSegments] = await Promise.all([
 			getTestCylinderHeight(),
 			getTestCylinderInnerDiameter(),
+			getRadialSegments(),
 		]);
 
-		const height = Number.isFinite(heightDb) && heightDb > 0 ? heightDb : 50;
-		const diameter =
-			Number.isFinite(diameterDb) && diameterDb > 0 ? diameterDb : 75;
-		const radialSegments = await getRadialSegments();
+		const height = heightDb ? heightDb : 50;
+		const diameter = diameterDb ? diameterDb : 75;
 
 		instance.#radius = diameter / 2;
 		instance.#radialSegments = radialSegments;
@@ -41,6 +40,7 @@ export class TestCylinder extends AppObject {
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
 			side: DoubleSide,
+			wireframe: import.meta.env.DEV,
 		});
 		const geometry = new CylinderGeometry(
 			instance.#radius,
