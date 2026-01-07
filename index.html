@@ -223,11 +223,47 @@
     <icon-element type="loader"></icon-element>
   </div>
 
+  <offline-indicator></offline-indicator>
+
   <script type="module" src="./src/renderer.ts"></script>
 
   <script>
-    if ('serviceWorker' in navigator && location.protocol === 'https:') {
-      navigator.serviceWorker.register('/sw.js')
+    // Enhanced service worker registration with update handling
+    if ('serviceWorker' in navigator) {
+      // Register service worker for both HTTPS and localhost development
+      const shouldRegister = location.protocol === 'https:' ||
+        location.hostname === 'localhost' ||
+        location.hostname === '127.0.0.1';
+
+      if (shouldRegister) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('Service Worker registered successfully:', registration.scope);
+
+            // Check for updates every 60 seconds
+            setInterval(() => {
+              registration.update();
+            }, 60000);
+
+            // Handle service worker updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New service worker is available, show update notification
+                    if (confirm('A new version is available. Reload to update?')) {
+                      window.location.reload();
+                    }
+                  }
+                });
+              }
+            });
+          })
+          .catch(error => {
+            console.error('Service Worker registration failed:', error);
+          });
+      }
     }
   </script>
 </body>

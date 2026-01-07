@@ -108,7 +108,29 @@
 
   <app-info></app-info>
 
+  <offline-indicator></offline-indicator>
+
   <script type="module" src="./src/help-renderer.ts"></script>
+
+  <script>
+    // Enhanced service worker registration with update handling
+    if ('serviceWorker' in navigator) {
+      // Register service worker for both HTTPS and localhost development
+      const shouldRegister = location.protocol === 'https:' ||
+        location.hostname === 'localhost' ||
+        location.hostname === '127.0.0.1';
+
+      if (shouldRegister) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('Service Worker registered successfully:', registration.scope);
+          })
+          .catch(error => {
+            console.error('Service Worker registration failed:', error);
+          });
+      }
+    }
+  </script>
 </body>
 
 </html>

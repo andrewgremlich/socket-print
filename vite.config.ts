@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import topLevelAwait from "vite-plugin-top-level-await";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { serviceWorkerPlugin } from "./vite-sw-plugin";
 
 export default defineConfig({
 	css: {
@@ -37,16 +38,40 @@ export default defineConfig({
 				entryFileNames: "assets/[name].[hash].js",
 				chunkFileNames: "assets/[name].[hash].js",
 				assetFileNames: "assets/[name].[hash][extname]",
-				// manualChunks(id) {
-				// 	if (id.includes("node_modules/three/")) {
-				// 		return "three";
-				// 	}
-				// 	if (id.includes("node_modules/three-mesh-bvh/")) {
-				// 		return "three-mesh-bvh";
-				// 	}
-				// },
+				manualChunks(id) {
+					if (id.includes("node_modules/three/")) {
+						return "three";
+					}
+					if (id.includes("node_modules/three-mesh-bvh/")) {
+						return "three-mesh-bvh";
+					}
+				},
 			},
 		},
 	},
-	plugins: [tsconfigPaths(), topLevelAwait()],
+	plugins: [
+		tsconfigPaths(), 
+		topLevelAwait(),
+		serviceWorkerPlugin({
+			swSrc: 'public/sw-template.js',
+			swDest: 'sw.js',
+			staticAssets: [
+				'/test_stl_file.stl',
+				'/TF-IschialContainment.stl',
+				'/Crosswalk.stl',
+				'/CylinderTest77x60.stl',
+				'/acme_J_needs-trimming.stl',
+				'/cylinder.stl',
+				'/test_cylinder.gcode',
+				'/test_cylinder.stl',
+				'/helvetiker_regular.typeface.json',
+				'/manifest.webmanifest',
+				'/favicon.ico',
+				'/64x64.png',
+				'/128x128@2x.png',
+				'/AppIcon-512@2x.png',
+				'/Square310x310Logo.png'
+			]
+		})
+	],
 });

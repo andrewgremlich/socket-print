@@ -104,7 +104,7 @@ export async function slicingAction(sendToFile: boolean) {
 	printObject.updateMatrixWorld();
 
 	if (printObject.currentType === PrintObjectType.Socket) {
-		mergeCylinder.setHeight(printObject.boundingBox.max.y / 2);
+		mergeCylinder.setHeight(printObject.boundingBox.max.y * 0.66);
 		app.addToScene(mergeCylinder.mesh);
 	}
 
