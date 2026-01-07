@@ -1,6 +1,7 @@
 class OfflineIndicator extends HTMLElement {
 	private indicator: HTMLDivElement;
 	private isOnline: boolean = navigator.onLine;
+	private hideTimer: number | null = null;
 
 	constructor() {
 		super();
@@ -17,10 +18,12 @@ class OfflineIndicator extends HTMLElement {
 	disconnectedCallback() {
 		window.removeEventListener("online", this.handleOnline);
 		window.removeEventListener("offline", this.handleOffline);
+		this.clearHideTimer();
 	}
 
 	private handleOnline = () => {
 		this.isOnline = true;
+		this.clearHideTimer();
 		this.updateStatus();
 	};
 
@@ -47,10 +50,35 @@ class OfflineIndicator extends HTMLElement {
 		}
 	}
 
+	private clearHideTimer() {
+		if (this.hideTimer !== null) {
+			clearTimeout(this.hideTimer);
+			this.hideTimer = null;
+		}
+	}
+
+	private startHideTimer() {
+		this.clearHideTimer();
+		this.hideTimer = window.setTimeout(() => {
+			if (this.indicator) {
+				this.indicator.classList.add("fade-out");
+				// Wait for animation to complete before hiding
+				setTimeout(() => {
+					if (this.indicator) {
+						this.indicator.style.display = "none";
+						this.indicator.classList.remove("fade-out");
+					}
+				}, 300);
+			}
+			this.hideTimer = null;
+		}, 10000); // 10 seconds
+	}
+
 	private updateStatus(hasCachedContent: boolean = false) {
 		if (!this.indicator) return;
 
 		if (this.isOnline) {
+			this.clearHideTimer();
 			this.indicator.style.display = "none";
 		} else {
 			this.indicator.style.display = "block";
@@ -62,6 +90,9 @@ class OfflineIndicator extends HTMLElement {
 				this.indicator.textContent = "Offline Mode";
 				this.indicator.style.background = "#ff6b6b";
 			}
+
+			// Start the auto-hide timer
+			this.startHideTimer();
 		}
 	}
 
@@ -98,6 +129,10 @@ class OfflineIndicator extends HTMLElement {
 					animation: slideIn 0.3s ease-out;
 				}
 
+				.offline-indicator.fade-out {
+					animation: fadeOut 0.3s ease-out;
+				}
+
 				@keyframes slideIn {
 					from {
 						transform: translateX(100%);
@@ -106,6 +141,15 @@ class OfflineIndicator extends HTMLElement {
 					to {
 						transform: translateX(0);
 						opacity: 1;
+					}
+				}
+
+				@keyframes fadeOut {
+					from {
+						opacity: 1;
+					}
+					to {
+						opacity: 0;
 					}
 				}
 
