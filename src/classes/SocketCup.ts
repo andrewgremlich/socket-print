@@ -1,11 +1,11 @@
 import { liveQuery, type Subscription } from "dexie";
 import {
 	DoubleSide,
-	LineCurve3,
+	ExtrudeGeometry,
 	Mesh,
 	MeshStandardMaterial,
-	TubeGeometry,
-	Vector3,
+	Path,
+	Shape,
 } from "three";
 import {
 	acceleratedRaycast,
@@ -17,9 +17,10 @@ import { getCupSize } from "@/db/formValuesDbActions";
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 
-export class Tube extends AppObject {
+export class SocketCup extends AppObject {
 	radius = 78 / 2;
 	height = 25;
+	wallThickness = 5;
 	radialSegments = 128;
 	tubularSegments = 128;
 	bumpDangerZone = 1;
@@ -46,17 +47,26 @@ export class Tube extends AppObject {
 	}
 
 	private createGeometry(radius: number, height: number) {
-		const path = new LineCurve3(
-			new Vector3(0, -1, 0),
-			new Vector3(0, -height - this.bumpDangerZone, 0),
-		);
-		return new TubeGeometry(
-			path,
-			this.radialSegments,
-			radius,
-			this.tubularSegments,
-			false,
-		);
+		const thickness = this.wallThickness;
+
+		const shape = new Shape();
+		shape.absarc(0, 0, radius, 0, Math.PI * 2, false);
+
+		const hole = new Path();
+		hole.absarc(0, 0, radius - thickness, 0, Math.PI * 2, true);
+		shape.holes.push(hole);
+
+		const geometry = new ExtrudeGeometry(shape, {
+			depth: height,
+			steps: this.tubularSegments,
+			bevelEnabled: false,
+		});
+
+		// Match your original TubeGeometry orientation
+		geometry.rotateX(Math.PI / 2);
+		geometry.translate(0, -this.bumpDangerZone, 0);
+
+		return geometry;
 	}
 
 	private updateSize(radius: number, height: number) {
@@ -86,7 +96,7 @@ export class Tube extends AppObject {
 	}
 
 	static async create() {
-		const instance = new Tube();
+		const instance = new SocketCup();
 
 		const [radialSegments, cupSize] = await Promise.all([
 			getRadialSegments(),

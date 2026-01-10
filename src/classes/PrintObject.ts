@@ -45,8 +45,8 @@ import {
 } from "@/utils/htmlElements";
 import { fetchStlFile, setStlFileInputAndDispatch } from "@/utils/printObject";
 import { AppObject } from "./AppObject";
+import type { SocketCup } from "./SocketCup";
 import { TestCylinder } from "./TestCylinder";
-import type { Tube } from "./Tube";
 
 type Callback = (params: { size: { x: number; y: number; z: number } }) => void;
 
@@ -56,10 +56,10 @@ export class PrintObject extends AppObject {
 	loadedStlFromIndexedDb = false;
 	offsetYPosition = 0;
 	currentType: PrintObjectType = undefined;
-	tube: Tube;
+	tube: SocketCup;
 	isCollidingWithTube: boolean = false;
 
-	constructor({ callback, tube }: { callback: Callback; tube: Tube }) {
+	constructor({ callback, tube }: { callback: Callback; tube: SocketCup }) {
 		super();
 
 		this.callback = callback;
