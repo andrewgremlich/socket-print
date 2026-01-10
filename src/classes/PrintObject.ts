@@ -69,43 +69,64 @@ export class PrintObject extends AppObject {
 			throw new Error("STL File Input not found");
 		}
 
-		getAllFiles().then((files) => {
-			if (files.length === 1) {
-				const { file, name, type } = files[0];
-				const stlFile = new File([file], name, {
-					type: "model/stl",
-				});
+		getAllFiles()
+			.then((files) => {
+				if (files.length === 1) {
+					const { file, name, type } = files[0];
+					const stlFile = new File([file], name, {
+						type: "model/stl",
+					});
 
-				this.currentType = type;
-				this.loadedStlFromIndexedDb = true;
+					this.currentType = type;
+					this.loadedStlFromIndexedDb = true;
 
-				setStlFileInputAndDispatch(stlFile);
-			} else {
+					setStlFileInputAndDispatch(stlFile);
+				} else {
+					this.loadedStlFromIndexedDb = false;
+				}
+			})
+			.catch((error) => {
+				console.error("Failed to load files from database:", error);
 				this.loadedStlFromIndexedDb = false;
-			}
-		});
+			});
 
 		addTestStlButton?.addEventListener("click", async () => {
-			await this.clearData();
-			this.currentType = PrintObjectType.Socket;
-			await fetchStlFile("test_stl_file.stl")();
+			try {
+				await this.clearData();
+				this.currentType = PrintObjectType.Socket;
+				await fetchStlFile("test_stl_file.stl")();
+			} catch (error) {
+				console.error("Failed to load test STL:", error);
+				loadingScreen.style.display = "none";
+			}
 		});
 		addTestCylinderButton?.addEventListener("click", async () => {
-			await this.clearData();
-			this.currentType = PrintObjectType.TestCylinder;
-			await this.#handleTestCylinder();
+			try {
+				await this.clearData();
+				this.currentType = PrintObjectType.TestCylinder;
+				console.log("test cylinder clicked");
+				await this.#handleTestCylinder();
+			} catch (error) {
+				console.error("Failed to create test cylinder:", error);
+				loadingScreen.style.display = "none";
+			}
 		});
 
 		stlFileInput?.addEventListener("change", async (evt) => {
-			if (evt.isTrusted) {
-				await this.clearData();
+			try {
+				if (evt.isTrusted) {
+					await this.clearData();
+				}
+
+				this.currentType = evt.isTrusted
+					? PrintObjectType.Socket
+					: this.currentType;
+
+				await this.#onStlFileChange(evt);
+			} catch (error) {
+				console.error("Failed to process STL file:", error);
+				loadingScreen.style.display = "none";
 			}
-
-			this.currentType = evt.isTrusted
-				? PrintObjectType.Socket
-				: this.currentType;
-
-			this.#onStlFileChange(evt);
 		});
 
 		coronalRotater?.addEventListener("click", this.coronalRotate90);
@@ -122,23 +143,36 @@ export class PrintObject extends AppObject {
 		});
 	}
 
-	getShrinkScale = async (mesh: Mesh) => {
+	applyShrinkScale = async () => {
+		if (!this.mesh) {
+			console.error("No Mesh found");
+			return;
+		}
+
 		const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
 		const shrinkScale = 1 / (1 - shrinkFactor / 100);
 
-		mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
-
-		return shrinkScale;
+		this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
 	};
 
-	applyNozzleSizeOffset = async (printObjectMesh: Mesh) => {
+	applyNozzleSizeOffset = async () => {
+		if (!this.mesh) {
+			console.error("No Mesh found");
+			return;
+		}
+
 		const nozzleSize = await getNozzleSize();
-		this.mesh = await applyOffset(printObjectMesh, nozzleSize); // TODO: this was previously (nozzleSize / 2), but it seemed to be consistently ~2mm too small. NozzleSize value would be 5mm.
+		this.mesh = await applyOffset(this.mesh, nozzleSize / 2);
 	};
 
-	#exportTestCylinder = async (mesh: Mesh) => {
+	#exportTestCylinder = async () => {
+		if (!this.mesh) {
+			console.error("No Mesh found");
+			return;
+		}
+
 		const stlExporter = new STLExporter();
-		const stlString = stlExporter.parse(mesh);
+		const stlString = stlExporter.parse(this.mesh);
 		const stlArrayBuffer = new TextEncoder().encode(stlString).buffer;
 
 		const cylinderFile = new File([stlArrayBuffer], "test_cylinder.stl", {
@@ -152,15 +186,23 @@ export class PrintObject extends AppObject {
 	};
 
 	#handleTestCylinder = async () => {
+		console.log("create test cylinder");
+
 		const testCylinder = await TestCylinder.create();
 
-		await this.getShrinkScale(testCylinder.mesh);
-		await this.applyNozzleSizeOffset(testCylinder.mesh);
+		this.mesh = testCylinder.mesh;
+
+		console.log("apply size adjustments");
+
+		// await this.applyShrinkScale(testCylinder.mesh);
+		// await this.applyNozzleSizeOffset(testCylinder.mesh);
+
+		console.log("assign name");
 
 		this.mesh.name = "test_cylinder";
 		activeFileName.textContent = "test_cylinder";
 
-		this.#exportTestCylinder(this.mesh);
+		this.#exportTestCylinder();
 
 		this.computeBoundingBox();
 
@@ -197,8 +239,10 @@ export class PrintObject extends AppObject {
 		});
 		const mesh = new Mesh(rawGeometry, material);
 
-		await this.getShrinkScale(mesh);
-		await this.applyNozzleSizeOffset(mesh);
+		this.mesh = mesh;
+
+		// await this.applyShrinkScale();
+		// await this.applyNozzleSizeOffset();
 
 		(this.mesh.material as MeshStandardMaterial).wireframe =
 			import.meta.env.DEV;
@@ -207,12 +251,12 @@ export class PrintObject extends AppObject {
 		this.mesh.geometry.computeBoundsTree = computeBoundsTree;
 		this.mesh.geometry.disposeBoundsTree = disposeBoundsTree;
 		this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
-		this.mesh.name = file.name;
+		this.mesh.name = file.name.replace(/[<>"'&]/g, "");
 		this.mesh.userData = { isSocket: true };
 		this.computeBoundingBox();
 		this.lockDepth = await getLockDepth();
 
-		activeFileName.textContent = file.name;
+		activeFileName.textContent = file.name.replace(/[<>"'&]/g, "");
 
 		this.mesh.geometry.translate(
 			-this.center.x,
@@ -276,6 +320,7 @@ export class PrintObject extends AppObject {
 
 		switch (this.currentType) {
 			case PrintObjectType.Socket:
+				if (!file) return;
 				await this.#handleSocket(file);
 				break;
 			case PrintObjectType.TestCylinder:
@@ -315,7 +360,7 @@ export class PrintObject extends AppObject {
 	};
 
 	#readSTLFile = async (file: File): Promise<BufferGeometry> => {
-		return new Promise((resolve, _reject) => {
+		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
 
 			reader.onload = async (e) => {
@@ -324,6 +369,8 @@ export class PrintObject extends AppObject {
 				const geometry = loader.parse(buffer);
 				resolve(geometry);
 			};
+
+			reader.onerror = () => reject(new Error("Failed to read STL file"));
 
 			reader.readAsArrayBuffer(file);
 		});
@@ -336,7 +383,7 @@ export class PrintObject extends AppObject {
 		this.mesh.position.x -= this.center.x;
 		this.mesh.position.z -= this.center.z;
 
-		if (minY < 0) {
+		if (minY < 0 && this.lockDepth !== null) {
 			this.mesh.position.y += abs(minY) - this.lockDepth;
 		}
 	};
@@ -408,6 +455,8 @@ export class PrintObject extends AppObject {
 	handleTranslationChange = async (axis: "x" | "y" | "z", evt: Event) => {
 		const targetValue = (evt.target as HTMLInputElement).value;
 		const numVal = Number.parseInt(targetValue, 10);
+
+		if (Number.isNaN(numVal)) return;
 
 		switch (axis) {
 			case "x":

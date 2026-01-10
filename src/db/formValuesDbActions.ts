@@ -1,16 +1,13 @@
-import { getDb } from "./getDb";
+import { db } from "./db";
 import type { DefaultKeyValueCollectionValues, FormValues } from "./types";
 
 export const getFormKeyValues = async () => {
-	const db = await getDb();
 	return await db.formValues.toArray();
 };
 
 export const setFormValues = async (
 	settings: DefaultKeyValueCollectionValues,
 ) => {
-	const db = await getDb();
-
 	const settingsArray = Object.entries(settings).map(([name, value]) => ({
 		name,
 		value,
@@ -25,7 +22,6 @@ export const setFormValues = async (
 };
 
 export const getIpAddress = async () => {
-	const db = await getDb();
 	const ipAddress = await db.formValues
 		.where("name")
 		.equals("ipAddress")
@@ -36,8 +32,6 @@ export const getIpAddress = async () => {
 };
 
 export const saveIpAddress = async (ipAddress: string) => {
-	const db = await getDb();
-
 	return await db.formValues
 		.where("name")
 		.equals("ipAddress")
@@ -45,7 +39,6 @@ export const saveIpAddress = async (ipAddress: string) => {
 };
 
 export const getLockPosition = async () => {
-	const db = await getDb();
 	const lockPosition = await db.formValues
 		.where("name")
 		.equals("lockPosition")
@@ -57,8 +50,6 @@ export const getLockPosition = async () => {
 export const saveLockPosition = async (
 	lockPosition: FormValues["lockPosition"],
 ) => {
-	const db = await getDb();
-
 	return await db.formValues
 		.where("name")
 		.equals("lockPosition")
@@ -66,7 +57,6 @@ export const saveLockPosition = async (
 };
 
 export const getCupSize = async () => {
-	const db = await getDb();
 	const cupSize = await db.formValues.where("name").equals("cupSize").first();
 	return cupSize.value as string;
 };
@@ -79,8 +69,6 @@ export const getCupSizeHeight = async () => {
 };
 
 export const saveCupSize = async (cupSize: string) => {
-	const db = await getDb();
-
 	return await db.formValues
 		.where("name")
 		.equals("cupSize")
@@ -88,7 +76,6 @@ export const saveCupSize = async (cupSize: string) => {
 };
 
 export const getNozzleSize = async () => {
-	const db = await getDb();
 	const nozzleSize = await db.formValues
 		.where("name")
 		.equals("nozzleSize")
@@ -97,8 +84,6 @@ export const getNozzleSize = async () => {
 };
 
 export const saveNozzleSize = async (nozzleSize: number) => {
-	const db = await getDb();
-
 	return await db.formValues
 		.where("name")
 		.equals("nozzleSize")
@@ -106,7 +91,6 @@ export const saveNozzleSize = async (nozzleSize: number) => {
 };
 
 export const getLayerHeight = async () => {
-	const db = await getDb();
 	const layerHeight = await db.formValues
 		.where("name")
 		.equals("layerHeight")
@@ -116,8 +100,6 @@ export const getLayerHeight = async () => {
 };
 
 export const saveLayerHeight = async (layerHeight: number) => {
-	const db = await getDb();
-
 	return await db.formValues
 		.where("name")
 		.equals("layerHeight")
@@ -125,7 +107,6 @@ export const saveLayerHeight = async (layerHeight: number) => {
 };
 
 export const getActiveMaterialProfile = async () => {
-	const db = await getDb();
 	const activeMaterialProfile = await db.formValues
 		.where("name")
 		.equals("activeMaterialProfile")
@@ -136,8 +117,6 @@ export const getActiveMaterialProfile = async () => {
 export const saveActiveMaterialProfile = async (
 	activeMaterialProfile: string,
 ) => {
-	const db = await getDb();
-
 	return await db.formValues
 		.where("name")
 		.equals("activeMaterialProfile")

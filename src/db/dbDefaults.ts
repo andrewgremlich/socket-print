@@ -1,4 +1,4 @@
-import { getDb } from "./getDb";
+import { db } from "./db";
 import {
 	type DefaultKeyValueCollectionNames,
 	type DefaultKeyValueCollectionValues,
@@ -17,7 +17,6 @@ const materialProfileDefaults: Omit<MaterialProfile, "id"> = {
 };
 
 export async function makeMaterialProfileDefaults() {
-	const db = await getDb();
 	const defaultProfile = await db.materialProfiles
 		.where("name")
 		.equals("cp1")
@@ -49,7 +48,6 @@ export async function makeDefaultsKeyValues(
 	defaultValues: DefaultKeyValueCollectionValues,
 	forceUpdate = false,
 ) {
-	const db = await getDb();
 	const dbCollection = await db[collection].toArray();
 
 	const missingKeys = Object.keys(defaultValues).filter(

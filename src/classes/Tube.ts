@@ -1,3 +1,4 @@
+import { liveQuery, type Subscription } from "dexie";
 import {
 	DoubleSide,
 	LineCurve3,
@@ -14,7 +15,6 @@ import {
 } from "three-mesh-bvh";
 import { getCupSize } from "@/db/formValuesDbActions";
 import { getRadialSegments } from "@/utils/getRadialSegments";
-import { getCupSizeSelect } from "@/utils/htmlElements";
 import { AppObject } from "./AppObject";
 
 export class Tube extends AppObject {
@@ -23,18 +23,15 @@ export class Tube extends AppObject {
 	radialSegments = 128;
 	tubularSegments = 128;
 	bumpDangerZone = 1;
-	private eventListener: ((evt: Event) => void) | null = null;
+	$liveCupSize: Subscription;
 
 	private constructor() {
 		super();
 
-		this.eventListener = (evt) => {
-			const value = (evt.target as HTMLSelectElement).value;
-			const parts = value.split("x");
+		this.$liveCupSize = liveQuery(() => getCupSize()).subscribe((result) => {
+			if (!result) return;
 
-			if (parts.length !== 2) return;
-
-			const [width, height] = parts.map(Number);
+			const [width, height] = result.split("x").map(Number);
 
 			if (
 				Number.isNaN(width) ||
@@ -45,9 +42,7 @@ export class Tube extends AppObject {
 				return;
 
 			this.updateSize(width / 2, height);
-		};
-
-		getCupSizeSelect.addEventListener("change", this.eventListener);
+		});
 	}
 
 	private createGeometry(radius: number, height: number) {
@@ -81,9 +76,9 @@ export class Tube extends AppObject {
 	}
 
 	dispose() {
-		if (this.eventListener) {
-			getCupSizeSelect.removeEventListener("change", this.eventListener);
-			this.eventListener = null;
+		if (this.$liveCupSize) {
+			this.$liveCupSize.unsubscribe();
+			this.$liveCupSize = null;
 		}
 		if (this.mesh) {
 			this.mesh.geometry.dispose();

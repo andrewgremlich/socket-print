@@ -14,7 +14,7 @@ import {
 	setTestCylinderHeight,
 	setTestCylinderInnerDiameter,
 } from "@/db/appSettingsDbActions";
-import { deleteDb } from "@/db/getDb";
+import { deleteDb } from "@/db/db";
 
 import { Dialog } from "../Dialog";
 
