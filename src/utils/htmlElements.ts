@@ -43,9 +43,15 @@ export const printerFileInput = document.getElementById(
 export const ipAddressInput = document.getElementById(
 	"ipAddressInput",
 ) as HTMLInputElement;
+export const testCylinderInnerDiameterInput = document.getElementById(
+	"testCylinderInnerDiameter",
+) as HTMLInputElement;
 
 export const activeMaterialProfileSelect = document.getElementById(
 	"activeMaterialProfile",
+) as HTMLSelectElement;
+export const getCupSizeSelect = document.getElementById(
+	"cupSize",
 ) as HTMLSelectElement;
 
 export const progressBar = document.getElementById(

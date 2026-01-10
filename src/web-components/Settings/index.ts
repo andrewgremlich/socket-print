@@ -63,7 +63,7 @@ export class Settings extends Dialog {
 						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
 
 						<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter</label>
-						<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="67" max="70" />
+						<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="65" max="80" />
 
 						<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
 					</form>
