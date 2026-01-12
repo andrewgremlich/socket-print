@@ -1,11 +1,5 @@
 import type { EntityTable } from "dexie";
 
-type KeyValueSetting = {
-	id: number;
-	name: string;
-	value: string | number | boolean;
-};
-
 export type MaterialProfile = {
 	id: number;
 	name: string;
@@ -29,10 +23,17 @@ export type SavedFile = {
 	file: Blob;
 };
 
+export type CupSize = {
+	innerDiameter: number;
+	outerDiameter: number;
+	height: number;
+	name: string;
+};
+
 export type FormValues = {
 	ipAddress: string;
 	lockPosition: "left" | "right";
-	cupSize: string;
+	cupSize: CupSize;
 	nozzleSize: number;
 	layerHeight: number;
 	activeMaterialProfile: string;
@@ -50,9 +51,15 @@ export type ProvelPrintSettings = {
 	startingCupLayerHeight: number;
 	lineWidthAdjustment: number;
 	testCylinderHeight: number;
-	testCylinderInnerDiameter: number;
+	testCylinderDiameter: number;
 	secondsPerLayer: number;
 	ePerRevolution: number;
+};
+
+type KeyValueSetting = {
+	id: number;
+	name: string;
+	value: string | number | boolean | CupSize;
 };
 
 export type Entities = {
@@ -77,5 +84,5 @@ export type DefaultKeyValueCollectionNames = Exclude<
 
 export type DefaultKeyValueCollectionValues = Record<
 	string,
-	string | number | boolean
+	string | number | boolean | CupSize
 >;

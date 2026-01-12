@@ -26,6 +26,7 @@ export async function makeMaterialProfileDefaults() {
 		const missingKeys = Object.keys(materialProfileDefaults).filter(
 			(key) => !Object.keys(defaultProfile).includes(key),
 		);
+
 		await Promise.all(
 			missingKeys.map((key) =>
 				db.materialProfiles.update(defaultProfile.id, {
@@ -46,7 +47,6 @@ export async function makeMaterialProfileDefaults() {
 export async function makeDefaultsKeyValues(
 	collection: DefaultKeyValueCollectionNames,
 	defaultValues: DefaultKeyValueCollectionValues,
-	forceUpdate = false,
 ) {
 	const dbCollection = await db[collection].toArray();
 
@@ -54,21 +54,17 @@ export async function makeDefaultsKeyValues(
 		(key) => !dbCollection.some((item) => item.name === key),
 	);
 
-	if (missingKeys.length || forceUpdate) {
-		if (forceUpdate) {
-			await db[collection].clear();
-		}
-
+	if (missingKeys.length) {
 		await Promise.all(
 			missingKeys.map((name) => {
 				if (collection === "savedFiles") {
-					// Provide a default Blob for missing files
 					return db[collection].add({
 						name,
 						type: PrintObjectType.Socket,
 						file: new Blob([], { type: "application/octet-stream" }),
 					});
 				}
+
 				return db[collection].add({
 					name,
 					value: defaultValues[name],

@@ -1,9 +1,11 @@
+import { liveQuery, type Subscription } from "dexie";
 import {
 	CylinderGeometry,
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
+import { getTestCylinderDiameter } from "@/db/appSettingsDbActions";
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 
@@ -11,10 +13,19 @@ export class MergeCylinder extends AppObject {
 	#radialSegments = 128; // default; replaced from DB
 	#radius = 78 / 2;
 	height: number;
+	$liveTestCylinderDiameter: Subscription;
 
 	private constructor(options?: { height: number }) {
 		super();
 		this.height = options?.height ?? 0;
+
+		this.$liveTestCylinderDiameter = liveQuery(() =>
+			getTestCylinderDiameter(),
+		).subscribe((diameter) => {
+			if (!diameter || diameter <= 0 || !this.mesh) return;
+			this.#radius = diameter / 2;
+			this.updateGeometry();
+		});
 	}
 
 	static async create(options?: { height: number }): Promise<MergeCylinder> {
@@ -40,8 +51,7 @@ export class MergeCylinder extends AppObject {
 		return instance;
 	}
 
-	setHeight(newHeight: number): void {
-		this.height = newHeight;
+	private updateGeometry(): void {
 		const newGeometry = new CylinderGeometry(
 			this.#radius,
 			this.#radius,
@@ -54,5 +64,21 @@ export class MergeCylinder extends AppObject {
 		this.mesh.geometry = newGeometry;
 		this.mesh.position.set(0, this.height / 2, 0);
 		this.updateMatrixWorld();
+	}
+
+	setHeight(newHeight: number): void {
+		this.height = newHeight;
+		this.updateGeometry();
+	}
+
+	dispose(): void {
+		if (this.$liveTestCylinderDiameter) {
+			this.$liveTestCylinderDiameter.unsubscribe();
+			this.$liveTestCylinderDiameter = null;
+		}
+		if (this.mesh) {
+			(this.mesh.material as MeshStandardMaterial).dispose();
+			this.mesh.geometry.dispose();
+		}
 	}
 }

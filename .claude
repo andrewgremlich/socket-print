@@ -1,0 +1,198 @@
+# Socket Print (Provel Print) - Claude Project File
+
+## Project Overview
+
+Socket Print (Product name: Provel Print) is a CAD-like desktop application designed to facilitate faster turnaround times for amputees to receive 3D-printed prosthetic sockets for residual limbs. It combines real-time 3D visualization, computational geometry, and G-code generation for manufacturing.
+
+**Repository**: https://github.com/andrewgremlich/socket-print
+**Version**: 1.14.3
+**License**: MIT
+
+## Key Features
+
+- Load and modify prosthetic socket STL files
+- Real-time 3D visualization with Three.js
+- Apply 3D transformations (rotation, translation)
+- Generate G-code files for 3D printers
+- Connect to compatible 3D printers for direct printing
+- Material profile management
+- Offline-first capability with service workers
+- Cross-platform desktop app via Tauri
+
+## Tech Stack
+
+### Frontend
+- **TypeScript** 5.9.3 - Type-safe language
+- **Vite** 7.3.0 - Build tool and dev server
+- **Three.js** 0.182.0 - 3D graphics library
+- **three-mesh-bvh** 0.9.4 - Optimized ray casting
+- **Dexie** 4.2.1 - IndexedDB wrapper
+- **Web Components** - Custom UI elements
+- **math.js** 15.1.0 - Mathematical functions
+- **hotkeys-js** 3.13.15 - Keyboard shortcuts
+
+### Desktop Framework
+- **Tauri** 2.x - Cross-platform native app (Rust backend)
+- **Tauri Plugins**: dialog, fs, log, updater, process
+
+### Testing & Quality
+- **Vitest** 4.0.16 - Unit testing
+- **Biome** 2.3.10 - Linting and formatting
+
+## Project Structure
+
+```
+socket-print/
+├── src/                      # Frontend TypeScript source
+│   ├── 3d/                  # 3D geometry & G-code generation
+│   │   ├── generateGCode.ts # G-code output generation
+│   │   ├── sliceWorker.ts   # Web Worker for model slicing
+│   │   └── ...              # Other 3D utilities
+│   ├── classes/             # Core object classes
+│   │   ├── Application.ts   # Main 3D scene manager
+│   │   ├── PrintObject.ts   # Loaded STL model wrapper
+│   │   ├── SocketCup.ts     # Prosthetic socket cup geometry
+│   │   └── ...              # Other classes
+│   ├── db/                  # Database & persistence layer
+│   │   ├── db.ts           # Dexie database setup
+│   │   ├── types.ts        # TypeScript type definitions
+│   │   └── ...             # DB actions and utilities
+│   ├── utils/              # Utility functions & helpers
+│   ├── web-components/     # Custom HTML elements
+│   │   ├── Settings/       # Settings dialog
+│   │   ├── MaterialProfileForm/
+│   │   └── ...
+│   └── renderer.ts         # Main app entry point
+├── src-tauri/              # Rust/Tauri backend
+│   ├── src/
+│   │   ├── lib.rs         # Tauri app setup & commands
+│   │   └── printer.rs     # Printer interface
+│   └── tauri.conf.json    # Tauri configuration
+├── public/                 # Static assets
+├── index.html             # Main app page
+└── vite.config.ts         # Vite build config
+```
+
+## Development Commands
+
+```bash
+# Setup
+npm install              # Install dependencies
+npm run prepare         # Setup git hooks
+
+# Development
+npm run dev             # Start dev server (localhost:4200)
+npm run dev:web         # Vite dev server
+
+# Building
+npm run build           # Production build
+npm run build:tauri     # Build Tauri desktop app
+npm run preview         # Preview build (localhost:4300)
+
+# Testing
+npm run test            # Run tests
+npm run test:watch      # Run tests in watch mode
+npm run test:coverage   # Generate coverage report
+
+# Code Quality
+npm run check           # TypeScript check + Biome formatting
+npm run clean           # Remove build artifacts
+```
+
+## Architecture & Workflow
+
+### Core Application Flow
+
+1. **Model Loading**
+   - User loads STL file via file input
+   - `PrintObject` class parses STL using Three.js STLLoader
+   - Model stored in IndexedDB
+   - Mesh added to 3D scene
+
+2. **3D Manipulation**
+   - User modifies position (X, Y, Z translation)
+   - User applies rotations (Coronal, Sagittal, Transverse)
+   - Changes stored in IndexedDB `appSettings`
+   - 3D scene updates in real-time
+
+3. **Slicing & G-code Generation**
+   - Web Worker (`sliceWorker.ts`) performs ray casting to slice model
+   - Collects 2D contours at each layer height
+   - Main thread calculates feedrate and extrusion
+   - Generates G-code output
+
+4. **Output**
+   - G-code sent to file (download) or printer (network)
+   - Material profiles define temp, density, extrusion factors
+
+### Data Persistence (IndexedDB)
+
+- **formValues**: User input (IP, cup size, nozzle size, layer height)
+- **appSettings**: App state (rotations, translations, lock position)
+- **materialProfiles**: Printer material definitions
+- **savedFiles**: Uploaded STL files
+
+## Key Files
+
+### Entry Points
+- [index.html](index.html) - Main application entry
+- [src/renderer.ts](src/renderer.ts) - Application initialization
+- [src/classes/Application.ts](src/classes/Application.ts) - Three.js scene manager
+
+### Core Classes
+- [src/classes/PrintObject.ts](src/classes/PrintObject.ts) - STL model handling
+- [src/classes/SocketCup.ts](src/classes/SocketCup.ts) - Prosthetic socket geometry
+- [src/classes/TestCylinder.ts](src/classes/TestCylinder.ts) - Test cylinder
+- [src/classes/MergeCylinder.ts](src/classes/MergeCylinder.ts) - Merge cylinder transitions
+
+### 3D Processing
+- [src/3d/generateGCode.ts](src/3d/generateGCode.ts) - G-code generation
+- [src/3d/sliceWorker.ts](src/3d/sliceWorker.ts) - Model slicing worker
+- [src/3d/generateOffsetWithNormal.ts](src/3d/generateOffsetWithNormal.ts) - Mesh offset
+- [src/3d/blendHardEdges.ts](src/3d/blendHardEdges.ts) - Edge smoothing
+
+### Database
+- [src/db/db.ts](src/db/db.ts) - Dexie database setup
+- [src/db/store.ts](src/db/store.ts) - Database initialization
+- [src/db/types.ts](src/db/types.ts) - TypeScript type definitions
+
+### Utilities
+- [src/utils/globalEvents.ts](src/utils/globalEvents.ts) - Global event handlers
+- [src/utils/htmlElements.ts](src/utils/htmlElements.ts) - DOM references
+- [src/utils/handlePrinterConnection.ts](src/utils/handlePrinterConnection.ts) - Printer connection
+
+## Important Notes
+
+### Security Considerations
+- Avoid command injection, XSS, SQL injection
+- Validate user input at system boundaries
+- Trust internal code and framework guarantees
+
+### Code Style
+- Prefer simple solutions over over-engineering
+- Only add features/refactors when explicitly requested
+- Delete unused code completely (no backwards-compatibility hacks)
+- Use Biome for formatting and linting
+
+### 3D Graphics Performance
+- Uses BVH (Bounding Volume Hierarchy) for optimized ray casting
+- Web Worker for slicing to avoid blocking UI
+- Mesh updates are reactive based on form changes
+
+### Material Profiles
+- Define nozzle temp, cup temp, shrink factor, output factor
+- Support for various 3D printing materials
+- Stored in IndexedDB for persistence
+
+### Testing
+- Use Vitest for unit tests
+- Test coverage available via `npm run test:coverage`
+- Tests should focus on critical geometry and G-code generation logic
+
+## Recent Changes
+
+- Socket cup upgrades and wall thickness added
+- Database improvements (live queries, singleton fix)
+- Component reactivity improvements
+- Removed Ring class and old events utility
+- Added new globalEvents utility

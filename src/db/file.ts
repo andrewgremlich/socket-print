@@ -5,18 +5,8 @@ export async function getAllFiles(): Promise<SavedFile[]> {
 	return await db.savedFiles.toArray();
 }
 
-export async function getFileByName(
-	name: string,
-): Promise<SavedFile | undefined> {
+async function getFileByName(name: string): Promise<SavedFile | undefined> {
 	return await db.savedFiles.where("name").equals(name).first();
-}
-
-export async function deleteFileByName(name: string): Promise<void> {
-	const file = await getFileByName(name);
-
-	if (file) {
-		await db.savedFiles.delete(file.id);
-	}
 }
 
 export async function deleteAllFiles(): Promise<void> {

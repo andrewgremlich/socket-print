@@ -18,9 +18,9 @@ import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 
 export class SocketCup extends AppObject {
-	radius = 78 / 2;
+	innerRadius = 78 / 2;
+	outerRadius = 78 / 2 + 5;
 	height = 25;
-	wallThickness = 5;
 	radialSegments = 128;
 	tubularSegments = 128;
 	bumpDangerZone = 1;
@@ -32,28 +32,32 @@ export class SocketCup extends AppObject {
 		this.$liveCupSize = liveQuery(() => getCupSize()).subscribe((result) => {
 			if (!result) return;
 
-			const [width, height] = result.split("x").map(Number);
+			const { innerDiameter, outerDiameter, height } = result;
 
 			if (
-				Number.isNaN(width) ||
+				Number.isNaN(innerDiameter) ||
+				Number.isNaN(outerDiameter) ||
 				Number.isNaN(height) ||
-				width <= 0 ||
+				innerDiameter <= 0 ||
+				outerDiameter <= 0 ||
 				height <= 0
 			)
 				return;
 
-			this.updateSize(width / 2, height);
+			this.updateSize(innerDiameter / 2, outerDiameter / 2, height);
 		});
 	}
 
-	private createGeometry(radius: number, height: number) {
-		const thickness = this.wallThickness;
-
+	private createGeometry(
+		innerRadius: number,
+		outerRadius: number,
+		height: number,
+	) {
 		const shape = new Shape();
-		shape.absarc(0, 0, radius, 0, Math.PI * 2, false);
+		shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
 
 		const hole = new Path();
-		hole.absarc(0, 0, radius - thickness, 0, Math.PI * 2, true);
+		hole.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
 		shape.holes.push(hole);
 
 		const geometry = new ExtrudeGeometry(shape, {
@@ -62,20 +66,20 @@ export class SocketCup extends AppObject {
 			bevelEnabled: false,
 		});
 
-		// Match your original TubeGeometry orientation
 		geometry.rotateX(Math.PI / 2);
 		geometry.translate(0, -this.bumpDangerZone, 0);
 
 		return geometry;
 	}
 
-	private updateSize(radius: number, height: number) {
+	private updateSize(innerRadius: number, outerRadius: number, height: number) {
 		if (!this.mesh) return;
 
-		this.radius = radius;
+		this.innerRadius = innerRadius;
+		this.outerRadius = outerRadius;
 		this.height = height;
 
-		const geometry = this.createGeometry(radius, height);
+		const geometry = this.createGeometry(innerRadius, outerRadius, height);
 		const bvh = new MeshBVH(geometry);
 
 		this.mesh.geometry.dispose();
@@ -102,19 +106,30 @@ export class SocketCup extends AppObject {
 			getRadialSegments(),
 			getCupSize(),
 		]);
-		const [width, height] = cupSize ? cupSize.split("x").map(Number) : [78, 25];
 
-		if (
-			Number.isNaN(width) ||
-			Number.isNaN(height) ||
-			width <= 0 ||
-			height <= 0
-		) {
-			instance.radius = 78 / 2;
+		if (!cupSize) {
+			instance.innerRadius = 78 / 2;
+			instance.outerRadius = 78 / 2 + 5;
 			instance.height = 25;
 		} else {
-			instance.radius = width / 2;
-			instance.height = height;
+			const { innerDiameter, outerDiameter, height } = cupSize;
+
+			if (
+				Number.isNaN(innerDiameter) ||
+				Number.isNaN(outerDiameter) ||
+				Number.isNaN(height) ||
+				innerDiameter <= 0 ||
+				outerDiameter <= 0 ||
+				height <= 0
+			) {
+				instance.innerRadius = 78 / 2;
+				instance.outerRadius = 78 / 2 + 5;
+				instance.height = 25;
+			} else {
+				instance.innerRadius = innerDiameter / 2;
+				instance.outerRadius = outerDiameter / 2;
+				instance.height = height;
+			}
 		}
 		instance.radialSegments = radialSegments;
 
@@ -123,7 +138,11 @@ export class SocketCup extends AppObject {
 			side: DoubleSide,
 			wireframe: import.meta.env.DEV,
 		});
-		const geometry = instance.createGeometry(instance.radius, instance.height);
+		const geometry = instance.createGeometry(
+			instance.innerRadius,
+			instance.outerRadius,
+			instance.height,
+		);
 		const mesh = new Mesh(geometry, material);
 		const bvh = new MeshBVH(geometry);
 

@@ -1,5 +1,9 @@
 import { db } from "./db";
-import type { DefaultKeyValueCollectionValues, FormValues } from "./types";
+import type {
+	CupSize,
+	DefaultKeyValueCollectionValues,
+	FormValues,
+} from "./types";
 
 export const getFormKeyValues = async () => {
 	return await db.formValues.toArray();
@@ -31,13 +35,6 @@ export const getIpAddress = async () => {
 	return ipAddressValue;
 };
 
-export const saveIpAddress = async (ipAddress: string) => {
-	return await db.formValues
-		.where("name")
-		.equals("ipAddress")
-		.modify({ value: ipAddress });
-};
-
 export const getLockPosition = async () => {
 	const lockPosition = await db.formValues
 		.where("name")
@@ -47,32 +44,14 @@ export const getLockPosition = async () => {
 	return lockPosition?.value as FormValues["lockPosition"];
 };
 
-export const saveLockPosition = async (
-	lockPosition: FormValues["lockPosition"],
-) => {
-	return await db.formValues
-		.where("name")
-		.equals("lockPosition")
-		.modify({ value: lockPosition });
-};
-
 export const getCupSize = async () => {
 	const cupSize = await db.formValues.where("name").equals("cupSize").first();
-	return cupSize.value as string;
+	return cupSize.value as CupSize;
 };
 
 export const getCupSizeHeight = async () => {
 	const cupSize = await getCupSize();
-	const splitWidthAndHeight = (cupSize as string).split("x");
-
-	return Number(splitWidthAndHeight[1]);
-};
-
-export const saveCupSize = async (cupSize: string) => {
-	return await db.formValues
-		.where("name")
-		.equals("cupSize")
-		.modify({ value: cupSize });
+	return cupSize.height;
 };
 
 export const getNozzleSize = async () => {
@@ -83,13 +62,6 @@ export const getNozzleSize = async () => {
 	return Number(nozzleSize.value);
 };
 
-export const saveNozzleSize = async (nozzleSize: number) => {
-	return await db.formValues
-		.where("name")
-		.equals("nozzleSize")
-		.modify({ value: nozzleSize });
-};
-
 export const getLayerHeight = async () => {
 	const layerHeight = await db.formValues
 		.where("name")
@@ -97,21 +69,6 @@ export const getLayerHeight = async () => {
 		.first();
 
 	return Number(layerHeight.value);
-};
-
-export const saveLayerHeight = async (layerHeight: number) => {
-	return await db.formValues
-		.where("name")
-		.equals("layerHeight")
-		.modify({ value: layerHeight });
-};
-
-export const getActiveMaterialProfile = async () => {
-	const activeMaterialProfile = await db.formValues
-		.where("name")
-		.equals("activeMaterialProfile")
-		.first();
-	return activeMaterialProfile.value as string;
 };
 
 export const saveActiveMaterialProfile = async (

@@ -7,6 +7,7 @@ import {
 	getEPerRevolution,
 	getLineWidthAdjustment,
 	getSecondsPerLayer,
+	getTestCylinderDiameter,
 } from "@/db/appSettingsDbActions";
 import {
 	getCupSize,
@@ -23,6 +24,7 @@ import {
 	getActiveMaterialProfileNozzleTemp,
 	getActiveMaterialProfileOutputFactor,
 } from "@/db/materialProfilesDbActions";
+import type { PrintObjectType } from "@/db/types";
 import {
 	getCirclePoints,
 	getTransitionLayer,
@@ -43,51 +45,74 @@ function makeGCodePoint(
 	return `G1 X${-floor(point.x, 2)} Y${floor(point[opts.flipHeight], 2)} Z${floor(point[opts.verticalAxis], 2)}`;
 }
 
+async function getStartingX() {
+	const testCylinderDiameter = await getTestCylinderDiameter();
+	return testCylinderDiameter / 2;
+}
+
 export async function generateGCode(
 	pointGatherer: Vector3[][],
 	feedratePerLevel: number[],
 	verticalAxis: "y" | "z" = "y",
 	options: {
 		estimatedTime?: string;
+		printObjectType?: PrintObjectType;
 	} = {},
 ): Promise<string> {
 	const { estimatedTime = "0m 0s" } = options;
 	const [
-		activeMaterialProfileName,
+		name,
 		outputFactor,
-		nozzleSize,
-		cupSize,
-		segments,
-		lockPosition,
-		secondsPerLayer,
-		lineWidthAdjustment,
-		cupHeight,
-		layerHeight,
 		nozzleTempRaw,
 		cupTempRaw,
 		density,
 		gramsPerRevolution,
-		ePerRevolution,
 	] = await Promise.all([
 		getActiveMaterialProfileName(),
 		getActiveMaterialProfileOutputFactor(),
-		getNozzleSize(),
-		getCupSize(),
-		getCircularSegments(),
-		getLockPosition(),
-		getSecondsPerLayer(),
-		getLineWidthAdjustment(),
-		getCupSizeHeight(),
-		getLayerHeight(),
 		getActiveMaterialProfileNozzleTemp(),
 		getActiveMaterialProfileCupTemp(),
 		getActiveMaterialProfileDensity(),
 		getActiveMaterialProfileGramsPerRevolution(),
-		getEPerRevolution(),
 	]);
-	const nozzleTemp = nozzleTempRaw ?? "195";
-	const cupTemp = cupTempRaw ?? "160";
-	const startingHeight = cupHeight + nozzleSize;
+	const [nozzleSize, cupSize, lockPosition, cupHeight, layerHeight] =
+		await Promise.all([
+			getNozzleSize(),
+			getCupSize(),
+			getLockPosition(),
+			getCupSizeHeight(),
+			getLayerHeight(),
+		]);
+	const [segments, secondsPerLayer, lineWidthAdjustment, ePerRevolution] =
+		await Promise.all([
+			getCircularSegments(),
+			getSecondsPerLayer(),
+			getLineWidthAdjustment(),
+			getEPerRevolution(),
+		]);
+	const startingX = await getStartingX();
+	const materialProfile = {
+		name,
+		outputFactor,
+		nozzleTemp: nozzleTempRaw ?? "195",
+		cupTemp: cupTempRaw ?? "160",
+		density,
+		gramsPerRevolution,
+	};
+	const formValues = {
+		nozzleSize,
+		cupSize,
+		lockPosition,
+		cupHeight,
+		layerHeight,
+	};
+	const appSettings = {
+		segments,
+		secondsPerLayer,
+		lineWidthAdjustment,
+		ePerRevolution,
+	};
+	const startingHeight = formValues.cupHeight + formValues.nozzleSize;
 	const flipHeight = flipVerticalAxis(verticalAxis);
 
 	const gcode = [
@@ -95,13 +120,13 @@ export async function generateGCode(
 		";TYPE:Custom",
 		";metadata",
 		`;estimated printing time (normal mode)=${estimatedTime}`,
-		`;customInfo material="${activeMaterialProfileName}"`,
-		`;customInfo nozzleSize="${nozzleSize}mm"`,
-		`;customInfo secondsPerLayer="${secondsPerLayer}"`,
-		`;customInfo cupSize="${cupSize} ${lockPosition === "left" ? "L" : "R"}"`,
-		`;customInfo nozzleTemp="${nozzleTemp}C"`,
-		`;customInfo cupTemp="${cupTemp}C"`,
-		`;customInfo layerHeight="${layerHeight ?? "1"}mm"`,
+		`;customInfo material="${materialProfile.name}"`,
+		`;customInfo nozzleSize="${formValues.nozzleSize}mm"`,
+		`;customInfo secondsPerLayer="${appSettings.secondsPerLayer}"`,
+		`;customInfo cupSize="${formValues.cupSize} ${formValues.lockPosition === "left" ? "L" : "R"}"`,
+		`;customInfo nozzleTemp="${materialProfile.nozzleTemp}C"`,
+		`;customInfo cupTemp="${materialProfile.cupTemp}C"`,
+		`;customInfo layerHeight="${formValues.layerHeight ?? "1"}mm"`,
 		";# START GCODE SEQUENCE FOR CUP PRINT#;",
 
 		"G21 ; Set units to millimeters",
@@ -111,14 +136,14 @@ export async function generateGCode(
 
 		";## Set temperatures ##",
 		"M106 P0 S0 H3 L0.15 X0.25 T20:40",
-		`M568 P0 S${nozzleTemp} ; set temperature for barrel to ${nozzleTemp};`,
-		`M140 P1 S${cupTemp}  ; set cup heater temperature to ${cupTemp} and continue`,
+		`M568 P0 S${materialProfile.nozzleTemp} ; set temperature for barrel to ${materialProfile.nozzleTemp};`,
+		`M140 P1 S${materialProfile.cupTemp}  ; set cup heater temperature to ${materialProfile.cupTemp} and continue`,
 
 		";## Home ##",
 		";G28",
 
 		";## move to prime position/ pickup cup heater start position ##",
-		`G1 Y0 Z${cupHeight + 10} F6000 ;Z down to cup height + 10 , Y moves back to cup center`,
+		`G1 Y0 Z${formValues.cupHeight + 10} F6000 ;Z down to cup height + 10 , Y moves back to cup center`,
 		"G1 X-90 ; only once at correct Z height move in to register with cup heater for pickup",
 		"M116 P0 S5 ; wait for nozzle temperature to be reached +/-5C",
 		"M116 H2 S2 ; wait for cup temperature to be reached +/-2C",
@@ -136,9 +161,9 @@ export async function generateGCode(
 		// ";##Cup Layer 1",
 		"G1 X50 Y0 F6000 ; Move to start of pre cup layer 1 extrusion",
 		"G1 E15 ; extrude a bit to make up for any ooze",
-		"G1 X36 Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion",
+		`G1 X${startingX} Y0 E10 F2250 ; Move to start of circle at the edge, continue slight extrusion`,
 		// ";Extrude in a circle A",
-		"G1 X38.5 F2250 	     		; 7.16.25 move back to cup",
+		`G1 X${startingX} F2250 	     		; 7.16.25 move back to cup`,
 		// "G3 X38.5 Y0 I-38.5 J0 E255 F1200 ; Counter-Clockwise circle around (0,0) with radius 39mm (1030 tested in practice complete cup layer 1).",
 
 		";#End of start gcode sequence for cup print#",
@@ -147,20 +172,21 @@ export async function generateGCode(
 		";--------print file in here--------",
 	];
 
-	let previousPoint: Vector3 = new Vector3(-38.5, startingHeight, 0); // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
+	let previousPoint: Vector3 = new Vector3(-startingX, startingHeight, 0); // hardcoded start point... see from gcode ALSO this must be Three.Js orientation context
 
 	const circlePoints = await getCirclePoints(previousPoint, {
-		segments,
+		segments: appSettings.segments,
 		center: new Vector3(0, 0, 0),
-		layerHeight,
+		layerHeight: formValues.layerHeight,
+		firstPointOfPrintObject: pointGatherer[0][0],
 	});
 	const transitionLayer = await getTransitionLayer(circlePoints, {
-		nozzleSize,
-		outputFactor,
+		nozzleSize: formValues.nozzleSize,
+		outputFactor: materialProfile.outputFactor,
 		offsetHeight: startingHeight,
-		gramsPerRevolution,
-		density,
-		ePerRevolution,
+		gramsPerRevolution: materialProfile.gramsPerRevolution,
+		density: materialProfile.density,
+		ePerRevolution: appSettings.ePerRevolution,
 	});
 
 	gcode.push(";START TRANSITION LAYER");
@@ -186,17 +212,19 @@ export async function generateGCode(
 		}
 
 		for (let j = 0; j < pointLevel.length; j++) {
-			const point = pointLevel[j].clone().add(new Vector3(0, layerHeight, 0));
+			const point = pointLevel[j]
+				.clone()
+				.add(new Vector3(0, formValues.layerHeight, 0));
 			const distance = previousPoint.distanceTo(point);
-			const lineWidth = nozzleSize * lineWidthAdjustment;
+			const lineWidth = formValues.nozzleSize * appSettings.lineWidthAdjustment;
 			const extrusion = getExtrusionCalculation({
 				distance,
-				layerHeight,
+				layerHeight: formValues.layerHeight,
 				lineWidth,
-				gramsPerRevolution,
-				density,
-				ePerRevolution,
-				outputFactor,
+				gramsPerRevolution: materialProfile.gramsPerRevolution,
+				density: materialProfile.density,
+				ePerRevolution: appSettings.ePerRevolution,
+				outputFactor: materialProfile.outputFactor,
 			});
 
 			previousPoint = point;

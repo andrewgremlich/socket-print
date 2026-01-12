@@ -56,14 +56,17 @@ export class PrintObject extends AppObject {
 	loadedStlFromIndexedDb = false;
 	offsetYPosition = 0;
 	currentType: PrintObjectType = undefined;
-	tube: SocketCup;
+	socketCup: SocketCup;
 	isCollidingWithTube: boolean = false;
 
-	constructor({ callback, tube }: { callback: Callback; tube: SocketCup }) {
+	constructor({
+		callback,
+		socketCup,
+	}: { callback: Callback; socketCup: SocketCup }) {
 		super();
 
 		this.callback = callback;
-		this.tube = tube;
+		this.socketCup = socketCup;
 
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
@@ -104,7 +107,6 @@ export class PrintObject extends AppObject {
 			try {
 				await this.clearData();
 				this.currentType = PrintObjectType.TestCylinder;
-				console.log("test cylinder clicked");
 				await this.#handleTestCylinder();
 			} catch (error) {
 				console.error("Failed to create test cylinder:", error);
@@ -186,18 +188,12 @@ export class PrintObject extends AppObject {
 	};
 
 	#handleTestCylinder = async () => {
-		console.log("create test cylinder");
-
 		const testCylinder = await TestCylinder.create();
 
 		this.mesh = testCylinder.mesh;
 
-		console.log("apply size adjustments");
-
 		// await this.applyShrinkScale(testCylinder.mesh);
 		// await this.applyNozzleSizeOffset(testCylinder.mesh);
-
-		console.log("assign name");
 
 		this.mesh.name = "test_cylinder";
 		activeFileName.textContent = "test_cylinder";
@@ -389,17 +385,17 @@ export class PrintObject extends AppObject {
 	};
 
 	isIntersectingWithTube = () => {
-		if (!this.mesh || !this.tube?.mesh) return;
+		if (!this.mesh || !this.socketCup?.mesh) return;
 
 		this.mesh.updateMatrixWorld();
-		this.tube.mesh.updateMatrixWorld();
+		this.socketCup.mesh.updateMatrixWorld();
 
 		const transformMatrix = new Matrix4()
-			.copy(this.tube.mesh.matrixWorld)
+			.copy(this.socketCup.mesh.matrixWorld)
 			.invert()
 			.multiply(this.mesh.matrixWorld);
 
-		const hit = this.tube.mesh.geometry.boundsTree.intersectsGeometry(
+		const hit = this.socketCup.mesh.geometry.boundsTree.intersectsGeometry(
 			this.mesh.geometry,
 			transformMatrix,
 		);

@@ -9,11 +9,14 @@ import { getExtrusionCalculation } from "./getExtrusionCalculation";
 
 export async function getCirclePoints(
 	startingPoint: Vector3,
-	options: { segments: number; center: Vector3; layerHeight: number },
+	options: {
+		segments: number;
+		center: Vector3;
+		layerHeight: number;
+		firstPointOfPrintObject: Vector3;
+	},
 ): Promise<{ point: Vector3; calculatedLayerHeight: number }[]> {
 	const angleStep = (2 * pi) / options.segments;
-
-	// NOTE: X and Z are for the horizontal plane in ThreeJS
 	const dx = startingPoint.x - options.center.x;
 	const dz = startingPoint.z - options.center.z;
 	const r = Number(sqrt(dx * dx + dz * dz));
