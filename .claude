@@ -2,10 +2,10 @@
 
 ## Project Overview
 
-Socket Print (Product name: Provel Print) is a CAD-like desktop application designed to facilitate faster turnaround times for amputees to receive 3D-printed prosthetic sockets for residual limbs. It combines real-time 3D visualization, computational geometry, and G-code generation for manufacturing.
+Socket Print (Product name: Provel Print) is a CAD-like desktop application designed to facilitate faster turnaround times for amputees to receive 3D-printed prosthetic sockets for residual limbs. It combines real-time 3D visualization, computational geometry, and G-code generation for pellet extrusion 3D printing systems.
 
 **Repository**: https://github.com/andrewgremlich/socket-print
-**Version**: 1.14.3
+**Version**: 1.15.1
 **License**: MIT
 
 ## Key Features
@@ -189,10 +189,64 @@ npm run clean           # Remove build artifacts
 - Test coverage available via `npm run test:coverage`
 - Tests should focus on critical geometry and G-code generation logic
 
-## Recent Changes
+## Recent Changes (v1.15.x)
 
-- Socket cup upgrades and wall thickness added
-- Database improvements (live queries, singleton fix)
-- Component reactivity improvements
-- Removed Ring class and old events utility
-- Added new globalEvents utility
+- **v1.15.1**: Latest release with socket printing capability
+- **v1.15.0**: Wireframe visualization in offset generation
+- **v1.14.3**: UAT (User Acceptance Testing) fixes
+- **v1.14.2**: Service worker improvements (no interception of printer traffic)
+- **v1.14.1**: Offline indicator auto-clear after 10 seconds
+- **v1.14.0**: Collision detection between tube and print object
+- **v1.13.x**: Camera distance limits, offset distance application improvements
+
+## G-Code Generation Pipeline
+
+The G-code generation system (`src/3d/generateGCode.ts`) is a critical component:
+
+1. **Header Generation** (`generateGCodeHeader`): Creates metadata and startup sequence
+   - Sets temperatures for nozzle and cup heater
+   - Includes cup heater removal sequence
+   - Primes extruder before printing
+
+2. **Transition Layer**: Generates circular transition from cup to socket
+   - Uses `getCirclePoints()` and `getTransitionLayer()` from cupTransitionLayer utils
+
+3. **Layer-by-Layer Extrusion**: Iterates through sliced point data
+   - Calculates extrusion amount using `getExtrusionCalculation()`
+   - Applies feedrate per level from slicing worker
+
+4. **End Sequence**: Handles print completion (purge, cooldown, end macro)
+
+## Key Constants & Calculations
+
+- **NOZZLE_SIZE_OFFSET_FACTOR**: 2 (used for calculating nozzle offset)
+- **Shrink Scale**: `1 / (1 - shrinkFactor / 100)` - compensates for material shrinkage
+- **Extrusion**: Based on distance, layer height, line width, material density, and output factor
+
+## Database Schema (Dexie v21)
+
+Four main tables:
+- **formValues**: IP address, lock position (left/right), cup size, nozzle size, layer height, active material profile
+- **appSettings**: Lock depth, segments, translations (X/Y/Z), rotations (coronal/sagittal/transverse), test cylinder settings, seconds per layer, E per revolution
+- **materialProfiles**: Name, nozzle temp, cup temp, shrink factor, output factor, grams per revolution, density
+- **savedFiles**: Name, type (Socket/TestCylinder), file blob
+
+## Print Object Types
+
+```typescript
+enum PrintObjectType {
+  TestCylinder = "TestCylinder",
+  Socket = "Socket",
+}
+```
+
+## Cup Size Configuration
+
+```typescript
+type CupSize = {
+  innerDiameter: number;
+  outerDiameter: number;
+  height: number;
+  name: string;
+};
+```
