@@ -86,12 +86,21 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	const direction = new Vector3();
 	const ray = raycaster.ray;
 
+	// Threshold for minimum points required per layer (percentage of segments)
+	const MIN_POINTS_THRESHOLD = 0.95;
+	const minPointsRequired = Math.floor(segments * MIN_POINTS_THRESHOLD);
+
+	// Maximum allowed gap in consecutive points (in terms of angle indices)
+	const MAX_CONSECUTIVE_MISSING = 3;
+
 	for (
 		let heightPosition = 0;
 		heightPosition < maxHeight;
 		heightPosition += layerHeight
 	) {
 		const pointLevel: Vector3[] = [];
+		let consecutiveMissing = 0;
+		let hasLargeGap = false;
 
 		self.postMessage({
 			type: "progress",
@@ -120,9 +129,19 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 
 				intersection.add(new Vector3(0, socketHeight, 0));
 				pointLevel.push(intersection);
+				consecutiveMissing = 0;
 			} else {
-				console.warn("No intersection found for this ray.");
+				consecutiveMissing++;
+				// Detect if we have too many consecutive missing points
+				if (consecutiveMissing > MAX_CONSECUTIVE_MISSING) {
+					hasLargeGap = true;
+				}
 			}
+		}
+
+		// Stop collecting layers if we don't have enough points OR if there's a large gap
+		if (pointLevel.length < minPointsRequired || hasLargeGap) {
+			break;
 		}
 
 		pointGatherer.push(pointLevel);
