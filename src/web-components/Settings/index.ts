@@ -14,7 +14,7 @@ import {
 	setTestCylinderHeight,
 	setTestCylinderInnerDiameter,
 } from "@/db/appSettingsDbActions";
-import { deleteDb } from "@/db/getDb";
+import { deleteDb } from "@/db/db";
 
 import { Dialog } from "../Dialog";
 
@@ -28,6 +28,20 @@ export class Settings extends Dialog {
 		this.id = "settingsDialog";
 		this.attachHTML`
 			<style>
+				dialog h3 {
+					font-size: 1.5rem;
+					margin-bottom: 1rem;
+				}
+
+				dialog h4 {
+					font-size: 1.2rem;
+					margin-bottom: 0.75rem;
+				}
+
+				dialog form {
+					margin-bottom: 1.5rem;
+				}
+
 				#resetAppContainer {
 					margin-top: 2rem;
 					margin-bottom: 2rem;
@@ -35,6 +49,12 @@ export class Settings extends Dialog {
 					& h4 {
 						margin-bottom: 0.5rem;
 					}
+				}
+
+				.greyedOut {
+					margin-top: 0.5rem;
+					font-size: 0.9em;
+					color:#666;
 				}
 			</style>
 		  <dialog id="${this.id}">
@@ -53,7 +73,7 @@ export class Settings extends Dialog {
 						<input type="number" id="ePerRevolution" name="ePerRevolution" step="0.1" min="10" max="50" />
 
 						<label for="secondsPerLayer">Seconds Per Layer</label>
-						<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="10" />
+						<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="14" />
 
 					<input type="submit" value="Save" class="button" id="saveSettings" />
 					</form>
@@ -62,8 +82,8 @@ export class Settings extends Dialog {
 						<label for="testCylinderHeight">Test Cylinder Height</label>
 						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
 
-						<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter</label>
-						<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="67" max="70" />
+						<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter Diameter</label>
+						<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="70" max="80" />
 
 						<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
 					</form>
@@ -159,8 +179,10 @@ export class Settings extends Dialog {
 
 	async saveTestCylinderSettings(evt: Event) {
 		evt.preventDefault();
+
 		const formData = new FormData(this.testCylinderForm);
 		const settings = Object.fromEntries(formData.entries());
+
 		await Promise.all([
 			setTestCylinderHeight(+settings.testCylinderHeight),
 			setTestCylinderInnerDiameter(+settings.testCylinderInnerDiameter),
@@ -192,25 +214,17 @@ export class Settings extends Dialog {
 			circularResolution: circularSegments,
 			secondsPerLayer,
 			ePerRevolution,
+			testCylinderHeight,
+			testCylinderInnerDiameter,
 		};
 
 		Object.entries(mainSettingMap).forEach(([key, value]) => {
-			const input = this.form.elements.namedItem(
-				key,
-			) as HTMLInputElement | null;
+			const input = this.shadowRoot.querySelector(
+				`#${key}`,
+			) as HTMLInputElement;
+
 			if (input) input.value = value.toString();
 		});
-
-		// Test cylinder form inputs
-		const testHeightInput = this.testCylinderForm.elements.namedItem(
-			"testCylinderHeight",
-		) as HTMLInputElement | null;
-		const testInnerDiameterInput = this.testCylinderForm.elements.namedItem(
-			"testCylinderInnerDiameter",
-		) as HTMLInputElement | null;
-		if (testHeightInput) testHeightInput.value = testCylinderHeight.toString();
-		if (testInnerDiameterInput)
-			testInnerDiameterInput.value = testCylinderInnerDiameter.toString();
 	}
 }
 

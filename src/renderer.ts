@@ -3,7 +3,7 @@ import "@/app-style.css";
 
 import "@/db/store";
 import "@/web-components";
-import "@/utils/events";
+import "@/utils/globalEvents";
 import "@/utils/updater";
 
 import { ceil } from "mathjs";
@@ -35,7 +35,7 @@ import {
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
-import { Tube } from "./classes/Tube";
+import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
 import { PrintObjectType } from "./db/types";
 
@@ -44,15 +44,13 @@ if (!window.Worker) {
 }
 
 const app = new Application();
-const tube = await Tube.create();
+const socketCup = await SocketCup.create();
 const mergeCylinder = await MergeCylinder.create();
 
-// app.addToScene(ring.mesh);
-app.addToScene(tube.mesh);
+app.addToScene(socketCup.mesh);
 
-// TODO: pass in Ring position and let PrintObject determine intersection.
 const printObject = new PrintObject({
-	tube,
+	socketCup: socketCup,
 	callback: ({ size: { y } }) => {
 		app.camera.position.set(0, y + 50, -200);
 		app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
@@ -72,8 +70,6 @@ const printObject = new PrintObject({
 		loadingScreen.style.display = "none";
 	},
 });
-
-// ring is added in async init above
 
 const removeMeshes = async (meshes: Mesh[]) => {
 	meshes.forEach((mesh) => {
@@ -155,7 +151,15 @@ export async function slicingAction(sendToFile: boolean) {
 
 			progressBar.value = 0;
 			progressBarDiv.style.display = "none";
+			worker.terminate();
 		}
+	};
+
+	worker.onerror = (error) => {
+		console.error("Worker error:", error);
+		progressBar.value = 0;
+		progressBarDiv.style.display = "none";
+		worker.terminate();
 	};
 
 	app.removeMeshFromScene(mergeCylinder.mesh);

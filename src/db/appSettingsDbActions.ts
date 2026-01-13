@@ -1,7 +1,6 @@
-import { getDb } from "./getDb";
+import { db } from "./db";
 
 export const getLockDepth = async () => {
-	const db = await getDb();
 	const lockDepth = await db.appSettings
 		.where("name")
 		.equals("lockDepth")
@@ -10,7 +9,6 @@ export const getLockDepth = async () => {
 };
 
 export const getCircularSegments = async () => {
-	const db = await getDb();
 	const circularSegments = await db.appSettings
 		.where("name")
 		.equals("circularSegments")
@@ -20,8 +18,6 @@ export const getCircularSegments = async () => {
 };
 
 export const setCircularSegments = async (circularSegments: number) => {
-	const db = await getDb();
-
 	return await db.appSettings
 		.where("name")
 		.equals("circularSegments")
@@ -33,8 +29,6 @@ export const updateTranslateValues = async (
 	translateY: number,
 	translateZ: number,
 ) => {
-	const db = await getDb();
-
 	await Promise.all([
 		db.appSettings
 			.where("name")
@@ -52,7 +46,6 @@ export const updateTranslateValues = async (
 };
 
 export const getTranslateValues = async () => {
-	const db = await getDb();
 	const translateX = await db.appSettings
 		.where("name")
 		.equals("translateX")
@@ -78,8 +71,6 @@ export const updateRotateValues = async (
 	rotateSagittal: number,
 	rotateTransverse: number,
 ) => {
-	const db = await getDb();
-
 	await Promise.all([
 		db.appSettings
 			.where("name")
@@ -97,7 +88,6 @@ export const updateRotateValues = async (
 };
 
 export const getRotateValues = async () => {
-	const db = await getDb();
 	const rotateCoronal = await db.appSettings
 		.where("name")
 		.equals("rotateCoronal")
@@ -119,7 +109,6 @@ export const getRotateValues = async () => {
 };
 
 export const getStartingCupLayerHeight = async () => {
-	const db = await getDb();
 	const startingCupLayerHeight = await db.appSettings
 		.where("name")
 		.equals("startingCupLayerHeight")
@@ -128,7 +117,6 @@ export const getStartingCupLayerHeight = async () => {
 };
 
 export const getLineWidthAdjustment = async () => {
-	const db = await getDb();
 	const lineWidthAdjustment = await db.appSettings
 		.where("name")
 		.equals("lineWidthAdjustment")
@@ -139,8 +127,6 @@ export const getLineWidthAdjustment = async () => {
 export const setStartingCupLayerHeight = async (
 	startingCupLayerHeight: number,
 ) => {
-	const db = await getDb();
-
 	return await db.appSettings
 		.where("name")
 		.equals("startingCupLayerHeight")
@@ -148,8 +134,6 @@ export const setStartingCupLayerHeight = async (
 };
 
 export const setLineWidthAdjustment = async (lineWidthAdjustment: number) => {
-	const db = await getDb();
-
 	return await db.appSettings
 		.where("name")
 		.equals("lineWidthAdjustment")
@@ -157,7 +141,6 @@ export const setLineWidthAdjustment = async (lineWidthAdjustment: number) => {
 };
 
 export const getTestCylinderHeight = async () => {
-	const db = await getDb();
 	const testCylinderHeight = await db.appSettings
 		.where("name")
 		.equals("testCylinderHeight")
@@ -166,8 +149,6 @@ export const getTestCylinderHeight = async () => {
 };
 
 export const setTestCylinderHeight = async (testCylinderHeight: number) => {
-	const db = await getDb();
-
 	return await db.appSettings
 		.where("name")
 		.equals("testCylinderHeight")
@@ -175,7 +156,6 @@ export const setTestCylinderHeight = async (testCylinderHeight: number) => {
 };
 
 export const getTestCylinderInnerDiameter = async () => {
-	const db = await getDb();
 	const testCylinderInnerDiameter = await db.appSettings
 		.where("name")
 		.equals("testCylinderInnerDiameter")
@@ -186,8 +166,6 @@ export const getTestCylinderInnerDiameter = async () => {
 export const setTestCylinderInnerDiameter = async (
 	testCylinderInnerDiameter: number,
 ) => {
-	const db = await getDb();
-
 	return await db.appSettings
 		.where("name")
 		.equals("testCylinderInnerDiameter")
@@ -195,7 +173,6 @@ export const setTestCylinderInnerDiameter = async (
 };
 
 export const getSecondsPerLayer = async (): Promise<number> => {
-	const db = await getDb();
 	const secondsPerLayer = await db.appSettings
 		.where("name")
 		.equals("secondsPerLayer")
@@ -204,8 +181,6 @@ export const getSecondsPerLayer = async (): Promise<number> => {
 };
 
 export const setSecondsPerLayer = async (secondsPerLayer: number) => {
-	const db = await getDb();
-
 	return await db.appSettings
 		.where("name")
 		.equals("secondsPerLayer")
@@ -213,7 +188,6 @@ export const setSecondsPerLayer = async (secondsPerLayer: number) => {
 };
 
 export const getEPerRevolution = async (): Promise<number> => {
-	const db = await getDb();
 	const ePerRevolution = await db.appSettings
 		.where("name")
 		.equals("ePerRevolution")
@@ -222,8 +196,6 @@ export const getEPerRevolution = async (): Promise<number> => {
 };
 
 export const setEPerRevolution = async (ePerRevolution: number) => {
-	const db = await getDb();
-
 	return await db.appSettings
 		.where("name")
 		.equals("ePerRevolution")

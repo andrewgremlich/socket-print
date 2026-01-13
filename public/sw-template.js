@@ -75,12 +75,12 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Skip printer communication requests (local IP addresses and localhost:8724)
+  // Skip printer communication requests (local IP addresses and localhost)
   const url = new URL(event.request.url);
   const hostname = url.hostname;
 
-  // Skip localhost:8724 (mock printer service)
-  if (hostname === "127.0.0.1" && url.port === "8724") {
+  // Skip all localhost domains
+  if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]") {
     return;
   }
 

@@ -1,21 +1,23 @@
+import { leftRadio, rightRadio } from "@/utils/htmlElements";
 import { getFormKeyValues } from "./formValuesDbActions";
 import { getActiveMaterialProfile } from "./materialProfilesDbActions";
+import type { CupSize } from "./types";
 
 export async function loadMainDataForm() {
 	const appSettings = await getFormKeyValues();
 
 	for (const { name, value } of Object.values(appSettings)) {
 		if (name === "lockPosition") {
-			const leftRadio = document.getElementById(
-				"lockPositionLeft",
-			) as HTMLInputElement | null;
-			const rightRadio = document.getElementById(
-				"lockPositionRight",
-			) as HTMLInputElement | null;
-			if (leftRadio && rightRadio) {
-				leftRadio.checked = value === "left";
-				rightRadio.checked = value === "right";
-			}
+			leftRadio.checked = value === "left";
+			rightRadio.checked = value === "right";
+			continue;
+		}
+
+		if (name === "cupSize") {
+			const casted = value as CupSize;
+			(document.querySelector(`[name="${name}"]`) as HTMLSelectElement).value =
+				casted.name;
+
 			continue;
 		}
 
@@ -23,9 +25,7 @@ export async function loadMainDataForm() {
 			`[name="${name}"]`,
 		) as HTMLInputElement | null;
 
-		if (input && input.type === "checkbox") {
-			input.checked = value as boolean;
-		} else if (input) {
+		if (input) {
 			input.value = `${value}`;
 		} else {
 			console.warn(`Input with name ${name} not found`);

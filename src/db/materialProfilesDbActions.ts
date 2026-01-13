@@ -1,14 +1,12 @@
-import { getDb } from "./getDb";
+import { db } from "./db";
 import type { MaterialProfile } from "./types";
 
 export const getMaterialProfiles = async () => {
-	const db = await getDb();
 	const profiles = await db.materialProfiles.toArray();
 	return profiles;
 };
 
 const getActiveProfile = async () => {
-	const db = await getDb();
 	const activeMaterialProfile = (await db.formValues
 		.where("name")
 		.equals("activeMaterialProfile")
@@ -28,8 +26,6 @@ export const getActiveMaterialProfile = async () => {
 };
 
 export const addNewMaterialProfile = async (profile: MaterialProfile) => {
-	const db = await getDb();
-	// biome-ignore lint/correctness/noUnusedVariables: this is to pull the id out.
 	const { id, ...rest } = profile;
 
 	await db.materialProfiles.add({ ...rest });
@@ -40,7 +36,6 @@ export const deleteActiveMaterialProfile = async () => {
 };
 
 export const updateMaterialProfile = async (profile: MaterialProfile) => {
-	const db = await getDb();
 	await db.materialProfiles.update(profile.id, profile);
 };
 

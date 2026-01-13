@@ -34,15 +34,18 @@ export const depthTranslate = document.getElementById(
 export const verticalTranslate = document.getElementById(
 	"verticalTranslate",
 ) as HTMLInputElement;
-export const mergeMeshes = document.getElementById(
-	"mergeMeshes",
-) as HTMLInputElement;
 export const printerFileInput = document.getElementById(
 	"printerFileInput",
 ) as HTMLInputElement;
 export const ipAddressInput = document.getElementById(
 	"ipAddressInput",
 ) as HTMLInputElement;
+export const leftRadio = document.getElementById(
+	"lockPositionLeft",
+) as HTMLInputElement | null;
+export const rightRadio = document.getElementById(
+	"lockPositionRight",
+) as HTMLInputElement | null;
 
 export const activeMaterialProfileSelect = document.getElementById(
 	"activeMaterialProfile",
@@ -74,9 +77,6 @@ export const progressBarDiv = document.getElementById(
 export const addMaterialProfile = document.getElementById(
 	"addMaterialProfile",
 ) as HTMLDivElement;
-export const newMaterialProfile = document.getElementById(
-	"makeNewMaterialProfile",
-) as HTMLDivElement;
 export const estimatedPrintTime = document.getElementById(
 	"estimatedPrintTime",
 ) as HTMLParagraphElement;
@@ -90,9 +90,6 @@ export const ipAddressSuccess = document.getElementById(
 export const editActiveMaterialProfile = document.getElementById(
 	"editActiveMaterialProfile",
 ) as HTMLDivElement;
-export const cancelMaterialProfileButton = document.getElementById(
-	"cancelMaterialProfile",
-) as HTMLButtonElement;
 export const deleteMaterialProfileButton = document.getElementById(
 	"deleteMaterialProfile",
 ) as HTMLButtonElement;

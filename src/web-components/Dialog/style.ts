@@ -42,8 +42,6 @@ dialog input:disabled, dialog input[readonly] {
 
 dialog label, dialog h2, dialog h3, dialog h4 {
   margin: 0;
-  margin-bottom: 5px;
-  padding: 0;
   color: #fff;
 }   
 

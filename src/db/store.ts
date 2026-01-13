@@ -10,12 +10,31 @@ import {
 	loadActiveMaterialProfileForm,
 	loadMainDataForm,
 } from "./loadDataIntoForms";
-import { EntityEnum, type FormValues, type ProvelPrintSettings } from "./types";
+import {
+	type CupSize,
+	EntityEnum,
+	type FormValues,
+	type ProvelPrintSettings,
+} from "./types";
+
+const defaultCupSize: CupSize = {
+	innerDiameter: 65,
+	outerDiameter: 84,
+	height: 38,
+	name: "84x38",
+};
+
+const smallCupSize: CupSize = {
+	innerDiameter: 65,
+	outerDiameter: 84,
+	height: 25,
+	name: "84x25",
+};
 
 const defaultFormValues: FormValues = {
 	ipAddress: "",
 	lockPosition: "right",
-	cupSize: "84x38",
+	cupSize: defaultCupSize,
 	nozzleSize: 5,
 	layerHeight: 1,
 	activeMaterialProfile: "cp1",
@@ -34,7 +53,7 @@ const defaultSettingNames: ProvelPrintSettings = {
 	lineWidthAdjustment: 1.2,
 	testCylinderHeight: 50,
 	testCylinderInnerDiameter: 70,
-	secondsPerLayer: 8,
+	secondsPerLayer: 12,
 	ePerRevolution: 31.3,
 };
 
@@ -53,11 +72,17 @@ appForm.addEventListener("change", async (event) => {
 	event.preventDefault();
 
 	const storeForm = new FormData(appForm);
-	const storeFormEntries = Object.fromEntries(
-		storeForm.entries(),
-	) as unknown as ProvelPrintSettings;
+	const storeFormEntries = Object.fromEntries(storeForm.entries());
 
-	await setFormValues(storeFormEntries);
+	const { cupSize, ...rest } = storeFormEntries;
+	const cupSizeHydrated = {
+		cupSize: [defaultCupSize, smallCupSize].find(
+			(size) => size.name === cupSize,
+		),
+		...rest,
+	};
+
+	await setFormValues(cupSizeHydrated);
 
 	const name = (event.target as HTMLInputElement).name;
 

@@ -70,7 +70,6 @@ export class Application {
 			this.controls.minDistance = 200;
 			this.controls.maxDistance = 500;
 			this.controls.enableDamping = true;
-			// this.controls.maxPolarAngle = pi / 2; // limit to horizontal view
 		}
 
 		this.addToScene(this.gridHelper);
@@ -120,22 +119,47 @@ export class Application {
 	loadFont = () => {
 		const loader = new FontLoader();
 
-		loader.load("helvetiker_regular.typeface.json", (font) => {
-			const anteriorViewLabel = new TextGeometry("Anterior", {
-				font,
-				size: 10,
-				depth: 1,
-			});
-			const textMesh = new Mesh(
-				anteriorViewLabel,
-				new MeshBasicMaterial({ color: 0xffffff }),
-			);
+		loader.load(
+			"helvetiker_regular.typeface.json",
+			(font) => {
+				const anteriorViewLabel = new TextGeometry("Anterior", {
+					font,
+					size: 10,
+					depth: 1,
+				});
+				const textMesh = new Mesh(
+					anteriorViewLabel,
+					new MeshBasicMaterial({ color: 0xffffff }),
+				);
 
-			textMesh.position.set(0, 0, -100);
-			textMesh.rotation.x = -pi / 2;
-			textMesh.rotation.z = pi;
+				textMesh.position.set(0, 0, -100);
+				textMesh.rotation.x = -pi / 2;
+				textMesh.rotation.z = pi;
 
-			this.addToScene(textMesh);
+				this.addToScene(textMesh);
+			},
+			undefined,
+			(error) => {
+				console.error("Failed to load font:", error);
+			},
+		);
+	};
+
+	dispose = () => {
+		window.removeEventListener("resize", this.#onWindowResize);
+		this.controls.dispose();
+		this.renderer.dispose();
+		this.scene.traverse((object) => {
+			if (object instanceof Mesh) {
+				object.geometry.dispose();
+				if (Array.isArray(object.material)) {
+					object.material.forEach((m) => {
+						m.dispose();
+					});
+				} else {
+					object.material.dispose();
+				}
+			}
 		});
 	};
 
