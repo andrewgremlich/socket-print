@@ -49,11 +49,16 @@ const mergeCylinder = await MergeCylinder.create();
 
 app.addToScene(socketCup.mesh);
 
+let initialCameraSet = false;
+
 const printObject = new PrintObject({
 	socketCup: socketCup,
 	callback: ({ size: { y } }) => {
-		app.camera.position.set(0, y + 50, -200);
-		app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
+		if (!initialCameraSet) {
+			app.camera.position.set(0, y + 50, -200);
+			app.controls.target.set(0, y * 0.5, 0); // look at the center of the object
+			initialCameraSet = true;
+		}
 
 		const existingMeshes = app.scene.children.filter((child) => {
 			return child.type === "Mesh" && child.userData.isSocket;
@@ -89,6 +94,7 @@ const removeMeshes = async (meshes: Mesh[]) => {
 
 	printObject.clearData();
 	app.resetCameraPosition();
+	initialCameraSet = false;
 };
 
 clearModelButton.addEventListener("click", async () => {

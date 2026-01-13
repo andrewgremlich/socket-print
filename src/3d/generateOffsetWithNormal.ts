@@ -195,7 +195,41 @@ export async function applyOffset(
 ): Promise<Mesh> {
 	const baseGeometry = meshToOffset.geometry as BufferGeometry;
 	const offsetFacets = createOffsetFacetsFromGeometry(baseGeometry, offset);
-	const meshOffset = await createMeshFromObject(offsetFacets);
-	meshOffset.name = "offset";
-	return meshOffset;
+
+	// Update geometry in-place instead of creating a new mesh
+	const faceCount = offsetFacets.length;
+	const verticesPosition = new Float32Array(faceCount * 9);
+	const normalsPosition = new Float32Array(faceCount * 9);
+	let ptr = 0;
+	for (const facet of offsetFacets) {
+		for (let i = 0; i < 3; i++) {
+			const v = facet.vertices[i];
+			const n = facet.normal;
+			verticesPosition[ptr] = v.x;
+			verticesPosition[ptr + 1] = v.y;
+			verticesPosition[ptr + 2] = v.z;
+			normalsPosition[ptr] = n.x;
+			normalsPosition[ptr + 1] = n.y;
+			normalsPosition[ptr + 2] = n.z;
+			ptr += 3;
+		}
+	}
+
+	// Dispose old geometry and create new one
+	const oldGeometry = meshToOffset.geometry;
+	const newGeometry = new BufferGeometry();
+	newGeometry.setAttribute(
+		"position",
+		new BufferAttribute(verticesPosition, 3),
+	);
+	newGeometry.setAttribute("normal", new BufferAttribute(normalsPosition, 3));
+	newGeometry.computeBoundingBox();
+	newGeometry.computeBoundingSphere();
+	newGeometry.computeVertexNormals();
+	ensureUV(newGeometry);
+
+	meshToOffset.geometry = newGeometry;
+	oldGeometry.dispose();
+
+	return meshToOffset;
 }

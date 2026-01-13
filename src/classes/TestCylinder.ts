@@ -14,10 +14,13 @@ import {
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 
+type OnChangeCallback = (size: { x: number; y: number; z: number }) => void;
+
 export class TestCylinder extends AppObject {
 	#radialSegments = 128;
 	#radius = 75 / 2;
 	#height = 50;
+	#onChangeCallback: OnChangeCallback | null = null;
 	$liveTestCylinderInnerDiameter: Subscription;
 	$liveTestCylinderHeight: Subscription;
 
@@ -66,6 +69,18 @@ export class TestCylinder extends AppObject {
 		ensureUV(this.mesh.geometry);
 		this.mesh.geometry.boundsTree = bvh;
 		this.computeBoundingBox();
+
+		if (this.#onChangeCallback) {
+			this.#onChangeCallback({
+				x: this.size.x,
+				y: this.size.y,
+				z: this.size.z,
+			});
+		}
+	}
+
+	onChange(callback: OnChangeCallback) {
+		this.#onChangeCallback = callback;
 	}
 
 	dispose() {

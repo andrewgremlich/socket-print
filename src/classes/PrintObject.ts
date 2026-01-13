@@ -63,6 +63,7 @@ export class PrintObject extends AppObject {
 	currentType: PrintObjectType | undefined = undefined;
 	socketCup: SocketCup;
 	isCollidingWithTube: boolean = false;
+	#testCylinderInstance: TestCylinder | null = null;
 
 	// Event listener references for cleanup
 	#testStlClickHandler?: () => Promise<void>;
@@ -180,6 +181,12 @@ export class PrintObject extends AppObject {
 	};
 
 	dispose = () => {
+		// Dispose of test cylinder instance if it exists
+		if (this.#testCylinderInstance) {
+			this.#testCylinderInstance.dispose();
+			this.#testCylinderInstance = null;
+		}
+
 		// Remove event listeners
 		if (this.#testStlClickHandler) {
 			addTestStlButton?.removeEventListener("click", this.#testStlClickHandler);
@@ -287,7 +294,24 @@ export class PrintObject extends AppObject {
 	};
 
 	#handleTestCylinder = async () => {
+		// Dispose of any existing test cylinder instance
+		if (this.#testCylinderInstance) {
+			this.#testCylinderInstance.dispose();
+			this.#testCylinderInstance = null;
+		}
+
 		const testCylinder = await TestCylinder.create();
+		this.#testCylinderInstance = testCylinder;
+
+		// Subscribe to geometry changes
+		testCylinder.onChange(async () => {
+			await this.applyNozzleSizeOffset();
+			await this.applyShrinkScale();
+			this.computeBoundingBox();
+			this.mesh.position.set(0, this.size.y / 2, 0);
+			this.callback({ size: this.size });
+			this.isIntersectingWithTube();
+		});
 
 		this.mesh = testCylinder.mesh;
 
@@ -450,6 +474,12 @@ export class PrintObject extends AppObject {
 	};
 
 	clearData = async () => {
+		// Dispose of test cylinder instance if it exists
+		if (this.#testCylinderInstance) {
+			this.#testCylinderInstance.dispose();
+			this.#testCylinderInstance = null;
+		}
+
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
 			this.mesh.removeFromParent();
