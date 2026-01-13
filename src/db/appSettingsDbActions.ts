@@ -155,19 +155,21 @@ export const setTestCylinderHeight = async (testCylinderHeight: number) => {
 		.modify({ value: testCylinderHeight });
 };
 
-export const getTestCylinderDiameter = async () => {
-	const testCylinderDiameter = await db.appSettings
+export const getTestCylinderInnerDiameter = async () => {
+	const testCylinderInnerDiameter = await db.appSettings
 		.where("name")
-		.equals("testCylinderDiameter")
+		.equals("testCylinderInnerDiameter")
 		.first();
-	return Number(testCylinderDiameter.value);
+	return Number(testCylinderInnerDiameter.value);
 };
 
-export const settestCylinderDiameter = async (testCylinderDiameter: number) => {
+export const setTestCylinderInnerDiameter = async (
+	testCylinderInnerDiameter: number,
+) => {
 	return await db.appSettings
 		.where("name")
-		.equals("testCylinderDiameter")
-		.modify({ value: testCylinderDiameter });
+		.equals("testCylinderInnerDiameter")
+		.modify({ value: testCylinderInnerDiameter });
 };
 
 export const getSecondsPerLayer = async (): Promise<number> => {

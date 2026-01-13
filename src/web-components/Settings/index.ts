@@ -4,18 +4,17 @@ import {
 	getLineWidthAdjustment,
 	getSecondsPerLayer,
 	getStartingCupLayerHeight,
-	getTestCylinderDiameter,
 	getTestCylinderHeight,
+	getTestCylinderInnerDiameter,
 	setCircularSegments,
 	setEPerRevolution,
 	setLineWidthAdjustment,
 	setSecondsPerLayer,
 	setStartingCupLayerHeight,
 	setTestCylinderHeight,
-	settestCylinderDiameter,
+	setTestCylinderInnerDiameter,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/db";
-import { getNozzleSize } from "@/db/formValuesDbActions";
 
 import { Dialog } from "../Dialog";
 
@@ -29,6 +28,20 @@ export class Settings extends Dialog {
 		this.id = "settingsDialog";
 		this.attachHTML`
 			<style>
+				dialog h3 {
+					font-size: 1.5rem;
+					margin-bottom: 1rem;
+				}
+
+				dialog h4 {
+					font-size: 1.2rem;
+					margin-bottom: 0.75rem;
+				}
+
+				dialog form {
+					margin-bottom: 1.5rem;
+				}
+
 				#resetAppContainer {
 					margin-top: 2rem;
 					margin-bottom: 2rem;
@@ -69,11 +82,8 @@ export class Settings extends Dialog {
 						<label for="testCylinderHeight">Test Cylinder Height</label>
 						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
 
-						<label for="testCylinderDiameter">Test Cylinder Diameter</label>
-						<input type="number" id="testCylinderDiameter" name="testCylinderDiameter" step="1" min="70" max="80" />
-
-						<p class="greyedOut">Calculated Inner Diameter:</p>
-						<p class="greyedOut"><span id="calculatedInnerDiameter">--</span> mm</p>
+						<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter Diameter</label>
+						<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="70" max="80" />
 
 						<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
 					</form>
@@ -114,15 +124,6 @@ export class Settings extends Dialog {
 		this.testCylinderForm.addEventListener("submit", (evt) =>
 			this.saveTestCylinderSettings(evt),
 		);
-
-		const testDiameterInput = this.testCylinderForm.elements.namedItem(
-			"testCylinderDiameter",
-		) as HTMLInputElement;
-		if (testDiameterInput) {
-			testDiameterInput.addEventListener("input", () =>
-				this.updateCalculatedInnerDiameter(),
-			);
-		}
 
 		this.closeButton.addEventListener("click", () => this.hide());
 		this.dialog.addEventListener("close", () => this.hide());
@@ -178,26 +179,14 @@ export class Settings extends Dialog {
 
 	async saveTestCylinderSettings(evt: Event) {
 		evt.preventDefault();
+
 		const formData = new FormData(this.testCylinderForm);
 		const settings = Object.fromEntries(formData.entries());
+
 		await Promise.all([
 			setTestCylinderHeight(+settings.testCylinderHeight),
-			settestCylinderDiameter(+settings.testCylinderDiameter),
+			setTestCylinderInnerDiameter(+settings.testCylinderInnerDiameter),
 		]);
-	}
-
-	async updateCalculatedInnerDiameter() {
-		const testDiameterInput = this.testCylinderForm.elements.namedItem(
-			"testCylinderDiameter",
-		) as HTMLInputElement;
-		const nozzleSize = await getNozzleSize();
-		const diameter = Number(testDiameterInput.value);
-		const innerDiameter = diameter - nozzleSize;
-		const innerDiameterSpan = this.shadowRoot.getElementById(
-			"calculatedInnerDiameter",
-		);
-		if (innerDiameterSpan)
-			innerDiameterSpan.textContent = innerDiameter.toFixed(2);
 	}
 
 	async loadDataIntoForm() {
@@ -206,19 +195,17 @@ export class Settings extends Dialog {
 			lineWidthAdjustment,
 			circularSegments,
 			testCylinderHeight,
-			testCylinderDiameter,
+			testCylinderInnerDiameter,
 			secondsPerLayer,
 			ePerRevolution,
-			nozzleSize,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
 			getLineWidthAdjustment(),
 			getCircularSegments(),
 			getTestCylinderHeight(),
-			getTestCylinderDiameter(),
+			getTestCylinderInnerDiameter(),
 			getSecondsPerLayer(),
 			getEPerRevolution(),
-			getNozzleSize(),
 		]);
 
 		const mainSettingMap: Record<string, number> = {
@@ -227,33 +214,17 @@ export class Settings extends Dialog {
 			circularResolution: circularSegments,
 			secondsPerLayer,
 			ePerRevolution,
+			testCylinderHeight,
+			testCylinderInnerDiameter,
 		};
 
 		Object.entries(mainSettingMap).forEach(([key, value]) => {
-			const input = this.form.elements.namedItem(
-				key,
-			) as HTMLInputElement | null;
+			const input = this.shadowRoot.querySelector(
+				`#${key}`,
+			) as HTMLInputElement;
+
 			if (input) input.value = value.toString();
 		});
-
-		// Test cylinder form inputs
-		const testHeightInput = this.testCylinderForm.elements.namedItem(
-			"testCylinderHeight",
-		) as HTMLInputElement | null;
-		const testDiameterInput = this.testCylinderForm.elements.namedItem(
-			"testCylinderDiameter",
-		) as HTMLInputElement | null;
-
-		if (testHeightInput) testHeightInput.value = testCylinderHeight.toString();
-		if (testDiameterInput)
-			testDiameterInput.value = testCylinderDiameter.toString();
-
-		const innerDiameter = testCylinderDiameter - nozzleSize;
-		const innerDiameterSpan = this.shadowRoot.getElementById(
-			"calculatedInnerDiameter",
-		);
-		if (innerDiameterSpan)
-			innerDiameterSpan.textContent = innerDiameter.toFixed(2);
 	}
 }
 

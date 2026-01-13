@@ -1,4 +1,4 @@
-import { abs, pi, round } from "mathjs";
+import { abs, floor, pi, round } from "mathjs";
 import {
 	type BufferGeometry,
 	DoubleSide,
@@ -152,10 +152,6 @@ export class PrintObject extends AppObject {
 					await this.clearData();
 				}
 
-				this.currentType = evt.isTrusted
-					? PrintObjectType.Socket
-					: this.currentType;
-
 				await this.#onStlFileChange(evt);
 			} catch (error) {
 				this.#handleError(error, "Failed to process STL file");
@@ -246,7 +242,7 @@ export class PrintObject extends AppObject {
 		}
 
 		const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
-		const shrinkScale = 1 / (1 - shrinkFactor / 100);
+		const shrinkScale = floor(1 / (1 - shrinkFactor / 100), 4);
 
 		this.mesh.scale.set(shrinkScale, shrinkScale, shrinkScale);
 	};
@@ -258,6 +254,7 @@ export class PrintObject extends AppObject {
 		}
 
 		const nozzleSize = await getNozzleSize();
+
 		this.mesh = await applyOffset(
 			this.mesh,
 			nozzleSize / NOZZLE_SIZE_OFFSET_FACTOR,
@@ -294,8 +291,8 @@ export class PrintObject extends AppObject {
 
 		this.mesh = testCylinder.mesh;
 
-		// await this.applyShrinkScale(testCylinder.mesh);
-		// await this.applyNozzleSizeOffset(testCylinder.mesh);
+		await this.applyNozzleSizeOffset();
+		await this.applyShrinkScale();
 
 		this.mesh.name = "test_cylinder";
 		activeFileName.textContent = "test_cylinder";
@@ -339,16 +336,14 @@ export class PrintObject extends AppObject {
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
 			side: DoubleSide,
+			wireframe: import.meta.env.DEV,
 		});
 		const mesh = new Mesh(rawGeometry, material);
 
 		this.mesh = mesh;
 
-		// await this.applyShrinkScale();
-		// await this.applyNozzleSizeOffset();
-
-		(this.mesh.material as MeshStandardMaterial).wireframe =
-			import.meta.env.DEV;
+		await this.applyNozzleSizeOffset();
+		await this.applyShrinkScale();
 
 		this.mesh.raycast = acceleratedRaycast;
 		this.mesh.geometry.computeBoundsTree = computeBoundsTree;

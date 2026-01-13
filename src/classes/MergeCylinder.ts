@@ -5,7 +5,7 @@ import {
 	Mesh,
 	MeshStandardMaterial,
 } from "three";
-import { getTestCylinderDiameter } from "@/db/appSettingsDbActions";
+import { getTestCylinderInnerDiameter } from "@/db/appSettingsDbActions";
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 
@@ -13,14 +13,14 @@ export class MergeCylinder extends AppObject {
 	#radialSegments = 128; // default; replaced from DB
 	#radius = 78 / 2;
 	height: number;
-	$liveTestCylinderDiameter: Subscription;
+	$liveTestCylinderInnerDiameter: Subscription;
 
 	private constructor(options?: { height: number }) {
 		super();
 		this.height = options?.height ?? 0;
 
-		this.$liveTestCylinderDiameter = liveQuery(() =>
-			getTestCylinderDiameter(),
+		this.$liveTestCylinderInnerDiameter = liveQuery(() =>
+			getTestCylinderInnerDiameter(),
 		).subscribe((diameter) => {
 			if (!diameter || diameter <= 0 || !this.mesh) return;
 			this.#radius = diameter / 2;
@@ -72,9 +72,9 @@ export class MergeCylinder extends AppObject {
 	}
 
 	dispose(): void {
-		if (this.$liveTestCylinderDiameter) {
-			this.$liveTestCylinderDiameter.unsubscribe();
-			this.$liveTestCylinderDiameter = null;
+		if (this.$liveTestCylinderInnerDiameter) {
+			this.$liveTestCylinderInnerDiameter.unsubscribe();
+			this.$liveTestCylinderInnerDiameter = null;
 		}
 		if (this.mesh) {
 			(this.mesh.material as MeshStandardMaterial).dispose();

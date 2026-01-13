@@ -8,8 +8,8 @@ import {
 import { acceleratedRaycast, MeshBVH } from "three-mesh-bvh";
 import { ensureUV } from "@/3d/ensureUV";
 import {
-	getTestCylinderDiameter,
 	getTestCylinderHeight,
+	getTestCylinderInnerDiameter,
 } from "@/db/appSettingsDbActions";
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
@@ -18,14 +18,14 @@ export class TestCylinder extends AppObject {
 	#radialSegments = 128;
 	#radius = 75 / 2;
 	#height = 50;
-	$liveTestCylinderDiameter: Subscription;
+	$liveTestCylinderInnerDiameter: Subscription;
 	$liveTestCylinderHeight: Subscription;
 
 	private constructor() {
 		super();
 
-		this.$liveTestCylinderDiameter = liveQuery(() =>
-			getTestCylinderDiameter(),
+		this.$liveTestCylinderInnerDiameter = liveQuery(() =>
+			getTestCylinderInnerDiameter(),
 		).subscribe((diameter) => {
 			if (!diameter || diameter <= 0 || !this.mesh) return;
 			this.updateRadius(diameter / 2);
@@ -69,9 +69,9 @@ export class TestCylinder extends AppObject {
 	}
 
 	dispose() {
-		if (this.$liveTestCylinderDiameter) {
-			this.$liveTestCylinderDiameter.unsubscribe();
-			this.$liveTestCylinderDiameter = null;
+		if (this.$liveTestCylinderInnerDiameter) {
+			this.$liveTestCylinderInnerDiameter.unsubscribe();
+			this.$liveTestCylinderInnerDiameter = null;
 		}
 		if (this.$liveTestCylinderHeight) {
 			this.$liveTestCylinderHeight.unsubscribe();
@@ -89,7 +89,7 @@ export class TestCylinder extends AppObject {
 		// Fetch dimensions + radial segment count from IndexedDB, fall back if invalid.
 		const [heightDb, diameterDb, radialSegments] = await Promise.all([
 			getTestCylinderHeight(),
-			getTestCylinderDiameter(),
+			getTestCylinderInnerDiameter(),
 			getRadialSegments(),
 		]);
 

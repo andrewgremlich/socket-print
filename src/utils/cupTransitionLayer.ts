@@ -13,17 +13,25 @@ export async function getCirclePoints(
 		segments: number;
 		center: Vector3;
 		layerHeight: number;
-		firstPointOfPrintObject: Vector3;
+		shrinkScale: number;
+		nozzleSizeOffset: number;
 	},
 ): Promise<{ point: Vector3; calculatedLayerHeight: number }[]> {
 	const angleStep = (2 * pi) / options.segments;
+
+	// Note: startingPoint is already transformed (includes shrink scale and nozzle offset)
+	// So we just extract the radius directly from it
 	const dx = startingPoint.x - options.center.x;
 	const dz = startingPoint.z - options.center.z;
 	const r = Number(sqrt(dx * dx + dz * dz));
+
 	const theta0 = atan2(dz, dx);
 	const points: { point: Vector3; calculatedLayerHeight: number }[] = [];
 	const startingHeight = await getStartingCupLayerHeight();
-	const endingHeight = options.layerHeight + startingHeight;
+
+	// Apply shrink scale to layer heights
+	const scaledLayerHeight = options.layerHeight * options.shrinkScale;
+	const endingHeight = scaledLayerHeight + startingHeight;
 	const heightDiff = endingHeight - startingHeight;
 	const dy = heightDiff / (options.segments - 1);
 
