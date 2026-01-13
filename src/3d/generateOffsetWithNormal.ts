@@ -155,7 +155,7 @@ export async function createMeshFromObject(
 		transparent: false,
 		side: DoubleSide,
 		vertexColors: false,
-		wireframe: false,
+		wireframe: import.meta.env.DEV,
 	});
 
 	const faceCount = object.length;
