@@ -1,4 +1,5 @@
 import { liveQuery, type Subscription } from "dexie";
+import { floor } from "mathjs";
 import {
 	CylinderGeometry,
 	DoubleSide,
@@ -6,8 +7,13 @@ import {
 	MeshStandardMaterial,
 } from "three";
 import { getTestCylinderInnerDiameter } from "@/db/appSettingsDbActions";
+import { getNozzleSize } from "@/db/formValuesDbActions";
+import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
+
+// Nozzle size offset factor - same as in generateGCode.ts
+const NOZZLE_SIZE_OFFSET_FACTOR = 2;
 
 export class MergeCylinder extends AppObject {
 	#radialSegments = 128; // default; replaced from DB
@@ -21,9 +27,18 @@ export class MergeCylinder extends AppObject {
 
 		this.$liveTestCylinderInnerDiameter = liveQuery(() =>
 			getTestCylinderInnerDiameter(),
-		).subscribe((diameter) => {
+		).subscribe(async (diameter) => {
 			if (!diameter || diameter <= 0 || !this.mesh) return;
-			this.#radius = diameter / 2;
+
+			// Apply the same transformation as in generateGCode.ts
+			const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
+			const nozzleSize = await getNozzleSize();
+			const shrinkScale = floor(1 / (1 - shrinkFactor / 100), 4);
+			const nozzleSizeOffset = nozzleSize / NOZZLE_SIZE_OFFSET_FACTOR;
+			const startingX = diameter / 2;
+			const transformedRadius = startingX * shrinkScale + nozzleSizeOffset;
+
+			this.#radius = transformedRadius;
 			this.updateGeometry();
 		});
 	}
@@ -32,6 +47,16 @@ export class MergeCylinder extends AppObject {
 		const instance = new MergeCylinder(options);
 		const radialSegments = await getRadialSegments();
 		instance.#radialSegments = radialSegments;
+
+		// Apply the same transformation as in generateGCode.ts for initial radius
+		const diameter = await getTestCylinderInnerDiameter();
+		const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
+		const nozzleSize = await getNozzleSize();
+		const shrinkScale = floor(1 / (1 - shrinkFactor / 100), 4);
+		const nozzleSizeOffset = nozzleSize / NOZZLE_SIZE_OFFSET_FACTOR;
+		const startingX = diameter / 2;
+		const transformedRadius = startingX * shrinkScale + nozzleSizeOffset;
+		instance.#radius = transformedRadius;
 
 		const material = new MeshStandardMaterial({
 			color: 0xffffff,
