@@ -21,23 +21,31 @@ export class TestCylinder extends AppObject {
 	#radius = 75 / 2;
 	#height = 50;
 	#onChangeCallback: OnChangeCallback | null = null;
-	$liveTestCylinderInnerDiameter: Subscription;
-	$liveTestCylinderHeight: Subscription;
+	#initialized = false;
+	$liveTestCylinderInnerDiameter: Subscription | null = null;
+	$liveTestCylinderHeight: Subscription | null = null;
 
 	private constructor() {
 		super();
+	}
+
+	private setupSubscriptions() {
+		this.#initialized = true;
 
 		this.$liveTestCylinderInnerDiameter = liveQuery(() =>
 			getTestCylinderInnerDiameter(),
 		).subscribe((diameter) => {
-			if (!diameter || diameter <= 0 || !this.mesh) return;
+			if (!diameter || diameter <= 0 || !this.mesh || !this.#initialized)
+				return;
+			if (diameter / 2 === this.#radius) return;
 			this.updateRadius(diameter / 2);
 		});
 
 		this.$liveTestCylinderHeight = liveQuery(() =>
 			getTestCylinderHeight(),
 		).subscribe((height) => {
-			if (!height || height <= 0 || !this.mesh) return;
+			if (!height || height <= 0 || !this.mesh || !this.#initialized) return;
+			if (height === this.#height) return;
 			this.updateHeight(height);
 		});
 	}
@@ -108,6 +116,8 @@ export class TestCylinder extends AppObject {
 			getRadialSegments(),
 		]);
 
+		console.log(heightDb, diameterDb, radialSegments);
+
 		const height = heightDb ? heightDb : 50;
 		const diameter = diameterDb ? diameterDb : 75;
 
@@ -140,6 +150,7 @@ export class TestCylinder extends AppObject {
 		mesh.position.set(0, height / 2, 0);
 
 		instance.computeBoundingBox();
+		instance.setupSubscriptions();
 		return instance;
 	}
 }

@@ -9,11 +9,9 @@ import {
 import { getTestCylinderInnerDiameter } from "@/db/appSettingsDbActions";
 import { getNozzleSize } from "@/db/formValuesDbActions";
 import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
+import { NOZZLE_SIZE_OFFSET_FACTOR } from "@/utils/constants";
 import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
-
-// Nozzle size offset factor - same as in generateGCode.ts
-const NOZZLE_SIZE_OFFSET_FACTOR = 2;
 
 export class MergeCylinder extends AppObject {
 	#radialSegments = 128; // default; replaced from DB

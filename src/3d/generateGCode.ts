@@ -26,14 +26,12 @@ import {
 	getActiveMaterialProfileShrinkFactor,
 } from "@/db/materialProfilesDbActions";
 import type { PrintObjectType } from "@/db/types";
+import { NOZZLE_SIZE_OFFSET_FACTOR } from "@/utils/constants";
 import {
 	getCirclePoints,
 	getTransitionLayer,
 } from "@/utils/cupTransitionLayer";
 import { getExtrusionCalculation } from "@/utils/getExtrusionCalculation";
-
-// Nozzle size offset factor - same as in PrintObject.ts
-const NOZZLE_SIZE_OFFSET_FACTOR = 2;
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";

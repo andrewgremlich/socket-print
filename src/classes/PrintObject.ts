@@ -1,4 +1,4 @@
-import { abs, floor, pi, round } from "mathjs";
+import { abs, floor, round } from "mathjs";
 import {
 	type BufferGeometry,
 	DoubleSide,
@@ -28,6 +28,11 @@ import { getNozzleSize } from "@/db/formValuesDbActions";
 import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 import { PrintObjectType } from "@/db/types";
 import {
+	HALF_TURN,
+	NOZZLE_SIZE_OFFSET_FACTOR,
+	QUARTER_TURN,
+} from "@/utils/constants";
+import {
 	activeFileName,
 	addTestCylinderButton,
 	addTestStlButton,
@@ -49,11 +54,6 @@ import type { SocketCup } from "./SocketCup";
 import { TestCylinder } from "./TestCylinder";
 
 type Callback = (params: { size: { x: number; y: number; z: number } }) => void;
-
-// Rotation constants
-const QUARTER_TURN = pi / 2;
-const HALF_TURN = pi;
-const NOZZLE_SIZE_OFFSET_FACTOR = 2;
 
 export class PrintObject extends AppObject {
 	callback: Callback;
