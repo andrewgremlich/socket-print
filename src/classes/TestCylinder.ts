@@ -116,8 +116,6 @@ export class TestCylinder extends AppObject {
 			getRadialSegments(),
 		]);
 
-		console.log(heightDb, diameterDb, radialSegments);
-
 		const height = heightDb ? heightDb : 50;
 		const diameter = diameterDb ? diameterDb : 75;
 
