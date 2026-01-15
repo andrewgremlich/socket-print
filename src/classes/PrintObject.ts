@@ -151,6 +151,7 @@ export class PrintObject extends AppObject {
 			try {
 				if (evt.isTrusted) {
 					await this.clearData();
+					this.currentType = PrintObjectType.Socket;
 				}
 
 				await this.#onStlFileChange(evt);
@@ -250,23 +251,8 @@ export class PrintObject extends AppObject {
 
 		const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
 		const shrinkScale = floor(1 / (1 - shrinkFactor / 100), 4);
-		console.log(
-			"[applyShrinkScale] shrinkFactor:",
-			shrinkFactor,
-			"shrinkScale:",
-			shrinkScale,
-		);
-
 		// Bake scale into geometry vertices so it exports correctly to STL
 		this.mesh.geometry.scale(shrinkScale, shrinkScale, shrinkScale);
-
-		// Log geometry size after scaling
-		this.mesh.geometry.computeBoundingBox();
-		const box = this.mesh.geometry.boundingBox;
-		console.log(
-			"[applyShrinkScale] AFTER - diameter (x):",
-			box ? box.max.x - box.min.x : "unknown",
-		);
 	};
 
 	applyNozzleSizeOffset = async () => {
@@ -277,28 +263,7 @@ export class PrintObject extends AppObject {
 
 		const nozzleSize = await getNozzleSize();
 		const offsetAmount = nozzleSize / NOZZLE_SIZE_OFFSET_FACTOR;
-
-		// Log geometry size before offset
-		this.mesh.geometry.computeBoundingBox();
-		const boxBefore = this.mesh.geometry.boundingBox;
-		console.log(
-			"[applyNozzleSizeOffset] BEFORE - nozzleSize:",
-			nozzleSize,
-			"offsetAmount:",
-			offsetAmount,
-			"diameter (x):",
-			boxBefore ? boxBefore.max.x - boxBefore.min.x : "unknown",
-		);
-
 		this.mesh = await applyOffset(this.mesh, offsetAmount);
-
-		// Log geometry size after offset
-		this.mesh.geometry.computeBoundingBox();
-		const boxAfter = this.mesh.geometry.boundingBox;
-		console.log(
-			"[applyNozzleSizeOffset] AFTER - diameter (x):",
-			boxAfter ? boxAfter.max.x - boxAfter.min.x : "unknown",
-		);
 	};
 
 	#exportTestCylinder = async () => {
@@ -308,17 +273,7 @@ export class PrintObject extends AppObject {
 		}
 
 		try {
-			// Log final dimensions before export
 			this.mesh.geometry.computeBoundingBox();
-			const box = this.mesh.geometry.boundingBox;
-			console.log(
-				"[exportTestCylinder] FINAL EXPORT - diameter (x):",
-				box ? box.max.x - box.min.x : "unknown",
-				"diameter (z):",
-				box ? box.max.z - box.min.z : "unknown",
-				"height (y):",
-				box ? box.max.y - box.min.y : "unknown",
-			);
 
 			const stlExporter = new STLExporter();
 			const stlString = stlExporter.parse(this.mesh);
@@ -499,11 +454,14 @@ export class PrintObject extends AppObject {
 		});
 
 		this.toggleInput(false);
+		loadingScreen.style.display = "none";
 	};
 
 	#onStlFileChange = async (event: Event) => {
 		const { target: inputFiles } = event;
 		const file = (inputFiles as HTMLInputElement).files?.[0];
+
+		console.log("[PrintObject] STL file changed:", file?.name);
 
 		switch (this.currentType) {
 			case PrintObjectType.Socket:
