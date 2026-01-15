@@ -62,7 +62,6 @@ export class PrintObject extends AppObject {
 	offsetYPosition = 0;
 	currentType: PrintObjectType | undefined = undefined;
 	socketCup: SocketCup;
-	isCollidingWithTube: boolean = false;
 	#testCylinderInstance: TestCylinder | null = null;
 
 	// Event listener references for cleanup
@@ -310,7 +309,7 @@ export class PrintObject extends AppObject {
 			this.computeBoundingBox();
 			this.mesh.position.set(0, this.size.y / 2, 0);
 			this.callback({ size: this.size });
-			this.isIntersectingWithTube();
+			this.isIntersectingWithSocketCup();
 		});
 
 		this.mesh = testCylinder.mesh;
@@ -334,6 +333,8 @@ export class PrintObject extends AppObject {
 				z: testCylinder.size.z,
 			},
 		});
+
+		this.isIntersectingWithSocketCup();
 	};
 
 	#handleSocket = async (file: File) => {
@@ -473,7 +474,7 @@ export class PrintObject extends AppObject {
 				break;
 		}
 
-		this.isIntersectingWithTube();
+		this.isIntersectingWithSocketCup();
 	};
 
 	clearData = async () => {
@@ -544,7 +545,7 @@ export class PrintObject extends AppObject {
 		}
 	};
 
-	isIntersectingWithTube = () => {
+	isIntersectingWithSocketCup = () => {
 		if (!this.mesh || !this.socketCup?.mesh) return;
 
 		this.mesh.updateMatrixWorld();
@@ -569,8 +570,6 @@ export class PrintObject extends AppObject {
 			generateGCodeButton.disabled = false;
 			printerFileInput.disabled = false;
 		}
-
-		this.isCollidingWithTube = hit;
 	};
 
 	handleRotationChange = async (axis: "x" | "y" | "z", amount: number) => {
@@ -606,7 +605,7 @@ export class PrintObject extends AppObject {
 			this.#showError("Failed to save rotation settings");
 		}
 
-		this.isIntersectingWithTube();
+		this.isIntersectingWithSocketCup();
 	};
 
 	coronalRotate90 = () => this.handleRotationChange("x", QUARTER_TURN);
@@ -642,7 +641,7 @@ export class PrintObject extends AppObject {
 			this.#showError("Failed to save position settings");
 		}
 
-		this.isIntersectingWithTube();
+		this.isIntersectingWithSocketCup();
 	};
 
 	horizontalChange = (evt: Event) => this.handleTranslationChange("x", evt);
