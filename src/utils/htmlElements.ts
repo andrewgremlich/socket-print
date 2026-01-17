@@ -82,10 +82,10 @@ export const estimatedPrintTime = document.getElementById(
 ) as HTMLParagraphElement;
 export const ipAddressFailure = document.getElementById(
 	"ipAddressFailure",
-) as IconElement;
+) as HTMLParagraphElement;
 export const ipAddressSuccess = document.getElementById(
 	"ipAddressSuccess",
-) as IconElement;
+) as HTMLParagraphElement;
 
 export const editActiveMaterialProfile = document.getElementById(
 	"editActiveMaterialProfile",

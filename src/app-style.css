@@ -111,6 +111,16 @@ main {
 	}
 }
 
+#portStatusIcons {
+	& p {
+		margin: 0;
+		font-size: 16px;
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+}
+
 #lockPositionGroup {
 	display: flex;
 	gap: 20px;
@@ -251,7 +261,7 @@ main {
 		margin: 10px;
 	}
 
-	icon-element {
+	.spin-icon {
 		flex-shrink: 0;
 		animation: loading 3s linear infinite;
 	}
@@ -268,7 +278,7 @@ main {
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.8);
 
-	icon-element {
+	.spin-icon {
 		animation: loading 3s linear infinite;
 		width: 100px;
 		height: 100px;

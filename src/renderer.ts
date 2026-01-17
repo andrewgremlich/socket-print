@@ -6,6 +6,14 @@ import "@/web-components";
 import "@/utils/globalEvents";
 import "@/utils/updater";
 
+import {
+	Check,
+	createIcons,
+	Loader,
+	Printer,
+	PrinterCheck,
+	Settings,
+} from "lucide";
 import { ceil } from "mathjs";
 import { type Mesh, Vector3 } from "three";
 import { blendHardEdges } from "@/3d/blendHardEdges";
@@ -38,6 +46,16 @@ import {
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
 import { PrintObjectType } from "./db/types";
+
+createIcons({
+	icons: {
+		Settings,
+		Loader,
+		PrinterCheck,
+		Printer,
+		Check,
+	},
+});
 
 if (!window.Worker) {
 	throw new Error("Web Worker not supported");
