@@ -420,8 +420,8 @@ export class PrintObject extends AppObject {
 
 		this.mesh.rotation.set(
 			rotateValues.coronal,
-			rotateValues.sagittal,
 			rotateValues.transverse,
+			rotateValues.sagittal,
 		);
 
 		try {
@@ -584,19 +584,12 @@ export class PrintObject extends AppObject {
 		}
 		this.autoAlignMesh();
 
-		// Save rotation values to IndexedDB
+		// Save actual mesh rotation values to IndexedDB
 		try {
-			const currentRotateValues = await getRotateValues();
 			await updateRotateValues(
-				axis === "x"
-					? currentRotateValues.coronal + amount
-					: currentRotateValues.coronal,
-				axis === "z"
-					? currentRotateValues.sagittal + amount
-					: currentRotateValues.sagittal,
-				axis === "y"
-					? currentRotateValues.transverse + amount
-					: currentRotateValues.transverse,
+				this.mesh.rotation.x,
+				this.mesh.rotation.z,
+				this.mesh.rotation.y,
 			);
 		} catch (error) {
 			console.error("Failed to save rotation values to database:", error);
