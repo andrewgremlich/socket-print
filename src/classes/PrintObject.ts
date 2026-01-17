@@ -309,7 +309,6 @@ export class PrintObject extends AppObject {
 			this.computeBoundingBox();
 			this.mesh.position.set(0, this.size.y / 2, 0);
 			this.callback({ size: this.size });
-			this.isIntersectingWithSocketCup();
 		});
 
 		this.mesh = testCylinder.mesh;
@@ -373,7 +372,6 @@ export class PrintObject extends AppObject {
 		this.mesh.raycast = acceleratedRaycast;
 		this.mesh.geometry.computeBoundsTree = computeBoundsTree;
 		this.mesh.geometry.disposeBoundsTree = disposeBoundsTree;
-		this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
 		this.mesh.name = file.name.replace(/[<>"'&]/g, "");
 		this.mesh.userData = { isSocket: true };
 		this.computeBoundingBox();
@@ -393,6 +391,9 @@ export class PrintObject extends AppObject {
 			-this.center.y,
 			-this.center.z,
 		);
+
+		// Create BVH after all geometry modifications (offset, scale, translate)
+		this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
 
 		let translateValues = { x: 0, y: 0, z: 0 };
 		let rotateValues = { coronal: 0, sagittal: 0, transverse: 0 };
@@ -461,8 +462,6 @@ export class PrintObject extends AppObject {
 	#onStlFileChange = async (event: Event) => {
 		const { target: inputFiles } = event;
 		const file = (inputFiles as HTMLInputElement).files?.[0];
-
-		console.log("[PrintObject] STL file changed:", file?.name);
 
 		switch (this.currentType) {
 			case PrintObjectType.Socket:
