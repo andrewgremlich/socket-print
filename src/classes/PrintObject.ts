@@ -556,10 +556,9 @@ export class PrintObject extends AppObject {
 			.invert()
 			.multiply(this.mesh.matrixWorld);
 
-		const hit = this.socketCup.mesh.geometry.boundsTree.intersectsGeometry(
-			this.mesh.geometry,
-			transformMatrix,
-		);
+		const hit = (
+			this.socketCup.mesh.geometry.boundsTree as MeshBVH
+		).intersectsGeometry(this.mesh.geometry, transformMatrix);
 
 		if (hit) {
 			collisionWarning.style.display = "block";
