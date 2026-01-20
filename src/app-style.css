@@ -8,10 +8,12 @@ main {
 }
 
 .show {
+	/* biome-ignore lint/complexity/noImportantStyles: intentional override for utility class */
 	display: block !important;
 }
 
 .hide {
+	/* biome-ignore lint/complexity/noImportantStyles: intentional override for utility class */
 	display: none !important;
 }
 
@@ -55,10 +57,10 @@ main {
 #activateSettingsDialog {
 	color: #e5e5e5;
 
-		&:hover {
-			color: #010101;
-			transition: color var(--transition-slow);
-		}
+	&:hover {
+		color: #010101;
+		transition: color var(--transition-slow);
+	}
 }
 
 @media (prefers-color-scheme: dark) {
