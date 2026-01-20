@@ -2,7 +2,7 @@
 	"name": "socket-print",
 	"productName": "Provel Print",
 	"description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
-	"version": "1.15.7",
+	"version": "1.16.0",
 	"type": "module",
 	"author": {
 		"name": "andrewgremlich"
