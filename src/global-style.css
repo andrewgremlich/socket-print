@@ -170,9 +170,15 @@ a {
 }
 
 h1 {
+	color: var(--text-primary);
 	font-size: var(--font-size-2xl);
 	font-weight: 600;
 	margin-right: var(--spacing-lg);
+
+	& a {
+		color: inherit;
+		text-decoration: none;
+	}
 }
 
 h2 {
