@@ -1,4 +1,4 @@
-import { Vector3 } from "three";
+import { type SphereGeometry, Vector3 } from "three";
 import { describe, expect, test } from "vitest";
 import { DebugPoint } from "./DebugPoint";
 
@@ -13,7 +13,7 @@ describe("DebugPoint", () => {
 		expect(debugPoint.geometry.type).toBe("SphereGeometry");
 		// parameters: { radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength }
 		const { radius, widthSegments, heightSegments } = (
-			debugPoint.geometry as any
+			debugPoint.geometry as SphereGeometry
 		).parameters;
 		expect(radius).toBe(1);
 		expect(widthSegments).toBe(16);

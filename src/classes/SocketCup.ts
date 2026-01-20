@@ -1,4 +1,5 @@
 import { liveQuery, type Subscription } from "dexie";
+import { cos, pi, sin, sqrt } from "mathjs";
 import {
 	BufferGeometry,
 	DoubleSide,
@@ -77,18 +78,18 @@ export class SocketCup extends AppObject {
 				outerRadiusTop + t * (outerRadiusBottom - outerRadiusTop);
 
 			for (let seg = 0; seg <= segments; seg++) {
-				const theta = (seg / segments) * Math.PI * 2;
-				const x = Math.cos(theta) * currentOuterRadius;
-				const z = Math.sin(theta) * currentOuterRadius;
+				const theta = (seg / segments) * pi * 2;
+				const x = cos(theta) * currentOuterRadius;
+				const z = sin(theta) * currentOuterRadius;
 
 				positions.push(x, y - this.bumpDangerZone, z);
 
 				// Calculate normal for tapered surface
 				const slope = (outerRadiusTop - outerRadiusBottom) / height;
-				const nx = Math.cos(theta);
+				const nx = Number(cos(theta));
 				const ny = slope;
-				const nz = Math.sin(theta);
-				const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+				const nz = Number(sin(theta));
+				const len = Number(sqrt(nx * nx + ny * ny + nz * nz));
 				normals.push(nx / len, ny / len, nz / len);
 			}
 		}
@@ -103,18 +104,18 @@ export class SocketCup extends AppObject {
 				innerRadiusTop + t * (innerRadiusBottom - innerRadiusTop);
 
 			for (let seg = 0; seg <= segments; seg++) {
-				const theta = (seg / segments) * Math.PI * 2;
-				const x = Math.cos(theta) * currentInnerRadius;
-				const z = Math.sin(theta) * currentInnerRadius;
+				const theta = (seg / segments) * pi * 2;
+				const x = cos(theta) * currentInnerRadius;
+				const z = sin(theta) * currentInnerRadius;
 
 				positions.push(x, y - this.bumpDangerZone, z);
 
 				// Normal points inward
 				const slope = (innerRadiusTop - innerRadiusBottom) / height;
-				const nx = -Math.cos(theta);
+				const nx = -Number(cos(theta));
 				const ny = -slope;
-				const nz = -Math.sin(theta);
-				const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+				const nz = -Number(sin(theta));
+				const len = Number(sqrt(nx * nx + ny * ny + nz * nz));
 				normals.push(nx / len, ny / len, nz / len);
 			}
 		}
@@ -200,7 +201,6 @@ export class SocketCup extends AppObject {
 	dispose() {
 		if (this.$liveCupSize) {
 			this.$liveCupSize.unsubscribe();
-			this.$liveCupSize = null;
 		}
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
