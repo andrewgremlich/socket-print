@@ -1,24 +1,24 @@
 export const formContainerStyle = `
 dialog {
-  z-index: 9999;
+  z-index: var(--z-dropdown);
   border: none;
-  border-radius: 15px;
-  background-color: #444;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  padding: 20px 30px !important;
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-menu);
+  box-shadow: var(--shadow-dropdown);
+  padding: var(--spacing-lg) var(--spacing-xl) !important;
 }
 
 dialog::backdrop {
-  background: rgba(0,0,0,0.3);
+  background: var(--shadow-overlay);
 }
 
 dialog form {
   display: grid;
-  row-gap: 5px;
+  row-gap: var(--spacing-xs);
   column-gap: 50px;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
 }
 
 dialog form > * {
@@ -26,38 +26,38 @@ dialog form > * {
 }
 
 dialog input {
-  background-color: #f0f0f0;
-  color: #000;
-  border: 3px solid #ccc;
-  border-radius: 8px;
-  padding: 4px 0px;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
   cursor: pointer;
 }
 
 dialog input:disabled, dialog input[readonly] {
-  background-color: #eee;
-  color: #999;
+  background-color: var(--bg-disabled);
+  color: var(--text-disabled);
   cursor: not-allowed;
 }
 
 dialog label, dialog h2, dialog h3, dialog h4 {
   margin: 0;
-  color: #fff;
-}   
+  color: var(--text-primary);
+}
 
 dialog p {
-  color: #ccc;
+  color: var(--text-secondary);
 }
 
 dialog a {
-  color: #1e90ff;
-  text-underline-offset: 5px;
+  color: var(--text-link);
+  text-underline-offset: var(--spacing-xs);
   text-underline-thickness: 2px;
   text-decoration-style: dashed;
-  transition: color 0.3s ease;
+  transition: color var(--transition-slow);
 
   &:hover {
-    color: #fff;
+    color: var(--accent-color);
   }
 }
 `;
