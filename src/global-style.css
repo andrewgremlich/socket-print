@@ -116,7 +116,7 @@
 		--text-muted: #b0b0b0;
 		--text-disabled: #737373;
 		--text-placeholder: #808080;
-		--text-link: #1e90ff;
+		--text-link: #5caeff;
 		--text-error: #ff4d4d;
 
 		/* Border colors */
@@ -195,6 +195,7 @@ p {
 a {
 	text-decoration: none;
 	transition: color var(--transition-normal);
+	color: var(--text-link);
 
 	&:hover {
 		color: var(--accent-color);

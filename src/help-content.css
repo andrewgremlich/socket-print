@@ -13,7 +13,7 @@
 	}
 }
 
-#helpContent {
+#helpContent, #licensesContent {
 	max-width: var(--tablet-width);
 	padding-top: 40px;
 	padding-bottom: 40px;
