@@ -14,7 +14,7 @@
 	"scripts": {
 		"dev": "npm run dev:web",
 		"dev:web": "vite --config vite.config.ts",
-		"build": "npm run clean && vite build",
+		"build": "npm run test && npm run clean && vite build",
 		"build:tauri": "tauri build",
 		"preview": "vite preview --config vite.config.ts",
 		"prepare": "husky",
