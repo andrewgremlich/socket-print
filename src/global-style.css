@@ -311,6 +311,11 @@ button {
 		box-shadow var(--transition-normal),
 		transform var(--transition-fast);
 
+	&:hover:not([disabled]):not(.menuBarButton):not(.menuBarDropdownButton) {
+		border-color: var(--border-hover);
+		background-color: var(--bg-input-hover);
+	}
+
 	&:focus {
 		outline: none;
 		border-color: var(--accent-color);

@@ -51,10 +51,8 @@ export class Settings extends Dialog {
 					}
 				}
 
-				.greyedOut {
-					margin-top: 0.5rem;
-					font-size: 0.9em;
-					color: var(--text-muted);
+				#resetWarning {
+					color: var(--text-error);
 				}
 			</style>
 		  <dialog id="${this.id}" aria-labelledby="settingsTitle">
@@ -90,7 +88,7 @@ export class Settings extends Dialog {
 					<div id="resetAppContainer">
 						<h4>Reset Application</h4>
 						<input type="button" class="button" id="resetApp" value="Reset Application" aria-describedby="resetWarning" />
-						<p id="resetWarning" class="greyedOut">This will delete all your data and settings</p>
+						<p id="resetWarning">This will delete all your data and settings!</p>
 					</div>
 					<div id="closeContainer" style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
 						<input type="button" class="button" id="closeSettings" value="Close" />

@@ -53,11 +53,22 @@ main {
 }
 
 #activateSettingsDialog {
-	color: var(--icon-color);
+	color: #e5e5e5;
 
-	&:hover {
-		color: var(--text-primary);
-		transition: color var(--transition-slow);
+		&:hover {
+			color: #010101;
+			transition: color var(--transition-slow);
+		}
+}
+
+@media (prefers-color-scheme: dark) {
+	#activateSettingsDialog {
+		color: #4f4f4f;
+
+		&:hover {
+			color: var(--text-primary);
+			transition: color var(--transition-slow);
+		}
 	}
 }
 
