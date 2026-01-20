@@ -54,11 +54,11 @@ export class Settings extends Dialog {
 				.greyedOut {
 					margin-top: 0.5rem;
 					font-size: 0.9em;
-					color:#666;
+					color: var(--text-muted);
 				}
 			</style>
-		  <dialog id="${this.id}">
-		    <h3>Settings</h3>
+		  <dialog id="${this.id}" aria-labelledby="settingsTitle">
+		    <h3 id="settingsTitle">Settings</h3>
         	<form id="settingsForm" method="dialog">
             <!--<label for="startingCupLayerHeight">Starting Cup Layer Height</label>
             <input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />-->
@@ -82,14 +82,15 @@ export class Settings extends Dialog {
 						<label for="testCylinderHeight">Test Cylinder Height</label>
 						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
 
-						<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter Diameter</label>
+						<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter</label>
 						<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="70" max="80" />
 
 						<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
 					</form>
 					<div id="resetAppContainer">
 						<h4>Reset Application</h4>
-						<input type="button" class="button" id="resetApp" value="Reset Application" />
+						<input type="button" class="button" id="resetApp" value="Reset Application" aria-describedby="resetWarning" />
+						<p id="resetWarning" class="greyedOut">This will delete all your data and settings</p>
 					</div>
 					<div id="closeContainer" style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
 						<input type="button" class="button" id="closeSettings" value="Close" />

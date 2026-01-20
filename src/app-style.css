@@ -45,6 +45,13 @@ main {
 	}
 }
 
+#application {
+	display: flex;
+	justify-content: center;
+	flex-direction: row;
+	flex: auto;
+}
+
 #activateSettingsDialog {
 	color: var(--icon-color);
 
@@ -67,10 +74,16 @@ main {
 	transition: color var(--transition-normal);
 	box-shadow: none;
 
-	&:hover {
+	&:hover,
+	&:focus {
 		color: var(--accent-color);
 		text-decoration: underline;
 		text-underline-offset: 3px;
+	}
+
+	&:focus {
+		outline: 2px solid var(--accent-color);
+		outline-offset: 2px;
 	}
 }
 
@@ -102,11 +115,17 @@ main {
 	white-space: nowrap;
 	transition: color var(--transition-normal);
 
-	&:hover {
+	&:hover,
+	&:focus {
 		color: var(--accent-color);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 		cursor: pointer;
+	}
+
+	&:focus {
+		outline: 2px solid var(--accent-color);
+		outline-offset: 2px;
 	}
 }
 
@@ -339,5 +358,11 @@ main {
 	}
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.spin-icon {
+		animation: none;
 	}
 }

@@ -23,6 +23,12 @@ export class Dialog extends HTMLElement {
 	show() {
 		if (!this.dialog.open) {
 			this.dialog.showModal();
+			const firstFocusable = this.dialog.querySelector<HTMLElement>(
+				'button, [href], input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])',
+			);
+			if (firstFocusable) {
+				firstFocusable.focus();
+			}
 		}
 	}
 

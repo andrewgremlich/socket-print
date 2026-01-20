@@ -85,10 +85,10 @@ class OfflineIndicator extends HTMLElement {
 
 			if (hasCachedContent) {
 				this.indicator.textContent = "Offline Mode - Cached Content Available";
-				this.indicator.style.background = "#4ecdc4";
+				this.indicator.style.background = "#0d9488";
 			} else {
 				this.indicator.textContent = "Offline Mode";
-				this.indicator.style.background = "#ff6b6b";
+				this.indicator.style.background = "#dc2626";
 			}
 
 			// Start the auto-hide timer
@@ -108,7 +108,7 @@ class OfflineIndicator extends HTMLElement {
 				}
 
 				.offline-indicator {
-					background: #ff6b6b;
+					background: #dc2626;
 					color: white;
 					padding: 8px 16px;
 					border-radius: 4px;
@@ -121,7 +121,7 @@ class OfflineIndicator extends HTMLElement {
 				}
 
 				.offline-indicator.cached {
-					background: #4ecdc4;
+					background: #0d9488;
 				}
 
 				.offline-indicator.show {
@@ -153,6 +153,21 @@ class OfflineIndicator extends HTMLElement {
 					}
 				}
 
+				@media (prefers-reduced-motion: reduce) {
+					.offline-indicator {
+						transition: none;
+					}
+
+					.offline-indicator.show {
+						animation: none;
+					}
+
+					.offline-indicator.fade-out {
+						animation: none;
+						opacity: 0;
+					}
+				}
+
 				@media (max-width: 768px) {
 					:host {
 						top: 5px;
@@ -165,7 +180,7 @@ class OfflineIndicator extends HTMLElement {
 					}
 				}
 			</style>
-			<div class="offline-indicator" id="indicator">
+			<div class="offline-indicator" id="indicator" role="status" aria-live="polite" aria-label="Network status indicator">
 				Offline Mode
 			</div>
 		`;

@@ -19,13 +19,27 @@ export class MaterialProfileForm extends Dialog {
 		super();
 		this.id = "materialDialog";
 		this.attachHTML`
-      <dialog id="${this.id}">
-        <h3 id="formTitle"></h3>
+      <style>
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        }
+      </style>
+      <dialog id="${this.id}" aria-labelledby="formTitle">
+        <h3 id="formTitle" aria-live="polite"></h3>
         <form id="materialForm" method="dialog">
 						<input type="hidden" name="materialProfileId" placeholder="Material Profile ID" />
 
             <label for="materialProfileName">Material Profile Name</label>
-            <input type="text" id="materialProfileName" name="materialProfileName" required />
+            <input type="text" id="materialProfileName" name="materialProfileName" required aria-describedby="nameReadOnlyHint" />
+            <span id="nameReadOnlyHint" class="visually-hidden"></span>
             
             <label for="nozzleTemp">Nozzle Temp (C)</label>
             <input type="number" min="160" max="260" value="200" name="nozzleTemp" id="nozzleTemp" required />
@@ -36,14 +50,14 @@ export class MaterialProfileForm extends Dialog {
             <label for="shrinkFactor">Shrink Factor (%)</label>
             <input type="number" min="0.1" max="4.0" step="0.01" value="2.6" name="shrinkFactor" id="shrinkFactor" required />
 
+            <label for="outputFactor">Output Factor</label>
+            <input type="number" min="0.9" max="1.1" step="0.01" value="1" name="outputFactor" id="outputFactor" required />
+
 						<label for="gramsPerRevolution">Grams Per Revolution</label>
             <input type="number" step="0.01" name="gramsPerRevolution" id="gramsPerRevolution" required min="0.1" max="0.3" />
 
 						<label for="density">Density (g/cm³)</label>
             <input type="number" step="0.0001" name="density" id="density" required min="0.0005" max="0.0020" />
-
-            <label for="outputFactor">Output Factor</label>
-            <input type="number" min="0.9" max="1.1" step="0.01" value="1" name="outputFactor" id="outputFactor" required />
 
             <input type="submit" value="Save" class="button" id="saveMaterialProfile" />
             <input type="button" value="Cancel" class="button" id="cancelMaterialProfile" />
@@ -77,10 +91,15 @@ export class MaterialProfileForm extends Dialog {
 		this.formTitle.textContent =
 			type === "new" ? "Add Material Profile" : "Edit Material Profile";
 
+		const nameHint = this.shadowRoot.getElementById("nameReadOnlyHint");
+
 		if (type === "edit") {
 			const profile = await getActiveMaterialProfile();
 
 			this.materialProfileName.readOnly = true;
+			this.materialProfileName.setAttribute("aria-readonly", "true");
+			if (nameHint)
+				nameHint.textContent = "Name cannot be changed when editing";
 			this.editMaterialProfile = profile;
 
 			(
@@ -104,6 +123,8 @@ export class MaterialProfileForm extends Dialog {
 				profile.density.toString();
 		} else {
 			this.materialProfileName.readOnly = false;
+			this.materialProfileName.removeAttribute("aria-readonly");
+			if (nameHint) nameHint.textContent = "";
 			this.editMaterialProfile = null;
 			this.form.reset();
 		}

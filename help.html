@@ -9,8 +9,9 @@
 </head>
 
 <body>
-  <div id="helpContent">
-    <h1><a href="/">ProvelPrint</a></h1>
+  <a href="#helpContent" class="skip-link">Skip to main content</a>
+  <main id="helpContent">
+    <h1><a href="/" aria-label="ProvelPrint - Return to home page">ProvelPrint</a></h1>
 
     <h2>File</h2>
 
@@ -54,8 +55,8 @@
 
     <h2>Layer Height</h2>
 
-    <p>A layer height of 1.0 mm (.040") might be typical and will be better at handling abrupt contour changes. Thicker
-      layer heights will print faster.</p>
+    <p>A layer height of 1.0 mm (.040") might be typical and will be better at handling abrupt contour
+      changes. Thicker layer heights will print faster, but should not be used with extreme overhangs.</p>
 
     <h2>Material</h2>
 
@@ -72,8 +73,8 @@
 
     <h2>Cup Temp</h2>
 
-    <p>Nozzle temperature in °C. Insufficient cup temperature can cause poor adhesion and reduced strength. Range: 140 -
-      170°C</p>
+    <p>Nozzle temperature in °C. Insufficient cup temperature can cause poor adhesion and reduced
+      strength. Range: 140 - 200°C</p>
 
     <h2>Shrink Factor</h2>
 
@@ -82,6 +83,14 @@
     <h2>Output Factor</h2>
 
     <p>This allows user correction for minor over or under extrusion. Range: 0.90 - 1.10</p>
+
+    <h2>Density</h2>
+
+    <p>Do not change this without consulting Provel.</p>
+
+    <h2>Grams Per Revolution</h2>
+
+    <p>Do not change this without consulting Provel.</p>
 
     <h2>Print Time</h2>
 
@@ -101,8 +110,10 @@
 
     <h2>Translate</h2>
 
-    <p>Allows translation of the socket in X (left/right), Y (forward/back), and Z (up/down).</p>
-  </div>
+    <p>Allows translation of the socket in X (left/right), Y (forward,back), and Z (up/down).</p>
+
+    <offline-indicator></offline-indicator>
+  </main>
 
   <script type="module" src="./src/help-renderer.ts"></script>
 
