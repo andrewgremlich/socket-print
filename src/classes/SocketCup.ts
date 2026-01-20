@@ -1,11 +1,10 @@
 import { liveQuery, type Subscription } from "dexie";
 import {
+	BufferGeometry,
 	DoubleSide,
-	ExtrudeGeometry,
+	Float32BufferAttribute,
 	Mesh,
 	MeshStandardMaterial,
-	Path,
-	Shape,
 } from "three";
 import {
 	acceleratedRaycast,
@@ -24,6 +23,7 @@ export class SocketCup extends AppObject {
 	radialSegments = 128;
 	tubularSegments = 128;
 	bumpDangerZone = 1;
+	taperRatio = 0.85; // Base radius is 85% of top radius
 	$liveCupSize: Subscription;
 
 	private constructor() {
@@ -53,21 +53,129 @@ export class SocketCup extends AppObject {
 		outerRadius: number,
 		height: number,
 	) {
-		const shape = new Shape();
-		shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+		// Create a tapered cup (frustum) - wider at top, narrower at base
+		const segments = this.radialSegments;
+		const rings = this.tubularSegments;
 
-		const hole = new Path();
-		hole.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
-		shape.holes.push(hole);
+		const positions: number[] = [];
+		const normals: number[] = [];
+		const indices: number[] = [];
 
-		const geometry = new ExtrudeGeometry(shape, {
-			depth: height,
-			steps: this.tubularSegments,
-			bevelEnabled: false,
-		});
+		// Top radii (wider)
+		const outerRadiusTop = outerRadius;
+		const innerRadiusTop = innerRadius;
 
-		geometry.rotateX(Math.PI / 2);
-		geometry.translate(0, -this.bumpDangerZone, 0);
+		// Bottom radii (narrower based on taper ratio)
+		const outerRadiusBottom = outerRadius * this.taperRatio;
+		const innerRadiusBottom = innerRadius * this.taperRatio;
+
+		// Generate vertices for the outer surface
+		for (let ring = 0; ring <= rings; ring++) {
+			const t = ring / rings;
+			const y = -t * height; // Goes from 0 (top) to -height (bottom)
+			const currentOuterRadius =
+				outerRadiusTop + t * (outerRadiusBottom - outerRadiusTop);
+
+			for (let seg = 0; seg <= segments; seg++) {
+				const theta = (seg / segments) * Math.PI * 2;
+				const x = Math.cos(theta) * currentOuterRadius;
+				const z = Math.sin(theta) * currentOuterRadius;
+
+				positions.push(x, y - this.bumpDangerZone, z);
+
+				// Calculate normal for tapered surface
+				const slope = (outerRadiusTop - outerRadiusBottom) / height;
+				const nx = Math.cos(theta);
+				const ny = slope;
+				const nz = Math.sin(theta);
+				const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+				normals.push(nx / len, ny / len, nz / len);
+			}
+		}
+
+		const outerVertexCount = (rings + 1) * (segments + 1);
+
+		// Generate vertices for the inner surface
+		for (let ring = 0; ring <= rings; ring++) {
+			const t = ring / rings;
+			const y = -t * height;
+			const currentInnerRadius =
+				innerRadiusTop + t * (innerRadiusBottom - innerRadiusTop);
+
+			for (let seg = 0; seg <= segments; seg++) {
+				const theta = (seg / segments) * Math.PI * 2;
+				const x = Math.cos(theta) * currentInnerRadius;
+				const z = Math.sin(theta) * currentInnerRadius;
+
+				positions.push(x, y - this.bumpDangerZone, z);
+
+				// Normal points inward
+				const slope = (innerRadiusTop - innerRadiusBottom) / height;
+				const nx = -Math.cos(theta);
+				const ny = -slope;
+				const nz = -Math.sin(theta);
+				const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+				normals.push(nx / len, ny / len, nz / len);
+			}
+		}
+
+		// Generate indices for outer surface
+		for (let ring = 0; ring < rings; ring++) {
+			for (let seg = 0; seg < segments; seg++) {
+				const a = ring * (segments + 1) + seg;
+				const b = a + segments + 1;
+				const c = a + 1;
+				const d = b + 1;
+
+				indices.push(a, b, c);
+				indices.push(c, b, d);
+			}
+		}
+
+		// Generate indices for inner surface (reversed winding)
+		for (let ring = 0; ring < rings; ring++) {
+			for (let seg = 0; seg < segments; seg++) {
+				const a = outerVertexCount + ring * (segments + 1) + seg;
+				const b = a + segments + 1;
+				const c = a + 1;
+				const d = b + 1;
+
+				indices.push(a, c, b);
+				indices.push(c, d, b);
+			}
+		}
+
+		// Add top ring (cap between inner and outer at top)
+		const topOuterStart = 0;
+		const topInnerStart = outerVertexCount;
+		for (let seg = 0; seg < segments; seg++) {
+			const outerA = topOuterStart + seg;
+			const outerB = topOuterStart + seg + 1;
+			const innerA = topInnerStart + seg;
+			const innerB = topInnerStart + seg + 1;
+
+			indices.push(outerA, innerA, outerB);
+			indices.push(outerB, innerA, innerB);
+		}
+
+		// Add bottom ring (cap between inner and outer at bottom)
+		const bottomOuterStart = rings * (segments + 1);
+		const bottomInnerStart = outerVertexCount + rings * (segments + 1);
+		for (let seg = 0; seg < segments; seg++) {
+			const outerA = bottomOuterStart + seg;
+			const outerB = bottomOuterStart + seg + 1;
+			const innerA = bottomInnerStart + seg;
+			const innerB = bottomInnerStart + seg + 1;
+
+			indices.push(outerA, outerB, innerA);
+			indices.push(outerB, innerB, innerA);
+		}
+
+		const geometry = new BufferGeometry();
+		geometry.setAttribute("position", new Float32BufferAttribute(positions, 3));
+		geometry.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+		geometry.setIndex(indices);
+		geometry.computeVertexNormals();
 
 		return geometry;
 	}
