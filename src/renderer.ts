@@ -9,6 +9,7 @@ import "@/utils/updater";
 import {
 	Check,
 	createIcons,
+	File,
 	Loader,
 	Printer,
 	PrinterCheck,
@@ -54,6 +55,7 @@ createIcons({
 		PrinterCheck,
 		Printer,
 		Check,
+		File,
 	},
 });
 

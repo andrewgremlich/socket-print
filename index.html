@@ -99,12 +99,12 @@
             <span>Port Status</span>
             <div id="portStatusIcons" aria-live="polite">
               <p id="ipAddressSuccess" class="hide">Connected <i data-lucide="printer-check"></i></p>
-              <p id="ipAddressFailure">Disconnected <i data-lucide="printer"></i></p>
+              <p id="ipAddressFailure">Disconnected</p>
             </div>
           </div>
 
           <div class="form-group">
-            <label>Lock Position</label>
+            <label></i>Lock Position</label>
             <div id="lockPositionGroup" style="display: flex; gap: 20px; align-items: center;">
               <label for="lockPositionLeft" style="display: flex; align-items: center; gap: 5px;">
                 <input type="radio" id="lockPositionLeft" name="lockPosition" value="left" checked />
@@ -155,14 +155,15 @@
           </div>
 
           <div>
-            <span>Cup Temp (C)</span><span id="cupTempDisplay">130</span>
+            <span> Cup Temp (C)</span><span id="cupTempDisplay">130</span>
           </div>
         </form>
 
         <div id="printActions">
-          <button type="button" id="generateGCodeButton">File</button>
+          <button type="button" id="generateGCodeButton"><i data-lucide="file"></i>File</button>
 
-          <button type="button" id="printerFileInput" name="printerFileInput">Print</button>
+          <button type="button" id="printerFileInput" name="printerFileInput"><i data-lucide="printer"></i>
+            Print</button>
         </div>
       </div>
 

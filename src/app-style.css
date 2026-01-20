@@ -1,11 +1,5 @@
-:root {
-	--desktop-width: 900px;
-	--tablet-width: 600px;
-}
-
 main {
 	width: var(--tablet-width);
-	/* Allow shrinking inside #app flex column */
 	min-height: 0;
 
 	@media (min-width: 901px) {
@@ -21,20 +15,60 @@ main {
 	display: none !important;
 }
 
+#menuBar {
+	width: 100%;
+	height: var(--menu-bar-height);
+	background-color: var(--bg-menu);
+	z-index: var(--z-dropdown);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex: 0 0 auto;
+	padding: 0 var(--spacing-lg);
+
+	& > div {
+		width: var(--desktop-width);
+		display: flex;
+		justify-content: space-between;
+	}
+
+	nav {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		& > div {
+			display: flex;
+			align-items: center;
+		}
+	}
+}
+
+#activateSettingsDialog {
+	color: var(--icon-color);
+
+	&:hover {
+		color: var(--text-primary);
+		transition: color var(--transition-slow);
+	}
+}
+
 .menuBarButton {
 	text-align: center;
 	vertical-align: middle;
 	line-height: 1.2;
-	font-size: 16px;
-	margin-right: 10px;
 	display: block;
-	color: #fff;
+	color: var(--text-primary);
 	border: none;
 	background-color: transparent;
 	cursor: pointer;
 	text-decoration: none;
+	transition: color var(--transition-normal);
+	box-shadow: none;
 
 	&:hover {
+		color: var(--accent-color);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -45,29 +79,31 @@ main {
 
 	& .menuBarDropdown {
 		display: none;
-		z-index: 9999;
-		background-color: #444;
+		z-index: var(--z-dropdown);
+		background-color: var(--bg-menu);
 
-		padding: 8px 5px;
-		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-		border-radius: 5px;
+		padding: 8px var(--spacing-xs);
+		box-shadow: var(--shadow-dropdown);
+		border-radius: var(--radius-sm);
 		position: absolute;
 		left: 0;
-		top: 40px;
+		top: var(--menu-bar-height);
 	}
 }
 
 .menuBarDropdownButton {
 	background: none;
 	border: none;
-	color: #fff;
-	font-size: 16px;
-	padding: 5px;
+	box-shadow: none;
+	color: var(--text-primary);
+	padding: var(--spacing-xs);
 	text-decoration: none;
 	display: block;
 	white-space: nowrap;
+	transition: color var(--transition-normal);
 
 	&:hover {
+		color: var(--accent-color);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 		cursor: pointer;
@@ -90,56 +126,62 @@ main {
 }
 
 #userInterface {
-	margin-right: 20px;
+	margin-right: var(--spacing-lg);
 	display: flex;
 	flex-direction: column;
+}
 
-	& #appForm {
+#appForm {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	margin-bottom: var(--spacing-lg);
+	height: 100%;
+
+	& > * {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		justify-content: space-between;
-		margin-bottom: 20px;
-		height: 100%;
+		align-items: center;
+		margin-bottom: var(--spacing-md);
+	}
 
-		& > * {
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-			align-items: center;
-			margin-bottom: 15px;
-		}
+	& label,
+	& div span {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
 	}
 }
 
 #portStatusIcons {
 	& p {
 		margin: 0;
-		font-size: 16px;
 		display: flex;
 		align-items: center;
-		gap: 15px;
+		gap: var(--spacing-md);
 	}
 }
 
 #lockPositionGroup {
 	display: flex;
-	gap: 20px;
+	gap: var(--spacing-lg);
 	align-items: center;
 }
 
 #lockPositionGroup label {
 	display: flex;
 	align-items: center;
-	gap: 5px;
-	font-size: 16px;
+	gap: var(--spacing-xs);
 	cursor: pointer;
 }
 
 #lockPositionGroup input[type="radio"] {
-	accent-color: #00e1ee;
+	accent-color: var(--accent-color);
 	width: 18px;
 	height: 18px;
 	margin: 0;
+	cursor: pointer;
 }
 
 #printActions {
@@ -149,8 +191,17 @@ main {
 	justify-content: flex-start;
 
 	& button {
-		margin-right: 20px;
+		margin-right: var(--spacing-lg);
 		padding: 2px 8px;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		& svg {
+			margin-right: 8px;
+			width: var(--spacing-lg);
+		}
 	}
 }
 
@@ -165,100 +216,97 @@ main {
 	@media (min-width: 901px) {
 		width: 500px;
 	}
+}
 
-	& #provelPrint {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		margin-bottom: 10px;
-		min-height: 0;
-		overflow: hidden;
+#provelPrint {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin-bottom: var(--spacing-sm);
+	min-height: 0;
+	overflow: hidden;
+}
 
-		& #modelViewer {
-			width: 100%;
-			height: 100%;
-			display: block;
-		}
+#modelViewer {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
 
-		& #activeFileName {
-			position: absolute;
-			top: 10px;
-			left: 10px;
-			color: #fff;
-			font-size: 16px;
-		}
+#activeFileName {
+	position: absolute;
+	top: var(--spacing-sm);
+	left: var(--spacing-sm);
+	color: var(--text-primary);
+}
 
-		& #collisionWarning {
-			display: none;
-			position: absolute;
-			bottom: 10px;
-			right: 10px;
-			color: #ff2d2d;
-			font-size: 16px;
-		}
+#collisionWarning {
+	display: none;
+	position: absolute;
+	bottom: var(--spacing-sm);
+	right: var(--spacing-sm);
+	color: var(--text-error);
+}
 
-		& #estimatedPrintTimeContainer {
-			position: absolute;
-			bottom: 10px;
-			left: 10px;
-			color: #fff;
-			font-size: 16px;
+#estimatedPrintTimeContainer {
+	position: absolute;
+	bottom: var(--spacing-sm);
+	left: var(--spacing-sm);
+	color: var(--text-primary);
 
-			& span {
-				display: inline-block;
-			}
-		}
+	& span {
+		display: inline-block;
+	}
+}
+
+#editSocket {
+	padding: 0px var(--spacing-sm);
+
+	& button {
+		padding: 4px 12px;
+		margin-bottom: var(--spacing-xs);
+		margin-right: var(--spacing-xs);
 	}
 
-	& #editSocket {
-		padding: 0px 10px;
+	& > div {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: flex-end;
+		margin-bottom: var(--spacing-sm);
+	}
+}
 
-		& button {
-			padding: 4px 12px;
-			margin-bottom: 5px;
-			margin-right: 5px;
-		}
+#rotateSocket {
+	& span {
+		margin-right: var(--spacing-lg);
+	}
+}
 
-		& > div {
-			display: flex;
-			flex-wrap: wrap;
-			align-items: center;
-			justify-content: flex-end;
-			margin-bottom: 10px;
-		}
+#changePosition {
+	& label {
+		margin-left: var(--spacing-lg);
+	}
 
-		& #rotateSocket {
-			& span {
-				margin-right: 20px;
-			}
-		}
-
-		& #changePosition {
-			& label {
-				margin-left: 20px;
-			}
-
-			& input {
-				margin-left: 10px;
-			}
-		}
+	& input {
+		margin-left: var(--spacing-sm);
 	}
 }
 
 #progressBarDiv {
 	position: fixed;
-	z-index: 9999;
-	bottom: 10px;
-	left: 10px;
-	background-color: #444;
-	padding: 0px 15px;
-	border-radius: 15px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	z-index: var(--z-dropdown);
+	bottom: var(--spacing-sm);
+	left: var(--spacing-sm);
+	background-color: var(--bg-menu);
+	padding: 0px var(--spacing-md);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-dropdown);
 	display: none;
 	align-items: center;
 
 	& > * {
-		margin: 10px;
+		margin: var(--spacing-sm);
 	}
 
 	.spin-icon {
@@ -270,13 +318,13 @@ main {
 #loading {
 	position: fixed;
 	top: 0;
-	z-index: 9999;
+	z-index: var(--z-dropdown);
 	width: 100%;
 	height: 100%;
 	display: none;
 	justify-content: center;
 	align-items: center;
-	background-color: rgba(0, 0, 0, 0.8);
+	background-color: var(--shadow-overlay);
 
 	.spin-icon {
 		animation: loading 3s linear infinite;
