@@ -97,6 +97,10 @@ export class Application {
 				cloned.applyMatrix4(object.matrixWorld);
 				// Ensure all geometries are non-indexed for merging
 				const nonIndexed = cloned.index ? cloned.toNonIndexed() : cloned;
+				// Remove UV attributes to ensure all geometries are compatible for merging
+				if (nonIndexed.hasAttribute("uv")) {
+					nonIndexed.deleteAttribute("uv");
+				}
 				geometries.push(nonIndexed);
 			}
 		});
