@@ -1,6 +1,11 @@
 import "@/global-style.css";
 import "@/app-style.css";
 
+import { initializeTheme } from "@/web-components/Settings";
+
+// Initialize theme before any components render to prevent flash
+initializeTheme();
+
 import "@/db/store";
 import "@/web-components";
 import "@/utils/globalEvents";

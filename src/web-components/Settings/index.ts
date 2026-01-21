@@ -18,10 +18,30 @@ import { deleteDb } from "@/db/db";
 
 import { Dialog } from "../Dialog";
 
+type Theme = "dark" | "light" | "system";
+
+const THEME_STORAGE_KEY = "app-theme";
+
+export function initializeTheme(): void {
+	const storedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
+	const theme: Theme = storedTheme ?? "dark";
+	document.documentElement.setAttribute("data-theme", theme);
+}
+
+export function setTheme(theme: Theme): void {
+	localStorage.setItem(THEME_STORAGE_KEY, theme);
+	document.documentElement.setAttribute("data-theme", theme);
+}
+
+export function getTheme(): Theme {
+	return (localStorage.getItem(THEME_STORAGE_KEY) as Theme) ?? "dark";
+}
+
 export class Settings extends Dialog {
 	resetButton: HTMLButtonElement;
 	testCylinderForm: HTMLFormElement;
 	closeButton: HTMLButtonElement;
+	themeSelect: HTMLSelectElement;
 
 	constructor() {
 		super();
@@ -54,46 +74,75 @@ export class Settings extends Dialog {
 				#resetWarning {
 					color: var(--text-error);
 				}
+
+				#themeContainer {
+					display: flex;
+					align-items: center;
+					gap: 1rem;
+					margin-bottom: 1.5rem;
+				}
+
+				#themeContainer label {
+					margin-bottom: 0;
+				}
 			</style>
-		  <dialog id="${this.id}" aria-labelledby="settingsTitle">
-		    <h3 id="settingsTitle">Settings</h3>
-        	<form id="settingsForm" method="dialog">
-            <!--<label for="startingCupLayerHeight">Starting Cup Layer Height</label>
-            <input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />-->
+			<dialog id="${this.id}" aria-labelledby="settingsTitle">
+				<h3 id="settingsTitle">Settings</h3>
 
-            <!--<label for="lineWidthAdjustment">Line Width Adjustment</label>
-            <input type="number" id="lineWidthAdjustment" name="lineWidthAdjustment" step="0.1" min="1" max="2" />-->
+				<h4>Appearance</h4>
+				<div id="themeContainer">
+					<label for="themeSelect">Theme</label>
+					<select id="themeSelect" name="theme">
+						<option value="dark">Dark</option>
+						<option value="light">Light</option>
+						<option value="system">System</option>
+					</select>
+				</div>
 
-						<!--<label for="circularResolution">Circular Resolution</label>
-						<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />-->
+				<h4>GCode Generation Factors</h4>
 
-						<label for="ePerRevolution">E Per Revolution</label>
-						<input type="number" id="ePerRevolution" name="ePerRevolution" step="0.1" min="10" max="50" />
+				<form id="settingsForm" method="dialog">
+					<!--
+					<label for="startingCupLayerHeight">Starting Cup Layer Height</label>
+					<input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />
 
-						<label for="secondsPerLayer">Seconds Per Layer</label>
-						<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="14" />
+					<label for="lineWidthAdjustment">Line Width Adjustment</label>
+					<input type="number" id="lineWidthAdjustment" name="lineWidthAdjustment" step="0.1" min="1" max="2" />
+
+					<label for="circularResolution">Circular Resolution</label>
+					<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />
+					-->
+
+					<label for="ePerRevolution">E Per Revolution</label>
+					<input type="number" id="ePerRevolution" name="ePerRevolution" step="0.1" min="10" max="50" />
+
+					<label for="secondsPerLayer">Seconds Per Layer</label>
+					<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="14" />
 
 					<input type="submit" value="Save" class="button" id="saveSettings" />
-					</form>
-					<h4>Test Cylinder Dimensions</h4>
-					<form id="testCylinderSettings">
-						<label for="testCylinderHeight">Test Cylinder Height</label>
-						<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
+				</form>
 
-						<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter</label>
-						<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="70" max="80" />
+				<h4>Test Cylinder Dimensions</h4>
+				<form id="testCylinderSettings">
+					<label for="testCylinderHeight">Test Cylinder Height</label>
+					<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
 
-						<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
-					</form>
-					<div id="resetAppContainer">
-						<h4>Reset Application</h4>
-						<input type="button" class="button" id="resetApp" value="Reset Application" aria-describedby="resetWarning" />
-						<p id="resetWarning">This will delete all your data and settings!</p>
-					</div>
-					<div id="closeContainer" style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
-						<input type="button" class="button" id="closeSettings" value="Close" />
-					</div>
-		  </dialog>
+					<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter</label>
+					<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="70" max="80" />
+
+					<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
+				</form>
+
+				<div id="resetAppContainer">
+					<h4>Reset Application</h4>
+					<input type="button" class="button" id="resetApp" value="Reset Application" aria-describedby="resetWarning" />
+					<p id="resetWarning">This will delete all your data and settings!</p>
+				</div>
+
+				<div id="closeContainer" style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+					<input type="button" class="button" id="closeSettings" value="Close" />
+				</div>
+			</dialog>
 		`;
 
 		this.form = this.shadowRoot.getElementById(
@@ -108,12 +157,16 @@ export class Settings extends Dialog {
 		this.closeButton = this.shadowRoot.getElementById(
 			"closeSettings",
 		) as HTMLButtonElement;
+		this.themeSelect = this.shadowRoot.getElementById(
+			"themeSelect",
+		) as HTMLSelectElement;
 
 		this.dialogEvents();
 	}
 
 	async showSettings() {
 		await this.loadDataIntoForm();
+		this.themeSelect.value = getTheme();
 		this.show();
 	}
 
@@ -127,6 +180,9 @@ export class Settings extends Dialog {
 		this.closeButton.addEventListener("click", () => this.hide());
 		this.dialog.addEventListener("close", () => this.hide());
 		this.resetButton.addEventListener("click", () => this.resetApplication());
+		this.themeSelect.addEventListener("change", () => {
+			setTheme(this.themeSelect.value as Theme);
+		});
 	}
 
 	async resetApplication() {

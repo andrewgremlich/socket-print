@@ -95,44 +95,124 @@
 	--icon-color: #4a4a4a;
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
+/* Dark theme variables */
+:root[data-theme="dark"],
+:root[data-theme="system"] {
+	/* Accent colors */
+	--accent-color: #00e1ee;
+	--accent-color-hover: #00c4d4;
+	--accent-color-subtle: rgba(0, 225, 238, 0.1);
+	--accent-color-border: rgba(0, 225, 238, 0.4);
+
+	/* Background colors */
+	--bg-page: #252525;
+	--bg-menu: #444444;
+	--bg-input: #3a3a3a;
+	--bg-input-hover: #454545;
+	--bg-disabled: #2a2a2a;
+
+	/* Text colors */
+	--text-primary: #ffffff;
+	--text-secondary: #e0e0e0;
+	--text-muted: #b0b0b0;
+	--text-disabled: #737373;
+	--text-placeholder: #808080;
+	--text-link: #5caeff;
+	--text-error: #ff4d4d;
+
+	/* Border colors */
+	--border-default: #555555;
+	--border-hover: #707070;
+	--border-disabled: #3a3a3a;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3);
+	--shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.5);
+	--shadow-overlay: rgba(0, 0, 0, 0.8);
+
+	/* Icon colors */
+	--icon-color: #e0e0e0;
+}
+
+/* System theme follows OS preference */
+@media (prefers-color-scheme: light) {
+	:root[data-theme="system"] {
 		/* Accent colors */
-		--accent-color: #00e1ee;
-		--accent-color-hover: #00c4d4;
-		--accent-color-subtle: rgba(0, 225, 238, 0.1);
-		--accent-color-border: rgba(0, 225, 238, 0.4);
+		--accent-color: #00b8c4;
+		--accent-color-hover: #009aa3;
+		--accent-color-subtle: rgba(0, 184, 196, 0.1);
+		--accent-color-border: rgba(0, 184, 196, 0.4);
 
 		/* Background colors */
-		--bg-page: #252525;
-		--bg-menu: #444444;
-		--bg-input: #3a3a3a;
-		--bg-input-hover: #454545;
-		--bg-disabled: #2a2a2a;
+		--bg-page: #f5f5f5;
+		--bg-menu: #ffffff;
+		--bg-input: #ffffff;
+		--bg-input-hover: #fafafa;
+		--bg-disabled: #e5e5e5;
 
 		/* Text colors */
-		--text-primary: #ffffff;
-		--text-secondary: #e0e0e0;
-		--text-muted: #b0b0b0;
-		--text-disabled: #737373;
-		--text-placeholder: #808080;
-		--text-link: #5caeff;
-		--text-error: #ff4d4d;
+		--text-primary: #1a1a1a;
+		--text-secondary: #4a4a4a;
+		--text-muted: #6b7280;
+		--text-disabled: #9ca3af;
+		--text-placeholder: #9ca3af;
+		--text-link: #0077cc;
+		--text-error: #dc2626;
 
 		/* Border colors */
-		--border-default: #555555;
-		--border-hover: #707070;
-		--border-disabled: #3a3a3a;
+		--border-default: #d1d5db;
+		--border-hover: #a1a1aa;
+		--border-disabled: #e5e5e5;
 
 		/* Shadows */
-		--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-		--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.3);
-		--shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.5);
-		--shadow-overlay: rgba(0, 0, 0, 0.8);
+		--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+		--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+		--shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.15);
+		--shadow-overlay: rgba(0, 0, 0, 0.5);
 
 		/* Icon colors */
-		--icon-color: #e0e0e0;
+		--icon-color: #4a4a4a;
 	}
+}
+
+/* Light theme explicit override */
+:root[data-theme="light"] {
+	/* Accent colors */
+	--accent-color: #00b8c4;
+	--accent-color-hover: #009aa3;
+	--accent-color-subtle: rgba(0, 184, 196, 0.1);
+	--accent-color-border: rgba(0, 184, 196, 0.4);
+
+	/* Background colors */
+	--bg-page: #f5f5f5;
+	--bg-menu: #ffffff;
+	--bg-input: #ffffff;
+	--bg-input-hover: #fafafa;
+	--bg-disabled: #e5e5e5;
+
+	/* Text colors */
+	--text-primary: #1a1a1a;
+	--text-secondary: #4a4a4a;
+	--text-muted: #6b7280;
+	--text-disabled: #9ca3af;
+	--text-placeholder: #9ca3af;
+	--text-link: #0077cc;
+	--text-error: #dc2626;
+
+	/* Border colors */
+	--border-default: #d1d5db;
+	--border-hover: #a1a1aa;
+	--border-disabled: #e5e5e5;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+	--shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+	--shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.15);
+	--shadow-overlay: rgba(0, 0, 0, 0.5);
+
+	/* Icon colors */
+	--icon-color: #4a4a4a;
 }
 
 * {
