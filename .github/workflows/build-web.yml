@@ -1,12 +1,21 @@
 name: Build and Zip Vite Web Project
 
+# Workflow disabled
 on:
-  push:
-    tags:
-      - 'v*.*.*'  # Trigger on version tags like v1.2.3
-    # branches:
-    #   - main
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      disabled:
+        description: 'This workflow is disabled'
+        required: true
+        default: 'disabled'
+
+# on:
+#   push:
+#     tags:
+#       - 'v*.*.*'  # Trigger on version tags like v1.2.3
+#     # branches:
+#     #   - main
+#   workflow_dispatch: {}
 
 permissions:
   contents: write
