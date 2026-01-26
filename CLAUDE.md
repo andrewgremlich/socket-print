@@ -5,7 +5,7 @@
 Socket Print (Product name: Provel Print) is a CAD-like desktop application designed to facilitate faster turnaround times for amputees to receive 3D-printed prosthetic sockets for residual limbs. It combines real-time 3D visualization, computational geometry, and G-code generation for pellet extrusion 3D printing systems.
 
 **Repository**: https://github.com/andrewgremlich/socket-print
-**Version**: 1.15.1
+**Version**: 1.16.1
 **License**: MIT
 
 ## Key Features
@@ -23,21 +23,27 @@ Socket Print (Product name: Provel Print) is a CAD-like desktop application desi
 
 ### Frontend
 - **TypeScript** 5.9.3 - Type-safe language
-- **Vite** 7.3.0 - Build tool and dev server
+- **Vite** 7.3.1 - Build tool and dev server
 - **Three.js** 0.182.0 - 3D graphics library
-- **three-mesh-bvh** 0.9.4 - Optimized ray casting
+- **three-mesh-bvh** 0.9.7 - Optimized ray casting
 - **Dexie** 4.2.1 - IndexedDB wrapper
 - **Web Components** - Custom UI elements
-- **math.js** 15.1.0 - Mathematical functions
-- **hotkeys-js** 3.13.15 - Keyboard shortcuts
+- **mathjs** 15.1.0 - Mathematical functions
+- **hotkeys-js** 4.0.0 - Keyboard shortcuts
+- **Lucide** 0.562.0 - Icon library
+- **validator** 13.15.26 - Input validation
+- **crc-32** 1.2.2 - CRC32 checksum
 
 ### Desktop Framework
 - **Tauri** 2.x - Cross-platform native app (Rust backend)
 - **Tauri Plugins**: dialog, fs, log, updater, process
 
+### Build & Styling
+- **LightningCSS** 1.30.2 - CSS transformation
+
 ### Testing & Quality
-- **Vitest** 4.0.16 - Unit testing
-- **Biome** 2.3.10 - Linting and formatting
+- **Vitest** 4.0.17 - Unit testing
+- **Biome** 2.3.11 - Linting and formatting
 
 ## Project Structure
 
@@ -70,6 +76,8 @@ socket-print/
 │   └── tauri.conf.json    # Tauri configuration
 ├── public/                 # Static assets
 ├── index.html             # Main app page
+├── help.html              # Help documentation page
+├── licenses.html          # Third-party licenses page
 └── vite.config.ts         # Vite build config
 ```
 
@@ -140,10 +148,12 @@ npm run clean           # Remove build artifacts
 - [src/classes/Application.ts](src/classes/Application.ts) - Three.js scene manager
 
 ### Core Classes
+- [src/classes/AppObject.ts](src/classes/AppObject.ts) - Base class for 3D objects
 - [src/classes/PrintObject.ts](src/classes/PrintObject.ts) - STL model handling
 - [src/classes/SocketCup.ts](src/classes/SocketCup.ts) - Prosthetic socket geometry
 - [src/classes/TestCylinder.ts](src/classes/TestCylinder.ts) - Test cylinder
 - [src/classes/MergeCylinder.ts](src/classes/MergeCylinder.ts) - Merge cylinder transitions
+- [src/classes/DebugPoint.ts](src/classes/DebugPoint.ts) - Debug visualization helper
 
 ### 3D Processing
 - [src/3d/generateGCode.ts](src/3d/generateGCode.ts) - G-code generation
@@ -189,15 +199,12 @@ npm run clean           # Remove build artifacts
 - Test coverage available via `npm run test:coverage`
 - Tests should focus on critical geometry and G-code generation logic
 
-## Recent Changes (v1.15.x)
+## Recent Changes (v1.16.x)
 
-- **v1.15.1**: Latest release with socket printing capability
-- **v1.15.0**: Wireframe visualization in offset generation
-- **v1.14.3**: UAT (User Acceptance Testing) fixes
-- **v1.14.2**: Service worker improvements (no interception of printer traffic)
-- **v1.14.1**: Offline indicator auto-clear after 10 seconds
-- **v1.14.0**: Collision detection between tube and print object
-- **v1.13.x**: Camera distance limits, offset distance application improvements
+- **v1.16.1**: Theme selector, test improvements, build bug fixes
+- **v1.16.0**: Accurate socket cup geometry, CSS design system with light/dark theme support, comprehensive accessibility updates
+- **v1.15.7**: Fix rotation save/restore to use actual mesh Euler angles
+- **v1.15.x**: Wireframe visualization, UAT fixes, service worker improvements, collision detection
 
 ## G-Code Generation Pipeline
 
@@ -227,7 +234,7 @@ The G-code generation system (`src/3d/generateGCode.ts`) is a critical component
 
 Four main tables:
 - **formValues**: IP address, lock position (left/right), cup size, nozzle size, layer height, active material profile
-- **appSettings**: Lock depth, segments, translations (X/Y/Z), rotations (coronal/sagittal/transverse), test cylinder settings, seconds per layer, E per revolution
+- **appSettings**: Lock depth, circularSegments, translations (X/Y/Z), rotations (coronal/sagittal/transverse), startingCupLayerHeight, lineWidthAdjustment, testCylinderHeight, testCylinderInnerDiameter, seconds per layer, E per revolution
 - **materialProfiles**: Name, nozzle temp, cup temp, shrink factor, output factor, grams per revolution, density
 - **savedFiles**: Name, type (Socket/TestCylinder), file blob
 
