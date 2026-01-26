@@ -68,6 +68,19 @@ if (!window.Worker) {
 }
 
 const app = new Application();
+
+// Clean up WebGL context on HMR to prevent "Too many active WebGL contexts" warning
+if (import.meta.hot) {
+	import.meta.hot.dispose(() => {
+		app.dispose();
+	});
+}
+
+// Clean up WebGL context when page is unloaded (navigation, refresh, tab close)
+window.addEventListener("beforeunload", () => {
+	app.dispose();
+});
+
 const socketCup = await SocketCup.create();
 
 app.addToScene(socketCup.mesh);
