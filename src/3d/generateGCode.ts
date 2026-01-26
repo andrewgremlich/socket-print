@@ -25,7 +25,7 @@ import {
 	getActiveMaterialProfileOutputFactor,
 	getActiveMaterialProfileShrinkFactor,
 } from "@/db/materialProfilesDbActions";
-import type { PrintObjectType } from "@/db/types";
+import type { CupSize, PrintObjectType } from "@/db/types";
 import { NOZZLE_SIZE_OFFSET_FACTOR } from "@/utils/constants";
 import {
 	getCirclePoints,
@@ -92,7 +92,7 @@ function generateGCodeHeader(params: {
 		`;customInfo material="${materialProfile.name}"`,
 		`;customInfo nozzleSize="${formValues.nozzleSize}mm"`,
 		`;customInfo secondsPerLayer="${appSettings.secondsPerLayer}"`,
-		`;customInfo cupSize="${formValues.cupSize} ${lockPositionLabel}"`,
+		`;customInfo cupSize="${(formValues.cupSize as CupSize).name} ${lockPositionLabel}"`,
 		`;customInfo nozzleTemp="${materialProfile.nozzleTemp}C"`,
 		`;customInfo cupTemp="${materialProfile.cupTemp}C"`,
 		`;customInfo layerHeight="${formValues.layerHeight ?? "1"}mm"`,
