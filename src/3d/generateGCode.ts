@@ -62,7 +62,7 @@ function generateGCodeHeader(params: {
 	};
 	formValues: {
 		nozzleSize: number;
-		cupSize: unknown;
+		cupSize: CupSize;
 		lockPosition: string;
 		cupHeight: number;
 		layerHeight: number;
