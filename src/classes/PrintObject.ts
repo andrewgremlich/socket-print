@@ -5,6 +5,7 @@ import {
 	Matrix4,
 	Mesh,
 	MeshStandardMaterial,
+	type Scene,
 } from "three";
 import { STLExporter } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -50,6 +51,7 @@ import {
 } from "@/utils/htmlElements";
 import { fetchStlFile, setStlFileInputAndDispatch } from "@/utils/printObject";
 import { AppObject } from "./AppObject";
+import { CupToSocketTransition } from "./CupToSocketTransition";
 import type { SocketCup } from "./SocketCup";
 import { TestCylinder } from "./TestCylinder";
 
@@ -63,6 +65,8 @@ export class PrintObject extends AppObject {
 	currentType: PrintObjectType | undefined = undefined;
 	socketCup: SocketCup;
 	#testCylinderInstance: TestCylinder | null = null;
+	#transitionInstance: CupToSocketTransition | null = null;
+	#scene: Scene;
 
 	// Event listener references for cleanup
 	#testStlClickHandler?: () => Promise<void>;
@@ -75,11 +79,13 @@ export class PrintObject extends AppObject {
 	constructor({
 		callback,
 		socketCup,
-	}: { callback: Callback; socketCup: SocketCup }) {
+		scene,
+	}: { callback: Callback; socketCup: SocketCup; scene: Scene }) {
 		super();
 
 		this.callback = callback;
 		this.socketCup = socketCup;
+		this.#scene = scene;
 
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
@@ -185,6 +191,12 @@ export class PrintObject extends AppObject {
 		if (this.#testCylinderInstance) {
 			this.#testCylinderInstance.dispose();
 			this.#testCylinderInstance = null;
+		}
+
+		// Dispose of transition instance if it exists
+		if (this.#transitionInstance) {
+			this.#transitionInstance.dispose();
+			this.#transitionInstance = null;
 		}
 
 		// Remove event listeners
@@ -333,7 +345,7 @@ export class PrintObject extends AppObject {
 			},
 		});
 
-		this.isIntersectingWithSocketCup();
+		await this.isIntersectingWithSocketCup();
 	};
 
 	#handleSocket = async (file: File) => {
@@ -455,8 +467,45 @@ export class PrintObject extends AppObject {
 			},
 		});
 
+		// Create and compute the cup-to-socket transition
+		await this.#computeSocketTransition();
+
 		this.toggleInput(false);
 		loadingScreen.style.display = "none";
+	};
+
+	#computeSocketTransition = async () => {
+		if (!this.mesh || this.currentType !== PrintObjectType.Socket) {
+			return;
+		}
+
+		// Dispose existing transition if any
+		if (this.#transitionInstance) {
+			this.#transitionInstance.dispose();
+			this.#transitionInstance = null;
+		}
+
+		// Ensure mesh matrices are updated
+		this.mesh.updateMatrixWorld(true);
+
+		// Create new transition instance
+		this.#transitionInstance = await CupToSocketTransition.create(
+			this.socketCup,
+			this.mesh,
+			this.#scene,
+		);
+
+		// Compute the transition and validate fit
+		const result = await this.#transitionInstance.computeTransition();
+
+		if (!result.isValid) {
+			// Imperfect fit - show warning and disable G-code generation
+			collisionWarning.textContent =
+				"Imperfect fit: Socket does not fully cover the cup edge";
+			collisionWarning.style.display = "block";
+			generateGCodeButton.disabled = true;
+			printerFileInput.disabled = true;
+		}
 	};
 
 	#onStlFileChange = async (event: Event) => {
@@ -473,7 +522,7 @@ export class PrintObject extends AppObject {
 				break;
 		}
 
-		this.isIntersectingWithSocketCup();
+		await this.isIntersectingWithSocketCup();
 	};
 
 	clearData = async () => {
@@ -481,6 +530,12 @@ export class PrintObject extends AppObject {
 		if (this.#testCylinderInstance) {
 			this.#testCylinderInstance.dispose();
 			this.#testCylinderInstance = null;
+		}
+
+		// Dispose of transition instance if it exists
+		if (this.#transitionInstance) {
+			this.#transitionInstance.dispose();
+			this.#transitionInstance = null;
 		}
 
 		if (this.mesh) {
@@ -544,7 +599,7 @@ export class PrintObject extends AppObject {
 		}
 	};
 
-	isIntersectingWithSocketCup = () => {
+	isIntersectingWithSocketCup = async () => {
 		if (!this.mesh || !this.socketCup?.mesh) return;
 
 		this.mesh.updateMatrixWorld();
@@ -560,14 +615,27 @@ export class PrintObject extends AppObject {
 		).intersectsGeometry(this.mesh.geometry, transformMatrix);
 
 		if (hit) {
+			collisionWarning.textContent = "Socket is intersecting with the cup";
 			collisionWarning.style.display = "block";
 			generateGCodeButton.disabled = true;
 			printerFileInput.disabled = true;
-		} else {
-			collisionWarning.style.display = "none";
-			generateGCodeButton.disabled = false;
-			printerFileInput.disabled = false;
+			return;
 		}
+
+		// Recompute transition and check validity
+		if (this.currentType === PrintObjectType.Socket) {
+			await this.#computeSocketTransition();
+
+			// If transition is invalid, warnings are already set by #computeSocketTransition
+			if (this.#transitionInstance && !this.#transitionInstance.isValidFit()) {
+				return;
+			}
+		}
+
+		// No collision and valid transition - enable G-code
+		collisionWarning.style.display = "none";
+		generateGCodeButton.disabled = false;
+		printerFileInput.disabled = false;
 	};
 
 	handleRotationChange = async (axis: "x" | "y" | "z", amount: number) => {
@@ -596,7 +664,7 @@ export class PrintObject extends AppObject {
 			this.#showError("Failed to save rotation settings");
 		}
 
-		this.isIntersectingWithSocketCup();
+		await this.isIntersectingWithSocketCup();
 	};
 
 	coronalRotate90 = () => this.handleRotationChange("x", QUARTER_TURN);
@@ -632,10 +700,14 @@ export class PrintObject extends AppObject {
 			this.#showError("Failed to save position settings");
 		}
 
-		this.isIntersectingWithSocketCup();
+		await this.isIntersectingWithSocketCup();
 	};
 
 	horizontalChange = (evt: Event) => this.handleTranslationChange("x", evt);
 	verticalChange = (evt: Event) => this.handleTranslationChange("y", evt);
 	depthChange = (evt: Event) => this.handleTranslationChange("z", evt);
+
+	getTransitionInstance(): CupToSocketTransition | null {
+		return this.#transitionInstance;
+	}
 }

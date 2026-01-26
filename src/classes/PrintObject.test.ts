@@ -1,7 +1,14 @@
 /**
  * @vitest-environment jsdom
  */
-import { Box3, BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from "three";
+import {
+	Box3,
+	BoxGeometry,
+	Mesh,
+	MeshStandardMaterial,
+	Scene,
+	Vector3,
+} from "three";
 import { MeshBVH } from "three-mesh-bvh";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { PrintObjectType } from "@/db/types";
@@ -116,6 +123,20 @@ vi.mock("./TestCylinder", () => ({
 	},
 }));
 
+// Mock CupToSocketTransition class
+vi.mock("./CupToSocketTransition", () => ({
+	CupToSocketTransition: {
+		create: vi.fn().mockImplementation(async () => {
+			return {
+				computeTransition: vi.fn().mockResolvedValue({ isValid: true }),
+				isValidFit: vi.fn().mockReturnValue(true),
+				dispose: vi.fn(),
+				mesh: null,
+			};
+		}),
+	},
+}));
+
 import * as htmlElements from "@/utils/htmlElements";
 // Import after mocks are set up
 import { PrintObject } from "./PrintObject";
@@ -137,13 +158,20 @@ function createMockSocketCup() {
 	};
 }
 
+// Helper to create mock Scene
+function createMockScene() {
+	return new Scene();
+}
+
 // Helper to create a PrintObject with mesh
 async function createPrintObjectWithMesh(): Promise<PrintObject> {
 	const callback: Callback = vi.fn();
 	const socketCup = createMockSocketCup();
+	const scene = createMockScene();
 	const printObject = new PrintObject({
 		callback,
 		socketCup: socketCup as never,
+		scene,
 	});
 
 	// Manually set up a mesh
@@ -160,11 +188,13 @@ describe("PrintObject", () => {
 	let printObject: PrintObject;
 	let mockCallback: Callback;
 	let mockSocketCup: ReturnType<typeof createMockSocketCup>;
+	let mockScene: Scene;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		mockCallback = vi.fn();
 		mockSocketCup = createMockSocketCup();
+		mockScene = createMockScene();
 
 		// Reset HTML element states
 		htmlElements.loadingScreen.style.display = "none";
@@ -184,6 +214,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 
 			expect(printObject).toBeInstanceOf(PrintObject);
@@ -195,6 +226,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 
 			expect(printObject.lockDepth).toBeNull();
@@ -212,6 +244,7 @@ describe("PrintObject", () => {
 				new PrintObject({
 					callback: mockCallback,
 					socketCup: mockSocketCup as never,
+					scene: mockScene,
 				});
 			}).toThrow("STL File Input not found");
 
@@ -276,6 +309,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 			const consoleSpy = vi
 				.spyOn(console, "error")
@@ -302,6 +336,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 			const consoleSpy = vi
 				.spyOn(console, "error")
@@ -357,6 +392,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 
 			printObject.toggleInput(true);
@@ -373,6 +409,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 
 			printObject.toggleInput(false);
@@ -437,6 +474,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 
 			// Should not throw
@@ -697,6 +735,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 
 			expect(() => printObject.computeBoundingBox()).toThrow("Mesh not found");
@@ -720,6 +759,7 @@ describe("PrintObject", () => {
 			printObject = new PrintObject({
 				callback: mockCallback,
 				socketCup: mockSocketCup as never,
+				scene: mockScene,
 			});
 
 			// Should not throw

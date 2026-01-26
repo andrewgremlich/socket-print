@@ -29,7 +29,6 @@ import { generateGCode, writeGCodeFile } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import { Application } from "@/classes/Application";
-import { MergeCylinder } from "@/classes/MergeCylinder";
 import { PrintObject } from "@/classes/PrintObject";
 import {
 	updateRotateValues,
@@ -51,7 +50,6 @@ import {
 } from "@/utils/htmlElements";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
-import { PrintObjectType } from "./db/types";
 
 createIcons({
 	icons: {
@@ -70,7 +68,6 @@ if (!window.Worker) {
 
 const app = new Application();
 const socketCup = await SocketCup.create();
-const mergeCylinder = await MergeCylinder.create();
 
 app.addToScene(socketCup.mesh);
 
@@ -78,6 +75,7 @@ let initialCameraSet = false;
 
 const printObject = new PrintObject({
 	socketCup: socketCup,
+	scene: app.scene,
 	callback: ({ size: { y } }) => {
 		if (!initialCameraSet) {
 			app.camera.position.set(0, y + 50, -200);
@@ -123,17 +121,14 @@ const removeMeshes = async (meshes: Mesh[]) => {
 };
 
 clearModelButton.addEventListener("click", async () => {
-	await removeMeshes([printObject.mesh, mergeCylinder.mesh]);
+	await removeMeshes([printObject.mesh]);
 	await deleteAllFiles();
 });
 
 export async function slicingAction(sendToFile: boolean) {
 	printObject.updateMatrixWorld();
 
-	if (printObject.currentType === PrintObjectType.Socket) {
-		mergeCylinder.setHeight(printObject.boundingBox.max.y * 0.66);
-		app.addToScene(mergeCylinder.mesh);
-	}
+	// Transition geometry is now managed by PrintObject and already in scene
 
 	const allGeometries = app.collectAllGeometries();
 
@@ -192,8 +187,6 @@ export async function slicingAction(sendToFile: boolean) {
 		progressBarDiv.style.display = "none";
 		worker.terminate();
 	};
-
-	app.removeMeshFromScene(mergeCylinder.mesh);
 }
 
 generateGCodeButton.addEventListener("click", async () => {

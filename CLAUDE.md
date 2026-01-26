@@ -152,7 +152,7 @@ npm run clean           # Remove build artifacts
 - [src/classes/PrintObject.ts](src/classes/PrintObject.ts) - STL model handling
 - [src/classes/SocketCup.ts](src/classes/SocketCup.ts) - Prosthetic socket geometry
 - [src/classes/TestCylinder.ts](src/classes/TestCylinder.ts) - Test cylinder
-- [src/classes/MergeCylinder.ts](src/classes/MergeCylinder.ts) - Merge cylinder transitions
+- [src/classes/CupToSocketTransition.ts](src/classes/CupToSocketTransition.ts) - Cup-to-socket transition geometry with fit validation
 - [src/classes/DebugPoint.ts](src/classes/DebugPoint.ts) - Debug visualization helper
 
 ### 3D Processing
