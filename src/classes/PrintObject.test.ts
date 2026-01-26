@@ -13,6 +13,7 @@ import { MeshBVH } from "three-mesh-bvh";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { PrintObjectType } from "@/db/types";
 import { QUARTER_TURN } from "@/utils/constants";
+import { toggleTransformInputs } from "@/utils/printObjectEvents";
 
 // Mock Three.js addons to avoid canvas requirements
 vi.mock("three/examples/jsm/Addons.js", () => ({
@@ -387,15 +388,9 @@ describe("PrintObject", () => {
 		});
 	});
 
-	describe("toggleInput", () => {
+	describe("toggleTransformInputs", () => {
 		test("disables all controls when true", () => {
-			printObject = new PrintObject({
-				callback: mockCallback,
-				socketCup: mockSocketCup as never,
-				scene: mockScene,
-			});
-
-			printObject.toggleInput(true);
+			toggleTransformInputs(true);
 
 			expect(htmlElements.coronalRotater.disabled).toBe(true);
 			expect(htmlElements.sagittalRotate.disabled).toBe(true);
@@ -406,13 +401,7 @@ describe("PrintObject", () => {
 		});
 
 		test("enables all controls when false", () => {
-			printObject = new PrintObject({
-				callback: mockCallback,
-				socketCup: mockSocketCup as never,
-				scene: mockScene,
-			});
-
-			printObject.toggleInput(false);
+			toggleTransformInputs(false);
 
 			expect(htmlElements.coronalRotater.disabled).toBe(false);
 			expect(htmlElements.sagittalRotate.disabled).toBe(false);
