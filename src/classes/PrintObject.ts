@@ -615,7 +615,7 @@ export class PrintObject extends AppObject {
 		).intersectsGeometry(this.mesh.geometry, transformMatrix);
 
 		if (hit) {
-			collisionWarning.textContent = "Socket is intersecting with the cup";
+			collisionWarning.textContent = "Interference!";
 			collisionWarning.style.display = "block";
 			generateGCodeButton.disabled = true;
 			printerFileInput.disabled = true;

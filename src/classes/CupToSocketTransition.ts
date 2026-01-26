@@ -1,3 +1,4 @@
+import { liveQuery, type Subscription } from "dexie";
 import { cos, floor, pi, sin } from "mathjs";
 import {
 	BufferGeometry,
@@ -15,6 +16,7 @@ import {
 	disposeBoundsTree,
 	MeshBVH,
 } from "three-mesh-bvh";
+import { getTestCylinderInnerDiameter } from "@/db/appSettingsDbActions";
 import { getNozzleSize } from "@/db/formValuesDbActions";
 import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
 import { NOZZLE_SIZE_OFFSET_FACTOR } from "@/utils/constants";
@@ -36,6 +38,8 @@ export class CupToSocketTransition extends AppObject {
 	#isValidFit = false;
 	#intersectionPoints: Vector3[] = [];
 	#bottomRingPoints: Vector3[] = [];
+	#lastDiameter: number | null = null;
+	$liveTestCylinderDiameter: Subscription | null = null;
 
 	private constructor(
 		socketCup: SocketCup,
@@ -62,19 +66,33 @@ export class CupToSocketTransition extends AppObject {
 			scene,
 			segments,
 		);
+		instance.#setupSubscriptions();
 		return instance;
+	}
+
+	#setupSubscriptions(): void {
+		this.$liveTestCylinderDiameter = liveQuery(() =>
+			getTestCylinderInnerDiameter(),
+		).subscribe((diameter) => {
+			if (!diameter || diameter <= 0 || !this.mesh) return;
+			if (diameter === this.#lastDiameter) return;
+			this.#lastDiameter = diameter;
+			this.recompute();
+		});
 	}
 
 	async computeTransition(): Promise<TransitionResult> {
 		// Get transformation parameters
 		const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
 		const nozzleSize = await getNozzleSize();
+		const testCylinderDiameter = await getTestCylinderInnerDiameter();
 		const shrinkScale = floor(1 / (1 - shrinkFactor / 100), 4);
 		const nozzleSizeOffset = nozzleSize / NOZZLE_SIZE_OFFSET_FACTOR;
 
-		// Calculate transformed radius using cup's outer radius
+		// Calculate transformed radius using test cylinder diameter
+		const testCylinderRadius = (testCylinderDiameter ?? 75) / 2;
 		const transformedRadius =
-			this.#socketCup.outerRadius * shrinkScale + nozzleSizeOffset;
+			testCylinderRadius * shrinkScale + nozzleSizeOffset;
 
 		// Cup top Y position (accounting for bump danger zone)
 		const cupTopY = -this.#socketCup.bumpDangerZone;
@@ -243,6 +261,11 @@ export class CupToSocketTransition extends AppObject {
 	}
 
 	dispose(): void {
+		if (this.$liveTestCylinderDiameter) {
+			this.$liveTestCylinderDiameter.unsubscribe();
+			this.$liveTestCylinderDiameter = null;
+		}
+
 		if (this.mesh) {
 			this.#scene.remove(this.mesh);
 

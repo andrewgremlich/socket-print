@@ -48,6 +48,7 @@ import {
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
+import { SliceWorkerStatus } from "./3d/sliceWorker";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
 
@@ -140,15 +141,20 @@ export async function slicingAction(sendToFile: boolean) {
 		positions: allGeometries.attributes.position.array,
 	});
 
-	worker.onmessage = async (event) => {
+	worker.onmessage = async (
+		event: MessageEvent<{
+			type: SliceWorkerStatus;
+			data: number | Vector3[][];
+		}>,
+	) => {
 		const { type, data } = event.data;
 
-		if (type === "progress") {
+		if (type === SliceWorkerStatus.PROGRESS && typeof data === "number") {
 			const progress = ceil(data * 100);
 
 			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
-		} else if (type === "done") {
+		} else if (type === SliceWorkerStatus.DONE && Array.isArray(data)) {
 			const vectors: Vector3[][] = [];
 			for (const level of data) {
 				const levelVectors: Vector3[] = [];
