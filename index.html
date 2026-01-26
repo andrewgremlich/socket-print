@@ -105,7 +105,8 @@
 
           <div class="form-group">
             <span id="lockPositionLabel">Lock Position</span>
-            <div id="lockPositionGroup" role="radiogroup" aria-labelledby="lockPositionLabel" style="display: flex; gap: 20px; align-items: center;">
+            <div id="lockPositionGroup" role="radiogroup" aria-labelledby="lockPositionLabel"
+              style="display: flex; gap: 20px; align-items: center;">
               <label for="lockPositionLeft" style="display: flex; align-items: center; gap: 5px;">
                 <input type="radio" id="lockPositionLeft" name="lockPosition" value="left" checked />
                 Left
@@ -139,6 +140,7 @@
           <div class="form-group">
             <label for="layerHeight">Layer Height</label>
             <select name="layerHeight" id="layerHeight">
+              <option value="0.75">0.75mm</option>
               <option value="1" selected>1mm</option>
               <option value="1.5">1.5mm</option>
               <option value="2">2mm</option>
@@ -160,9 +162,11 @@
         </form>
 
         <div id="printActions">
-          <button type="button" id="generateGCodeButton" aria-label="Save G-Code file"><i data-lucide="file" aria-hidden="true"></i>File</button>
+          <button type="button" id="generateGCodeButton" aria-label="Save G-Code file"><i data-lucide="file"
+              aria-hidden="true"></i>File</button>
 
-          <button type="button" id="printerFileInput" name="printerFileInput" aria-label="Send to printer"><i data-lucide="printer" aria-hidden="true"></i>
+          <button type="button" id="printerFileInput" name="printerFileInput" aria-label="Send to printer"><i
+              data-lucide="printer" aria-hidden="true"></i>
             Print</button>
         </div>
       </div>
@@ -175,7 +179,8 @@
             <span>Estimated Print Time:</span>
             <span id="estimatedPrintTime">0m 0s</span>
           </div>
-          <canvas id="modelViewer" role="img" aria-label="3D model preview of the socket">Your browser does not support the canvas element.</canvas>
+          <canvas id="modelViewer" role="img" aria-label="3D model preview of the socket">Your browser does not support
+            the canvas element.</canvas>
         </div>
 
         <div id="editSocket" aria-label="Socket Edit Controls">
@@ -183,19 +188,23 @@
             <span>Rotate 90</span>
             <button disabled id="coronalRotater" type="button" aria-describedby="rotateDisabledHint">Coronal</button>
             <button disabled id="sagittalRotate" type="button" aria-describedby="rotateDisabledHint">Sagittal</button>
-            <button disabled id="transversalRotater" type="button" aria-describedby="rotateDisabledHint">Transverse</button>
+            <button disabled id="transversalRotater" type="button"
+              aria-describedby="rotateDisabledHint">Transverse</button>
             <span id="rotateDisabledHint" class="hide">Load a model to enable rotation controls</span>
           </div>
           <div id="changePosition">
             <span>Translate</span>
             <label for="horizontalTranslate">X
-              <input disabled id="horizontalTranslate" type="number" value="0" step="1" min="-100" max="100" aria-describedby="translateDisabledHint" />
+              <input disabled id="horizontalTranslate" type="number" value="0" step="1" min="-100" max="100"
+                aria-describedby="translateDisabledHint" />
             </label>
             <label for="depthTranslate">Y
-              <input disabled id="depthTranslate" type="number" value="0" step="1" min="-100" max="100" aria-describedby="translateDisabledHint" />
+              <input disabled id="depthTranslate" type="number" value="0" step="1" min="-100" max="100"
+                aria-describedby="translateDisabledHint" />
             </label>
             <label for="verticalTranslate">Z
-              <input disabled id="verticalTranslate" type="number" value="0" step="1" min="-100" max="100" aria-describedby="translateDisabledHint" />
+              <input disabled id="verticalTranslate" type="number" value="0" step="1" min="-100" max="100"
+                aria-describedby="translateDisabledHint" />
             </label>
             <span id="translateDisabledHint" class="hide">Load a model to enable translation controls</span>
           </div>
