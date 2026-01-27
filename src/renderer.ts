@@ -29,7 +29,6 @@ import { generateGCode, writeGCodeFile } from "@/3d/generateGCode";
 import { sendGCodeFile } from "@/3d/sendGCodeFile";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import { Application } from "@/classes/Application";
-import { MergeCylinder } from "@/classes/MergeCylinder";
 import { PrintObject } from "@/classes/PrintObject";
 import {
 	updateRotateValues,
@@ -49,9 +48,9 @@ import {
 	progressBarLabel,
 	verticalTranslate,
 } from "@/utils/htmlElements";
+import { SliceWorkerStatus } from "./3d/sliceWorker";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
-import { PrintObjectType } from "./db/types";
 
 createIcons({
 	icons: {
@@ -69,8 +68,20 @@ if (!window.Worker) {
 }
 
 const app = new Application();
+
+// Clean up WebGL context on HMR to prevent "Too many active WebGL contexts" warning
+if (import.meta.hot) {
+	import.meta.hot.dispose(() => {
+		app.dispose();
+	});
+}
+
+// Clean up WebGL context when page is unloaded (navigation, refresh, tab close)
+window.addEventListener("beforeunload", () => {
+	app.dispose();
+});
+
 const socketCup = await SocketCup.create();
-const mergeCylinder = await MergeCylinder.create();
 
 app.addToScene(socketCup.mesh);
 
@@ -78,6 +89,7 @@ let initialCameraSet = false;
 
 const printObject = new PrintObject({
 	socketCup: socketCup,
+	scene: app.scene,
 	callback: ({ size: { y } }) => {
 		if (!initialCameraSet) {
 			app.camera.position.set(0, y + 50, -200);
@@ -123,17 +135,14 @@ const removeMeshes = async (meshes: Mesh[]) => {
 };
 
 clearModelButton.addEventListener("click", async () => {
-	await removeMeshes([printObject.mesh, mergeCylinder.mesh]);
+	await removeMeshes([printObject.mesh]);
 	await deleteAllFiles();
 });
 
 export async function slicingAction(sendToFile: boolean) {
 	printObject.updateMatrixWorld();
 
-	if (printObject.currentType === PrintObjectType.Socket) {
-		mergeCylinder.setHeight(printObject.boundingBox.max.y * 0.66);
-		app.addToScene(mergeCylinder.mesh);
-	}
+	// Transition geometry is now managed by PrintObject and already in scene
 
 	const allGeometries = app.collectAllGeometries();
 
@@ -145,15 +154,20 @@ export async function slicingAction(sendToFile: boolean) {
 		positions: allGeometries.attributes.position.array,
 	});
 
-	worker.onmessage = async (event) => {
+	worker.onmessage = async (
+		event: MessageEvent<{
+			type: SliceWorkerStatus;
+			data: number | Vector3[][];
+		}>,
+	) => {
 		const { type, data } = event.data;
 
-		if (type === "progress") {
+		if (type === SliceWorkerStatus.PROGRESS && typeof data === "number") {
 			const progress = ceil(data * 100);
 
 			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
-		} else if (type === "done") {
+		} else if (type === SliceWorkerStatus.DONE && Array.isArray(data)) {
 			const vectors: Vector3[][] = [];
 			for (const level of data) {
 				const levelVectors: Vector3[] = [];
@@ -192,8 +206,6 @@ export async function slicingAction(sendToFile: boolean) {
 		progressBarDiv.style.display = "none";
 		worker.terminate();
 	};
-
-	app.removeMeshFromScene(mergeCylinder.mesh);
 }
 
 generateGCodeButton.addEventListener("click", async () => {

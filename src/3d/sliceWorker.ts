@@ -1,4 +1,4 @@
-import { cos, pi, sin } from "mathjs";
+import { ceil, cos, pi, sin } from "mathjs";
 import {
 	Box3,
 	BufferAttribute,
@@ -29,11 +29,16 @@ import { ensureUV } from "./ensureUV";
 
 Mesh.prototype.raycast = acceleratedRaycast;
 
-type SliceWorker = {
-	positions: number[];
-};
+export enum SliceWorkerStatus {
+	DONE = "done",
+	PROGRESS = "progress",
+}
 
-self.onmessage = async (event: MessageEvent<SliceWorker>) => {
+self.onmessage = async (
+	event: MessageEvent<{
+		positions: number[];
+	}>,
+) => {
 	const { positions } = event.data;
 	const layerHeight = await getLayerHeight();
 	const segments = await getCircularSegments();
@@ -103,8 +108,8 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 		let hasLargeGap = false;
 
 		self.postMessage({
-			type: "progress",
-			data: heightPosition / maxHeight,
+			type: SliceWorkerStatus.PROGRESS,
+			data: ceil(heightPosition / maxHeight, 2),
 		});
 
 		const startAngle = pi;
@@ -148,7 +153,7 @@ self.onmessage = async (event: MessageEvent<SliceWorker>) => {
 	}
 
 	self.postMessage({
-		type: "done",
+		type: SliceWorkerStatus.DONE,
 		data: pointGatherer,
 	});
 };
