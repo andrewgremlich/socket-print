@@ -1,4 +1,4 @@
-import { BoxGeometry, Mesh, MeshBasicMaterial, Vector3 } from "three";
+import { BoxGeometry, Mesh, MeshBasicMaterial } from "three";
 import { describe, expect, test } from "vitest";
 import { AppObject } from "./AppObject";
 

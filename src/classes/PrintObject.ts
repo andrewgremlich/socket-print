@@ -1,11 +1,5 @@
-import { floor, round } from "mathjs";
-import {
-	DoubleSide,
-	Matrix4,
-	Mesh,
-	MeshStandardMaterial,
-	type Scene,
-} from "three";
+import { floor } from "mathjs";
+import { DoubleSide, Mesh, MeshStandardMaterial, type Scene } from "three";
 import {
 	acceleratedRaycast,
 	computeBoundsTree,
@@ -14,13 +8,7 @@ import {
 } from "three-mesh-bvh";
 import { ensureUV } from "@/3d/ensureUV";
 import { applyOffset } from "@/3d/generateOffsetWithNormal";
-import {
-	getLockDepth,
-	getRotateValues,
-	getTranslateValues,
-	updateRotateValues,
-	updateTranslateValues,
-} from "@/db/appSettingsDbActions";
+import { getLockDepth } from "@/db/appSettingsDbActions";
 import { getAllFiles, setFileByName } from "@/db/file";
 import { getNozzleSize } from "@/db/formValuesDbActions";
 import { getActiveMaterialProfileShrinkFactor } from "@/db/materialProfilesDbActions";
@@ -33,34 +21,27 @@ import {
 import {
 	activeFileName,
 	collisionWarning,
-	depthTranslate,
 	generateGCodeButton,
-	horizontalTranslate,
 	loadingScreen,
 	printerFileInput,
 	stlFileInput,
-	verticalTranslate,
 } from "@/utils/htmlElements";
-import {
-	applyRotation,
-	applyTranslation,
-	autoAlignMesh,
-	saveRotationToDatabase,
-	saveTranslationToDatabase,
-	type TransformAxis,
-} from "@/utils/meshTransforms";
-import { fetchStlFile, setStlFileInputAndDispatch } from "@/utils/printObject";
-import {
-	attachPrintObjectEventListeners,
-	detachPrintObjectEventListeners,
-	type PrintObjectEventHandlers,
-	toggleTransformInputs,
-} from "@/utils/printObjectEvents";
+import { setStlFileInputAndDispatch } from "@/utils/printObject";
 import { exportMeshToDatabase, readSTLFile } from "@/utils/stlLoader";
 import { AppObject } from "./AppObject";
-import { CupToSocketTransition } from "./CupToSocketTransition";
+import { CollisionDetector } from "./CollisionDetector";
+import type { CupToSocketTransition } from "./CupToSocketTransition";
+import { MeshTransformController } from "./MeshTransformController";
+import { PrintObjectEventManager } from "./PrintObjectEventManager";
 import type { SocketCup } from "./SocketCup";
 import { TestCylinder } from "./TestCylinder";
+import type {
+	CollisionState,
+	ICollisionDetector,
+	IEventManager,
+	IMeshTransformController,
+	TransformAxis,
+} from "./types";
 
 type Callback = (params: { size: { x: number; y: number; z: number } }) => void;
 
@@ -73,27 +54,67 @@ export class PrintObject extends AppObject {
 	socketCup: SocketCup;
 
 	#testCylinderInstance: TestCylinder | null = null;
-	#transitionInstance: CupToSocketTransition | null = null;
-	#scene: Scene;
-	#eventHandlers: PrintObjectEventHandlers | null = null;
+
+	// Composed controllers (typed to interfaces for testability)
+	#transformController: IMeshTransformController;
+	#collisionDetector: ICollisionDetector;
+	#eventManager: IEventManager;
 
 	constructor({
 		callback,
 		socketCup,
 		scene,
-	}: { callback: Callback; socketCup: SocketCup; scene: Scene }) {
+		// Allow dependency injection for testing
+		transformController,
+		collisionDetector,
+		eventManager,
+	}: {
+		callback: Callback;
+		socketCup: SocketCup;
+		scene: Scene;
+		transformController?: IMeshTransformController;
+		collisionDetector?: ICollisionDetector;
+		eventManager?: IEventManager;
+	}) {
 		super();
 
 		this.callback = callback;
 		this.socketCup = socketCup;
-		this.#scene = scene;
 
 		if (!stlFileInput) {
 			throw new Error("STL File Input not found");
 		}
 
+		// Initialize composed controllers (use injected or create defaults)
+		this.#transformController =
+			transformController ?? new MeshTransformController(this.#showError);
+		this.#collisionDetector =
+			collisionDetector ?? new CollisionDetector(socketCup, scene);
+
+		this.#transformController.onTransformChange(async () => {
+			await this.#checkCollisionAndUpdateUI();
+		});
+
+		this.#eventManager =
+			eventManager ??
+			new PrintObjectEventManager({
+				onClearData: () => this.clearData(),
+				onTestCylinder: () => this.#handleTestCylinder(),
+				onStlFileChange: (evt) => this.#onStlFileChange(evt),
+				onCoronalRotate: () => this.coronalRotate90(),
+				onSagittalRotate: () => this.sagittalRotate90(),
+				onTransversalRotate: () => this.transversalRotater90(),
+				onVerticalChange: (evt) => this.verticalChange(evt),
+				onHorizontalChange: (evt) => this.horizontalChange(evt),
+				onDepthChange: (evt) => this.depthChange(evt),
+				onError: (error, message) => this.#handleError(error, message),
+				setCurrentType: (type) => {
+					this.currentType = type;
+				},
+			});
+
 		this.#initializeFromDatabase();
-		this.#attachEventListeners();
+		this.#eventManager.attach();
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -122,48 +143,6 @@ export class PrintObject extends AppObject {
 		}
 	};
 
-	#attachEventListeners = () => {
-		this.#eventHandlers = {
-			testStlClick: async () => {
-				try {
-					await this.clearData();
-					this.currentType = PrintObjectType.Socket;
-					await fetchStlFile("test_stl_file.stl")();
-				} catch (error) {
-					this.#handleError(error, "Failed to load test STL file");
-				}
-			},
-			testCylinderClick: async () => {
-				try {
-					await this.clearData();
-					this.currentType = PrintObjectType.TestCylinder;
-					await this.#handleTestCylinder();
-				} catch (error) {
-					this.#handleError(error, "Failed to create test cylinder");
-				}
-			},
-			stlFileChange: async (evt: Event) => {
-				try {
-					if (evt.isTrusted) {
-						await this.clearData();
-						this.currentType = PrintObjectType.Socket;
-					}
-					await this.#onStlFileChange(evt);
-				} catch (error) {
-					this.#handleError(error, "Failed to process STL file");
-				}
-			},
-			coronalRotate: () => this.coronalRotate90(),
-			sagittalRotate: () => this.sagittalRotate90(),
-			transversalRotate: () => this.transversalRotater90(),
-			verticalInput: (evt: Event) => this.verticalChange(evt),
-			horizontalInput: (evt: Event) => this.horizontalChange(evt),
-			depthInput: (evt: Event) => this.depthChange(evt),
-		};
-
-		attachPrintObjectEventListeners(this.#eventHandlers);
-	};
-
 	// ─────────────────────────────────────────────────────────────────────────────
 	// Error Handling
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -179,6 +158,23 @@ export class PrintObject extends AppObject {
 	};
 
 	// ─────────────────────────────────────────────────────────────────────────────
+	// UI Updates (centralized collision UI handling)
+	// ─────────────────────────────────────────────────────────────────────────────
+
+	#updateCollisionUI(state: CollisionState): void {
+		if (state.hasCollision || state.hasInvalidFit) {
+			collisionWarning.textContent = state.message ?? "";
+			collisionWarning.style.display = "block";
+			generateGCodeButton.disabled = true;
+			printerFileInput.disabled = true;
+		} else {
+			collisionWarning.style.display = "none";
+			generateGCodeButton.disabled = false;
+			printerFileInput.disabled = false;
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────────
 	// Cleanup
 	// ─────────────────────────────────────────────────────────────────────────────
 
@@ -186,13 +182,9 @@ export class PrintObject extends AppObject {
 		this.#testCylinderInstance?.dispose();
 		this.#testCylinderInstance = null;
 
-		this.#transitionInstance?.dispose();
-		this.#transitionInstance = null;
-
-		if (this.#eventHandlers) {
-			detachPrintObjectEventListeners(this.#eventHandlers);
-			this.#eventHandlers = null;
-		}
+		this.#collisionDetector.dispose();
+		this.#eventManager.detach();
+		this.#transformController.clear();
 
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
@@ -211,8 +203,7 @@ export class PrintObject extends AppObject {
 		this.#testCylinderInstance?.dispose();
 		this.#testCylinderInstance = null;
 
-		this.#transitionInstance?.dispose();
-		this.#transitionInstance = null;
+		this.#collisionDetector.dispose();
 
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
@@ -226,15 +217,9 @@ export class PrintObject extends AppObject {
 		this.loadedStlFromIndexedDb = false;
 		this.currentType = undefined;
 
-		try {
-			await updateRotateValues(0, 0, 0);
-			await updateTranslateValues(0, 0, 0);
-		} catch (error) {
-			console.error("Failed to reset transform values in database:", error);
-			this.#showError("Failed to reset position settings");
-		}
-
-		toggleTransformInputs(true);
+		await this.#transformController.resetDatabase();
+		this.#transformController.clear();
+		this.#eventManager.toggleInputs(true);
 	};
 
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -264,8 +249,26 @@ export class PrintObject extends AppObject {
 	};
 
 	autoAlignMesh = () => {
-		this.computeBoundingBox();
-		autoAlignMesh(this.mesh, this.boundingBox, this.center, this.lockDepth);
+		this.#transformController.autoAlign(() => {
+			this.computeBoundingBox();
+			return { boundingBox: this.boundingBox, center: this.center };
+		});
+	};
+
+	// ─────────────────────────────────────────────────────────────────────────────
+	// Collision Detection
+	// ─────────────────────────────────────────────────────────────────────────────
+
+	#checkCollisionAndUpdateUI = async () => {
+		const state = await this.#collisionDetector.checkCollision(
+			this.mesh,
+			this.currentType,
+		);
+		this.#updateCollisionUI(state);
+	};
+
+	isIntersectingWithSocketCup = async () => {
+		await this.#checkCollisionAndUpdateUI();
 	};
 
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -317,7 +320,7 @@ export class PrintObject extends AppObject {
 			},
 		});
 
-		await this.isIntersectingWithSocketCup();
+		await this.#checkCollisionAndUpdateUI();
 	};
 
 	// ─────────────────────────────────────────────────────────────────────────────
@@ -381,65 +384,26 @@ export class PrintObject extends AppObject {
 		);
 		this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
 
-		let translateValues = { x: 0, y: 0, z: 0 };
-		let rotateValues = { coronal: 0, sagittal: 0, transverse: 0 };
-
-		try {
-			translateValues = await getTranslateValues();
-			rotateValues = await getRotateValues();
-		} catch (error) {
-			console.error("Failed to get transform values from database:", error);
-			this.#showError("Failed to load position settings");
-		}
-
 		this.offsetYPosition = this.size.y / 2 - this.lockDepth;
 
-		if (this.loadedStlFromIndexedDb) {
-			this.mesh.position.set(
-				translateValues.x,
-				translateValues.y,
-				translateValues.z,
-			);
-		} else {
-			this.mesh.position.set(0, this.offsetYPosition, 0);
-		}
+		// Set up the transform controller with the mesh
+		this.#transformController.setMesh({
+			mesh: this.mesh,
+			lockDepth: this.lockDepth,
+			offsetYPosition: this.offsetYPosition,
+		});
 
-		this.mesh.rotation.set(
-			rotateValues.coronal,
-			rotateValues.transverse,
-			rotateValues.sagittal,
+		await this.#transformController.restoreFromDatabase(
+			this.loadedStlFromIndexedDb,
 		);
-
-		try {
-			await updateTranslateValues(
-				this.mesh.position.x,
-				this.mesh.position.y,
-				this.mesh.position.z,
-			);
-			await updateRotateValues(
-				rotateValues.coronal,
-				rotateValues.sagittal,
-				rotateValues.transverse,
-			);
-		} catch (error) {
-			console.error("Failed to save transform values to database:", error);
-			this.#showError("Failed to save position settings");
-		}
-
-		horizontalTranslate.value = (-this.mesh.position.x).toString();
-		verticalTranslate.value = round(
-			this.mesh.position.y - this.offsetYPosition,
-			0,
-		).toString();
-		depthTranslate.value = (-this.mesh.position.z).toString();
 
 		this.callback({
 			size: { x: this.size.x, y: this.size.y, z: this.size.z },
 		});
 
-		await this.#computeSocketTransition();
+		await this.#checkCollisionAndUpdateUI();
 
-		toggleTransformInputs(false);
+		this.#eventManager.toggleInputs(false);
 		loadingScreen.style.display = "none";
 	};
 
@@ -457,92 +421,18 @@ export class PrintObject extends AppObject {
 				break;
 		}
 
-		await this.isIntersectingWithSocketCup();
+		await this.#checkCollisionAndUpdateUI();
 	};
 
 	// ─────────────────────────────────────────────────────────────────────────────
-	// Collision Detection
-	// ─────────────────────────────────────────────────────────────────────────────
-
-	#computeSocketTransition = async () => {
-		if (!this.mesh || this.currentType !== PrintObjectType.Socket) {
-			return;
-		}
-
-		this.#transitionInstance?.dispose();
-		this.#transitionInstance = null;
-
-		this.mesh.updateMatrixWorld(true);
-
-		this.#transitionInstance = await CupToSocketTransition.create(
-			this.socketCup,
-			this.mesh,
-			this.#scene,
-		);
-
-		const result = await this.#transitionInstance.computeTransition();
-
-		if (!result.isValid) {
-			collisionWarning.textContent =
-				"Imperfect fit: Socket does not fully cover the cup edge";
-			collisionWarning.style.display = "block";
-			generateGCodeButton.disabled = true;
-			printerFileInput.disabled = true;
-		}
-	};
-
-	isIntersectingWithSocketCup = async () => {
-		if (!this.mesh || !this.socketCup?.mesh) return;
-
-		this.mesh.updateMatrixWorld();
-		this.socketCup.mesh.updateMatrixWorld();
-
-		const transformMatrix = new Matrix4()
-			.copy(this.socketCup.mesh.matrixWorld)
-			.invert()
-			.multiply(this.mesh.matrixWorld);
-
-		const hit = (
-			this.socketCup.mesh.geometry.boundsTree as MeshBVH
-		).intersectsGeometry(this.mesh.geometry, transformMatrix);
-
-		if (hit) {
-			collisionWarning.textContent = "Interference!";
-			collisionWarning.style.display = "block";
-			generateGCodeButton.disabled = true;
-			printerFileInput.disabled = true;
-			return;
-		}
-
-		if (this.currentType === PrintObjectType.Socket) {
-			await this.#computeSocketTransition();
-
-			if (this.#transitionInstance && !this.#transitionInstance.isValidFit()) {
-				return;
-			}
-		}
-
-		collisionWarning.style.display = "none";
-		generateGCodeButton.disabled = false;
-		printerFileInput.disabled = false;
-	};
-
-	// ─────────────────────────────────────────────────────────────────────────────
-	// Transformation Methods
+	// Transformation Methods (delegated to controller)
 	// ─────────────────────────────────────────────────────────────────────────────
 
 	handleRotationChange = async (axis: TransformAxis, amount: number) => {
-		applyRotation(this.mesh, axis, amount);
-		this.autoAlignMesh();
-
-		try {
-			await saveRotationToDatabase(this.mesh);
-		} catch (error) {
-			console.error("Failed to save rotation values to database:", error);
-			this.#showError("Failed to save rotation settings");
-		}
-
-		await this.isIntersectingWithSocketCup();
+		await this.#transformController.handleRotation(axis, amount, () => {
+			this.computeBoundingBox();
+			return { boundingBox: this.boundingBox, center: this.center };
+		});
 	};
 
 	coronalRotate90 = () => this.handleRotationChange("x", QUARTER_TURN);
@@ -550,21 +440,7 @@ export class PrintObject extends AppObject {
 	transversalRotater90 = () => this.handleRotationChange("y", QUARTER_TURN);
 
 	handleTranslationChange = async (axis: TransformAxis, evt: Event) => {
-		const targetValue = (evt.target as HTMLInputElement).value;
-		const numVal = Number.parseInt(targetValue, 10);
-
-		if (Number.isNaN(numVal)) return;
-
-		applyTranslation(this.mesh, axis, numVal, this.offsetYPosition);
-
-		try {
-			await saveTranslationToDatabase(this.mesh);
-		} catch (error) {
-			console.error("Failed to save translation values to database:", error);
-			this.#showError("Failed to save position settings");
-		}
-
-		await this.isIntersectingWithSocketCup();
+		await this.#transformController.handleTranslation(axis, evt);
 	};
 
 	horizontalChange = (evt: Event) => this.handleTranslationChange("x", evt);
@@ -572,6 +448,20 @@ export class PrintObject extends AppObject {
 	depthChange = (evt: Event) => this.handleTranslationChange("z", evt);
 
 	getTransitionInstance(): CupToSocketTransition | null {
-		return this.#transitionInstance;
+		return this.#collisionDetector.getTransitionInstance() as CupToSocketTransition | null;
+	}
+
+	/**
+	 * Test helper to set up the transform controller with the current mesh.
+	 * This simulates what #handleSocket does internally.
+	 * @internal Only for testing purposes
+	 */
+	_testSetupTransformController(): void {
+		if (!this.mesh) return;
+		this.#transformController.setMesh({
+			mesh: this.mesh,
+			lockDepth: this.lockDepth,
+			offsetYPosition: this.offsetYPosition,
+		});
 	}
 }

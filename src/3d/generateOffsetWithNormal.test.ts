@@ -184,14 +184,16 @@ describe("applyOffset", () => {
 		const mesh = new Mesh(nonIndexedGeom, material);
 
 		mesh.geometry.computeBoundingBox();
-		const originalSize =
-			mesh.geometry.boundingBox!.max.x - mesh.geometry.boundingBox!.min.x;
+		const boundingBox = mesh.geometry.boundingBox;
+		if (!boundingBox) throw new Error("Bounding box not computed");
+		const originalSize = boundingBox.max.x - boundingBox.min.x;
 
 		await applyOffset(mesh, 0.5);
 
 		mesh.geometry.computeBoundingBox();
-		const newSize =
-			mesh.geometry.boundingBox!.max.x - mesh.geometry.boundingBox!.min.x;
+		const newBoundingBox = mesh.geometry.boundingBox;
+		if (!newBoundingBox) throw new Error("Bounding box not computed");
+		const newSize = newBoundingBox.max.x - newBoundingBox.min.x;
 
 		expect(newSize).toBeGreaterThan(originalSize);
 	});
@@ -203,14 +205,16 @@ describe("applyOffset", () => {
 		const mesh = new Mesh(nonIndexedGeom, material);
 
 		mesh.geometry.computeBoundingBox();
-		const originalSize =
-			mesh.geometry.boundingBox!.max.x - mesh.geometry.boundingBox!.min.x;
+		const boundingBox = mesh.geometry.boundingBox;
+		if (!boundingBox) throw new Error("Bounding box not computed");
+		const originalSize = boundingBox.max.x - boundingBox.min.x;
 
 		await applyOffset(mesh, -0.3);
 
 		mesh.geometry.computeBoundingBox();
-		const newSize =
-			mesh.geometry.boundingBox!.max.x - mesh.geometry.boundingBox!.min.x;
+		const newBoundingBox = mesh.geometry.boundingBox;
+		if (!newBoundingBox) throw new Error("Bounding box not computed");
+		const newSize = newBoundingBox.max.x - newBoundingBox.min.x;
 
 		expect(newSize).toBeLessThan(originalSize);
 	});
@@ -251,12 +255,16 @@ describe("applyOffset", () => {
 		const mesh = new Mesh(nonIndexedGeom, material);
 
 		mesh.geometry.computeBoundingBox();
-		const originalMax = mesh.geometry.boundingBox!.max.clone();
+		const boundingBox = mesh.geometry.boundingBox;
+		if (!boundingBox) throw new Error("Bounding box not computed");
+		const originalMax = boundingBox.max.clone();
 
 		await applyOffset(mesh, 0);
 
 		mesh.geometry.computeBoundingBox();
-		const newMax = mesh.geometry.boundingBox!.max;
+		const newBoundingBox = mesh.geometry.boundingBox;
+		if (!newBoundingBox) throw new Error("Bounding box not computed");
+		const newMax = newBoundingBox.max;
 
 		expect(newMax.x).toBeCloseTo(originalMax.x, 5);
 		expect(newMax.y).toBeCloseTo(originalMax.y, 5);
