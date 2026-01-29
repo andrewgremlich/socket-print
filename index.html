@@ -208,6 +208,20 @@
             </label>
             <span id="translateDisabledHint" class="hide">Load a model to enable translation controls</span>
           </div>
+          <div id="trimLineControls" aria-label="Trim Line Controls">
+            <span>Trim Line</span>
+            <div id="trimLineButtons">
+              <button disabled id="drawTrimLineBtn" type="button" aria-describedby="trimLineDisabledHint">Draw</button>
+              <button disabled id="clearTrimLineBtn" type="button" aria-describedby="trimLineDisabledHint">Clear</button>
+            </div>
+            <label for="applyTrimLineCheckbox" id="applyTrimLineLabel">
+              <input type="checkbox" id="applyTrimLineCheckbox" name="applyTrimLineCheckbox" disabled
+                aria-describedby="trimLineDisabledHint" />
+              Apply to G-code
+            </label>
+            <p id="trimLineStatus" class="status-text" aria-live="polite"></p>
+            <span id="trimLineDisabledHint" class="hide">Load a model to enable trim line controls</span>
+          </div>
         </div>
       </div>
     </main>

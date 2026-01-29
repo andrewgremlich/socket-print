@@ -18,6 +18,7 @@ import {
 	TextGeometry,
 } from "three/examples/jsm/Addons.js";
 import { threeDViewer } from "@/utils/htmlElements";
+import { TrimLine } from "./TrimLine";
 
 export class Application {
 	#provelPrintView: HTMLElement | null = document.getElementById("provelPrint");
@@ -27,6 +28,7 @@ export class Application {
 	renderer: WebGLRenderer;
 	controls: OrbitControls;
 	gridHelper: GridHelper;
+	trimLine: TrimLine;
 	width: number;
 	height: number;
 
@@ -72,6 +74,13 @@ export class Application {
 			this.controls.enableDamping = true;
 		}
 
+		this.trimLine = new TrimLine(
+			this.scene,
+			this.camera,
+			threeDViewer,
+			this.controls,
+		);
+
 		this.addToScene(this.gridHelper);
 		this.addToScene(ambientLight);
 		this.addToScene(directionalLight1);
@@ -89,7 +98,10 @@ export class Application {
 			if (
 				object instanceof Mesh &&
 				!(object.geometry instanceof TextGeometry) &&
-				!(object.geometry instanceof RingGeometry)
+				!(object.geometry instanceof RingGeometry) &&
+				!object.userData.isTrimLine &&
+				!object.userData.isTrimLinePoint &&
+				!object.userData.isTrimLineShading
 			) {
 				// Clone geometry and apply the object's full world transform so slicing
 				// sees the final, transformed vertices (scale, rotation, translation).
@@ -151,6 +163,7 @@ export class Application {
 
 	dispose = () => {
 		window.removeEventListener("resize", this.#onWindowResize);
+		this.trimLine.dispose();
 		this.controls.dispose();
 		this.renderer.dispose();
 		this.scene.traverse((object) => {

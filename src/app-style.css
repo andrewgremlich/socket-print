@@ -325,6 +325,33 @@ main {
 	}
 }
 
+#trimLineControls {
+	& span {
+		margin-right: var(--spacing-lg);
+	}
+
+	& #trimLineButtons {
+		display: inline-flex;
+		gap: var(--spacing-xs);
+	}
+
+	& #applyTrimLineLabel {
+		margin-left: var(--spacing-lg);
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		cursor: pointer;
+	}
+
+	& #trimLineStatus {
+		margin: 0;
+		margin-left: var(--spacing-lg);
+		font-size: var(--font-size-sm);
+		color: var(--text-secondary);
+		min-width: 120px;
+	}
+}
+
 #progressBarDiv {
 	position: fixed;
 	z-index: var(--z-dropdown);

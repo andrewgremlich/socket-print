@@ -55,6 +55,8 @@ const defaultSettingNames: ProvelPrintSettings = {
 	testCylinderInnerDiameter: 70,
 	secondsPerLayer: 12,
 	ePerRevolution: 31.3,
+	trimLinePoints: "[]",
+	trimLineEnabled: false,
 };
 
 const initData = async () => {

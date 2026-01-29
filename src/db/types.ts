@@ -54,6 +54,8 @@ export type ProvelPrintSettings = {
 	testCylinderInnerDiameter: number;
 	secondsPerLayer: number;
 	ePerRevolution: number;
+	trimLinePoints: string;
+	trimLineEnabled: boolean;
 };
 
 type KeyValueSetting = {

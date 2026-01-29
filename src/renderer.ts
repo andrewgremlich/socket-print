@@ -36,8 +36,11 @@ import {
 } from "@/db/appSettingsDbActions";
 import {
 	activeFileName,
+	applyTrimLineCheckbox,
 	clearModelButton,
+	clearTrimLineBtn,
 	depthTranslate,
+	drawTrimLineBtn,
 	estimatedPrintTime,
 	generateGCodeButton,
 	horizontalTranslate,
@@ -46,11 +49,14 @@ import {
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
+	trimLineStatus,
 	verticalTranslate,
 } from "@/utils/htmlElements";
 import { SliceWorkerStatus } from "./3d/sliceWorker";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
+import { getTrimLineEnabled, setTrimLineEnabled } from "./db/trimLineDbActions";
+import { filterPointsByTrimLine } from "./utils/trimLineFiltering";
 
 createIcons({
 	icons: {
@@ -178,14 +184,29 @@ export async function slicingAction(sendToFile: boolean) {
 			}
 
 			const blended = blendHardEdges(vectors, 1);
-			const feedratePerLevel = await calculateFeedratePerLevel(blended);
-			const printTime = await calculatePrintTime(blended, feedratePerLevel);
+
+			// Apply trim line filtering if enabled
+			const trimLineEnabled = await getTrimLineEnabled();
+			const filteredVectors = trimLineEnabled
+				? filterPointsByTrimLine(blended, app.trimLine)
+				: blended;
+
+			const feedratePerLevel = await calculateFeedratePerLevel(filteredVectors);
+			const printTime = await calculatePrintTime(
+				filteredVectors,
+				feedratePerLevel,
+			);
 
 			estimatedPrintTime.textContent = printTime;
 
-			const gcode = await generateGCode(blended, feedratePerLevel, "y", {
-				estimatedTime: printTime,
-			});
+			const gcode = await generateGCode(
+				filteredVectors,
+				feedratePerLevel,
+				"y",
+				{
+					estimatedTime: printTime,
+				},
+			);
 			const filePathName = `${printObject.mesh?.name}.gcode`;
 
 			if (sendToFile) {
@@ -223,3 +244,84 @@ printerFileInput.addEventListener("click", async () => {
 		console.error("Error invoking slicing action:", error);
 	}
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Trim Line Controls
+// ─────────────────────────────────────────────────────────────────────────────
+
+const updateTrimLineUI = (hasPoints: boolean, isDrawing: boolean) => {
+	if (isDrawing) {
+		drawTrimLineBtn.textContent = "Finish";
+		trimLineStatus.textContent = "Click on model to add points...";
+		clearTrimLineBtn.disabled = true;
+	} else {
+		drawTrimLineBtn.textContent = "Draw";
+		clearTrimLineBtn.disabled = !hasPoints;
+		trimLineStatus.textContent = hasPoints
+			? `${app.trimLine.getPoints().length} points defined`
+			: "";
+	}
+};
+
+const enableTrimLineControls = (enabled: boolean) => {
+	drawTrimLineBtn.disabled = !enabled;
+	clearTrimLineBtn.disabled = !enabled || !app.trimLine.hasPoints();
+	applyTrimLineCheckbox.disabled = !enabled;
+};
+
+// Set up trim line callbacks
+app.trimLine.setOnDrawingStateChange((isDrawing) => {
+	updateTrimLineUI(app.trimLine.hasPoints(), isDrawing);
+});
+
+app.trimLine.setOnPointsChange((points) => {
+	updateTrimLineUI(points.length > 0, app.trimLine.isDrawing());
+});
+
+// Load trim line from database on startup
+app.trimLine.loadFromDatabase().then(() => {
+	updateTrimLineUI(app.trimLine.hasPoints(), false);
+});
+
+// Load trim line enabled state from database
+getTrimLineEnabled().then((enabled) => {
+	applyTrimLineCheckbox.checked = enabled;
+});
+
+drawTrimLineBtn.addEventListener("click", async () => {
+	if (app.trimLine.isDrawing()) {
+		await app.trimLine.finishDrawing();
+	} else {
+		if (!printObject.mesh) {
+			trimLineStatus.textContent = "Load a model first";
+			return;
+		}
+		app.trimLine.setTargetMesh(printObject.mesh);
+		app.trimLine.enableDrawingMode(printObject.mesh);
+	}
+});
+
+clearTrimLineBtn.addEventListener("click", async () => {
+	await app.trimLine.clear();
+	updateTrimLineUI(false, false);
+});
+
+applyTrimLineCheckbox.addEventListener("change", async () => {
+	await setTrimLineEnabled(applyTrimLineCheckbox.checked);
+});
+
+// Enable trim line controls when a model is loaded
+const originalCallback = printObject.callback;
+printObject.callback = (params) => {
+	originalCallback(params);
+	enableTrimLineControls(true);
+	app.trimLine.setTargetMesh(printObject.mesh);
+};
+
+// Disable trim line controls when model is cleared
+const originalClearData = printObject.clearData.bind(printObject);
+printObject.clearData = async () => {
+	await originalClearData();
+	await app.trimLine.clear();
+	enableTrimLineControls(false);
+};

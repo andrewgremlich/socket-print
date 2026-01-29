@@ -115,3 +115,17 @@ export const settingsDialog = document.querySelector(
 	"app-settings",
 ) as Settings;
 export const infoDialog = document.querySelector("app-info") as Info;
+
+// Trim line controls
+export const drawTrimLineBtn = document.getElementById(
+	"drawTrimLineBtn",
+) as HTMLButtonElement;
+export const clearTrimLineBtn = document.getElementById(
+	"clearTrimLineBtn",
+) as HTMLButtonElement;
+export const applyTrimLineCheckbox = document.getElementById(
+	"applyTrimLineCheckbox",
+) as HTMLInputElement;
+export const trimLineStatus = document.getElementById(
+	"trimLineStatus",
+) as HTMLParagraphElement;
