@@ -3,7 +3,7 @@ import type { Entities } from "./types";
 
 export let db = new Dexie("ProvelPrintDatabase") as Dexie & Entities;
 
-db.version(21).stores({
+db.version(22).stores({
 	formValues: "++id, name, value",
 	appSettings: "++id, name, value",
 	materialProfiles:
