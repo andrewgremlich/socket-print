@@ -1,8 +1,5 @@
 import {
 	BufferAttribute,
-	BufferGeometry,
-	Line,
-	LineBasicMaterial,
 	Mesh,
 	MeshBasicMaterial,
 	type PerspectiveCamera,
@@ -19,15 +16,15 @@ import {
 	type TrimLinePoint,
 } from "@/db/trimLineDbActions";
 
-const TRIM_LINE_COLOR = 0x00ff00;
 const TRIM_LINE_POINT_COLOR = 0xff0000;
 const SHADED_REGION_COLOR = 0x333333;
 const SHADED_REGION_OPACITY = 0.5;
 const POINT_SPHERE_RADIUS = 1;
+const INTERPOLATION_DISTANCE_MM = 1;
 
 export class TrimLine {
-	private points: Vector3[] = [];
-	private lineMesh: Line | null = null;
+	private drawnPoints: Vector3[] = [];
+	private interpolatedPoints: Vector3[] = [];
 	private pointMeshes: Mesh[] = [];
 	private shadedRegionMesh: Mesh | null = null;
 	private isDrawingMode = false;
@@ -68,12 +65,13 @@ export class TrimLine {
 	async loadFromDatabase(): Promise<void> {
 		const savedPoints = await getTrimLinePoints();
 		if (savedPoints.length > 0) {
-			this.points = savedPoints.map(
+			// Saved points are the interpolated points
+			this.interpolatedPoints = savedPoints.map(
 				(p: TrimLinePoint) => new Vector3(p.x, p.y, p.z),
 			);
 			this.updateVisualization();
 			this.updateShadedRegion();
-			this.onPointsChange?.(this.points);
+			this.onPointsChange?.(this.interpolatedPoints);
 		}
 	}
 
@@ -105,12 +103,51 @@ export class TrimLine {
 	async finishDrawing(): Promise<void> {
 		this.disableDrawingMode();
 
-		if (this.points.length >= 2) {
-			await setTrimLinePoints(this.points);
+		if (this.drawnPoints.length >= 2) {
+			// Interpolate points between drawn points
+			this.interpolatedPoints = this.interpolatePoints(this.drawnPoints);
+			await setTrimLinePoints(this.interpolatedPoints);
+			this.updateVisualization();
 			this.updateShadedRegion();
 		}
 
-		this.onPointsChange?.(this.points);
+		this.onPointsChange?.(this.interpolatedPoints);
+	}
+
+	private interpolatePoints(points: Vector3[]): Vector3[] {
+		if (points.length < 2) return [...points];
+
+		const result: Vector3[] = [];
+
+		for (let i = 0; i < points.length; i++) {
+			const currentPoint = points[i];
+			const nextPoint = points[(i + 1) % points.length];
+
+			// Always add the current drawn point
+			result.push(currentPoint.clone());
+
+			// Calculate distance between current and next point
+			const distance = currentPoint.distanceTo(nextPoint);
+
+			// If distance is greater than interpolation distance, add intermediate points
+			if (distance > INTERPOLATION_DISTANCE_MM) {
+				const numIntermediatePoints = Math.floor(
+					distance / INTERPOLATION_DISTANCE_MM,
+				);
+
+				for (let j = 1; j < numIntermediatePoints; j++) {
+					const t = j / numIntermediatePoints;
+					const interpolated = new Vector3().lerpVectors(
+						currentPoint,
+						nextPoint,
+						t,
+					);
+					result.push(interpolated);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	private handlePointerDown(event: PointerEvent): void {
@@ -132,30 +169,36 @@ export class TrimLine {
 	}
 
 	private addPoint(point: Vector3): void {
-		this.points.push(point);
+		this.drawnPoints.push(point);
 		this.updateVisualization();
-		this.onPointsChange?.(this.points);
+		this.onPointsChange?.(this.drawnPoints);
 	}
 
 	async clear(): Promise<void> {
-		this.points = [];
+		this.drawnPoints = [];
+		this.interpolatedPoints = [];
 		this.disableDrawingMode();
 		this.removeVisualization();
 		this.removeShadedRegion();
 		await setTrimLinePoints([]);
-		this.onPointsChange?.(this.points);
+		this.onPointsChange?.(this.interpolatedPoints);
 	}
 
 	private updateVisualization(): void {
 		this.removeVisualization();
 
-		if (this.points.length === 0) return;
+		// Show drawn points during drawing, interpolated points after finishing
+		const pointsToShow = this.isDrawingMode
+			? this.drawnPoints
+			: this.interpolatedPoints;
+
+		if (pointsToShow.length === 0) return;
 
 		// Create point spheres for each vertex
 		const pointMaterial = new MeshBasicMaterial({
 			color: TRIM_LINE_POINT_COLOR,
 		});
-		for (const point of this.points) {
+		for (const point of pointsToShow) {
 			const sphereGeometry = new SphereGeometry(POINT_SPHERE_RADIUS, 8, 8);
 			const sphereMesh = new Mesh(sphereGeometry, pointMaterial);
 			sphereMesh.position.copy(point);
@@ -163,38 +206,9 @@ export class TrimLine {
 			this.scene.add(sphereMesh);
 			this.pointMeshes.push(sphereMesh);
 		}
-
-		// Create line connecting points
-		if (this.points.length >= 2) {
-			const positions = new Float32Array(this.points.length * 3);
-			for (let i = 0; i < this.points.length; i++) {
-				positions[i * 3] = this.points[i].x;
-				positions[i * 3 + 1] = this.points[i].y;
-				positions[i * 3 + 2] = this.points[i].z;
-			}
-
-			const geometry = new BufferGeometry();
-			geometry.setAttribute("position", new BufferAttribute(positions, 3));
-
-			const material = new LineBasicMaterial({
-				color: TRIM_LINE_COLOR,
-				linewidth: 2,
-			});
-
-			this.lineMesh = new Line(geometry, material);
-			this.lineMesh.userData.isTrimLine = true;
-			this.scene.add(this.lineMesh);
-		}
 	}
 
 	private removeVisualization(): void {
-		if (this.lineMesh) {
-			this.scene.remove(this.lineMesh);
-			this.lineMesh.geometry.dispose();
-			(this.lineMesh.material as LineBasicMaterial).dispose();
-			this.lineMesh = null;
-		}
-
 		for (const mesh of this.pointMeshes) {
 			this.scene.remove(mesh);
 			mesh.geometry.dispose();
@@ -206,7 +220,7 @@ export class TrimLine {
 	private updateShadedRegion(): void {
 		this.removeShadedRegion();
 
-		if (this.points.length < 2 || !this.targetMesh) return;
+		if (this.interpolatedPoints.length < 2 || !this.targetMesh) return;
 
 		// Clone the target mesh geometry and create a shaded overlay
 		// for vertices that are above the trim line
@@ -271,7 +285,7 @@ export class TrimLine {
 	}
 
 	isPointAboveTrimLine(point: Vector3): boolean {
-		if (this.points.length < 2) return false;
+		if (this.interpolatedPoints.length < 2) return false;
 
 		// Calculate the angle of the point in the XZ plane
 		const pointAngle = Math.atan2(point.z, point.x);
@@ -284,17 +298,20 @@ export class TrimLine {
 	}
 
 	private interpolateHeightAtAngle(targetAngle: number): number {
-		if (this.points.length === 0) return Number.POSITIVE_INFINITY;
-		if (this.points.length === 1) return this.points[0].y;
+		if (this.interpolatedPoints.length === 0) return Number.POSITIVE_INFINITY;
+		if (this.interpolatedPoints.length === 1)
+			return this.interpolatedPoints[0].y;
 
 		// Convert all trim points to angle/height pairs
-		const angleHeightPairs = this.points.map((p) => ({
+		const angleHeightPairs = this.interpolatedPoints.map((p) => ({
 			angle: Math.atan2(p.z, p.x),
 			height: p.y,
 		}));
 
 		// Sort by angle
-		angleHeightPairs.sort((a, b) => a.angle - b.angle);
+		angleHeightPairs.sort(
+			(a: { angle: number }, b: { angle: number }) => a.angle - b.angle,
+		);
 
 		// Normalize target angle to [-PI, PI]
 		let normalizedTarget = targetAngle;
@@ -339,11 +356,11 @@ export class TrimLine {
 	}
 
 	getPoints(): Vector3[] {
-		return [...this.points];
+		return [...this.interpolatedPoints];
 	}
 
 	hasPoints(): boolean {
-		return this.points.length > 0;
+		return this.interpolatedPoints.length > 0 || this.drawnPoints.length > 0;
 	}
 
 	isDrawing(): boolean {
@@ -358,7 +375,8 @@ export class TrimLine {
 		this.disableDrawingMode();
 		this.removeVisualization();
 		this.removeShadedRegion();
-		this.points = [];
+		this.drawnPoints = [];
+		this.interpolatedPoints = [];
 		this.targetMesh = null;
 	}
 }

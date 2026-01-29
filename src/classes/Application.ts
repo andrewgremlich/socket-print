@@ -99,7 +99,6 @@ export class Application {
 				object instanceof Mesh &&
 				!(object.geometry instanceof TextGeometry) &&
 				!(object.geometry instanceof RingGeometry) &&
-				!object.userData.isTrimLine &&
 				!object.userData.isTrimLinePoint &&
 				!object.userData.isTrimLineShading
 			) {
