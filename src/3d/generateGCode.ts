@@ -32,6 +32,7 @@ import {
 	getTransitionLayer,
 } from "@/utils/cupTransitionLayer";
 import { getExtrusionCalculation } from "@/utils/getExtrusionCalculation";
+import { isPointAboveTrimLine } from "@/utils/trimLineFiltering";
 
 export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
@@ -146,9 +147,10 @@ export async function generateGCode(
 	options: {
 		estimatedTime?: string;
 		printObjectType?: PrintObjectType;
+		trimLinePoints?: Vector3[];
 	} = {},
 ): Promise<string> {
-	const { estimatedTime = "0m 0s" } = options;
+	const { estimatedTime = "0m 0s", trimLinePoints } = options;
 
 	const [
 		name,
@@ -267,15 +269,24 @@ export async function generateGCode(
 		for (const point of pointLevel) {
 			const adjustedPoint = point.clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(adjustedPoint);
-			const extrusion = getExtrusionCalculation({
-				distance,
-				layerHeight,
-				lineWidth,
-				gramsPerRevolution,
-				density,
-				ePerRevolution,
-				outputFactor,
-			});
+
+			// Check if point is above trim line - if so, no extrusion
+			const isAboveTrimLine =
+				trimLinePoints &&
+				trimLinePoints.length >= 2 &&
+				isPointAboveTrimLine(adjustedPoint, trimLinePoints);
+
+			const extrusion = isAboveTrimLine
+				? 0
+				: getExtrusionCalculation({
+						distance,
+						layerHeight,
+						lineWidth,
+						gramsPerRevolution,
+						density,
+						ePerRevolution,
+						outputFactor,
+					});
 
 			previousPoint = adjustedPoint;
 

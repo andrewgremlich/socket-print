@@ -56,7 +56,6 @@ import { SliceWorkerStatus } from "./3d/sliceWorker";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
 import { getTrimLineEnabled, setTrimLineEnabled } from "./db/trimLineDbActions";
-import { filterPointsByTrimLine } from "./utils/trimLineFiltering";
 
 createIcons({
 	icons: {
@@ -185,28 +184,21 @@ export async function slicingAction(sendToFile: boolean) {
 
 			const blended = blendHardEdges(vectors, 1);
 
-			// Apply trim line filtering if enabled
+			// Get trim line points if enabled
 			const trimLineEnabled = await getTrimLineEnabled();
-			const filteredVectors = trimLineEnabled
-				? filterPointsByTrimLine(blended, app.trimLine)
-				: blended;
+			const trimLinePoints = trimLineEnabled
+				? app.trimLine.getPoints()
+				: undefined;
 
-			const feedratePerLevel = await calculateFeedratePerLevel(filteredVectors);
-			const printTime = await calculatePrintTime(
-				filteredVectors,
-				feedratePerLevel,
-			);
+			const feedratePerLevel = await calculateFeedratePerLevel(blended);
+			const printTime = await calculatePrintTime(blended, feedratePerLevel);
 
 			estimatedPrintTime.textContent = printTime;
 
-			const gcode = await generateGCode(
-				filteredVectors,
-				feedratePerLevel,
-				"y",
-				{
-					estimatedTime: printTime,
-				},
-			);
+			const gcode = await generateGCode(blended, feedratePerLevel, "y", {
+				estimatedTime: printTime,
+				trimLinePoints,
+			});
 			const filePathName = `${printObject.mesh?.name}.gcode`;
 
 			if (sendToFile) {
