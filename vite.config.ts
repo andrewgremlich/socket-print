@@ -14,7 +14,6 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ["three", "three/examples/jsm/Addons.js"],
 		esbuildOptions: {
-			// Ensure three is treated as a single package
 			mainFields: ["module", "main"],
 		},
 	},

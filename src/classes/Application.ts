@@ -88,7 +88,19 @@ export class Application {
 	collectAllGeometries = () => {
 		const geometries: BufferGeometry[] = [];
 
+		// Get the TransformControls helper to exclude its meshes
+		const transformHelper = this.transformControls?.getHelper();
+
 		this.scene.traverse((object) => {
+			// Skip TransformControls helper meshes
+			if (transformHelper) {
+				let parent = object.parent;
+				while (parent) {
+					if (parent === transformHelper) return;
+					parent = parent.parent;
+				}
+			}
+
 			if (
 				object instanceof Mesh &&
 				!(object.geometry instanceof TextGeometry) &&

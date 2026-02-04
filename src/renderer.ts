@@ -18,7 +18,6 @@ import {
 	Loader,
 	Printer,
 	PrinterCheck,
-	Rotate3D,
 	Settings,
 } from "lucide";
 import { ceil } from "mathjs";
@@ -63,7 +62,6 @@ createIcons({
 		Printer,
 		Check,
 		File,
-		Rotate3D,
 	},
 });
 
