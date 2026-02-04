@@ -81,3 +81,12 @@ export type ErrorCallback = (message: string) => void;
  * Axis types for transformations.
  */
 export type TransformAxis = "x" | "y" | "z";
+
+export type TransformControlsOptions = {
+	mode?: "translate" | "rotate" | "scale";
+	showX?: boolean;
+	showY?: boolean;
+	showZ?: boolean;
+	size?: number;
+	onChange?: () => void | Promise<void>;
+};

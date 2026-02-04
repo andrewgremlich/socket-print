@@ -18,6 +18,7 @@ import {
 	Loader,
 	Printer,
 	PrinterCheck,
+	Rotate3D,
 	Settings,
 } from "lucide";
 import { ceil } from "mathjs";
@@ -46,8 +47,10 @@ import {
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
+	toggleZRotateTransformControlsButton,
 	verticalTranslate,
 } from "@/utils/htmlElements";
+import { saveRotationToDatabase } from "@/utils/meshTransforms";
 import { SliceWorkerStatus } from "./3d/sliceWorker";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
@@ -60,6 +63,7 @@ createIcons({
 		Printer,
 		Check,
 		File,
+		Rotate3D,
 	},
 });
 
@@ -108,6 +112,15 @@ const printObject = new PrintObject({
 		}
 
 		app.addToScene(printObject.mesh);
+
+		app.attachTransformControls(printObject.mesh, {
+			onChange: async () => {
+				// Save the rotation values to IndexedDB
+				await saveRotationToDatabase(printObject.mesh);
+				// Update collision detection and cup-to-socket transition
+				await printObject.isIntersectingWithSocketCup();
+			},
+		});
 
 		loadingScreen.style.display = "none";
 	},
@@ -222,4 +235,12 @@ printerFileInput.addEventListener("click", async () => {
 	} catch (error) {
 		console.error("Error invoking slicing action:", error);
 	}
+});
+
+toggleZRotateTransformControlsButton.addEventListener("click", () => {
+	const isVisible = app.toggleZRotateTransformControls();
+	toggleZRotateTransformControlsButton.setAttribute(
+		"aria-pressed",
+		isVisible.toString(),
+	);
 });

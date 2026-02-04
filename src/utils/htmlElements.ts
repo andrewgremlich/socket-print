@@ -66,6 +66,9 @@ export const activeFileName = document.getElementById(
 export const collisionWarning = document.getElementById(
 	"collisionWarning",
 ) as HTMLSpanElement;
+export const toggleZRotateTransformControlsButton = document.getElementById(
+	"toggleZRotateTransformControls",
+) as HTMLButtonElement;
 
 export const menuBar = document.getElementById("menuBar") as HTMLDivElement;
 export const menuBarDropdowns = document.querySelectorAll(

@@ -5,6 +5,19 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { serviceWorkerPlugin } from "./vite-sw-plugin";
 
 export default defineConfig({
+	resolve: {
+		dedupe: ["three"],
+		alias: {
+			three: resolve(__dirname, "node_modules/three"),
+		},
+	},
+	optimizeDeps: {
+		include: ["three", "three/examples/jsm/Addons.js"],
+		esbuildOptions: {
+			// Ensure three is treated as a single package
+			mainFields: ["module", "main"],
+		},
+	},
 	css: {
 		transformer: "lightningcss",
 		lightningcss: {
@@ -24,7 +37,12 @@ export default defineConfig({
 		port: 4300,
 		host: "localhost",
 	},
+	worker: {
+		format: "es",
+	},
 	build: {
+		chunkSizeWarningLimit: 1000,
+		sourcemap: "hidden",
 		minify: true,
 		target: "es2022",
 		// modulePreload: false,
