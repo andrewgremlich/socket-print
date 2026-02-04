@@ -102,7 +102,6 @@ export class Settings extends Dialog {
 				<h4>GCode Generation Factors</h4>
 
 				<form id="settingsForm" method="dialog">
-					<!--
 					<label for="startingCupLayerHeight">Starting Cup Layer Height</label>
 					<input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />
 
@@ -111,7 +110,6 @@ export class Settings extends Dialog {
 
 					<label for="circularResolution">Circular Resolution</label>
 					<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="150" />
-					-->
 
 					<label for="ePerRevolution">E Per Revolution</label>
 					<input type="number" id="ePerRevolution" name="ePerRevolution" step="0.1" min="10" max="50" />

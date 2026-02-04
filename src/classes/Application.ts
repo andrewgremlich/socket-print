@@ -11,14 +11,16 @@ import {
 	Scene,
 	WebGLRenderer,
 } from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import {
 	BufferGeometryUtils,
 	FontLoader,
+	OrbitControls,
 	TextGeometry,
+	TransformControls,
 } from "three/examples/jsm/Addons.js";
 import { threeDViewer } from "@/utils/htmlElements";
 import { TrimLine } from "./TrimLine";
+import type { TransformControlsOptions } from "./types";
 
 export class Application {
 	#provelPrintView: HTMLElement | null = document.getElementById("provelPrint");
@@ -31,6 +33,7 @@ export class Application {
 	trimLine: TrimLine;
 	width: number;
 	height: number;
+	transformControls: TransformControls | null = null;
 
 	constructor() {
 		if (!this.#provelPrintView) {
@@ -94,7 +97,19 @@ export class Application {
 	collectAllGeometries = () => {
 		const geometries: BufferGeometry[] = [];
 
+		// Get the TransformControls helper to exclude its meshes
+		const transformHelper = this.transformControls?.getHelper();
+
 		this.scene.traverse((object) => {
+			// Skip TransformControls helper meshes
+			if (transformHelper) {
+				let parent = object.parent;
+				while (parent) {
+					if (parent === transformHelper) return;
+					parent = parent.parent;
+				}
+			}
+
 			if (
 				object instanceof Mesh &&
 				!(object.geometry instanceof TextGeometry) &&
@@ -131,6 +146,73 @@ export class Application {
 		this.scene.remove(mesh);
 	};
 
+	attachTransformControls = (
+		mesh: Mesh,
+		options: TransformControlsOptions = {},
+	): TransformControls => {
+		const {
+			mode = "rotate",
+			showX = false,
+			showY = true,
+			showZ = false,
+			size = 1,
+			onChange,
+		} = options;
+
+		// Clean up existing transform controls if any
+		this.detachTransformControls();
+
+		this.transformControls = new TransformControls(
+			this.camera,
+			this.renderer.domElement,
+		);
+		this.transformControls.attach(mesh);
+		this.transformControls.setMode(mode);
+		this.transformControls.showX = showX;
+		this.transformControls.showY = showY;
+		this.transformControls.showZ = showZ;
+		this.transformControls.size = size;
+
+		// Disable OrbitControls while dragging TransformControls
+		// and call onChange when dragging ends
+		this.transformControls.addEventListener("dragging-changed", (event) => {
+			this.controls.enabled = !event.value;
+
+			// When dragging ends, call the onChange callback
+			if (!event.value && onChange) {
+				onChange();
+			}
+		});
+
+		const helper = this.transformControls.getHelper();
+		helper.visible = false;
+		this.transformControls.enabled = false;
+		this.scene.add(helper);
+
+		return this.transformControls;
+	};
+
+	detachTransformControls = () => {
+		if (this.transformControls) {
+			this.transformControls.detach();
+			// @ts-expect-error - TransformControls extends Object3D but types don't reflect this
+			this.scene.remove(this.transformControls);
+			this.transformControls.dispose();
+			this.transformControls = null;
+		}
+	};
+
+	toggleZRotateTransformControls = (): boolean => {
+		if (this.transformControls) {
+			const helper = this.transformControls.getHelper();
+			const newState = !helper.visible;
+			helper.visible = newState;
+			this.transformControls.enabled = newState;
+			return newState;
+		}
+		return false;
+	};
+
 	loadFont = () => {
 		const loader = new FontLoader();
 
@@ -163,6 +245,7 @@ export class Application {
 	dispose = () => {
 		window.removeEventListener("resize", this.#onWindowResize);
 		this.trimLine.dispose();
+		this.detachTransformControls();
 		this.controls.dispose();
 		this.renderer.dispose();
 		this.scene.traverse((object) => {

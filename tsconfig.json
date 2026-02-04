@@ -14,8 +14,7 @@
     "types": ["vitest"],
     "paths": {
       "@/*": ["./src/*"],
-      "pkg": ["package.json"],
-      "clipper2z": ["./clipper2-wasm/clipper2z.js"]
+      "pkg": ["package.json"]
     }
   },
   "include": ["src"],
