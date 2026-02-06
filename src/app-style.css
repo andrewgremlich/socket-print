@@ -331,11 +331,20 @@ main {
 
 #rotateSocket {
 	& span {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-xs);
 		margin-right: var(--spacing-lg);
 	}
 }
 
 #changePosition {
+	& > span {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-s);
+	}
+
 	& label {
 		margin-left: var(--spacing-lg);
 	}

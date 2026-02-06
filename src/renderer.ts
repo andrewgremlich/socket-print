@@ -16,8 +16,11 @@ import {
 	createIcons,
 	File,
 	Loader,
+	Move3d,
 	Printer,
 	PrinterCheck,
+	Rotate3d,
+	RotateCw,
 	Settings,
 } from "lucide";
 import { ceil } from "mathjs";
@@ -62,6 +65,9 @@ createIcons({
 		Printer,
 		Check,
 		File,
+		Move3d,
+		Rotate3d,
+		RotateCw,
 	},
 });
 
