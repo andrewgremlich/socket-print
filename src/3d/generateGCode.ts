@@ -271,10 +271,16 @@ export async function generateGCode(
 			const distance = previousPoint.distanceTo(adjustedPoint);
 
 			// Check if point is above trim line - if so, no extrusion
+			// Sliced points have startingHeight added by the slice worker,
+			// but trim line was drawn on the mesh in world space without that offset.
+			// Subtract startingHeight to compare in the same coordinate space.
+			const trimComparePoint = point
+				.clone()
+				.sub(new Vector3(0, startingHeight, 0));
 			const isAboveTrimLine =
 				trimLinePoints &&
 				trimLinePoints.length >= 2 &&
-				isPointAboveTrimLine(adjustedPoint, trimLinePoints);
+				isPointAboveTrimLine(trimComparePoint, trimLinePoints);
 
 			const extrusion = isAboveTrimLine
 				? 0
