@@ -141,9 +141,9 @@ export class Application {
 	): TransformControls => {
 		const {
 			mode = "rotate",
-			showX = false,
+			showX = true,
 			showY = true,
-			showZ = false,
+			showZ = true,
 			size = 1,
 			onChange,
 		} = options;
@@ -191,7 +191,7 @@ export class Application {
 		}
 	};
 
-	toggleZRotateTransformControls = (): boolean => {
+	toggleRotateTransformControls = (): boolean => {
 		if (this.transformControls) {
 			const helper = this.transformControls.getHelper();
 			const newState = !helper.visible;

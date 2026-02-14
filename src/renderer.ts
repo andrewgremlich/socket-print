@@ -49,7 +49,7 @@ import {
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
-	toggleZRotateTransformControlsButton,
+	toggleRotateTransformControlsButton,
 	verticalTranslate,
 } from "@/utils/htmlElements";
 import { saveRotationToDatabase } from "@/utils/meshTransforms";
@@ -241,9 +241,9 @@ printerFileInput.addEventListener("click", async () => {
 	}
 });
 
-toggleZRotateTransformControlsButton.addEventListener("click", () => {
-	const isVisible = app.toggleZRotateTransformControls();
-	toggleZRotateTransformControlsButton.setAttribute(
+toggleRotateTransformControlsButton.addEventListener("click", () => {
+	const isVisible = app.toggleRotateTransformControls();
+	toggleRotateTransformControlsButton.setAttribute(
 		"aria-pressed",
 		isVisible.toString(),
 	);

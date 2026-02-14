@@ -280,7 +280,7 @@ main {
 	color: var(--text-error);
 }
 
-#toggleZRotateTransformControls {
+#toggleRotateTransformControls {
 	/*For if and when there is a rotate icon.*/
 	display: flex;
 	justify-content: center;
