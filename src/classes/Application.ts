@@ -7,7 +7,6 @@ import {
 	Mesh,
 	MeshBasicMaterial,
 	PerspectiveCamera,
-	RingGeometry,
 	Scene,
 	WebGLRenderer,
 } from "three";
@@ -88,36 +87,24 @@ export class Application {
 	collectAllGeometries = () => {
 		const geometries: BufferGeometry[] = [];
 
-		// Get the TransformControls helper to exclude its meshes
-		const transformHelper = this.transformControls?.getHelper();
-
 		this.scene.traverse((object) => {
-			// Skip TransformControls helper meshes
-			if (transformHelper) {
-				let parent = object.parent;
-				while (parent) {
-					if (parent === transformHelper) return;
-					parent = parent.parent;
-				}
-			}
+			if (!(object instanceof Mesh)) return;
 
-			if (
-				object instanceof Mesh &&
-				!(object.geometry instanceof TextGeometry) &&
-				!(object.geometry instanceof RingGeometry)
-			) {
-				// Clone geometry and apply the object's full world transform so slicing
-				// sees the final, transformed vertices (scale, rotation, translation).
-				const cloned = object.geometry.clone();
-				cloned.applyMatrix4(object.matrixWorld);
-				// Ensure all geometries are non-indexed for merging
-				const nonIndexed = cloned.index ? cloned.toNonIndexed() : cloned;
-				// Remove UV attributes to ensure all geometries are compatible for merging
-				if (nonIndexed.hasAttribute("uv")) {
-					nonIndexed.deleteAttribute("uv");
-				}
-				geometries.push(nonIndexed);
+			// Only include meshes explicitly marked for slicing
+			const { isSocket, isSocketCup, isTransition } = object.userData;
+			if (!isSocket && !isSocketCup && !isTransition) return;
+
+			// Clone geometry and apply the object's full world transform so slicing
+			// sees the final, transformed vertices (scale, rotation, translation).
+			const cloned = object.geometry.clone();
+			cloned.applyMatrix4(object.matrixWorld);
+			// Ensure all geometries are non-indexed for merging
+			const nonIndexed = cloned.index ? cloned.toNonIndexed() : cloned;
+			// Remove UV attributes to ensure all geometries are compatible for merging
+			if (nonIndexed.hasAttribute("uv")) {
+				nonIndexed.deleteAttribute("uv");
 			}
+			geometries.push(nonIndexed);
 		});
 
 		return BufferGeometryUtils.mergeGeometries(geometries, false);
@@ -132,6 +119,9 @@ export class Application {
 	};
 
 	removeMeshFromScene = (mesh: Mesh) => {
+		if (this.transformControls?.object === mesh) {
+			this.detachTransformControls();
+		}
 		this.scene.remove(mesh);
 	};
 

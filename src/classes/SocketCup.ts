@@ -255,6 +255,7 @@ export class SocketCup extends AppObject {
 		const bvh = new MeshBVH(geometry);
 
 		instance.mesh = mesh;
+		instance.mesh.userData = { isSocketCup: true };
 		instance.mesh.raycast = acceleratedRaycast;
 		instance.mesh.geometry.computeBoundsTree = computeBoundsTree;
 		instance.mesh.geometry.disposeBoundsTree = disposeBoundsTree;

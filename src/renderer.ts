@@ -135,6 +135,8 @@ const removeMeshes = async (meshes: Mesh[]) => {
 		app.removeMeshFromScene(mesh);
 	});
 
+	toggleRotateTransformControlsButton.setAttribute("aria-pressed", "false");
+
 	horizontalTranslate.value = "0";
 	depthTranslate.value = "0";
 	verticalTranslate.value = "0";

@@ -195,7 +195,6 @@ export class PrintObject extends AppObject {
 			} else {
 				this.mesh.material.dispose();
 			}
-			this.mesh.removeFromParent();
 		}
 	};
 
@@ -207,7 +206,6 @@ export class PrintObject extends AppObject {
 
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
-			this.mesh.removeFromParent();
 			this.mesh = undefined;
 		}
 
