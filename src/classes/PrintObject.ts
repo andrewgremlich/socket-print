@@ -195,7 +195,6 @@ export class PrintObject extends AppObject {
 			} else {
 				this.mesh.material.dispose();
 			}
-			this.mesh.removeFromParent();
 		}
 	};
 
@@ -207,7 +206,6 @@ export class PrintObject extends AppObject {
 
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
-			this.mesh.removeFromParent();
 			this.mesh = undefined;
 		}
 
@@ -296,6 +294,7 @@ export class PrintObject extends AppObject {
 		await this.applyShrinkScale();
 
 		this.mesh.name = "test_cylinder";
+		this.mesh.userData = { isPrintObject: true };
 		activeFileName.textContent = "test_cylinder";
 
 		try {
@@ -364,7 +363,7 @@ export class PrintObject extends AppObject {
 		this.mesh.geometry.computeBoundsTree = computeBoundsTree;
 		this.mesh.geometry.disposeBoundsTree = disposeBoundsTree;
 		this.mesh.name = file.name.replace(/[<>"'&]/g, "");
-		this.mesh.userData = { isSocket: true };
+		this.mesh.userData = { isPrintObject: true };
 		this.computeBoundingBox();
 
 		try {

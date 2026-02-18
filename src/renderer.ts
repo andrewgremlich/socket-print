@@ -16,8 +16,11 @@ import {
 	createIcons,
 	File,
 	Loader,
+	Move3d,
 	Printer,
 	PrinterCheck,
+	Rotate3d,
+	RotateCw,
 	Settings,
 } from "lucide";
 import { ceil } from "mathjs";
@@ -49,7 +52,7 @@ import {
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
-	toggleZRotateTransformControlsButton,
+	toggleRotateTransformControlsButton,
 	trimLineStatus,
 	verticalTranslate,
 } from "@/utils/htmlElements";
@@ -67,6 +70,9 @@ createIcons({
 		Printer,
 		Check,
 		File,
+		Move3d,
+		Rotate3d,
+		RotateCw,
 	},
 });
 
@@ -105,7 +111,7 @@ const printObject = new PrintObject({
 		}
 
 		const existingMeshes = app.scene.children.filter((child) => {
-			return child.type === "Mesh" && child.userData.isSocket;
+			return child.type === "Mesh" && child.userData.isPrintObject;
 		});
 
 		if (existingMeshes.length > 0) {
@@ -134,6 +140,8 @@ const removeMeshes = async (meshes: Mesh[]) => {
 		app.removeMeshFromScene(mesh);
 	});
 
+	toggleRotateTransformControlsButton.setAttribute("aria-pressed", "false");
+
 	horizontalTranslate.value = "0";
 	depthTranslate.value = "0";
 	verticalTranslate.value = "0";
@@ -160,7 +168,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 	// Transition geometry is now managed by PrintObject and already in scene
 
-	const allGeometries = app.collectAllGeometries();
+	const allGeometries = app.collectAllPrintableGeometries();
 
 	progressBarDiv.style.display = "flex";
 
@@ -248,9 +256,9 @@ printerFileInput.addEventListener("click", async () => {
 	}
 });
 
-toggleZRotateTransformControlsButton.addEventListener("click", () => {
-	const isVisible = app.toggleZRotateTransformControls();
-	toggleZRotateTransformControlsButton.setAttribute(
+toggleRotateTransformControlsButton.addEventListener("click", () => {
+	const isVisible = app.toggleRotateTransformControls();
+	toggleRotateTransformControlsButton.setAttribute(
 		"aria-pressed",
 		isVisible.toString(),
 	);

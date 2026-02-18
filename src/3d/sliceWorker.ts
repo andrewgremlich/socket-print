@@ -98,9 +98,11 @@ self.onmessage = async (
 	// Maximum allowed gap in consecutive points (in terms of angle indices)
 	const MAX_CONSECUTIVE_MISSING = 3;
 
+	const trimTop = 2 * layerHeight; // Trim top layers to avoid slicing issues at the very top of the model
+
 	for (
 		let heightPosition = 0;
-		heightPosition < maxHeight;
+		heightPosition < maxHeight - trimTop;
 		heightPosition += layerHeight
 	) {
 		const pointLevel: Vector3[] = [];

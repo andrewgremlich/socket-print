@@ -123,7 +123,7 @@ export class Settings extends Dialog {
 				<h4>Test Cylinder Dimensions</h4>
 				<form id="testCylinderSettings">
 					<label for="testCylinderHeight">Test Cylinder Height</label>
-					<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="50" />
+					<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="100" />
 
 					<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter</label>
 					<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="70" max="80" />
