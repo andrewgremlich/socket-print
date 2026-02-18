@@ -106,7 +106,7 @@ const printObject = new PrintObject({
 		}
 
 		const existingMeshes = app.scene.children.filter((child) => {
-			return child.type === "Mesh" && child.userData.isSocket;
+			return child.type === "Mesh" && child.userData.isPrintObject;
 		});
 
 		if (existingMeshes.length > 0) {
@@ -163,7 +163,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 	// Transition geometry is now managed by PrintObject and already in scene
 
-	const allGeometries = app.collectAllGeometries();
+	const allGeometries = app.collectAllPrintableGeometries();
 
 	progressBarDiv.style.display = "flex";
 

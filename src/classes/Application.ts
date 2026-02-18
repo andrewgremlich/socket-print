@@ -84,23 +84,18 @@ export class Application {
 		window.addEventListener("resize", this.#onWindowResize);
 	}
 
-	collectAllGeometries = () => {
+	collectAllPrintableGeometries = () => {
 		const geometries: BufferGeometry[] = [];
 
 		this.scene.traverse((object) => {
 			if (!(object instanceof Mesh)) return;
 
-			// Only include meshes explicitly marked for slicing
-			const { isSocket, isSocketCup, isTransition } = object.userData;
-			if (!isSocket && !isSocketCup && !isTransition) return;
+			const { isPrintObject, isSocketCup, isTransition } = object.userData;
+			if (!isPrintObject && !isSocketCup && !isTransition) return;
 
-			// Clone geometry and apply the object's full world transform so slicing
-			// sees the final, transformed vertices (scale, rotation, translation).
 			const cloned = object.geometry.clone();
 			cloned.applyMatrix4(object.matrixWorld);
-			// Ensure all geometries are non-indexed for merging
 			const nonIndexed = cloned.index ? cloned.toNonIndexed() : cloned;
-			// Remove UV attributes to ensure all geometries are compatible for merging
 			if (nonIndexed.hasAttribute("uv")) {
 				nonIndexed.deleteAttribute("uv");
 			}
