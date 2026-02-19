@@ -170,12 +170,16 @@ main {
 	margin-bottom: var(--spacing-lg);
 	height: 100%;
 
-	& > * {
+	& .form-group {
 		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
+		flex-direction: column;
 		margin-bottom: var(--spacing-md);
+
+		& span,
+		& label {
+			color: var(--text-secondary);
+			font-size: 14px;
+		}
 	}
 
 	& label,

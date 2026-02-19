@@ -84,82 +84,79 @@
               </svg>-->
 
     <main id="application">
-      <div id="userInterface">
-        <form id="appForm" aria-labelledby="appFormTitle">
-          <h2 id="appFormTitle" class="hide">Socket Print Settings</h2>
-          <div class="form-group">
-            <label for="ipAddressInput" style="margin-right:15px">IP Address and Port</label>
-            <div id="ipAddress">
-              <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress"
-                value="" placeholder="192.168.X.XXX:xxxx" aria-required="true" aria-label="IP Address and Port" />
-            </div>
-          </div>
+      <form id="appForm" aria-labelledby="appFormTitle">
+        <div class="form-group">
+          <label for="ipAddressInput" style="margin-right:15px">IP Address and Port</label>
+          <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress" value=""
+            placeholder="192.168.X.XXX:xxxx" aria-required="true" aria-label="IP Address and Port" />
+        </div>
 
-          <div class="form-group">
-            <span id="portStatusLabel">Port Status</span>
-            <div id="portStatusIcons" role="status" aria-live="polite" aria-labelledby="portStatusLabel">
-              <p id="ipAddressSuccess" class="hide">Connected <i data-lucide="printer-check" aria-hidden="true"></i></p>
-              <p id="ipAddressFailure">Disconnected</p>
-            </div>
+        <div class="form-group">
+          <span id="portStatusLabel">Port Status</span>
+          <div id="portStatusIcons" role="status" aria-live="polite" aria-labelledby="portStatusLabel">
+            <p id="ipAddressSuccess" class="hide">Connected <i data-lucide="printer-check" aria-hidden="true"></i></p>
+            <p id="ipAddressFailure">Disconnected</p>
           </div>
+        </div>
 
-          <div class="form-group">
-            <span id="lockPositionLabel">Lock Position</span>
-            <div id="lockPositionGroup" role="radiogroup" aria-labelledby="lockPositionLabel"
-              style="display: flex; gap: 20px; align-items: center;">
-              <label for="lockPositionLeft" style="display: flex; align-items: center; gap: 5px;">
-                <input type="radio" id="lockPositionLeft" name="lockPosition" value="left" checked />
-                Left
-              </label>
-              <label for="lockPositionRight" style="display: flex; align-items: center; gap: 5px;">
-                <input type="radio" id="lockPositionRight" name="lockPosition" value="right" />
-                Right
-              </label>
-            </div>
+        <div class="form-group">
+          <span id="lockPositionLabel">Lock Position</span>
+          <div id="lockPositionGroup" role="radiogroup" aria-labelledby="lockPositionLabel"
+            style="display: flex; gap: 20px; align-items: center;">
+            <label for="lockPositionLeft" style="display: flex; align-items: center; gap: 5px;">
+              <input type="radio" id="lockPositionLeft" name="lockPosition" value="left" checked />
+              Left
+            </label>
+            <label for="lockPositionRight" style="display: flex; align-items: center; gap: 5px;">
+              <input type="radio" id="lockPositionRight" name="lockPosition" value="right" />
+              Right
+            </label>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label for="cupSize">Cup Size</label>
-            <select name="cupSize" id="cupSize">
-              <option value="84x38" selected>84 x 38</option>
-              <option value="84x25">84 x 25</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="cupSize">Cup Size</label>
+          <select name="cupSize" id="cupSize">
+            <option value="84x38" selected>84 x 38</option>
+            <option value="84x25">84 x 25</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label for="nozzleSize">Nozzle Size</label>
-            <select name="nozzleSize" id="nozzleSize">
-              <option value="3">3mm</option>
-              <option value="4">4mm</option>
-              <option value="5" selected>5mm</option>
-              <option value="6">6mm</option>
-              <option value="7">7mm</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="nozzleSize">Nozzle Size</label>
+          <select name="nozzleSize" id="nozzleSize">
+            <option value="3">3mm</option>
+            <option value="4">4mm</option>
+            <option value="5" selected>5mm</option>
+            <option value="6">6mm</option>
+            <option value="7">7mm</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label for="layerHeight">Layer Height</label>
-            <select name="layerHeight" id="layerHeight">
-              <option value="0.75">0.75mm</option>
-              <option value="1" selected>1mm</option>
-              <option value="1.5">1.5mm</option>
-              <option value="2">2mm</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="layerHeight">Layer Height</label>
+          <select name="layerHeight" id="layerHeight">
+            <option value="0.75">0.75mm</option>
+            <option value="1" selected>1mm</option>
+            <option value="1.5">1.5mm</option>
+            <option value="2">2mm</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label for="activeMaterialProfile">Material</label>
-            <select name="activeMaterialProfile" id="activeMaterialProfile"></select>
-          </div>
+        <div class="form-group">
+          <label for="activeMaterialProfile">Material</label>
+          <select name="activeMaterialProfile" id="activeMaterialProfile"></select>
+        </div>
 
-          <div>
-            <span>Nozzle Temp (C)</span><span id="nozzleTempDisplay">200</span>
-          </div>
+        <div class="form-group">
+          <span>Nozzle Temp (C)</span>
+          <p id="nozzleTempDisplay">200</p>
+        </div>
 
-          <div>
-            <span> Cup Temp (C)</span><span id="cupTempDisplay">130</span>
-          </div>
-        </form>
+        <div class="form-group">
+          <span> Cup Temp (C)</span>
+          <p id="cupTempDisplay">130</p>
+        </div>
 
         <div id="printActions">
           <button type="button" id="generateGCodeButton" aria-label="Save G-Code file"><i data-lucide="file"
@@ -169,7 +166,7 @@
               data-lucide="printer" aria-hidden="true"></i>
             Print</button>
         </div>
-      </div>
+      </form>
 
       <div id="secondaryInterface">
         <div id="provelPrint" aria-label="3D Print Preview Area">
