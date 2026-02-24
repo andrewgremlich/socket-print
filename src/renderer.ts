@@ -40,6 +40,7 @@ import {
 import {
 	activeFileName,
 	clearModelButton,
+	collisionWarning,
 	estimatedPrintTime,
 	generateGCodeButton,
 	loadingScreen,
@@ -140,7 +141,8 @@ const removeMeshes = async (meshes: Mesh[]) => {
 	xTranslate.value = "0";
 	yTranslate.value = "0";
 	zTranslate.value = "0";
-	activeFileName.textContent = "";
+	activeFileName.textContent = "No file selected";
+	collisionWarning.style.display = "none";
 
 	estimatedPrintTime.textContent = "0m 0s";
 
