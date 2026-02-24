@@ -10,6 +10,7 @@
 
 #application {
 	display: grid;
+	gap: var(--spacing-lg);
 	grid-template-columns: repeat(12, 1fr);
 	flex: 1;
 	min-height: 0;
