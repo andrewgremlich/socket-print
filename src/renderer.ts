@@ -40,17 +40,18 @@ import {
 import {
 	activeFileName,
 	clearModelButton,
-	depthTranslate,
+	collisionWarning,
 	estimatedPrintTime,
 	generateGCodeButton,
-	horizontalTranslate,
 	loadingScreen,
 	printerFileInput,
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
-	toggleRotateTransformControlsButton,
-	verticalTranslate,
+	toggleTransformControlsButton,
+	xTranslate,
+	yTranslate,
+	zTranslate,
 } from "@/utils/htmlElements";
 import { saveRotationToDatabase } from "@/utils/meshTransforms";
 import { SliceWorkerStatus } from "./3d/sliceWorker";
@@ -135,12 +136,13 @@ const removeMeshes = async (meshes: Mesh[]) => {
 		app.removeMeshFromScene(mesh);
 	});
 
-	toggleRotateTransformControlsButton.setAttribute("aria-pressed", "false");
+	toggleTransformControlsButton.setAttribute("aria-pressed", "false");
 
-	horizontalTranslate.value = "0";
-	depthTranslate.value = "0";
-	verticalTranslate.value = "0";
-	activeFileName.textContent = "";
+	xTranslate.value = "0";
+	yTranslate.value = "0";
+	zTranslate.value = "0";
+	activeFileName.textContent = "No file selected";
+	collisionWarning.style.display = "none";
 
 	estimatedPrintTime.textContent = "0m 0s";
 
@@ -243,9 +245,9 @@ printerFileInput.addEventListener("click", async () => {
 	}
 });
 
-toggleRotateTransformControlsButton.addEventListener("click", () => {
-	const isVisible = app.toggleRotateTransformControls();
-	toggleRotateTransformControlsButton.setAttribute(
+toggleTransformControlsButton.addEventListener("click", () => {
+	const isVisible = app.translateRotationControls();
+	toggleTransformControlsButton.setAttribute(
 		"aria-pressed",
 		isVisible.toString(),
 	);

@@ -176,7 +176,7 @@ export class Application {
 		}
 	};
 
-	toggleRotateTransformControls = (): boolean => {
+	translateRotationControls = (): boolean => {
 		if (this.transformControls) {
 			const helper = this.transformControls.getHelper();
 			const newState = !helper.visible;

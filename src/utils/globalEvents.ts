@@ -12,17 +12,10 @@ import {
 	printerConnection,
 } from "./handlePrinterConnection";
 import {
-	activateInfoDialog,
-	activateSettingsDialog,
-	addMaterialProfile,
-	deleteMaterialProfileButton,
-	editActiveMaterialProfile,
-	helpButton,
 	infoDialog,
 	ipAddressInput,
 	materialProfileForm,
-	menuBar,
-	menuBarDropdowns,
+	menuBarComponent,
 	settingsDialog,
 } from "./htmlElements";
 
@@ -36,54 +29,26 @@ hotkeys("ctrl+shift+r", (_event, handler) => {
 	}
 });
 
-menuBar.addEventListener("click", (evt) => {
-	const target = evt.target as HTMLElement;
-
-	for (const dropdown of menuBarDropdowns) {
-		if (dropdown !== target.nextElementSibling) {
-			dropdown.classList.remove("show");
-		}
-	}
-
-	if (
-		target.matches(".menuBarButton") &&
-		!target.classList.contains("noDropdown")
-	) {
-		const nextSibling = target.nextElementSibling as HTMLElement;
-		nextSibling.classList.toggle("show");
-	}
-});
-
-window.addEventListener("click", (evt) => {
-	if (!(evt.target as HTMLElement).matches(".menuBarButton")) {
-		for (const dropdown of menuBarDropdowns) {
-			dropdown.classList.remove("show");
-		}
-	}
-});
-
 ipAddressInput.addEventListener("input", handleIpAddressChange);
 setTimeout(async () => await printerConnection(), 1000);
 
-activateSettingsDialog.addEventListener(
-	"click",
-	async () => await settingsDialog.showSettings(),
-);
+menuBarComponent.addEventListener("menu-settings", async () => {
+	await settingsDialog.showSettings();
+});
 
-activateInfoDialog.addEventListener(
-	"click",
-	async () => await infoDialog.showSettings(),
-);
+menuBarComponent.addEventListener("menu-info", async () => {
+	await infoDialog.showSettings();
+});
 
-addMaterialProfile.addEventListener("click", () =>
-	materialProfileForm.showForm("new"),
-);
+menuBarComponent.addEventListener("menu-add-material-profile", () => {
+	materialProfileForm.showForm("new");
+});
 
-editActiveMaterialProfile.addEventListener("click", () =>
-	materialProfileForm.showForm("edit"),
-);
+menuBarComponent.addEventListener("menu-edit-material-profile", () => {
+	materialProfileForm.showForm("edit");
+});
 
-deleteMaterialProfileButton.addEventListener("click", async () => {
+menuBarComponent.addEventListener("menu-delete-material-profile", async () => {
 	await deleteActiveMaterialProfile();
 
 	const materialProfiles = await getMaterialProfiles();
@@ -93,6 +58,6 @@ deleteMaterialProfileButton.addEventListener("click", async () => {
 	await loadActiveMaterialProfileForm();
 });
 
-helpButton.addEventListener("click", () => {
+menuBarComponent.addEventListener("menu-help", () => {
 	window.open("/help.html", "_self");
 });

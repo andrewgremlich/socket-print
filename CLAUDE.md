@@ -119,7 +119,7 @@ npm run clean           # Remove build artifacts
 
 2. **3D Manipulation**
    - User modifies position (X, Y, Z translation)
-   - User applies rotations (Coronal, Sagittal, Transverse)
+   - User applies rotations (X, Y, Z)
    - Changes stored in IndexedDB `appSettings`
    - 3D scene updates in real-time
 
@@ -252,7 +252,7 @@ The G-code generation system (`src/3d/generateGCode.ts`) is a critical component
 
 Four main tables:
 - **formValues**: IP address, lock position (left/right), cup size, nozzle size, layer height, active material profile
-- **appSettings**: Lock depth, circularSegments, translations (X/Y/Z), rotations (coronal/sagittal/transverse), startingCupLayerHeight, lineWidthAdjustment, testCylinderHeight, testCylinderInnerDiameter, seconds per layer, E per revolution
+- **appSettings**: Lock depth, circularSegments, translations (X/Y/Z), rotations (X/Y/Z), startingCupLayerHeight, lineWidthAdjustment, testCylinderHeight, testCylinderInnerDiameter, seconds per layer, E per revolution
 - **materialProfiles**: Name, nozzle temp, cup temp, shrink factor, output factor, grams per revolution, density
 - **savedFiles**: Name, type (Socket/TestCylinder), file blob
 

@@ -15,151 +15,82 @@
 
 <body>
   <div id="app">
-    <div id="menuBar">
-      <div>
-        <nav role="menubar">
-          <div>
-
-            <h1><a href="/" aria-label="ProvelPrint - Return to home page">ProvelPrint</a></h1>
-
-            <div class="menuBarButtonContainer">
-              <button role="menuitem" aria-haspopup="true" class="menuBarButton">File</button>
-
-              <div class="menuBarDropdown" role="menu">
-                <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
-                  id="stlFileInputLabel">
-                  Open STL file
-                  <input role="menuitem" type="file" accept=".stl" id="stlFileInput" name="stlFileInput"
-                    class="fileInput" />
-                </label>
-
-                <button role="menuitem" class="menuBarDropdownButton" id="clearModelButton" type="button">Clear
-                  model</button>
-
-                <button role="menuitem" class="menuBarDropdownButton" id="addTestStlButton" type="button">Load Test
-                  Socket STL</button>
-
-                <button role="menuitem" class="menuBarDropdownButton" id="addTestCylinderButton" type="button">Load Test
-                  Cylinder STL</button>
-              </div>
-            </div>
-
-            <div class="menuBarButtonContainer">
-              <button role="menuitem" aria-haspopup="true" class="menuBarButton">Edit</button>
-
-              <div class="menuBarDropdown" role="menu">
-                <button role="menuitem" class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material
-                  Profile</button>
-                <button role="menuitem" class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit
-                  Active Material
-                  Profile</button>
-                <button role="menuitem" class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete
-                  Active Material
-                  Profile</button>
-              </div>
-            </div>
-
-            <button role="menuitem" class="menuBarButton noDropdown" id="helpButton" type="button">Help</button>
-
-            <button role="menuitem" aria-haspopup="true" id="activateInfoDialog" class="menuBarButton noDropdown"
-              type="button">Info</button>
-          </div>
-
-          <div>
-            <button role="menuitem" aria-haspopup="true" id="activateSettingsDialog" class="menuBarButton noDropdown"
-              type="button" aria-label="Settings">
-              <i data-lucide="settings" aria-hidden="true"></i>
-            </button>
-          </div>
-        </nav>
-      </div>
-    </div>
-
-    <!-- Info Icon -->
-    <!--<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>-->
+    <menu-bar></menu-bar>
 
     <main id="application">
-      <div id="userInterface">
-        <form id="appForm" aria-labelledby="appFormTitle">
-          <h2 id="appFormTitle" class="hide">Socket Print Settings</h2>
-          <div class="form-group">
-            <label for="ipAddressInput" style="margin-right:15px">IP Address and Port</label>
-            <div id="ipAddress">
-              <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress"
-                value="" placeholder="192.168.X.XXX:xxxx" aria-required="true" aria-label="IP Address and Port" />
-            </div>
-          </div>
+      <form id="appForm" aria-labelledby="appFormTitle">
+        <div class="form-group">
+          <label for="ipAddressInput" style="margin-right:15px">IP Address and Port</label>
+          <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress" value=""
+            placeholder="192.168.X.XXX:xxxx" aria-required="true" aria-label="IP Address and Port" />
+        </div>
 
-          <div class="form-group">
-            <span id="portStatusLabel">Port Status</span>
-            <div id="portStatusIcons" role="status" aria-live="polite" aria-labelledby="portStatusLabel">
-              <p id="ipAddressSuccess" class="hide">Connected <i data-lucide="printer-check" aria-hidden="true"></i></p>
-              <p id="ipAddressFailure">Disconnected</p>
-            </div>
+        <div class="form-group">
+          <span id="portStatusLabel">Port Status</span>
+          <div id="portStatusIcons" role="status" aria-live="polite" aria-labelledby="portStatusLabel">
+            <p id="ipAddressSuccess" class="hide">Connected <i data-lucide="printer-check" aria-hidden="true"></i></p>
+            <p id="ipAddressFailure">Disconnected</p>
           </div>
+        </div>
 
-          <div class="form-group">
-            <span id="lockPositionLabel">Lock Position</span>
-            <div id="lockPositionGroup" role="radiogroup" aria-labelledby="lockPositionLabel"
-              style="display: flex; gap: 20px; align-items: center;">
-              <label for="lockPositionLeft" style="display: flex; align-items: center; gap: 5px;">
-                <input type="radio" id="lockPositionLeft" name="lockPosition" value="left" checked />
-                Left
-              </label>
-              <label for="lockPositionRight" style="display: flex; align-items: center; gap: 5px;">
-                <input type="radio" id="lockPositionRight" name="lockPosition" value="right" />
-                Right
-              </label>
-            </div>
+        <div class="form-group">
+          <span id="lockPositionLabel">Lock Position</span>
+          <div id="lockPositionGroup" role="radiogroup" aria-labelledby="lockPositionLabel"
+            style="display: flex; gap: 20px; align-items: center;">
+            <label for="lockPositionLeft" style="display: flex; align-items: center; gap: 5px;">
+              <input type="radio" id="lockPositionLeft" name="lockPosition" value="left" checked />
+              Left
+            </label>
+            <label for="lockPositionRight" style="display: flex; align-items: center; gap: 5px;">
+              <input type="radio" id="lockPositionRight" name="lockPosition" value="right" />
+              Right
+            </label>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label for="cupSize">Cup Size</label>
-            <select name="cupSize" id="cupSize">
-              <option value="84x38" selected>84 x 38</option>
-              <option value="84x25">84 x 25</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="cupSize">Cup Size</label>
+          <select name="cupSize" id="cupSize">
+            <option value="84x38" selected>84 x 38</option>
+            <option value="84x25">84 x 25</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label for="nozzleSize">Nozzle Size</label>
-            <select name="nozzleSize" id="nozzleSize">
-              <option value="3">3mm</option>
-              <option value="4">4mm</option>
-              <option value="5" selected>5mm</option>
-              <option value="6">6mm</option>
-              <option value="7">7mm</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="nozzleSize">Nozzle Size</label>
+          <select name="nozzleSize" id="nozzleSize">
+            <option value="3">3mm</option>
+            <option value="4">4mm</option>
+            <option value="5" selected>5mm</option>
+            <option value="6">6mm</option>
+            <option value="7">7mm</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label for="layerHeight">Layer Height</label>
-            <select name="layerHeight" id="layerHeight">
-              <option value="0.75">0.75mm</option>
-              <option value="1" selected>1mm</option>
-              <option value="1.5">1.5mm</option>
-              <option value="2">2mm</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="layerHeight">Layer Height</label>
+          <select name="layerHeight" id="layerHeight">
+            <option value="0.75">0.75mm</option>
+            <option value="1" selected>1mm</option>
+            <option value="1.5">1.5mm</option>
+            <option value="2">2mm</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label for="activeMaterialProfile">Material</label>
-            <select name="activeMaterialProfile" id="activeMaterialProfile"></select>
-          </div>
+        <div class="form-group">
+          <label for="activeMaterialProfile">Material</label>
+          <select name="activeMaterialProfile" id="activeMaterialProfile"></select>
+        </div>
 
-          <div>
-            <span>Nozzle Temp (C)</span><span id="nozzleTempDisplay">200</span>
-          </div>
+        <div class="form-group">
+          <span>Nozzle Temp (C)</span>
+          <p id="nozzleTempDisplay">200</p>
+        </div>
 
-          <div>
-            <span> Cup Temp (C)</span><span id="cupTempDisplay">130</span>
-          </div>
-        </form>
+        <div class="form-group">
+          <span> Cup Temp (C)</span>
+          <p id="cupTempDisplay">130</p>
+        </div>
 
         <div id="printActions">
           <button type="button" id="generateGCodeButton" aria-label="Save G-Code file"><i data-lucide="file"
@@ -169,49 +100,49 @@
               data-lucide="printer" aria-hidden="true"></i>
             Print</button>
         </div>
-      </div>
+      </form>
 
       <div id="secondaryInterface">
         <div id="provelPrint" aria-label="3D Print Preview Area">
           <span id="collisionWarning">Interference!</span>
           <span id="activeFileName">No file selected</span>
-          <button type="button" id="toggleRotateTransformControls" aria-label="Toggle rotation controls"
-            title="Toggle rotation controls" aria-pressed="false">
-            <i data-lucide="rotate-3d" aria-hidden="true"></i> Rotate
-          </button>
+          <div id="translateRotationControls">
+            <div id="changePosition">
+              <span><i data-lucide="move-3d" aria-hidden="true"></i> Translate</span>
+              <label for="xTranslate">X
+                <input disabled id="xTranslate" type="number" value="0" step="1" min="-100" max="100"
+                  aria-describedby="translateDisabledHint" />
+              </label>
+              <label for="yTranslate">Y
+                <input disabled id="yTranslate" type="number" value="0" step="1" min="-100" max="100"
+                  aria-describedby="translateDisabledHint" />
+              </label>
+              <label for="zTranslate">Z
+                <input disabled id="zTranslate" type="number" value="0" step="1" min="-100" max="100"
+                  aria-describedby="translateDisabledHint" />
+              </label>
+              <span id="translateDisabledHint" class="hide">Load a model to enable translation controls</span>
+            </div>
+
+            <div id="rotateSocket">
+              <span><i data-lucide="rotate-cw" aria-hidden="true"></i> Rotate 90°</span>
+              <button disabled id="xRotate" type="button" aria-describedby="rotateDisabledHint">X</button>
+              <button disabled id="yRotate" type="button" aria-describedby="rotateDisabledHint">Y</button>
+              <button disabled id="zRotate" type="button" aria-describedby="rotateDisabledHint">Z</button>
+              <span id="rotateDisabledHint" class="hide">Load a model to enable rotation controls</span>
+            </div>
+
+            <button id="toggleTransformControlsButton" type="button" aria-label="Toggle rotation controls" title="Toggle rotation controls"
+              aria-pressed="false">
+              <i data-lucide="rotate-3d" aria-hidden="true"></i> Rotate
+            </button>
+          </div>
           <div id="estimatedPrintTimeContainer" aria-label="Estimated Print Time">
             <span>Estimated Print Time:</span>
             <span id="estimatedPrintTime">0m 0s</span>
           </div>
           <canvas id="modelViewer" role="img" aria-label="3D model preview of the socket">Your browser does not support
             the canvas element.</canvas>
-        </div>
-
-        <div id="editSocket" aria-label="Socket Edit Controls">
-          <div id="rotateSocket">
-            <span><i data-lucide="rotate-cw" aria-hidden="true"></i> Rotate 90</span>
-            <button disabled id="coronalRotater" type="button" aria-describedby="rotateDisabledHint">Coronal</button>
-            <button disabled id="sagittalRotate" type="button" aria-describedby="rotateDisabledHint">Sagittal</button>
-            <button disabled id="transversalRotater" type="button"
-              aria-describedby="rotateDisabledHint">Transverse</button>
-            <span id="rotateDisabledHint" class="hide">Load a model to enable rotation controls</span>
-          </div>
-          <div id="changePosition">
-            <span><i data-lucide="move-3d" aria-hidden="true"></i> Translate</span>
-            <label for="horizontalTranslate">X
-              <input disabled id="horizontalTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint" />
-            </label>
-            <label for="depthTranslate">Y
-              <input disabled id="depthTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint" />
-            </label>
-            <label for="verticalTranslate">Z
-              <input disabled id="verticalTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint" />
-            </label>
-            <span id="translateDisabledHint" class="hide">Load a model to enable translation controls</span>
-          </div>
         </div>
       </div>
     </main>
