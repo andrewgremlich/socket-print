@@ -106,43 +106,43 @@
         <div id="provelPrint" aria-label="3D Print Preview Area">
           <span id="collisionWarning">Interference!</span>
           <span id="activeFileName">No file selected</span>
-          <button type="button" id="toggleRotateTransformControls" aria-label="Toggle rotation controls"
-            title="Toggle rotation controls" aria-pressed="false">
-            <i data-lucide="rotate-3d" aria-hidden="true"></i> Rotate
-          </button>
+          <div id="translateRotationControls">
+            <div id="changePosition">
+              <span><i data-lucide="move-3d" aria-hidden="true"></i> Translate</span>
+              <label for="xTranslate">X
+                <input disabled id="xTranslate" type="number" value="0" step="1" min="-100" max="100"
+                  aria-describedby="translateDisabledHint" />
+              </label>
+              <label for="yTranslate">Y
+                <input disabled id="yTranslate" type="number" value="0" step="1" min="-100" max="100"
+                  aria-describedby="translateDisabledHint" />
+              </label>
+              <label for="zTranslate">Z
+                <input disabled id="zTranslate" type="number" value="0" step="1" min="-100" max="100"
+                  aria-describedby="translateDisabledHint" />
+              </label>
+              <span id="translateDisabledHint" class="hide">Load a model to enable translation controls</span>
+            </div>
+
+            <div id="rotateSocket">
+              <span><i data-lucide="rotate-cw" aria-hidden="true"></i> Rotate 90°</span>
+              <button disabled id="xRotate" type="button" aria-describedby="rotateDisabledHint">X</button>
+              <button disabled id="yRotate" type="button" aria-describedby="rotateDisabledHint">Y</button>
+              <button disabled id="zRotate" type="button" aria-describedby="rotateDisabledHint">Z</button>
+              <span id="rotateDisabledHint" class="hide">Load a model to enable rotation controls</span>
+            </div>
+
+            <button type="button" aria-label="Toggle rotation controls" title="Toggle rotation controls"
+              aria-pressed="false">
+              <i data-lucide="rotate-3d" aria-hidden="true"></i> Rotate
+            </button>
+          </div>
           <div id="estimatedPrintTimeContainer" aria-label="Estimated Print Time">
             <span>Estimated Print Time:</span>
             <span id="estimatedPrintTime">0m 0s</span>
           </div>
           <canvas id="modelViewer" role="img" aria-label="3D model preview of the socket">Your browser does not support
             the canvas element.</canvas>
-        </div>
-
-        <div id="editSocket" aria-label="Socket Edit Controls">
-          <div id="rotateSocket">
-            <span><i data-lucide="rotate-cw" aria-hidden="true"></i> Rotate 90</span>
-            <button disabled id="xRotate" type="button" aria-describedby="rotateDisabledHint">X Rotation</button>
-            <button disabled id="yRotate" type="button" aria-describedby="rotateDisabledHint">Y Rotation</button>
-            <button disabled id="zRotate" type="button"
-              aria-describedby="rotateDisabledHint">Z Rotation</button>
-            <span id="rotateDisabledHint" class="hide">Load a model to enable rotation controls</span>
-          </div>
-          <div id="changePosition">
-            <span><i data-lucide="move-3d" aria-hidden="true"></i> Translate</span>
-            <label for="xTranslate">X
-              <input disabled id="xTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint" />
-            </label>
-            <label for="yTranslate">Y
-              <input disabled id="yTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint" />
-            </label>
-            <label for="zTranslate">Z
-              <input disabled id="zTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint" />
-            </label>
-            <span id="translateDisabledHint" class="hide">Load a model to enable translation controls</span>
-          </div>
         </div>
       </div>
     </main>

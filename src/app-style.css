@@ -11,13 +11,17 @@
 #application {
 	display: grid;
 	grid-template-columns: repeat(12, 1fr);
+	flex: 1;
+	min-height: 0;
 
 	& > #appForm {
-		grid-column: 1 / 3;
+		grid-column: 1 / 4;
+		overflow-y: auto;
 	}
 
 	& > #secondaryInterface {
 		grid-column: 4 / 13;
+		min-height: 0;
 	}
 }
 
@@ -39,7 +43,6 @@
 	flex-direction: column;
 	justify-content: space-between;
 	margin-bottom: var(--spacing-lg);
-	height: 100%;
 
 	& .form-group {
 		display: flex;
@@ -142,14 +145,11 @@
 	color: var(--text-error);
 }
 
-#toggleRotateTransformControls {
-	/*For if and when there is a rotate icon.*/
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: var(--spacing-xs);
-
+#translateRotationControls {
 	position: absolute;
+	display: flex;
+	justify-content: flex-end;
+	flex-direction: column;
 	top: var(--spacing-sm);
 	right: var(--spacing-sm);
 	padding: var(--spacing-xs) var(--spacing-sm);
@@ -157,8 +157,26 @@
 	cursor: pointer;
 	z-index: 1;
 
-	&[aria-pressed="false"] {
-		opacity: 0.6;
+	& > * {
+		flex-grow: 0;
+		align-self: flex-end;
+	}
+
+	& button {
+		padding: 4px 12px;
+		margin-right: var(--spacing-xs);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--spacing-xs);
+	}
+
+	& > div {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: flex-end;
+		margin-bottom: var(--spacing-sm);
 	}
 }
 
@@ -170,24 +188,6 @@
 
 	& span {
 		display: inline-block;
-	}
-}
-
-#editSocket {
-	padding: 0px var(--spacing-sm);
-
-	& button {
-		padding: 4px 12px;
-		margin-bottom: var(--spacing-xs);
-		margin-right: var(--spacing-xs);
-	}
-
-	& > div {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: flex-end;
-		margin-bottom: var(--spacing-sm);
 	}
 }
 
@@ -208,11 +208,12 @@
 	}
 
 	& label {
-		margin-left: var(--spacing-lg);
+		margin-left: var(--spacing-sm);
 	}
 
 	& input {
 		margin-left: var(--spacing-sm);
+		width: 60px;
 	}
 }
 
