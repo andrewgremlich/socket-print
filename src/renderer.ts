@@ -48,7 +48,7 @@ import {
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
-	translateRotationControlsButton,
+	toggleTransformControlsButton,
 	xTranslate,
 	yTranslate,
 	zTranslate,
@@ -136,7 +136,7 @@ const removeMeshes = async (meshes: Mesh[]) => {
 		app.removeMeshFromScene(mesh);
 	});
 
-	translateRotationControlsButton.setAttribute("aria-pressed", "false");
+	toggleTransformControlsButton.setAttribute("aria-pressed", "false");
 
 	xTranslate.value = "0";
 	yTranslate.value = "0";
@@ -245,9 +245,9 @@ printerFileInput.addEventListener("click", async () => {
 	}
 });
 
-translateRotationControlsButton.addEventListener("click", () => {
+toggleTransformControlsButton.addEventListener("click", () => {
 	const isVisible = app.translateRotationControls();
-	translateRotationControlsButton.setAttribute(
+	toggleTransformControlsButton.setAttribute(
 		"aria-pressed",
 		isVisible.toString(),
 	);

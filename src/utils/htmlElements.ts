@@ -61,8 +61,8 @@ export const activeFileName = document.getElementById(
 export const collisionWarning = document.getElementById(
 	"collisionWarning",
 ) as HTMLSpanElement;
-export const translateRotationControlsButton = document.getElementById(
-	"translateRotationControls",
+export const toggleTransformControlsButton = document.getElementById(
+	"toggleTransformControlsButton",
 ) as HTMLButtonElement;
 
 export const progressBarDiv = document.getElementById(
