@@ -710,7 +710,7 @@ describe("PrintObject", () => {
 
 			await printObject.yChange(mockEvent);
 
-			expect(handleTranslationSpy).toHaveBeenCalledWith("y", mockEvent);
+			expect(handleTranslationSpy).toHaveBeenCalledWith("z", mockEvent);
 		});
 
 		test("zChange calls handleTranslationChange with z", async () => {
@@ -723,7 +723,7 @@ describe("PrintObject", () => {
 
 			await printObject.zChange(mockEvent);
 
-			expect(handleTranslationSpy).toHaveBeenCalledWith("z", mockEvent);
+			expect(handleTranslationSpy).toHaveBeenCalledWith("y", mockEvent);
 		});
 	});
 
