@@ -5,7 +5,7 @@
 Socket Print (Product name: Provel Print) is a CAD-like desktop application designed to facilitate faster turnaround times for amputees to receive 3D-printed prosthetic sockets for residual limbs. It combines real-time 3D visualization, computational geometry, and G-code generation for pellet extrusion 3D printing systems.
 
 **Repository**: https://github.com/andrewgremlich/socket-print
-**Version**: 1.16.1
+**Version**: 1.18.5
 **License**: MIT
 
 ## Key Features
@@ -24,13 +24,13 @@ Socket Print (Product name: Provel Print) is a CAD-like desktop application desi
 ### Frontend
 - **TypeScript** 5.9.3 - Type-safe language
 - **Vite** 7.3.1 - Build tool and dev server
-- **Three.js** 0.182.0 - 3D graphics library
-- **three-mesh-bvh** 0.9.7 - Optimized ray casting
-- **Dexie** 4.2.1 - IndexedDB wrapper
+- **Three.js** 0.183.0 - 3D graphics library
+- **three-mesh-bvh** 0.9.8 - Optimized ray casting
+- **Dexie** 4.3.0 - IndexedDB wrapper
 - **Web Components** - Custom UI elements
-- **mathjs** 15.1.0 - Mathematical functions
+- **mathjs** 15.1.1 - Mathematical functions
 - **hotkeys-js** 4.0.0 - Keyboard shortcuts
-- **Lucide** 0.562.0 - Icon library
+- **Lucide** 0.575.0 - Icon library
 - **validator** 13.15.26 - Input validation
 - **crc-32** 1.2.2 - CRC32 checksum
 
@@ -39,11 +39,11 @@ Socket Print (Product name: Provel Print) is a CAD-like desktop application desi
 - **Tauri Plugins**: dialog, fs, log, updater, process
 
 ### Build & Styling
-- **LightningCSS** 1.30.2 - CSS transformation
+- **LightningCSS** 1.31.1 - CSS transformation
 
 ### Testing & Quality
-- **Vitest** 4.0.17 - Unit testing
-- **Biome** 2.3.11 - Linting and formatting
+- **Vitest** 4.0.18 - Unit testing
+- **Biome** 2.4.3 - Linting and formatting
 
 ## Project Structure
 
@@ -150,16 +150,24 @@ npm run clean           # Remove build artifacts
 ### Core Classes
 - [src/classes/AppObject.ts](src/classes/AppObject.ts) - Base class for 3D objects
 - [src/classes/PrintObject.ts](src/classes/PrintObject.ts) - STL model handling
-- [src/classes/SocketCup.ts](src/classes/SocketCup.ts) - Prosthetic socket geometry
+- [src/classes/PrintObjectEventManager.ts](src/classes/PrintObjectEventManager.ts) - Event management for print objects
+- [src/classes/SocketCup.ts](src/classes/SocketCup.ts) - Prosthetic socket cup geometry
 - [src/classes/TestCylinder.ts](src/classes/TestCylinder.ts) - Test cylinder
 - [src/classes/CupToSocketTransition.ts](src/classes/CupToSocketTransition.ts) - Cup-to-socket transition geometry with fit validation
+- [src/classes/CollisionDetector.ts](src/classes/CollisionDetector.ts) - Collision detection between objects
+- [src/classes/MeshTransformController.ts](src/classes/MeshTransformController.ts) - Mesh transformation controls
 - [src/classes/DebugPoint.ts](src/classes/DebugPoint.ts) - Debug visualization helper
+- [src/classes/types.ts](src/classes/types.ts) - Class-level TypeScript types
 
 ### 3D Processing
 - [src/3d/generateGCode.ts](src/3d/generateGCode.ts) - G-code generation
 - [src/3d/sliceWorker.ts](src/3d/sliceWorker.ts) - Model slicing worker
 - [src/3d/generateOffsetWithNormal.ts](src/3d/generateOffsetWithNormal.ts) - Mesh offset
 - [src/3d/blendHardEdges.ts](src/3d/blendHardEdges.ts) - Edge smoothing
+- [src/3d/calculateDistancePerLevel.ts](src/3d/calculateDistancePerLevel.ts) - Per-layer distance calculation
+- [src/3d/calculatePrintTime.ts](src/3d/calculatePrintTime.ts) - Estimated print time
+- [src/3d/sendGCodeFile.ts](src/3d/sendGCodeFile.ts) - Send G-code to printer over network
+- [src/3d/ensureUV.ts](src/3d/ensureUV.ts) - Ensure UV coordinates on geometry
 
 ### Database
 - [src/db/db.ts](src/db/db.ts) - Dexie database setup
@@ -170,6 +178,15 @@ npm run clean           # Remove build artifacts
 - [src/utils/globalEvents.ts](src/utils/globalEvents.ts) - Global event handlers
 - [src/utils/htmlElements.ts](src/utils/htmlElements.ts) - DOM references
 - [src/utils/handlePrinterConnection.ts](src/utils/handlePrinterConnection.ts) - Printer connection
+- [src/utils/cupTransitionLayer.ts](src/utils/cupTransitionLayer.ts) - Cup transition layer geometry helpers
+- [src/utils/getExtrusionCalculation.ts](src/utils/getExtrusionCalculation.ts) - Extrusion volume calculation
+- [src/utils/constants.ts](src/utils/constants.ts) - Shared constants (e.g. NOZZLE_SIZE_OFFSET_FACTOR)
+- [src/utils/meshTransforms.ts](src/utils/meshTransforms.ts) - Mesh transformation utilities
+- [src/utils/stlLoader.ts](src/utils/stlLoader.ts) - STL file loading helpers
+- [src/utils/updater.ts](src/utils/updater.ts) - Tauri app updater integration
+- [src/utils/getRadialSegments.ts](src/utils/getRadialSegments.ts) - Radial segment calculation
+- [src/utils/printObject.ts](src/utils/printObject.ts) - Print object utilities
+- [src/utils/printObjectEvents.ts](src/utils/printObjectEvents.ts) - Print object event helpers
 
 ## Important Notes
 
@@ -199,8 +216,9 @@ npm run clean           # Remove build artifacts
 - Test coverage available via `npm run test:coverage`
 - Tests should focus on critical geometry and G-code generation logic
 
-## Recent Changes (v1.16.x)
+## Recent Changes (v1.18.x)
 
+- **v1.18.5**: Current version (see git log for details)
 - **v1.16.1**: Theme selector, test improvements, build bug fixes
 - **v1.16.0**: Accurate socket cup geometry, CSS design system with light/dark theme support, comprehensive accessibility updates
 - **v1.15.7**: Fix rotation save/restore to use actual mesh Euler angles
