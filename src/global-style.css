@@ -286,10 +286,6 @@ a {
 	}
 }
 
-main {
-	padding: 1rem;
-}
-
 input {
 	font-family: inherit;
 	font-size: var(--font-size-sm);
