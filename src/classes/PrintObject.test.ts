@@ -31,9 +31,7 @@ vi.mock("three/examples/jsm/loaders/STLLoader.js", () => ({
 // Mock all external dependencies
 vi.mock("@/db/appSettingsDbActions", () => ({
 	getLockDepth: vi.fn().mockResolvedValue(5),
-	getRotateValues: vi
-		.fn()
-		.mockResolvedValue({ coronal: 0, sagittal: 0, transverse: 0 }),
+	getRotateValues: vi.fn().mockResolvedValue({ x: 0, y: 0, z: 0 }),
 	getTranslateValues: vi.fn().mockResolvedValue({ x: 0, y: 0, z: 0 }),
 	updateRotateValues: vi.fn().mockResolvedValue(undefined),
 	updateTranslateValues: vi.fn().mockResolvedValue(undefined),
@@ -71,13 +69,13 @@ vi.mock("@/utils/htmlElements", () => ({
 	activeFileName: document.createElement("span"),
 	addTestStlButton: document.createElement("button"),
 	addTestCylinderButton: document.createElement("button"),
-	coronalRotater: Object.assign(document.createElement("button"), {
+	xRotate: Object.assign(document.createElement("button"), {
 		disabled: false,
 	}),
-	sagittalRotate: Object.assign(document.createElement("button"), {
+	yRotate: Object.assign(document.createElement("button"), {
 		disabled: false,
 	}),
-	transversalRotater: Object.assign(document.createElement("button"), {
+	zRotate: Object.assign(document.createElement("button"), {
 		disabled: false,
 	}),
 	verticalTranslate: Object.assign(document.createElement("input"), {
@@ -385,11 +383,11 @@ describe("PrintObject", () => {
 
 		test("enables input controls", async () => {
 			printObject = await createPrintObjectWithMesh();
-			htmlElements.coronalRotater.disabled = false;
+			htmlElements.xRotate.disabled = false;
 
 			await printObject.clearData();
 
-			expect(htmlElements.coronalRotater.disabled).toBe(true);
+			expect(htmlElements.xRotate.disabled).toBe(true);
 		});
 	});
 
@@ -397,9 +395,9 @@ describe("PrintObject", () => {
 		test("disables all controls when true", () => {
 			toggleTransformInputs(true);
 
-			expect(htmlElements.coronalRotater.disabled).toBe(true);
-			expect(htmlElements.sagittalRotate.disabled).toBe(true);
-			expect(htmlElements.transversalRotater.disabled).toBe(true);
+			expect(htmlElements.xRotate.disabled).toBe(true);
+			expect(htmlElements.yRotate.disabled).toBe(true);
+			expect(htmlElements.zRotate.disabled).toBe(true);
 			expect(htmlElements.verticalTranslate.disabled).toBe(true);
 			expect(htmlElements.horizontalTranslate.disabled).toBe(true);
 			expect(htmlElements.depthTranslate.disabled).toBe(true);
@@ -408,9 +406,9 @@ describe("PrintObject", () => {
 		test("enables all controls when false", () => {
 			toggleTransformInputs(false);
 
-			expect(htmlElements.coronalRotater.disabled).toBe(false);
-			expect(htmlElements.sagittalRotate.disabled).toBe(false);
-			expect(htmlElements.transversalRotater.disabled).toBe(false);
+			expect(htmlElements.xRotate.disabled).toBe(false);
+			expect(htmlElements.yRotate.disabled).toBe(false);
+			expect(htmlElements.zRotate.disabled).toBe(false);
 			expect(htmlElements.verticalTranslate.disabled).toBe(false);
 			expect(htmlElements.horizontalTranslate.disabled).toBe(false);
 			expect(htmlElements.depthTranslate.disabled).toBe(false);
@@ -567,32 +565,32 @@ describe("PrintObject", () => {
 	});
 
 	describe("rotation shortcuts", () => {
-		test("coronalRotate90 rotates on x axis", async () => {
+		test("xRotate90 rotates on x axis", async () => {
 			printObject = await createPrintObjectWithMesh();
 			printObject.lockDepth = 0;
 			const handleRotationSpy = vi.spyOn(printObject, "handleRotationChange");
 
-			await printObject.coronalRotate90();
+			await printObject.xRotate90();
 
 			expect(handleRotationSpy).toHaveBeenCalledWith("x", QUARTER_TURN);
 		});
 
-		test("sagittalRotate90 rotates on z axis", async () => {
+		test("yRotate90 rotates on z axis", async () => {
 			printObject = await createPrintObjectWithMesh();
 			printObject.lockDepth = 0;
 			const handleRotationSpy = vi.spyOn(printObject, "handleRotationChange");
 
-			await printObject.sagittalRotate90();
+			await printObject.yRotate90();
 
 			expect(handleRotationSpy).toHaveBeenCalledWith("z", QUARTER_TURN);
 		});
 
-		test("transversalRotater90 rotates on y axis", async () => {
+		test("zRotate90 rotates on y axis", async () => {
 			printObject = await createPrintObjectWithMesh();
 			printObject.lockDepth = 0;
 			const handleRotationSpy = vi.spyOn(printObject, "handleRotationChange");
 
-			await printObject.transversalRotater90();
+			await printObject.zRotate90();
 
 			expect(handleRotationSpy).toHaveBeenCalledWith("y", QUARTER_TURN);
 		});

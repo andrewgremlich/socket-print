@@ -78,7 +78,7 @@ export class MeshTransformController implements IMeshTransformController {
 		if (!this.#mesh) return;
 
 		let translateValues = { x: 0, y: 0, z: 0 };
-		let rotateValues = { coronal: 0, sagittal: 0, transverse: 0 };
+		let rotateValues = { x: 0, y: 0, z: 0 };
 
 		try {
 			translateValues = await getTranslateValues();
@@ -98,11 +98,7 @@ export class MeshTransformController implements IMeshTransformController {
 			this.#mesh.position.set(0, this.#offsetYPosition, 0);
 		}
 
-		this.#mesh.rotation.set(
-			rotateValues.coronal,
-			rotateValues.transverse,
-			rotateValues.sagittal,
-		);
+		this.#mesh.rotation.set(rotateValues.x, rotateValues.z, rotateValues.y);
 
 		try {
 			await updateTranslateValues(
@@ -110,11 +106,7 @@ export class MeshTransformController implements IMeshTransformController {
 				this.#mesh.position.y,
 				this.#mesh.position.z,
 			);
-			await updateRotateValues(
-				rotateValues.coronal,
-				rotateValues.sagittal,
-				rotateValues.transverse,
-			);
+			await updateRotateValues(rotateValues.x, rotateValues.y, rotateValues.z);
 		} catch (error) {
 			console.error("Failed to save transform values to database:", error);
 			this.#showError("Failed to save position settings");

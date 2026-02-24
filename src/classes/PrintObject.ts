@@ -101,9 +101,9 @@ export class PrintObject extends AppObject {
 				onClearData: () => this.clearData(),
 				onTestCylinder: () => this.#handleTestCylinder(),
 				onStlFileChange: (evt) => this.#onStlFileChange(evt),
-				onCoronalRotate: () => this.coronalRotate90(),
-				onSagittalRotate: () => this.sagittalRotate90(),
-				onTransversalRotate: () => this.transversalRotater90(),
+				onXRotate: () => this.xRotate90(),
+				onYRotate: () => this.yRotate90(),
+				onZRotate: () => this.zRotate90(),
 				onVerticalChange: (evt) => this.verticalChange(evt),
 				onHorizontalChange: (evt) => this.horizontalChange(evt),
 				onDepthChange: (evt) => this.depthChange(evt),
@@ -433,9 +433,9 @@ export class PrintObject extends AppObject {
 		});
 	};
 
-	coronalRotate90 = () => this.handleRotationChange("x", QUARTER_TURN);
-	sagittalRotate90 = () => this.handleRotationChange("z", QUARTER_TURN);
-	transversalRotater90 = () => this.handleRotationChange("y", QUARTER_TURN);
+	xRotate90 = () => this.handleRotationChange("x", QUARTER_TURN);
+	yRotate90 = () => this.handleRotationChange("z", QUARTER_TURN);
+	zRotate90 = () => this.handleRotationChange("y", QUARTER_TURN);
 
 	handleTranslationChange = async (axis: TransformAxis, evt: Event) => {
 		await this.#transformController.handleTranslation(axis, evt);

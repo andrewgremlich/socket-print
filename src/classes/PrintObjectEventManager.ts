@@ -12,9 +12,9 @@ export type EventManagerCallbacks = {
 	onClearData: () => Promise<void>;
 	onTestCylinder: () => Promise<void>;
 	onStlFileChange: (evt: Event) => Promise<void>;
-	onCoronalRotate: () => void;
-	onSagittalRotate: () => void;
-	onTransversalRotate: () => void;
+	onXRotate: () => void;
+	onYRotate: () => void;
+	onZRotate: () => void;
 	onVerticalChange: (evt: Event) => void;
 	onHorizontalChange: (evt: Event) => void;
 	onDepthChange: (evt: Event) => void;
@@ -75,9 +75,9 @@ export class PrintObjectEventManager implements IEventManager {
 				await this.#callbacks.onStlFileChange(evt);
 			}, "Failed to process STL file"),
 
-			coronalRotate: this.#callbacks.onCoronalRotate,
-			sagittalRotate: this.#callbacks.onSagittalRotate,
-			transversalRotate: this.#callbacks.onTransversalRotate,
+			xRotate: this.#callbacks.onXRotate,
+			yRotate: this.#callbacks.onYRotate,
+			zRotate: this.#callbacks.onZRotate,
 			verticalInput: this.#callbacks.onVerticalChange,
 			horizontalInput: this.#callbacks.onHorizontalChange,
 			depthInput: this.#callbacks.onDepthChange,

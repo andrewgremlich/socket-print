@@ -1,22 +1,22 @@
 import {
 	addTestCylinderButton,
 	addTestStlButton,
-	coronalRotater,
 	depthTranslate,
 	horizontalTranslate,
-	sagittalRotate,
 	stlFileInput,
-	transversalRotater,
 	verticalTranslate,
+	xRotate,
+	yRotate,
+	zRotate,
 } from "@/utils/htmlElements";
 
 export type PrintObjectEventHandlers = {
 	testStlClick: () => Promise<void>;
 	testCylinderClick: () => Promise<void>;
 	stlFileChange: (evt: Event) => Promise<void>;
-	coronalRotate: () => void;
-	sagittalRotate: () => void;
-	transversalRotate: () => void;
+	xRotate: () => void;
+	yRotate: () => void;
+	zRotate: () => void;
 	verticalInput: (evt: Event) => void;
 	horizontalInput: (evt: Event) => void;
 	depthInput: (evt: Event) => void;
@@ -32,9 +32,9 @@ export const attachPrintObjectEventListeners = (
 	addTestStlButton?.addEventListener("click", handlers.testStlClick);
 	addTestCylinderButton?.addEventListener("click", handlers.testCylinderClick);
 	stlFileInput?.addEventListener("change", handlers.stlFileChange);
-	coronalRotater?.addEventListener("click", handlers.coronalRotate);
-	sagittalRotate?.addEventListener("click", handlers.sagittalRotate);
-	transversalRotater?.addEventListener("click", handlers.transversalRotate);
+	xRotate?.addEventListener("click", handlers.xRotate);
+	yRotate?.addEventListener("click", handlers.yRotate);
+	zRotate?.addEventListener("click", handlers.zRotate);
 	verticalTranslate?.addEventListener("input", handlers.verticalInput);
 	horizontalTranslate?.addEventListener("input", handlers.horizontalInput);
 	depthTranslate?.addEventListener("input", handlers.depthInput);
@@ -52,9 +52,9 @@ export const detachPrintObjectEventListeners = (
 		handlers.testCylinderClick,
 	);
 	stlFileInput?.removeEventListener("change", handlers.stlFileChange);
-	coronalRotater?.removeEventListener("click", handlers.coronalRotate);
-	sagittalRotate?.removeEventListener("click", handlers.sagittalRotate);
-	transversalRotater?.removeEventListener("click", handlers.transversalRotate);
+	xRotate?.removeEventListener("click", handlers.xRotate);
+	yRotate?.removeEventListener("click", handlers.yRotate);
+	zRotate?.removeEventListener("click", handlers.zRotate);
 	verticalTranslate?.removeEventListener("input", handlers.verticalInput);
 	horizontalTranslate?.removeEventListener("input", handlers.horizontalInput);
 	depthTranslate?.removeEventListener("input", handlers.depthInput);
@@ -64,9 +64,9 @@ export const detachPrintObjectEventListeners = (
  * Toggles the disabled state of all transform input controls.
  */
 export const toggleTransformInputs = (isDisabled: boolean): void => {
-	coronalRotater.disabled = isDisabled;
-	sagittalRotate.disabled = isDisabled;
-	transversalRotater.disabled = isDisabled;
+	xRotate.disabled = isDisabled;
+	yRotate.disabled = isDisabled;
+	zRotate.disabled = isDisabled;
 	verticalTranslate.disabled = isDisabled;
 	horizontalTranslate.disabled = isDisabled;
 	depthTranslate.disabled = isDisabled;

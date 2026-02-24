@@ -17,15 +17,9 @@ export const addTestCylinderButton = menuBarComponent.addTestCylinderButton;
 export const generateGCodeButton = document.getElementById(
 	"generateGCodeButton",
 ) as HTMLInputElement;
-export const coronalRotater = document.getElementById(
-	"coronalRotater",
-) as HTMLInputElement;
-export const sagittalRotate = document.getElementById(
-	"sagittalRotate",
-) as HTMLInputElement;
-export const transversalRotater = document.getElementById(
-	"transversalRotater",
-) as HTMLInputElement;
+export const xRotate = document.getElementById("xRotate") as HTMLInputElement;
+export const yRotate = document.getElementById("yRotate") as HTMLInputElement;
+export const zRotate = document.getElementById("zRotate") as HTMLInputElement;
 export const horizontalTranslate = document.getElementById(
 	"horizontalTranslate",
 ) as HTMLInputElement;

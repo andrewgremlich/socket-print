@@ -24,9 +24,9 @@ function createMockCallbacks(): EventManagerCallbacks {
 		onClearData: vi.fn().mockResolvedValue(undefined),
 		onTestCylinder: vi.fn().mockResolvedValue(undefined),
 		onStlFileChange: vi.fn().mockResolvedValue(undefined),
-		onCoronalRotate: vi.fn(),
-		onSagittalRotate: vi.fn(),
-		onTransversalRotate: vi.fn(),
+		onXRotate: vi.fn(),
+		onYRotate: vi.fn(),
+		onZRotate: vi.fn(),
 		onVerticalChange: vi.fn(),
 		onHorizontalChange: vi.fn(),
 		onDepthChange: vi.fn(),
@@ -68,9 +68,9 @@ describe("PrintObjectEventManager", () => {
 			expect(handlers).toHaveProperty("testStlClick");
 			expect(handlers).toHaveProperty("testCylinderClick");
 			expect(handlers).toHaveProperty("stlFileChange");
-			expect(handlers).toHaveProperty("coronalRotate");
-			expect(handlers).toHaveProperty("sagittalRotate");
-			expect(handlers).toHaveProperty("transversalRotate");
+			expect(handlers).toHaveProperty("xRotate");
+			expect(handlers).toHaveProperty("yRotate");
+			expect(handlers).toHaveProperty("zRotate");
 			expect(handlers).toHaveProperty("verticalInput");
 			expect(handlers).toHaveProperty("horizontalInput");
 			expect(handlers).toHaveProperty("depthInput");
@@ -205,14 +205,14 @@ describe("PrintObjectEventManager", () => {
 			const handlers = vi.mocked(attachPrintObjectEventListeners).mock
 				.calls[0][0];
 
-			handlers.coronalRotate();
-			expect(mockCallbacks.onCoronalRotate).toHaveBeenCalled();
+			handlers.xRotate();
+			expect(mockCallbacks.onXRotate).toHaveBeenCalled();
 
-			handlers.sagittalRotate();
-			expect(mockCallbacks.onSagittalRotate).toHaveBeenCalled();
+			handlers.yRotate();
+			expect(mockCallbacks.onYRotate).toHaveBeenCalled();
 
-			handlers.transversalRotate();
-			expect(mockCallbacks.onTransversalRotate).toHaveBeenCalled();
+			handlers.zRotate();
+			expect(mockCallbacks.onZRotate).toHaveBeenCalled();
 		});
 
 		test("translation handlers call appropriate callbacks", async () => {
