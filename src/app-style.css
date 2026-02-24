@@ -1,12 +1,3 @@
-main {
-	width: var(--tablet-width);
-	min-height: 0;
-
-	@media (min-width: 901px) {
-		width: var(--desktop-width);
-	}
-}
-
 .show {
 	/* biome-ignore lint/complexity/noImportantStyles: intentional override for utility class */
 	display: block !important;
@@ -17,136 +8,16 @@ main {
 	display: none !important;
 }
 
-#menuBar {
-	width: 100%;
-	height: var(--menu-bar-height);
-	background-color: var(--bg-menu);
-	z-index: var(--z-dropdown);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex: 0 0 auto;
-	padding: 0 var(--spacing-lg);
-
-	& > div {
-		width: var(--desktop-width);
-		display: flex;
-		justify-content: space-between;
-	}
-
-	nav {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-
-		& > div {
-			display: flex;
-			align-items: center;
-		}
-	}
-}
-
 #application {
-	display: flex;
-	justify-content: center;
-	flex-direction: row;
-	flex: auto;
-}
+	display: grid;
+	grid-template-columns: repeat(12, 1fr);
 
-#activateSettingsDialog {
-	color: #e5e5e5;
-
-	&:hover {
-		color: #010101;
-		transition: color var(--transition-slow);
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	#activateSettingsDialog {
-		color: #4f4f4f;
-
-		&:hover {
-			color: var(--text-primary);
-			transition: color var(--transition-slow);
-		}
-	}
-}
-
-.menuBarButton {
-	text-align: center;
-	vertical-align: middle;
-	line-height: 1.2;
-	display: block;
-	color: var(--text-primary);
-	border: none;
-	background-color: transparent;
-	cursor: pointer;
-	text-decoration: none;
-	transition: color var(--transition-normal);
-	box-shadow: none;
-
-	&:hover,
-	&:focus {
-		color: var(--accent-color);
-		text-decoration: underline;
-		text-underline-offset: 3px;
+	& > #appForm {
+		grid-column: 1 / 3;
 	}
 
-	&:focus {
-		outline: 2px solid var(--accent-color);
-		outline-offset: 2px;
-	}
-}
-
-.menuBarButtonContainer {
-	position: relative;
-
-	& .menuBarDropdown {
-		display: none;
-		z-index: var(--z-dropdown);
-		background-color: var(--bg-menu);
-
-		padding: 8px var(--spacing-xs);
-		box-shadow: var(--shadow-dropdown);
-		border-radius: var(--radius-sm);
-		position: absolute;
-		left: 0;
-		top: var(--menu-bar-height);
-	}
-}
-
-.menuBarDropdownButton {
-	background: none;
-	border: none;
-	box-shadow: none;
-	color: var(--text-primary);
-	padding: var(--spacing-xs);
-	text-decoration: none;
-	display: block;
-	white-space: nowrap;
-	transition: color var(--transition-normal);
-
-	&:hover,
-	&:focus {
-		color: var(--accent-color);
-		text-decoration: underline;
-		text-underline-offset: 3px;
-		cursor: pointer;
-	}
-
-	&:focus {
-		outline: 2px solid var(--accent-color);
-		outline-offset: 2px;
-	}
-}
-
-.fileInputLabel {
-	white-space: nowrap;
-
-	& > .fileInput {
-		display: none;
+	& > #secondaryInterface {
+		grid-column: 4 / 13;
 	}
 }
 
@@ -180,13 +51,6 @@ main {
 			color: var(--text-secondary);
 			font-size: 14px;
 		}
-	}
-
-	& label,
-	& div span {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-sm);
 	}
 }
 
@@ -246,12 +110,6 @@ main {
 	flex-direction: column;
 	justify-content: space-evenly;
 	align-items: flex-end;
-	width: 300px;
-	min-height: 0;
-
-	@media (min-width: 901px) {
-		width: 500px;
-	}
 }
 
 #provelPrint {

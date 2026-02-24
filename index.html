@@ -15,73 +15,7 @@
 
 <body>
   <div id="app">
-    <div id="menuBar">
-      <div>
-        <nav role="menubar">
-          <div>
-
-            <h1><a href="/" aria-label="ProvelPrint - Return to home page">ProvelPrint</a></h1>
-
-            <div class="menuBarButtonContainer">
-              <button role="menuitem" aria-haspopup="true" class="menuBarButton">File</button>
-
-              <div class="menuBarDropdown" role="menu">
-                <label style="display: block" class="menuBarDropdownButton fileInputLabel" for="stlFileInput"
-                  id="stlFileInputLabel">
-                  Open STL file
-                  <input role="menuitem" type="file" accept=".stl" id="stlFileInput" name="stlFileInput"
-                    class="fileInput" />
-                </label>
-
-                <button role="menuitem" class="menuBarDropdownButton" id="clearModelButton" type="button">Clear
-                  model</button>
-
-                <button role="menuitem" class="menuBarDropdownButton" id="addTestStlButton" type="button">Load Test
-                  Socket STL</button>
-
-                <button role="menuitem" class="menuBarDropdownButton" id="addTestCylinderButton" type="button">Load Test
-                  Cylinder STL</button>
-              </div>
-            </div>
-
-            <div class="menuBarButtonContainer">
-              <button role="menuitem" aria-haspopup="true" class="menuBarButton">Edit</button>
-
-              <div class="menuBarDropdown" role="menu">
-                <button role="menuitem" class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material
-                  Profile</button>
-                <button role="menuitem" class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit
-                  Active Material
-                  Profile</button>
-                <button role="menuitem" class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete
-                  Active Material
-                  Profile</button>
-              </div>
-            </div>
-
-            <button role="menuitem" class="menuBarButton noDropdown" id="helpButton" type="button">Help</button>
-
-            <button role="menuitem" aria-haspopup="true" id="activateInfoDialog" class="menuBarButton noDropdown"
-              type="button">Info</button>
-          </div>
-
-          <div>
-            <button role="menuitem" aria-haspopup="true" id="activateSettingsDialog" class="menuBarButton noDropdown"
-              type="button" aria-label="Settings">
-              <i data-lucide="settings" aria-hidden="true"></i>
-            </button>
-          </div>
-        </nav>
-      </div>
-    </div>
-
-    <!-- Info Icon -->
-    <!--<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>-->
+    <menu-bar></menu-bar>
 
     <main id="application">
       <form id="appForm" aria-labelledby="appFormTitle">

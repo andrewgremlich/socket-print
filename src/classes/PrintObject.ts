@@ -406,9 +406,8 @@ export class PrintObject extends AppObject {
 		loadingScreen.style.display = "none";
 	};
 
-	#onStlFileChange = async (event: Event) => {
-		const { target: inputFiles } = event;
-		const file = (inputFiles as HTMLInputElement).files?.[0];
+	#onStlFileChange = async (_event: Event) => {
+		const file = stlFileInput?.files?.[0];
 
 		switch (this.currentType) {
 			case PrintObjectType.Socket:
