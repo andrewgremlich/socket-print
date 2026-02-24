@@ -1,13 +1,13 @@
 import {
 	addTestCylinderButton,
 	addTestStlButton,
-	depthTranslate,
-	horizontalTranslate,
 	stlFileInput,
-	verticalTranslate,
 	xRotate,
+	xTranslate,
 	yRotate,
+	yTranslate,
 	zRotate,
+	zTranslate,
 } from "@/utils/htmlElements";
 
 export type PrintObjectEventHandlers = {
@@ -17,9 +17,9 @@ export type PrintObjectEventHandlers = {
 	xRotate: () => void;
 	yRotate: () => void;
 	zRotate: () => void;
-	verticalInput: (evt: Event) => void;
-	horizontalInput: (evt: Event) => void;
-	depthInput: (evt: Event) => void;
+	xInput: (evt: Event) => void;
+	yInput: (evt: Event) => void;
+	zInput: (evt: Event) => void;
 };
 
 /**
@@ -35,9 +35,9 @@ export const attachPrintObjectEventListeners = (
 	xRotate?.addEventListener("click", handlers.xRotate);
 	yRotate?.addEventListener("click", handlers.yRotate);
 	zRotate?.addEventListener("click", handlers.zRotate);
-	verticalTranslate?.addEventListener("input", handlers.verticalInput);
-	horizontalTranslate?.addEventListener("input", handlers.horizontalInput);
-	depthTranslate?.addEventListener("input", handlers.depthInput);
+	xTranslate?.addEventListener("input", handlers.xInput);
+	yTranslate?.addEventListener("input", handlers.yInput);
+	zTranslate?.addEventListener("input", handlers.zInput);
 };
 
 /**
@@ -55,9 +55,9 @@ export const detachPrintObjectEventListeners = (
 	xRotate?.removeEventListener("click", handlers.xRotate);
 	yRotate?.removeEventListener("click", handlers.yRotate);
 	zRotate?.removeEventListener("click", handlers.zRotate);
-	verticalTranslate?.removeEventListener("input", handlers.verticalInput);
-	horizontalTranslate?.removeEventListener("input", handlers.horizontalInput);
-	depthTranslate?.removeEventListener("input", handlers.depthInput);
+	xTranslate?.removeEventListener("input", handlers.xInput);
+	yTranslate?.removeEventListener("input", handlers.yInput);
+	zTranslate?.removeEventListener("input", handlers.zInput);
 };
 
 /**
@@ -67,7 +67,7 @@ export const toggleTransformInputs = (isDisabled: boolean): void => {
 	xRotate.disabled = isDisabled;
 	yRotate.disabled = isDisabled;
 	zRotate.disabled = isDisabled;
-	verticalTranslate.disabled = isDisabled;
-	horizontalTranslate.disabled = isDisabled;
-	depthTranslate.disabled = isDisabled;
+	xTranslate.disabled = isDisabled;
+	yTranslate.disabled = isDisabled;
+	zTranslate.disabled = isDisabled;
 };

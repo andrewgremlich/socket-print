@@ -27,9 +27,9 @@ function createMockCallbacks(): EventManagerCallbacks {
 		onXRotate: vi.fn(),
 		onYRotate: vi.fn(),
 		onZRotate: vi.fn(),
-		onVerticalChange: vi.fn(),
-		onHorizontalChange: vi.fn(),
-		onDepthChange: vi.fn(),
+		onXChange: vi.fn(),
+		onYChange: vi.fn(),
+		onZChange: vi.fn(),
 		onError: vi.fn(),
 		setCurrentType: vi.fn(),
 	};
@@ -71,9 +71,9 @@ describe("PrintObjectEventManager", () => {
 			expect(handlers).toHaveProperty("xRotate");
 			expect(handlers).toHaveProperty("yRotate");
 			expect(handlers).toHaveProperty("zRotate");
-			expect(handlers).toHaveProperty("verticalInput");
-			expect(handlers).toHaveProperty("horizontalInput");
-			expect(handlers).toHaveProperty("depthInput");
+			expect(handlers).toHaveProperty("xInput");
+			expect(handlers).toHaveProperty("yInput");
+			expect(handlers).toHaveProperty("zInput");
 		});
 	});
 
@@ -226,14 +226,14 @@ describe("PrintObjectEventManager", () => {
 				.calls[0][0];
 			const mockEvent = {} as Event;
 
-			handlers.verticalInput(mockEvent);
-			expect(mockCallbacks.onVerticalChange).toHaveBeenCalledWith(mockEvent);
+			handlers.xInput(mockEvent);
+			expect(mockCallbacks.onXChange).toHaveBeenCalledWith(mockEvent);
 
-			handlers.horizontalInput(mockEvent);
-			expect(mockCallbacks.onHorizontalChange).toHaveBeenCalledWith(mockEvent);
+			handlers.yInput(mockEvent);
+			expect(mockCallbacks.onYChange).toHaveBeenCalledWith(mockEvent);
 
-			handlers.depthInput(mockEvent);
-			expect(mockCallbacks.onDepthChange).toHaveBeenCalledWith(mockEvent);
+			handlers.zInput(mockEvent);
+			expect(mockCallbacks.onZChange).toHaveBeenCalledWith(mockEvent);
 		});
 	});
 

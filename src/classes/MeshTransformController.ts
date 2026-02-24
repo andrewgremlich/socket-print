@@ -6,11 +6,7 @@ import {
 	updateRotateValues,
 	updateTranslateValues,
 } from "@/db/appSettingsDbActions";
-import {
-	depthTranslate,
-	horizontalTranslate,
-	verticalTranslate,
-} from "@/utils/htmlElements";
+import { xTranslate, yTranslate, zTranslate } from "@/utils/htmlElements";
 import {
 	applyRotation,
 	applyTranslation,
@@ -121,12 +117,12 @@ export class MeshTransformController implements IMeshTransformController {
 	#syncInputsFromMesh(): void {
 		if (!this.#mesh) return;
 
-		horizontalTranslate.value = (-this.#mesh.position.x).toString();
-		verticalTranslate.value = round(
+		xTranslate.value = (-this.#mesh.position.x).toString();
+		zTranslate.value = round(
 			this.#mesh.position.y - this.#offsetYPosition,
 			0,
 		).toString();
-		depthTranslate.value = (-this.#mesh.position.z).toString();
+		yTranslate.value = (-this.#mesh.position.z).toString();
 	}
 
 	/**

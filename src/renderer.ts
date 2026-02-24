@@ -40,17 +40,17 @@ import {
 import {
 	activeFileName,
 	clearModelButton,
-	depthTranslate,
 	estimatedPrintTime,
 	generateGCodeButton,
-	horizontalTranslate,
 	loadingScreen,
 	printerFileInput,
 	progressBar,
 	progressBarDiv,
 	progressBarLabel,
 	toggleRotateTransformControlsButton,
-	verticalTranslate,
+	xTranslate,
+	yTranslate,
+	zTranslate,
 } from "@/utils/htmlElements";
 import { saveRotationToDatabase } from "@/utils/meshTransforms";
 import { SliceWorkerStatus } from "./3d/sliceWorker";
@@ -137,9 +137,9 @@ const removeMeshes = async (meshes: Mesh[]) => {
 
 	toggleRotateTransformControlsButton.setAttribute("aria-pressed", "false");
 
-	horizontalTranslate.value = "0";
-	depthTranslate.value = "0";
-	verticalTranslate.value = "0";
+	xTranslate.value = "0";
+	yTranslate.value = "0";
+	zTranslate.value = "0";
 	activeFileName.textContent = "";
 
 	estimatedPrintTime.textContent = "0m 0s";

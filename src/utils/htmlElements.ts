@@ -20,14 +20,14 @@ export const generateGCodeButton = document.getElementById(
 export const xRotate = document.getElementById("xRotate") as HTMLInputElement;
 export const yRotate = document.getElementById("yRotate") as HTMLInputElement;
 export const zRotate = document.getElementById("zRotate") as HTMLInputElement;
-export const horizontalTranslate = document.getElementById(
-	"horizontalTranslate",
+export const xTranslate = document.getElementById(
+	"xTranslate",
 ) as HTMLInputElement;
-export const depthTranslate = document.getElementById(
-	"depthTranslate",
+export const yTranslate = document.getElementById(
+	"yTranslate",
 ) as HTMLInputElement;
-export const verticalTranslate = document.getElementById(
-	"verticalTranslate",
+export const zTranslate = document.getElementById(
+	"zTranslate",
 ) as HTMLInputElement;
 export const printerFileInput = document.getElementById(
 	"printerFileInput",

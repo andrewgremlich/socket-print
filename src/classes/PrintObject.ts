@@ -104,9 +104,9 @@ export class PrintObject extends AppObject {
 				onXRotate: () => this.xRotate90(),
 				onYRotate: () => this.yRotate90(),
 				onZRotate: () => this.zRotate90(),
-				onVerticalChange: (evt) => this.verticalChange(evt),
-				onHorizontalChange: (evt) => this.horizontalChange(evt),
-				onDepthChange: (evt) => this.depthChange(evt),
+				onXChange: (evt) => this.xChange(evt),
+				onYChange: (evt) => this.yChange(evt),
+				onZChange: (evt) => this.zChange(evt),
 				onError: (error, message) => this.#handleError(error, message),
 				setCurrentType: (type) => {
 					this.currentType = type;
@@ -441,9 +441,9 @@ export class PrintObject extends AppObject {
 		await this.#transformController.handleTranslation(axis, evt);
 	};
 
-	horizontalChange = (evt: Event) => this.handleTranslationChange("x", evt);
-	verticalChange = (evt: Event) => this.handleTranslationChange("y", evt);
-	depthChange = (evt: Event) => this.handleTranslationChange("z", evt);
+	xChange = (evt: Event) => this.handleTranslationChange("x", evt);
+	yChange = (evt: Event) => this.handleTranslationChange("y", evt);
+	zChange = (evt: Event) => this.handleTranslationChange("z", evt);
 
 	getTransitionInstance(): CupToSocketTransition | null {
 		return this.#collisionDetector.getTransitionInstance() as CupToSocketTransition | null;

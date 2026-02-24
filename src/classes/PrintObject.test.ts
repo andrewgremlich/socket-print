@@ -78,15 +78,15 @@ vi.mock("@/utils/htmlElements", () => ({
 	zRotate: Object.assign(document.createElement("button"), {
 		disabled: false,
 	}),
-	verticalTranslate: Object.assign(document.createElement("input"), {
+	xTranslate: Object.assign(document.createElement("input"), {
 		value: "0",
 		disabled: false,
 	}),
-	horizontalTranslate: Object.assign(document.createElement("input"), {
+	yTranslate: Object.assign(document.createElement("input"), {
 		value: "0",
 		disabled: false,
 	}),
-	depthTranslate: Object.assign(document.createElement("input"), {
+	zTranslate: Object.assign(document.createElement("input"), {
 		value: "0",
 		disabled: false,
 	}),
@@ -398,9 +398,9 @@ describe("PrintObject", () => {
 			expect(htmlElements.xRotate.disabled).toBe(true);
 			expect(htmlElements.yRotate.disabled).toBe(true);
 			expect(htmlElements.zRotate.disabled).toBe(true);
-			expect(htmlElements.verticalTranslate.disabled).toBe(true);
-			expect(htmlElements.horizontalTranslate.disabled).toBe(true);
-			expect(htmlElements.depthTranslate.disabled).toBe(true);
+			expect(htmlElements.zTranslate.disabled).toBe(true);
+			expect(htmlElements.xTranslate.disabled).toBe(true);
+			expect(htmlElements.yTranslate.disabled).toBe(true);
 		});
 
 		test("enables all controls when false", () => {
@@ -409,9 +409,9 @@ describe("PrintObject", () => {
 			expect(htmlElements.xRotate.disabled).toBe(false);
 			expect(htmlElements.yRotate.disabled).toBe(false);
 			expect(htmlElements.zRotate.disabled).toBe(false);
-			expect(htmlElements.verticalTranslate.disabled).toBe(false);
-			expect(htmlElements.horizontalTranslate.disabled).toBe(false);
-			expect(htmlElements.depthTranslate.disabled).toBe(false);
+			expect(htmlElements.zTranslate.disabled).toBe(false);
+			expect(htmlElements.xTranslate.disabled).toBe(false);
+			expect(htmlElements.yTranslate.disabled).toBe(false);
 		});
 	});
 
@@ -687,7 +687,7 @@ describe("PrintObject", () => {
 	});
 
 	describe("translation shortcuts", () => {
-		test("horizontalChange calls handleTranslationChange with x", async () => {
+		test("xChange calls handleTranslationChange with x", async () => {
 			printObject = await createPrintObjectWithMesh();
 			const handleTranslationSpy = vi.spyOn(
 				printObject,
@@ -695,12 +695,12 @@ describe("PrintObject", () => {
 			);
 			const mockEvent = { target: { value: "5" } } as unknown as Event;
 
-			await printObject.horizontalChange(mockEvent);
+			await printObject.xChange(mockEvent);
 
 			expect(handleTranslationSpy).toHaveBeenCalledWith("x", mockEvent);
 		});
 
-		test("verticalChange calls handleTranslationChange with y", async () => {
+		test("yChange calls handleTranslationChange with y", async () => {
 			printObject = await createPrintObjectWithMesh();
 			const handleTranslationSpy = vi.spyOn(
 				printObject,
@@ -708,12 +708,12 @@ describe("PrintObject", () => {
 			);
 			const mockEvent = { target: { value: "5" } } as unknown as Event;
 
-			await printObject.verticalChange(mockEvent);
+			await printObject.yChange(mockEvent);
 
 			expect(handleTranslationSpy).toHaveBeenCalledWith("y", mockEvent);
 		});
 
-		test("depthChange calls handleTranslationChange with z", async () => {
+		test("zChange calls handleTranslationChange with z", async () => {
 			printObject = await createPrintObjectWithMesh();
 			const handleTranslationSpy = vi.spyOn(
 				printObject,
@@ -721,7 +721,7 @@ describe("PrintObject", () => {
 			);
 			const mockEvent = { target: { value: "5" } } as unknown as Event;
 
-			await printObject.depthChange(mockEvent);
+			await printObject.zChange(mockEvent);
 
 			expect(handleTranslationSpy).toHaveBeenCalledWith("z", mockEvent);
 		});

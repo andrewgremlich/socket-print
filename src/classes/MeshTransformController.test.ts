@@ -16,9 +16,9 @@ vi.mock("@/db/appSettingsDbActions", () => ({
 
 // Mock HTML elements
 vi.mock("@/utils/htmlElements", () => ({
-	horizontalTranslate: { value: "0" },
-	verticalTranslate: { value: "0" },
-	depthTranslate: { value: "0" },
+	xTranslate: { value: "0" },
+	yTranslate: { value: "0" },
+	zTranslate: { value: "0" },
 }));
 
 // Mock mesh transforms

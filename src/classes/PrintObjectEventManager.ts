@@ -15,9 +15,9 @@ export type EventManagerCallbacks = {
 	onXRotate: () => void;
 	onYRotate: () => void;
 	onZRotate: () => void;
-	onVerticalChange: (evt: Event) => void;
-	onHorizontalChange: (evt: Event) => void;
-	onDepthChange: (evt: Event) => void;
+	onXChange: (evt: Event) => void;
+	onYChange: (evt: Event) => void;
+	onZChange: (evt: Event) => void;
 	onError: (error: unknown, message: string) => void;
 	setCurrentType: (type: PrintObjectType) => void;
 };
@@ -78,9 +78,9 @@ export class PrintObjectEventManager implements IEventManager {
 			xRotate: this.#callbacks.onXRotate,
 			yRotate: this.#callbacks.onYRotate,
 			zRotate: this.#callbacks.onZRotate,
-			verticalInput: this.#callbacks.onVerticalChange,
-			horizontalInput: this.#callbacks.onHorizontalChange,
-			depthInput: this.#callbacks.onDepthChange,
+			xInput: this.#callbacks.onXChange,
+			yInput: this.#callbacks.onYChange,
+			zInput: this.#callbacks.onZChange,
 		};
 
 		attachPrintObjectEventListeners(this.#eventHandlers);
