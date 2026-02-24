@@ -442,8 +442,8 @@ export class PrintObject extends AppObject {
 	};
 
 	xChange = (evt: Event) => this.handleTranslationChange("x", evt);
-	yChange = (evt: Event) => this.handleTranslationChange("y", evt);
-	zChange = (evt: Event) => this.handleTranslationChange("z", evt);
+	yChange = (evt: Event) => this.handleTranslationChange("z", evt);
+	zChange = (evt: Event) => this.handleTranslationChange("y", evt);
 
 	getTransitionInstance(): CupToSocketTransition | null {
 		return this.#collisionDetector.getTransitionInstance() as CupToSocketTransition | null;
