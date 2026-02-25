@@ -1,3 +1,7 @@
+main {
+	margin: 0 1rem;
+}
+
 .show {
 	/* biome-ignore lint/complexity/noImportantStyles: intentional override for utility class */
 	display: block !important;
