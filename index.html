@@ -20,9 +20,8 @@
     <main id="application">
       <form id="appForm" aria-labelledby="appFormTitle">
         <div class="form-group">
-          <label for="ipAddressInput" style="margin-right:15px">IP Address and Port</label>
-          <input style="padding-left: 5px; margin-right: 5px" type="text" id="ipAddressInput" name="ipAddress" value=""
-            placeholder="192.168.X.XXX:xxxx" aria-required="true" aria-label="IP Address and Port" />
+          <app-input label="IP Address and Port" type="text" id="ipAddressInput" name="ipAddress" value=""
+            placeholder="192.168.X.XXX:xxxx" aria-required="true" aria-label="IP Address and Port"></app-input>
         </div>
 
         <div class="form-group">
@@ -109,18 +108,12 @@
           <div id="translateRotationControls">
             <div id="changePosition">
               <span><i data-lucide="move-3d" aria-hidden="true"></i> Translate</span>
-              <label for="xTranslate">X
-                <input disabled id="xTranslate" type="number" value="0" step="1" min="-100" max="100"
-                  aria-describedby="translateDisabledHint" />
-              </label>
-              <label for="yTranslate">Y
-                <input disabled id="yTranslate" type="number" value="0" step="1" min="-100" max="100"
-                  aria-describedby="translateDisabledHint" />
-              </label>
-              <label for="zTranslate">Z
-                <input disabled id="zTranslate" type="number" value="0" step="1" min="-100" max="100"
-                  aria-describedby="translateDisabledHint" />
-              </label>
+              <app-input label="X" direction="row" disabled id="xTranslate" type="number" value="0" step="1" min="-100" max="100"
+                aria-describedby="translateDisabledHint"></app-input>
+              <app-input label="Y" direction="row" disabled id="yTranslate" type="number" value="0" step="1" min="-100" max="100"
+                aria-describedby="translateDisabledHint"></app-input>
+              <app-input label="Z" direction="row" disabled id="zTranslate" type="number" value="0" step="1" min="-100" max="100"
+                aria-describedby="translateDisabledHint"></app-input>
               <span id="translateDisabledHint" class="hide">Load a model to enable translation controls</span>
             </div>
 

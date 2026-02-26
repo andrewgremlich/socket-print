@@ -212,12 +212,11 @@ main {
 		gap: var(--spacing-s);
 	}
 
-	& label {
+	& app-input {
 		margin-left: var(--spacing-sm);
 	}
 
-	& input {
-		margin-left: var(--spacing-sm);
+	& app-input::part(input) {
 		width: 60px;
 	}
 }

@@ -1,3 +1,4 @@
+import type { AppInput } from "@/web-components/AppInput";
 import type { Info } from "@/web-components/Info";
 import type { MaterialProfileForm } from "@/web-components/MaterialProfileForm";
 // Runtime import ensures MenuBar is registered before we query its shadow DOM elements
@@ -20,21 +21,15 @@ export const generateGCodeButton = document.getElementById(
 export const xRotate = document.getElementById("xRotate") as HTMLInputElement;
 export const yRotate = document.getElementById("yRotate") as HTMLInputElement;
 export const zRotate = document.getElementById("zRotate") as HTMLInputElement;
-export const xTranslate = document.getElementById(
-	"xTranslate",
-) as HTMLInputElement;
-export const yTranslate = document.getElementById(
-	"yTranslate",
-) as HTMLInputElement;
-export const zTranslate = document.getElementById(
-	"zTranslate",
-) as HTMLInputElement;
+export const xTranslate = document.getElementById("xTranslate") as AppInput;
+export const yTranslate = document.getElementById("yTranslate") as AppInput;
+export const zTranslate = document.getElementById("zTranslate") as AppInput;
 export const printerFileInput = document.getElementById(
 	"printerFileInput",
 ) as HTMLInputElement;
 export const ipAddressInput = document.getElementById(
 	"ipAddressInput",
-) as HTMLInputElement;
+) as AppInput;
 export const leftRadio = document.getElementById(
 	"lockPositionLeft",
 ) as HTMLInputElement | null;

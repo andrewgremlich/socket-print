@@ -1,3 +1,4 @@
+import "./AppInput";
 import "./MaterialProfileForm";
 import "./MenuBar";
 import "./Settings";
