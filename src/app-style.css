@@ -221,28 +221,6 @@ main {
 	}
 }
 
-#progressBarDiv {
-	position: fixed;
-	z-index: var(--z-dropdown);
-	bottom: var(--spacing-sm);
-	left: var(--spacing-sm);
-	background-color: var(--bg-menu);
-	padding: 0px var(--spacing-md);
-	border-radius: var(--radius-lg);
-	box-shadow: var(--shadow-dropdown);
-	display: none;
-	align-items: center;
-
-	& > * {
-		margin: var(--spacing-sm);
-	}
-
-	.spin-icon {
-		flex-shrink: 0;
-		animation: loading 3s linear infinite;
-	}
-}
-
 #loading {
 	position: fixed;
 	top: 0;

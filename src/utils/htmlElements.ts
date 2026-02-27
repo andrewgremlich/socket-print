@@ -4,6 +4,7 @@ import type { MaterialProfileForm } from "@/web-components/MaterialProfileForm";
 // Runtime import ensures MenuBar is registered before we query its shadow DOM elements
 import type { MenuBar } from "@/web-components/MenuBar";
 import "@/web-components/MenuBar";
+import type { ProgressBar } from "@/web-components/ProgressBar";
 import type { Settings } from "@/web-components/Settings";
 
 export const loadingScreen = document.getElementById("loading");
@@ -41,12 +42,9 @@ export const activeMaterialProfileSelect = document.getElementById(
 	"activeMaterialProfile",
 ) as HTMLSelectElement;
 
-export const progressBar = document.getElementById(
-	"progressBar",
-) as HTMLProgressElement;
-export const progressBarLabel = document.getElementById(
-	"progressBarLabel",
-) as HTMLLabelElement;
+export const progressBar = document.querySelector(
+	"progress-bar",
+) as ProgressBar;
 export const threeDViewer = document.getElementById(
 	"modelViewer",
 ) as HTMLCanvasElement;
@@ -60,9 +58,6 @@ export const toggleTransformControlsButton = document.getElementById(
 	"toggleTransformControlsButton",
 ) as HTMLButtonElement;
 
-export const progressBarDiv = document.getElementById(
-	"progressBarDiv",
-) as HTMLDivElement;
 export const estimatedPrintTime = document.getElementById(
 	"estimatedPrintTime",
 ) as HTMLParagraphElement;

@@ -46,8 +46,6 @@ import {
 	loadingScreen,
 	printerFileInput,
 	progressBar,
-	progressBarDiv,
-	progressBarLabel,
 	toggleTransformControlsButton,
 	xTranslate,
 	yTranslate,
@@ -167,7 +165,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 	const allGeometries = app.collectAllPrintableGeometries();
 
-	progressBarDiv.style.display = "flex";
+	progressBar.show();
 
 	const worker = new sliceWorker();
 
@@ -186,7 +184,6 @@ export async function slicingAction(sendToFile: boolean) {
 		if (type === SliceWorkerStatus.PROGRESS && typeof data === "number") {
 			const progress = ceil(data * 100);
 
-			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === SliceWorkerStatus.DONE && Array.isArray(data)) {
 			const vectors: Vector3[][] = [];
@@ -215,16 +212,14 @@ export async function slicingAction(sendToFile: boolean) {
 				await sendGCodeFile(new Blob([gcode]), filePathName);
 			}
 
-			progressBar.value = 0;
-			progressBarDiv.style.display = "none";
+			progressBar.reset();
 			worker.terminate();
 		}
 	};
 
 	worker.onerror = (error) => {
 		console.error("Worker error:", error);
-		progressBar.value = 0;
-		progressBarDiv.style.display = "none";
+		progressBar.reset();
 		worker.terminate();
 	};
 }
