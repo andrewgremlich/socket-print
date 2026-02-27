@@ -1,10 +1,10 @@
 export class AppInput extends HTMLElement {
 	static formAssociated = true;
 
-	private _shadow: ShadowRoot;
-	private _internals: ElementInternals;
-	private _input: HTMLInputElement;
-	private _label: HTMLLabelElement;
+	#shadow: ShadowRoot;
+	#internals: ElementInternals;
+	#input: HTMLInputElement;
+	#label: HTMLLabelElement;
 
 	static get observedAttributes() {
 		return [
@@ -26,9 +26,9 @@ export class AppInput extends HTMLElement {
 
 	constructor() {
 		super();
-		this._shadow = this.attachShadow({ mode: "open" });
-		this._internals = this.attachInternals();
-		this._shadow.innerHTML = `
+		this.#shadow = this.attachShadow({ mode: "open" });
+		this.#internals = this.attachInternals();
+		this.#shadow.innerHTML = `
 			<style>
 				:host {
 					display: flex;
@@ -93,16 +93,16 @@ export class AppInput extends HTMLElement {
 			<input part="input" />
 		`;
 
-		this._label = this._shadow.querySelector("label") as HTMLLabelElement;
-		this._input = this._shadow.querySelector("input") as HTMLInputElement;
+		this.#label = this.#shadow.querySelector("label") as HTMLLabelElement;
+		this.#input = this.#shadow.querySelector("input") as HTMLInputElement;
 
-		this._input.addEventListener("input", () => {
-			this._internals.setFormValue(this._input.value);
+		this.#input.addEventListener("input", () => {
+			this.#internals.setFormValue(this.#input.value);
 			this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
 		});
 
-		this._input.addEventListener("change", () => {
-			this._internals.setFormValue(this._input.value);
+		this.#input.addEventListener("change", () => {
+			this.#internals.setFormValue(this.#input.value);
 			this.dispatchEvent(
 				new Event("change", { bubbles: true, composed: true }),
 			);
@@ -110,24 +110,24 @@ export class AppInput extends HTMLElement {
 	}
 
 	get input(): HTMLInputElement {
-		return this._input;
+		return this.#input;
 	}
 
 	get value(): string {
-		return this._input.value;
+		return this.#input.value;
 	}
 
 	set value(val: string) {
-		this._input.value = val;
-		this._internals.setFormValue(val);
+		this.#input.value = val;
+		this.#internals.setFormValue(val);
 	}
 
 	get disabled(): boolean {
-		return this._input.disabled;
+		return this.#input.disabled;
 	}
 
 	set disabled(val: boolean) {
-		this._input.disabled = val;
+		this.#input.disabled = val;
 		if (val) {
 			this.setAttribute("disabled", "");
 		} else {
@@ -146,29 +146,29 @@ export class AppInput extends HTMLElement {
 	) {
 		switch (attrName) {
 			case "label":
-				this._label.textContent = newVal ?? "";
+				this.#label.textContent = newVal ?? "";
 				break;
 			case "disabled":
-				this._input.disabled = newVal !== null;
+				this.#input.disabled = newVal !== null;
 				break;
 			case "value":
-				this._input.value = newVal ?? "";
-				this._internals.setFormValue(newVal ?? "");
+				this.#input.value = newVal ?? "";
+				this.#internals.setFormValue(newVal ?? "");
 				break;
 			case "aria-required":
 			case "aria-label":
 			case "aria-describedby":
 				if (newVal !== null) {
-					this._input.setAttribute(attrName, newVal);
+					this.#input.setAttribute(attrName, newVal);
 				} else {
-					this._input.removeAttribute(attrName);
+					this.#input.removeAttribute(attrName);
 				}
 				break;
 			default:
 				if (newVal !== null) {
-					this._input.setAttribute(attrName, newVal);
+					this.#input.setAttribute(attrName, newVal);
 				} else {
-					this._input.removeAttribute(attrName);
+					this.#input.removeAttribute(attrName);
 				}
 				break;
 		}

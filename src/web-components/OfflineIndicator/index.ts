@@ -1,7 +1,7 @@
 class OfflineIndicator extends HTMLElement {
-	private indicator: HTMLDivElement;
-	private isOnline: boolean = navigator.onLine;
-	private hideTimer: number | null = null;
+	#indicator: HTMLDivElement;
+	#isOnline: boolean = navigator.onLine;
+	#hideTimer: number | null = null;
 
 	constructor() {
 		super();
@@ -9,40 +9,40 @@ class OfflineIndicator extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.render();
-		this.setupEventListeners();
-		this.checkCacheStatus();
-		this.updateStatus();
+		this.#render();
+		this.#setupEventListeners();
+		this.#checkCacheStatus();
+		this.#updateStatus();
 	}
 
 	disconnectedCallback() {
-		window.removeEventListener("online", this.handleOnline);
-		window.removeEventListener("offline", this.handleOffline);
-		this.clearHideTimer();
+		window.removeEventListener("online", this.#handleOnline);
+		window.removeEventListener("offline", this.#handleOffline);
+		this.#clearHideTimer();
 	}
 
-	private handleOnline = () => {
-		this.isOnline = true;
-		this.clearHideTimer();
-		this.updateStatus();
+	#handleOnline = () => {
+		this.#isOnline = true;
+		this.#clearHideTimer();
+		this.#updateStatus();
 	};
 
-	private handleOffline = () => {
-		this.isOnline = false;
-		this.updateStatus();
+	#handleOffline = () => {
+		this.#isOnline = false;
+		this.#updateStatus();
 	};
 
-	private setupEventListeners() {
-		window.addEventListener("online", this.handleOnline);
-		window.addEventListener("offline", this.handleOffline);
+	#setupEventListeners() {
+		window.addEventListener("online", this.#handleOnline);
+		window.addEventListener("offline", this.#handleOffline);
 	}
 
-	private async checkCacheStatus() {
+	async #checkCacheStatus() {
 		if ("serviceWorker" in navigator && "caches" in window) {
 			try {
 				const cacheNames = await caches.keys();
-				if (cacheNames.length > 0 && !this.isOnline) {
-					this.updateStatus(true);
+				if (cacheNames.length > 0 && !this.#isOnline) {
+					this.#updateStatus(true);
 				}
 			} catch (error) {
 				console.warn("Failed to check cache status:", error);
@@ -50,53 +50,53 @@ class OfflineIndicator extends HTMLElement {
 		}
 	}
 
-	private clearHideTimer() {
-		if (this.hideTimer !== null) {
-			clearTimeout(this.hideTimer);
-			this.hideTimer = null;
+	#clearHideTimer() {
+		if (this.#hideTimer !== null) {
+			clearTimeout(this.#hideTimer);
+			this.#hideTimer = null;
 		}
 	}
 
-	private startHideTimer() {
-		this.clearHideTimer();
-		this.hideTimer = window.setTimeout(() => {
-			if (this.indicator) {
-				this.indicator.classList.add("fade-out");
+	#startHideTimer() {
+		this.#clearHideTimer();
+		this.#hideTimer = window.setTimeout(() => {
+			if (this.#indicator) {
+				this.#indicator.classList.add("fade-out");
 				// Wait for animation to complete before hiding
 				setTimeout(() => {
-					if (this.indicator) {
-						this.indicator.style.display = "none";
-						this.indicator.classList.remove("fade-out");
+					if (this.#indicator) {
+						this.#indicator.style.display = "none";
+						this.#indicator.classList.remove("fade-out");
 					}
 				}, 300);
 			}
-			this.hideTimer = null;
+			this.#hideTimer = null;
 		}, 10000); // 10 seconds
 	}
 
-	private updateStatus(hasCachedContent: boolean = false) {
-		if (!this.indicator) return;
+	#updateStatus(hasCachedContent: boolean = false) {
+		if (!this.#indicator) return;
 
-		if (this.isOnline) {
-			this.clearHideTimer();
-			this.indicator.style.display = "none";
+		if (this.#isOnline) {
+			this.#clearHideTimer();
+			this.#indicator.style.display = "none";
 		} else {
-			this.indicator.style.display = "block";
+			this.#indicator.style.display = "block";
 
 			if (hasCachedContent) {
-				this.indicator.textContent = "Offline Mode - Cached Content Available";
-				this.indicator.style.background = "#0d9488";
+				this.#indicator.textContent = "Offline Mode - Cached Content Available";
+				this.#indicator.style.background = "#0d9488";
 			} else {
-				this.indicator.textContent = "Offline Mode";
-				this.indicator.style.background = "#dc2626";
+				this.#indicator.textContent = "Offline Mode";
+				this.#indicator.style.background = "#dc2626";
 			}
 
 			// Start the auto-hide timer
-			this.startHideTimer();
+			this.#startHideTimer();
 		}
 	}
 
-	private render() {
+	#render() {
 		this.shadowRoot.innerHTML = `
 			<style>
 				:host {
@@ -173,7 +173,7 @@ class OfflineIndicator extends HTMLElement {
 						top: 5px;
 						right: 5px;
 					}
-					
+
 					.offline-indicator {
 						font-size: 12px;
 						padding: 6px 12px;
@@ -185,7 +185,7 @@ class OfflineIndicator extends HTMLElement {
 			</div>
 		`;
 
-		this.indicator = this.shadowRoot.getElementById(
+		this.#indicator = this.shadowRoot.getElementById(
 			"indicator",
 		) as HTMLDivElement;
 	}

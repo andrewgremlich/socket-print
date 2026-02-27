@@ -1,12 +1,12 @@
 const SETTINGS_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`;
 
 export class MenuBar extends HTMLElement {
-	private _shadow: ShadowRoot;
+	#shadow: ShadowRoot;
 
 	constructor() {
 		super();
-		this._shadow = this.attachShadow({ mode: "open" });
-		this._shadow.innerHTML = `
+		this.#shadow = this.attachShadow({ mode: "open" });
+		this.#shadow.innerHTML = `
 			<style>${MenuBar.styles}</style>
 			${MenuBar.template}
 		`;
@@ -15,19 +15,19 @@ export class MenuBar extends HTMLElement {
 	// -- Public getters for external code --
 
 	get fileInput(): HTMLInputElement {
-		return this._shadow.getElementById("stlFileInput") as HTMLInputElement;
+		return this.#shadow.getElementById("stlFileInput") as HTMLInputElement;
 	}
 
 	get clearModelButton(): HTMLButtonElement {
-		return this._shadow.getElementById("clearModelButton") as HTMLButtonElement;
+		return this.#shadow.getElementById("clearModelButton") as HTMLButtonElement;
 	}
 
 	get addTestStlButton(): HTMLButtonElement {
-		return this._shadow.getElementById("addTestStlButton") as HTMLButtonElement;
+		return this.#shadow.getElementById("addTestStlButton") as HTMLButtonElement;
 	}
 
 	get addTestCylinderButton(): HTMLButtonElement {
-		return this._shadow.getElementById(
+		return this.#shadow.getElementById(
 			"addTestCylinderButton",
 		) as HTMLButtonElement;
 	}
@@ -35,17 +35,17 @@ export class MenuBar extends HTMLElement {
 	// -- Lifecycle --
 
 	connectedCallback() {
-		this.setupDropdownLogic();
-		this.setupFileInputDropdownClose();
-		this.setupMenuActions();
-		this.setupKeyboardNavigation();
+		this.#setupDropdownLogic();
+		this.#setupFileInputDropdownClose();
+		this.#setupMenuActions();
+		this.#setupKeyboardNavigation();
 	}
 
 	// -- Internal logic --
 
-	private setupDropdownLogic() {
-		const nav = this._shadow.getElementById("menuBar") as HTMLElement;
-		const dropdowns = this._shadow.querySelectorAll(
+	#setupDropdownLogic() {
+		const nav = this.#shadow.getElementById("menuBar") as HTMLElement;
+		const dropdowns = this.#shadow.querySelectorAll(
 			".menuBarDropdown",
 		) as NodeListOf<HTMLElement>;
 
@@ -84,8 +84,8 @@ export class MenuBar extends HTMLElement {
 		});
 	}
 
-	private closeAllDropdowns() {
-		const dropdowns = this._shadow.querySelectorAll(
+	#closeAllDropdowns() {
+		const dropdowns = this.#shadow.querySelectorAll(
 			".menuBarDropdown",
 		) as NodeListOf<HTMLElement>;
 		for (const dropdown of dropdowns) {
@@ -93,47 +93,47 @@ export class MenuBar extends HTMLElement {
 		}
 	}
 
-	private setupFileInputDropdownClose() {
+	#setupFileInputDropdownClose() {
 		this.fileInput?.addEventListener("change", () => {
-			this.closeAllDropdowns();
+			this.#closeAllDropdowns();
 		});
 	}
 
-	private setupMenuActions() {
+	#setupMenuActions() {
 		const dispatch = (name: string) => {
-			this.closeAllDropdowns();
+			this.#closeAllDropdowns();
 			this.dispatchEvent(new CustomEvent(name, { bubbles: true }));
 		};
 
-		this._shadow
+		this.#shadow
 			.getElementById("addMaterialProfile")
 			?.addEventListener("click", () => dispatch("menu-add-material-profile"));
 
-		this._shadow
+		this.#shadow
 			.getElementById("editActiveMaterialProfile")
 			?.addEventListener("click", () => dispatch("menu-edit-material-profile"));
 
-		this._shadow
+		this.#shadow
 			.getElementById("deleteMaterialProfile")
 			?.addEventListener("click", () =>
 				dispatch("menu-delete-material-profile"),
 			);
 
-		this._shadow
+		this.#shadow
 			.getElementById("helpButton")
 			?.addEventListener("click", () => dispatch("menu-help"));
 
-		this._shadow
+		this.#shadow
 			.getElementById("activateInfoDialog")
 			?.addEventListener("click", () => dispatch("menu-info"));
 
-		this._shadow
+		this.#shadow
 			.getElementById("activateSettingsDialog")
 			?.addEventListener("click", () => dispatch("menu-settings"));
 	}
 
-	private setupKeyboardNavigation() {
-		const nav = this._shadow.getElementById("menuBar") as HTMLElement;
+	#setupKeyboardNavigation() {
+		const nav = this.#shadow.getElementById("menuBar") as HTMLElement;
 		const topLevelButtons = nav.querySelectorAll(
 			":scope > div:first-child > .menuBarButtonContainer > .menuBarButton, :scope > div:first-child > .menuBarButton",
 		) as NodeListOf<HTMLElement>;
@@ -142,12 +142,12 @@ export class MenuBar extends HTMLElement {
 			const target = evt.target as HTMLElement;
 
 			// Find the open dropdown, if any
-			const openDropdown = this._shadow.querySelector(
+			const openDropdown = this.#shadow.querySelector(
 				".menuBarDropdown.show",
 			) as HTMLElement | null;
 
 			if (evt.key === "Escape") {
-				this.closeAllDropdowns();
+				this.#closeAllDropdowns();
 				// Focus the parent top-level button
 				const container = target.closest(".menuBarButtonContainer");
 				if (container) {
@@ -198,7 +198,7 @@ export class MenuBar extends HTMLElement {
 				) {
 					evt.preventDefault();
 					const dropdown = target.nextElementSibling as HTMLElement;
-					this.closeAllDropdowns();
+					this.#closeAllDropdowns();
 					dropdown.classList.add("show");
 					const firstItem = dropdown.querySelector(
 						"button.menuBarDropdownButton, label.menuBarDropdownButton",
@@ -211,7 +211,7 @@ export class MenuBar extends HTMLElement {
 
 	// -- Static template & styles --
 
-	private static get template() {
+	static get template() {
 		return `
 			<div id="menuBar">
 				<h1><a href="/" aria-label="ProvelPrint - Return to home page">ProvelPrint</a></h1>
@@ -250,7 +250,7 @@ export class MenuBar extends HTMLElement {
 		`;
 	}
 
-	private static get styles() {
+	static get styles() {
 		return `
 			:host {
 				display: flex;
