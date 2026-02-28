@@ -156,6 +156,7 @@
   </div>
 
   <offline-indicator></offline-indicator>
+  <update-notification></update-notification>
 
   <script type="module" src="./src/renderer.ts"></script>
   <script>
@@ -180,10 +181,7 @@
               if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
                   if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New service worker is available, show update notification
-                    if (confirm('A new version is available. Reload to update?')) {
-                      window.location.reload();
-                    }
+                    document.querySelector('update-notification').show();
                   }
                 });
               }

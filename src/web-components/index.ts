@@ -5,3 +5,4 @@ import "./Settings";
 import "./Info";
 import "./OfflineIndicator";
 import "./ProgressBar";
+import "./UpdateNotification";
