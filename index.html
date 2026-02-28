@@ -181,9 +181,7 @@
               if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
                   if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    customElements.whenDefined('update-notification').then(() => {
-                      document.querySelector('update-notification').show();
-                    });
+                    document.querySelector('update-notification').show();
                   }
                 });
               }
