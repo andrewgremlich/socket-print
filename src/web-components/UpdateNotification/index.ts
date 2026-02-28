@@ -21,13 +21,26 @@ class UpdateNotification extends HTMLElement {
 			this.#banner.classList.add("visible");
 		});
 
-		this.#hideTimer = window.setTimeout(() => {
-			this.#hide();
-		}, 30000);
+		const prefersReducedMotion = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		).matches;
+
+		this.#hideTimer = window.setTimeout(
+			() => {
+				this.#hide();
+			},
+			prefersReducedMotion ? 60000 : 30000,
+		);
 	}
 
 	#hide() {
 		this.#clearHideTimer();
+
+		const focused = this.shadowRoot.activeElement;
+		if (focused instanceof HTMLElement) {
+			focused.blur();
+		}
+
 		this.#banner.classList.remove("visible");
 		this.#banner.addEventListener(
 			"transitionend",
@@ -85,6 +98,11 @@ class UpdateNotification extends HTMLElement {
 					font-weight: 600;
 				}
 
+				button:focus-visible {
+					outline: 2px solid #93c5fd;
+					outline-offset: 2px;
+				}
+
 				.reload-btn {
 					background: #3b82f6;
 					color: white;
@@ -96,7 +114,7 @@ class UpdateNotification extends HTMLElement {
 
 				.dismiss-btn {
 					background: transparent;
-					color: #94a3b8;
+					color: #cbd5e1;
 				}
 
 				.dismiss-btn:hover {
