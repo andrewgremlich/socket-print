@@ -108,12 +108,12 @@
           <div id="translateRotationControls">
             <div id="changePosition">
               <span><i data-lucide="move-3d" aria-hidden="true"></i> Translate</span>
-              <app-input label="X" direction="row" disabled id="xTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint"></app-input>
-              <app-input label="Y" direction="row" disabled id="yTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint"></app-input>
-              <app-input label="Z" direction="row" disabled id="zTranslate" type="number" value="0" step="1" min="-100" max="100"
-                aria-describedby="translateDisabledHint"></app-input>
+              <app-input label="X" direction="row" disabled id="xTranslate" type="number" value="0" step="1" min="-100"
+                max="100" aria-describedby="translateDisabledHint"></app-input>
+              <app-input label="Y" direction="row" disabled id="yTranslate" type="number" value="0" step="1" min="-100"
+                max="100" aria-describedby="translateDisabledHint"></app-input>
+              <app-input label="Z" direction="row" disabled id="zTranslate" type="number" value="0" step="1" min="-100"
+                max="100" aria-describedby="translateDisabledHint"></app-input>
               <span id="translateDisabledHint" class="hide">Load a model to enable translation controls</span>
             </div>
 
@@ -125,8 +125,8 @@
               <span id="rotateDisabledHint" class="hide">Load a model to enable rotation controls</span>
             </div>
 
-            <button id="toggleTransformControlsButton" type="button" aria-label="Toggle rotation controls" title="Toggle rotation controls"
-              aria-pressed="false">
+            <button id="toggleTransformControlsButton" type="button" aria-label="Toggle rotation controls"
+              title="Toggle rotation controls" aria-pressed="false">
               <i data-lucide="rotate-3d" aria-hidden="true"></i> Rotate
             </button>
           </div>
@@ -181,7 +181,9 @@
               if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
                   if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    document.querySelector('update-notification').show();
+                    customElements.whenDefined('update-notification').then(() => {
+                      document.querySelector('update-notification').show();
+                    });
                   }
                 });
               }
