@@ -308,25 +308,11 @@ export async function writeGCodeFile(
 	gcodeString: string,
 	fileName = "file.gcode",
 ) {
-	if (window.isTauri) {
-		const dialog = await import("@tauri-apps/plugin-dialog");
-		const fs = await import("@tauri-apps/plugin-fs");
-		const path = await dialog.save({
-			title: "Save GCode file",
-			defaultPath: fileName,
-			filters: [{ name: "GCode", extensions: ["gcode"] }],
-		});
-
-		if (path) {
-			await fs.writeFile(path, new TextEncoder().encode(gcodeString));
-		}
-	} else {
-		const blob = new Blob([gcodeString], { type: "text/plain" });
-		const link = document.createElement("a");
-		link.href = URL.createObjectURL(blob);
-		link.download = fileName;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	}
+	const blob = new Blob([gcodeString], { type: "text/plain" });
+	const link = document.createElement("a");
+	link.href = URL.createObjectURL(blob);
+	link.download = fileName;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
 }

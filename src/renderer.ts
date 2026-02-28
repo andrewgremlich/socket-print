@@ -9,7 +9,6 @@ initializeTheme();
 import "@/db/store";
 import "@/web-components";
 import "@/utils/globalEvents";
-import "@/utils/updater";
 
 import {
 	Check,

@@ -19,7 +19,6 @@ socket-print/
 │   ├── utils/              # Utility functions & helpers
 │   ├── web-components/     # Custom HTML elements
 │   └── renderer.ts         # Main app entry point
-├── src-tauri/              # Rust/Tauri backend
 ├── public/                 # Static assets
 ├── index.html             # Main app page
 ├── help.html              # Help documentation page
@@ -70,7 +69,6 @@ socket-print/
 - `src/utils/constants.ts` - Shared constants (e.g. NOZZLE_SIZE_OFFSET_FACTOR)
 - `src/utils/meshTransforms.ts` - Mesh transformation utilities
 - `src/utils/stlLoader.ts` - STL file loading helpers
-- `src/utils/updater.ts` - Tauri app updater integration
 - `src/utils/getRadialSegments.ts` - Radial segment calculation
 - `src/utils/printObject.ts` - Print object utilities
 - `src/utils/printObjectEvents.ts` - Print object event helpers

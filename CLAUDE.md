@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Socket Print (Product name: Provel Print) is a CAD-like desktop application for faster turnaround times for amputees to receive 3D-printed prosthetic sockets. It combines real-time 3D visualization, computational geometry, and G-code generation for pellet extrusion 3D printing systems.
+Socket Print (Product name: Provel Print) is a CAD-like web application for faster turnaround times for amputees to receive 3D-printed prosthetic sockets. It combines real-time 3D visualization, computational geometry, and G-code generation for pellet extrusion 3D printing systems.
 
 **Repository**: https://github.com/andrewgremlich/socket-print
 
@@ -12,7 +12,6 @@ Socket Print (Product name: Provel Print) is a CAD-like desktop application for 
 - **Three.js** + **three-mesh-bvh** — 3D graphics and optimized ray casting
 - **Dexie** — IndexedDB wrapper for persistence
 - **Web Components** — Custom UI elements (Shadow DOM)
-- **Tauri 2.x** — Cross-platform desktop app (Rust backend)
 - **Vitest** — Unit testing
 - **Biome** — Linting and formatting
 - **LightningCSS** — CSS transformation
@@ -23,7 +22,6 @@ Socket Print (Product name: Provel Print) is a CAD-like desktop application for 
 npm install              # Install dependencies
 npm run dev              # Start dev server (localhost:4200)
 npm run build            # Production build
-npm run build:tauri      # Build Tauri desktop app
 npm run test             # Run tests
 npm run test:watch       # Run tests in watch mode
 npm run test:coverage    # Generate coverage report
