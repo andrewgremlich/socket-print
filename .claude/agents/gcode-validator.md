@@ -4,6 +4,7 @@ description: "Use this agent to validate G-code generation logic for correctness
 tools: Glob, Grep, Read, Bash
 model: opus
 color: red
+memory: project
 ---
 
 ## Task
