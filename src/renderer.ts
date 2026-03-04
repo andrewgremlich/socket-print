@@ -104,7 +104,10 @@ const printObject = new PrintObject({
 		}
 
 		const existingMeshes = app.scene.children.filter((child) => {
-			return child.type === "Mesh" && child.userData.isPrintObject;
+			return (
+				child.type === "Mesh" &&
+				(child.userData.isPrintObject || child.userData.isTransition)
+			);
 		});
 
 		if (existingMeshes.length > 0) {
@@ -124,6 +127,9 @@ const printObject = new PrintObject({
 			},
 		});
 
+		generateGCodeButton.disabled = false;
+		printerFileInput.disabled = false;
+
 		loadingScreen.style.display = "none";
 	},
 });
@@ -140,6 +146,8 @@ const removeMeshes = async (meshes: Mesh[]) => {
 	zTranslate.value = "0";
 	activeFileName.textContent = "No file selected";
 	collisionWarning.style.display = "none";
+	generateGCodeButton.disabled = true;
+	printerFileInput.disabled = true;
 
 	estimatedPrintTime.textContent = "0m 0s";
 

@@ -22,7 +22,8 @@
 		"test:coverage": "vitest run --coverage src/",
 		"check": "tsc --noEmit && biome check --write ./src",
 		"clean": "rimraf ./dist ./.vite ./out ./dev-dist",
-		"changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s"
+		"changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
+		"version": "npm run changelog && git add CHANGELOG.md"
 	},
 	"lint-staged": {
 		"*.{js,ts,tsx}": [
