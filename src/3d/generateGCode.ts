@@ -104,7 +104,6 @@ function generateGCodeHeader(params: {
 		"T0 ; select tool 0",
 		"",
 		";## Set temperatures ##",
-		"M106 P0 S0 H3 L0.15 X0.25 T20:40",
 		`M568 P0 S${materialProfile.nozzleTemp} ; set temperature for barrel`,
 		`M140 P1 S${materialProfile.cupTemp} ; set cup heater temperature`,
 		"",
@@ -116,6 +115,9 @@ function generateGCodeHeader(params: {
 		"G1 X-93 ; move in to register with cup heater for pickup",
 		"M116 P0 S5 ; wait for nozzle temperature +/-5C",
 		"M116 H2 S2 ; wait for cup temperature +/-2C",
+		"",
+		";## Enclosure blower thermostatic control ##",
+		"M106 P0 S0 H3 L0.20 X0.60 T20:24",
 		"",
 		";## cup heater removal sequence ##",
 		"M140 P1 S0 ; cup heater off",
@@ -257,6 +259,39 @@ export async function generateGCode(
 
 	const lineWidth = nozzleSize * lineWidthAdjustment;
 
+	// Calculate last transition layer E value for smooth E transition on first print layer
+	const lastTransitionDistance = circlePoints[
+		circlePoints.length - 2
+	].point.distanceTo(circlePoints[circlePoints.length - 1].point);
+	const lastTransitionE = getExtrusionCalculation({
+		distance: lastTransitionDistance,
+		layerHeight: circlePoints[circlePoints.length - 1].calculatedLayerHeight,
+		lineWidth,
+		gramsPerRevolution,
+		density,
+		ePerRevolution,
+		outputFactor,
+	});
+
+	// Calculate first E value of second print layer as the interpolation target
+	const lastFirstLayerPoint = pointGatherer[0][pointGatherer[0].length - 1]
+		.clone()
+		.add(new Vector3(0, layerHeight, 0));
+	const firstSecondLayerPoint = pointGatherer[1][0]
+		.clone()
+		.add(new Vector3(0, layerHeight, 0));
+	const secondLayerFirstE = getExtrusionCalculation({
+		distance: lastFirstLayerPoint.distanceTo(firstSecondLayerPoint),
+		layerHeight,
+		lineWidth,
+		gramsPerRevolution,
+		density,
+		ePerRevolution,
+		outputFactor,
+	});
+
+	const firstLayerPointCount = pointGatherer[0].length;
+
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
 		gcode.push(";START NEW LEVEL");
@@ -264,10 +299,11 @@ export async function generateGCode(
 		if (i === 0) gcode.push("M106 P2 S0 ; set fan speed");
 		if (i === 1) gcode.push("M106 P2 S0.5 ; set fan speed");
 
-		for (const point of pointLevel) {
+		for (let j = 0; j < pointLevel.length; j++) {
+			const point = pointLevel[j];
 			const adjustedPoint = point.clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(adjustedPoint);
-			const extrusion = getExtrusionCalculation({
+			let extrusion = getExtrusionCalculation({
 				distance,
 				layerHeight,
 				lineWidth,
@@ -276,6 +312,13 @@ export async function generateGCode(
 				ePerRevolution,
 				outputFactor,
 			});
+
+			// Smooth E transition on first layer: linearly interpolate from
+			// last transition layer E to first E of second print layer
+			if (i === 0) {
+				const t = j / (firstLayerPointCount - 1);
+				extrusion = lastTransitionE + (secondLayerFirstE - lastTransitionE) * t;
+			}
 
 			previousPoint = adjustedPoint;
 
@@ -294,8 +337,9 @@ export async function generateGCode(
 		"  G91",
 		"  G1 Z3 F3000",
 		"  G90",
-		"G1 X-180 E30 F6000 ;move extruder head out of way",
+		"G1 X-180 F6000 ;move extruder head out of way",
 		"M568 P0 S0 ;set the temperature off",
+		"M106 P0 S0 H-1 ; turn off enclosure blower",
 		"M106 S0 ; turn the blowers and fan off",
 		"M140 S0 ; set bed temperature",
 		'M98 P"0:/sys/provel/end.g"',
