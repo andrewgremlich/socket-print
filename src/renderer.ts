@@ -9,7 +9,6 @@ initializeTheme();
 import "@/db/store";
 import "@/web-components";
 import "@/utils/globalEvents";
-import "@/utils/updater";
 
 import {
 	Check,
@@ -46,8 +45,6 @@ import {
 	loadingScreen,
 	printerFileInput,
 	progressBar,
-	progressBarDiv,
-	progressBarLabel,
 	toggleTransformControlsButton,
 	xTranslate,
 	yTranslate,
@@ -107,7 +104,10 @@ const printObject = new PrintObject({
 		}
 
 		const existingMeshes = app.scene.children.filter((child) => {
-			return child.type === "Mesh" && child.userData.isPrintObject;
+			return (
+				child.type === "Mesh" &&
+				(child.userData.isPrintObject || child.userData.isTransition)
+			);
 		});
 
 		if (existingMeshes.length > 0) {
@@ -127,6 +127,9 @@ const printObject = new PrintObject({
 			},
 		});
 
+		generateGCodeButton.disabled = false;
+		printerFileInput.disabled = false;
+
 		loadingScreen.style.display = "none";
 	},
 });
@@ -143,6 +146,8 @@ const removeMeshes = async (meshes: Mesh[]) => {
 	zTranslate.value = "0";
 	activeFileName.textContent = "No file selected";
 	collisionWarning.style.display = "none";
+	generateGCodeButton.disabled = true;
+	printerFileInput.disabled = true;
 
 	estimatedPrintTime.textContent = "0m 0s";
 
@@ -167,7 +172,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 	const allGeometries = app.collectAllPrintableGeometries();
 
-	progressBarDiv.style.display = "flex";
+	progressBar.show();
 
 	const worker = new sliceWorker();
 
@@ -186,7 +191,6 @@ export async function slicingAction(sendToFile: boolean) {
 		if (type === SliceWorkerStatus.PROGRESS && typeof data === "number") {
 			const progress = ceil(data * 100);
 
-			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === SliceWorkerStatus.DONE && Array.isArray(data)) {
 			const vectors: Vector3[][] = [];
@@ -215,16 +219,14 @@ export async function slicingAction(sendToFile: boolean) {
 				await sendGCodeFile(new Blob([gcode]), filePathName);
 			}
 
-			progressBar.value = 0;
-			progressBarDiv.style.display = "none";
+			progressBar.reset();
 			worker.terminate();
 		}
 	};
 
 	worker.onerror = (error) => {
 		console.error("Worker error:", error);
-		progressBar.value = 0;
-		progressBarDiv.style.display = "none";
+		progressBar.reset();
 		worker.terminate();
 	};
 }

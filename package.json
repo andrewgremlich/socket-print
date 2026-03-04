@@ -2,12 +2,15 @@
 	"name": "socket-print",
 	"productName": "Provel Print",
 	"description": "A CAD-type application that facilitates a faster turnaround time for amputees to receive 3D printed socket for a residual limb.",
-	"version": "1.19.1",
+	"version": "1.20.0",
 	"type": "module",
 	"author": {
 		"name": "andrewgremlich"
 	},
 	"license": "MIT",
+	"engines": {
+		"node": ">=24"
+	},
 	"repository": {
 		"url": "https://github.com/andrewgremlich/socket-print"
 	},
@@ -15,7 +18,6 @@
 		"dev": "npm run dev:web",
 		"dev:web": "vite --config vite.config.ts",
 		"build": "npm run test && npm run clean && vite build",
-		"build:tauri": "tauri build",
 		"preview": "vite preview --config vite.config.ts",
 		"prepare": "husky",
 		"test": "vitest run src/ --config ./vite.config.ts",
@@ -23,7 +25,8 @@
 		"test:coverage": "vitest run --coverage src/",
 		"check": "tsc --noEmit && biome check --write ./src",
 		"clean": "rimraf ./dist ./.vite ./out ./dev-dist",
-		"tauri": "tauri"
+		"changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
+		"version": "npm run changelog && git add CHANGELOG.md"
 	},
 	"lint-staged": {
 		"*.{js,ts,tsx}": [
@@ -31,17 +34,18 @@
 		]
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.4",
-		"@tauri-apps/cli": "^2.10.0",
+		"@biomejs/biome": "^2.4.5",
 		"@types/node": "^24.10.8",
 		"@types/three": "^0.183.1",
 		"@types/validator": "^13.15.10",
 		"@vitest/coverage-v8": "^4.0.18",
 		"browserslist": "^4.28.1",
+		"conventional-changelog": "^7.2.0",
+		"conventional-changelog-conventionalcommits": "^9.2.0",
 		"husky": "^9.1.7",
 		"jsdom": "^28.1.0",
 		"lightningcss": "^1.31.1",
-		"lint-staged": "^16.3.1",
+		"lint-staged": "^16.3.2",
 		"rimraf": "^6.1.3",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1",
@@ -50,19 +54,13 @@
 		"vitest": "^4.0.18"
 	},
 	"dependencies": {
-		"@tauri-apps/api": "^2.10.1",
-		"@tauri-apps/plugin-dialog": "^2.6.0",
-		"@tauri-apps/plugin-fs": "^2.4.5",
-		"@tauri-apps/plugin-log": "^2.8.0",
-		"@tauri-apps/plugin-process": "^2.3.1",
-		"@tauri-apps/plugin-updater": "^2.10.0",
 		"crc-32": "^1.2.2",
 		"dexie": "^4.3.0",
 		"hotkeys-js": "^4.0.2",
 		"lucide": "0.575.0",
 		"mathjs": "^15.1.1",
 		"three": "^0.183.2",
-		"three-mesh-bvh": "^0.9.8",
+		"three-mesh-bvh": "^0.9.9",
 		"validator": "^13.15.26"
 	}
 }

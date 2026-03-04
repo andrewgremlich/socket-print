@@ -4,6 +4,7 @@ description: "Use this agent to analyze Three.js geometry code, BVH ray casting,
 tools: Glob, Grep, Read, Bash
 model: sonnet
 color: purple
+memory: project
 ---
 
 ## Task
