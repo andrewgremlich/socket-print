@@ -21,7 +21,8 @@
 		"test:watch": "vitest src/ --config ./vite.config.ts",
 		"test:coverage": "vitest run --coverage src/",
 		"check": "tsc --noEmit && biome check --write ./src",
-		"clean": "rimraf ./dist ./.vite ./out ./dev-dist"
+		"clean": "rimraf ./dist ./.vite ./out ./dev-dist",
+		"changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s"
 	},
 	"lint-staged": {
 		"*.{js,ts,tsx}": [
@@ -35,6 +36,8 @@
 		"@types/validator": "^13.15.10",
 		"@vitest/coverage-v8": "^4.0.18",
 		"browserslist": "^4.28.1",
+		"conventional-changelog": "^7.2.0",
+		"conventional-changelog-conventionalcommits": "^9.2.0",
 		"husky": "^9.1.7",
 		"jsdom": "^28.1.0",
 		"lightningcss": "^1.31.1",
