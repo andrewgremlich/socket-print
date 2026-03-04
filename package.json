@@ -8,6 +8,9 @@
 		"name": "andrewgremlich"
 	},
 	"license": "MIT",
+	"engines": {
+		"node": ">=24"
+	},
 	"repository": {
 		"url": "https://github.com/andrewgremlich/socket-print"
 	},
