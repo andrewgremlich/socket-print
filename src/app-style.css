@@ -193,7 +193,7 @@ main {
 	& .form-group {
 		display: flex;
 		flex-direction: column;
-		margin-bottom: var(--spacing-md);
+		margin-bottom: var(--spacing-xs);
 
 		& span,
 		& label {
