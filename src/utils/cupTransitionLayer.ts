@@ -73,7 +73,7 @@ export async function getTransitionLayer(
 		density: number;
 		ePerRevolution: number;
 	},
-): Promise<string> {
+): Promise<{ gcode: string; lastExtrusion: number }> {
 	const transitionLayer: string[] = [];
 	const lineWidthAdjustment = await getLineWidthAdjustment();
 	const feedrate = await calculateFeedratePerLevel([
@@ -81,6 +81,7 @@ export async function getTransitionLayer(
 	]);
 
 	let previousPoint: Vector3 | undefined;
+	let lastExtrusion = 0;
 
 	for (let i = 0; i < points.length; i++) {
 		const point = points[i].point;
@@ -100,13 +101,15 @@ export async function getTransitionLayer(
 				outputFactor,
 			});
 
+			lastExtrusion = round(extrusion, 2);
+
 			transitionLayer.push(
-				`G1 X${-round(point.x, 2)} Y${round(point.y, 2)} Z${floor(point.z + offsetHeight, 2)} E${round(extrusion, 2)} F${feedrate}`,
+				`G1 X${-round(point.x, 2)} Y${round(point.y, 2)} Z${floor(point.z + offsetHeight, 2)} E${lastExtrusion} F${feedrate}`,
 			);
 		}
 
 		previousPoint = point;
 	}
 
-	return transitionLayer.join("\n");
+	return { gcode: transitionLayer.join("\n"), lastExtrusion };
 }

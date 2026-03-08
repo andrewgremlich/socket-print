@@ -235,7 +235,10 @@ export async function generateGCode(
 		shrinkScale,
 		nozzleSizeOffset,
 	});
-	const transitionLayer = await getTransitionLayer(circlePoints, {
+	const {
+		gcode: transitionLayerGcode,
+		lastExtrusion: transitionLastExtrusion,
+	} = await getTransitionLayer(circlePoints, {
 		nozzleSize,
 		outputFactor,
 		offsetHeight: startingHeight,
@@ -246,7 +249,7 @@ export async function generateGCode(
 
 	gcode.push(
 		";START TRANSITION LAYER",
-		transitionLayer,
+		transitionLayerGcode,
 		";END TRANSITION LAYER",
 	);
 
@@ -259,42 +262,9 @@ export async function generateGCode(
 
 	const lineWidth = nozzleSize * lineWidthAdjustment;
 
-	// Calculate last transition layer E value for smooth E transition on first print layer
-	const lastTransitionDistance = circlePoints[
-		circlePoints.length - 2
-	].point.distanceTo(circlePoints[circlePoints.length - 1].point);
-	const lastTransitionE = getExtrusionCalculation({
-		distance: lastTransitionDistance,
-		layerHeight: circlePoints[circlePoints.length - 1].calculatedLayerHeight,
-		lineWidth,
-		gramsPerRevolution,
-		density,
-		ePerRevolution,
-		outputFactor,
-	});
-
-	// Calculate first E value of second print layer as the interpolation target
-	const lastFirstLayerPoint = pointGatherer[0][pointGatherer[0].length - 1]
-		.clone()
-		.add(new Vector3(0, layerHeight, 0));
-	const firstSecondLayerPoint = pointGatherer[1][0]
-		.clone()
-		.add(new Vector3(0, layerHeight, 0));
-	const secondLayerFirstE = getExtrusionCalculation({
-		distance: lastFirstLayerPoint.distanceTo(firstSecondLayerPoint),
-		layerHeight,
-		lineWidth,
-		gramsPerRevolution,
-		density,
-		ePerRevolution,
-		outputFactor,
-	});
-
-	const firstLayerPointCount = pointGatherer[0].length;
-
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
-		gcode.push(";START NEW LEVEL");
+		gcode.push(`;START NEW LEVEL ${i + 1}`);
 
 		if (i === 0) gcode.push("M106 P2 S0 ; set fan speed");
 		if (i === 1) gcode.push("M106 P2 S0.5 ; set fan speed");
@@ -303,7 +273,7 @@ export async function generateGCode(
 			const point = pointLevel[j];
 			const adjustedPoint = point.clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(adjustedPoint);
-			let extrusion = getExtrusionCalculation({
+			const extrusion = getExtrusionCalculation({
 				distance,
 				layerHeight,
 				lineWidth,
@@ -313,17 +283,25 @@ export async function generateGCode(
 				outputFactor,
 			});
 
-			// Smooth E transition on first layer: linearly interpolate from
-			// last transition layer E to first E of second print layer
+			let roundedExtrusion = floor(extrusion, 2);
+
+			if (roundedExtrusion === 0) continue;
+
+			// Ramp extrusion down from transition layer value over first layer
 			if (i === 0) {
-				const t = j / (firstLayerPointCount - 1);
-				extrusion = lastTransitionE + (secondLayerFirstE - lastTransitionE) * t;
+				const t = j / pointLevel.length;
+				const rampedExtrusion =
+					transitionLastExtrusion + t * (extrusion - transitionLastExtrusion);
+				roundedExtrusion = Math.max(
+					floor(rampedExtrusion, 2),
+					roundedExtrusion,
+				);
 			}
 
 			previousPoint = adjustedPoint;
 
 			gcode.push(
-				`${makeGCodePoint(adjustedPoint, { flipHeight, verticalAxis })} E${floor(extrusion, 2)} F${feedratePerLevel[i]}`,
+				`${makeGCodePoint(adjustedPoint, { flipHeight, verticalAxis })} E${roundedExtrusion} F${feedratePerLevel[i]}`,
 			);
 		}
 	}

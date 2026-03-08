@@ -12,24 +12,6 @@ main {
 	display: none !important;
 }
 
-#application {
-	display: grid;
-	gap: var(--spacing-lg);
-	grid-template-columns: repeat(12, 1fr);
-	flex: 1;
-	min-height: 0;
-
-	& > #appForm {
-		grid-column: 1 / 4;
-		overflow-y: auto;
-	}
-
-	& > #secondaryInterface {
-		grid-column: 4 / 13;
-		min-height: 0;
-	}
-}
-
 #app {
 	display: flex;
 	flex-direction: column;
@@ -37,29 +19,17 @@ main {
 	height: 100vh;
 }
 
+#secondaryInterface {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: flex-end;
+}
+
 #userInterface {
 	margin-right: var(--spacing-lg);
 	display: flex;
 	flex-direction: column;
-}
-
-#appForm {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	margin-bottom: var(--spacing-lg);
-
-	& .form-group {
-		display: flex;
-		flex-direction: column;
-		margin-bottom: var(--spacing-md);
-
-		& span,
-		& label {
-			color: var(--text-secondary);
-			font-size: 14px;
-		}
-	}
 }
 
 #portStatusIcons {
@@ -111,13 +81,6 @@ main {
 			width: var(--spacing-lg);
 		}
 	}
-}
-
-#secondaryInterface {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
-	align-items: flex-end;
 }
 
 #provelPrint {
@@ -221,6 +184,43 @@ main {
 	}
 }
 
+#appForm {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	margin-bottom: var(--spacing-lg);
+
+	& .form-group {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: var(--spacing-md);
+
+		& span,
+		& label {
+			color: var(--text-secondary);
+			font-size: 14px;
+		}
+	}
+}
+
+#application {
+	display: grid;
+	gap: var(--spacing-lg);
+	grid-template-columns: repeat(12, 1fr);
+	flex: 1;
+	min-height: 0;
+
+	& > #appForm {
+		grid-column: 1 / 4;
+		overflow-y: auto;
+	}
+
+	& > #secondaryInterface {
+		grid-column: 4 / 13;
+		min-height: 0;
+	}
+}
+
 #loading {
 	position: fixed;
 	top: 0;
@@ -249,7 +249,7 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.spin-icon {
+	#loading .spin-icon {
 		animation: none;
 	}
 }
