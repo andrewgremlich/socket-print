@@ -1,9 +1,11 @@
 import "@/global-style.css";
 import "@/app-style.css";
 
+import { initLogInterceptor } from "@/utils/logInterceptor";
 import { initializeTheme } from "@/web-components/Settings";
 
-// Initialize theme before any components render to prevent flash
+// Initialize log interceptor and theme before any components render
+initLogInterceptor();
 initializeTheme();
 
 import "@/db/store";

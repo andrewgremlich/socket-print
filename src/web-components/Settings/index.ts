@@ -15,6 +15,7 @@ import {
 	setTestCylinderInnerDiameter,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/db";
+import { downloadLogs } from "@/utils/logInterceptor";
 
 import { Dialog } from "../Dialog";
 
@@ -39,6 +40,7 @@ export function getTheme(): Theme {
 
 export class Settings extends Dialog {
 	resetButton: HTMLButtonElement;
+	downloadLogsButton: HTMLButtonElement;
 	testCylinderForm: HTMLFormElement;
 	closeButton: HTMLButtonElement;
 	themeSelect: HTMLSelectElement;
@@ -132,9 +134,9 @@ export class Settings extends Dialog {
 				</form>
 
 				<div id="resetAppContainer">
-					<h4>Reset Application</h4>
+					<h4>Application Help</h4>
+					<input type="button" class="button" id="downloadLogs" value="Download Logs" />
 					<input type="button" class="button" id="resetApp" value="Reset Application" aria-describedby="resetWarning" />
-					<p id="resetWarning">This will delete all your data and settings!</p>
 				</div>
 
 				<div id="closeContainer" style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
@@ -148,6 +150,9 @@ export class Settings extends Dialog {
 		) as HTMLFormElement;
 		this.resetButton = this.shadowRoot.getElementById(
 			"resetApp",
+		) as HTMLButtonElement;
+		this.downloadLogsButton = this.shadowRoot.getElementById(
+			"downloadLogs",
 		) as HTMLButtonElement;
 		this.testCylinderForm = this.shadowRoot.getElementById(
 			"testCylinderSettings",
@@ -178,6 +183,7 @@ export class Settings extends Dialog {
 		this.closeButton.addEventListener("click", () => this.hide());
 		this.dialog.addEventListener("close", () => this.hide());
 		this.resetButton.addEventListener("click", () => this.resetApplication());
+		this.downloadLogsButton.addEventListener("click", () => downloadLogs());
 		this.themeSelect.addEventListener("change", () => {
 			setTheme(this.themeSelect.value as Theme);
 		});
