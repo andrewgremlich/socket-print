@@ -1,3 +1,5 @@
+## [1.20.2](https://github.com/andrewgremlich/socket-print/compare/v1.18.5...v1.20.2) (2026-03-18)
+
 ## [1.20.1](https://github.com/andrewgremlich/socket-print/compare/v1.19.1...v1.20.1) (2026-03-08)
 
 ## [1.20.0](https://github.com/andrewgremlich/socket-print/compare/v1.17.1...v1.20.0) (2026-03-04)
