@@ -6,6 +6,7 @@ interface LogEntry {
 
 const logs: LogEntry[] = [];
 
+const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;
 
@@ -22,6 +23,11 @@ function now(): string {
 }
 
 export function initLogInterceptor(): void {
+	console.log = (...args: unknown[]) => {
+		logs.push({ type: "log", timestamp: now(), message: formatArgs(args) });
+		originalConsoleLog.apply(console, args);
+	};
+
 	console.error = (...args: unknown[]) => {
 		logs.push({ type: "error", timestamp: now(), message: formatArgs(args) });
 		originalConsoleError.apply(console, args);
