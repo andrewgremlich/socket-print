@@ -1,21 +1,9 @@
-name: Build and Zip Vite Web Project
+name: Build, Test, and Release
 
-# Workflow disabled
 on:
-  workflow_dispatch:
-    inputs:
-      disabled:
-        description: 'This workflow is disabled'
-        required: true
-        default: 'disabled'
-
-# on:
-#   push:
-#     tags:
-#       - 'v*.*.*'  # Trigger on version tags like v1.2.3
-#     # branches:
-#     #   - main
-#   workflow_dispatch: {}
+  push:
+    tags:
+      - "v*.*.*"
 
 permissions:
   contents: write
@@ -23,42 +11,41 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v5
-      
+
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: 24
-          
+
       - name: Install dependencies
         run: npm ci
-        
+
       - name: Run tests
         run: npm test
-        
+
       - name: Run tests with coverage
         run: npm run test:coverage
-        
+
       - name: Check types
         run: npm run check
 
-  build:
-    needs: test  # Still run tests before building
+  build-and-release:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 24
-
-      - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq unzip
 
       - name: Install dependencies
         run: npm ci
@@ -68,89 +55,40 @@ jobs:
         run: |
           VERSION=$(jq -r .version package.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-      - name: Build Vite project
-        run: npm run build
-
-      - name: Zip dist folder
-        run: |
-          cd dist
-          zip -r ../socket-print-v${{ steps.get_version.outputs.version }}.zip .
-        if: ${{ success() }}
 
       - name: Validate tag matches package version
         run: |
-          echo "Git ref name: ${GITHUB_REF_NAME}"
-          echo "Package version: v${{ steps.get_version.outputs.version }}"
           if [ "v${{ steps.get_version.outputs.version }}" != "${GITHUB_REF_NAME}" ]; then
-            echo "::error::Pushed tag (${GITHUB_REF_NAME}) does not match package.json version (v${{ steps.get_version.outputs.version }}).";
-            exit 1;
+            echo "::error::Tag (${GITHUB_REF_NAME}) does not match package.json version (v${{ steps.get_version.outputs.version }})."
+            exit 1
           fi
 
-      - name: Generate checksum
-        id: checksum
-        run: |
-          FILE=socket-print-v${{ steps.get_version.outputs.version }}.zip
-          HASH=$(shasum -a 256 "$FILE" | awk '{print $1}')
-          echo "$HASH  $FILE" > "$FILE.sha256"
-          echo "sha256=$HASH" >> $GITHUB_OUTPUT
-          echo "SHA256 checksum: $HASH"
-          cat "$FILE.sha256"
+      - name: Build project
+        run: npm run build
 
-      - name: Create Release and Upload Assets
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | sed -n '2p')
+          if [ -z "$PREVIOUS_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" ${{ github.ref_name }})
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" "${PREVIOUS_TAG}..${{ github.ref_name }}")
+          fi
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          name: ProvelPrint Web Release v${{ steps.get_version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          name: Provel Print ${{ github.ref_name }}
           draft: false
           prerelease: false
-          generate_release_notes: true
           body: |
-            Production web build for version v${{ steps.get_version.outputs.version }}.
+            ## Changelog
 
-            Artifacts:
-            - socket-print-v${{ steps.get_version.outputs.version }}.zip (Optimized bundled dist output from Vite build)
-            - socket-print-v${{ steps.get_version.outputs.version }}.zip.sha256 (SHA-256 checksum file)
-
-            Integrity Verification (macOS/Linux):
-            shasum -a 256 socket-print-v${{ steps.get_version.outputs.version }}.zip
-            Expected: ${{ steps.checksum.outputs.sha256 }}
-
-            Integrity Verification (Windows PowerShell):
-            Get-FileHash .\\socket-print-v${{ steps.get_version.outputs.version }}.zip -Algorithm SHA256
-            (Compare the Hash value to: ${{ steps.checksum.outputs.sha256 }})
-
-            Note: The "Source code" archives shown below are auto-generated by GitHub from the tag and are NOT the production build output. Use the versioned zip above for deployment.
-
-            Release created automatically by CI.
-          files: |
-            socket-print-v${{ steps.get_version.outputs.version }}.zip
-            socket-print-v${{ steps.get_version.outputs.version }}.zip.sha256
-          fail_on_unmatched_files: true
+            ${{ steps.changelog.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Copy files via SCP
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.VPS_IP }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "socket-print-v${{ steps.get_version.outputs.version }}.zip"
-          target: ~/ 
-
-      - name: Set up SSH Key and Deploy my App on Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.VPS_IP }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            set -e
-            cd ~/
-            rm -rf /var/www/socket-print
-            mkdir -p /var/www/socket-print
-            unzip -o socket-print-v${{ steps.get_version.outputs.version }}.zip -d /var/www/socket-print
-            rm -rf socket-print socket-print-v${{ steps.get_version.outputs.version }}.zip
