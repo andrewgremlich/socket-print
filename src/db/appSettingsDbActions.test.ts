@@ -125,9 +125,9 @@ describe("updateRotateValues", () => {
 
 		await updateRotateValues(0.1, 0.2, 0.3);
 
-		expect(mockEquals).toHaveBeenCalledWith("rotateCoronal");
-		expect(mockEquals).toHaveBeenCalledWith("rotateSagittal");
-		expect(mockEquals).toHaveBeenCalledWith("rotateTransverse");
+		expect(mockEquals).toHaveBeenCalledWith("rotateX");
+		expect(mockEquals).toHaveBeenCalledWith("rotateY");
+		expect(mockEquals).toHaveBeenCalledWith("rotateZ");
 		expect(mockModify).toHaveBeenCalledWith({ value: 0.1 });
 		expect(mockModify).toHaveBeenCalledWith({ value: 0.2 });
 		expect(mockModify).toHaveBeenCalledWith({ value: 0.3 });
@@ -135,15 +135,15 @@ describe("updateRotateValues", () => {
 });
 
 describe("getRotateValues", () => {
-	test("returns rotate values as coronal, sagittal, transverse object", async () => {
+	test("returns rotate values as x, y, z object", async () => {
 		mockFirst
-			.mockResolvedValueOnce({ name: "rotateCoronal", value: 0.5 })
-			.mockResolvedValueOnce({ name: "rotateSagittal", value: 1.0 })
-			.mockResolvedValueOnce({ name: "rotateTransverse", value: 1.5 });
+			.mockResolvedValueOnce({ name: "rotateX", value: 0.5 })
+			.mockResolvedValueOnce({ name: "rotateY", value: 1.0 })
+			.mockResolvedValueOnce({ name: "rotateZ", value: 1.5 });
 
 		const result = await getRotateValues();
 
-		expect(result).toEqual({ coronal: 0.5, sagittal: 1.0, transverse: 1.5 });
+		expect(result).toEqual({ x: 0.5, y: 1.0, z: 1.5 });
 	});
 });
 

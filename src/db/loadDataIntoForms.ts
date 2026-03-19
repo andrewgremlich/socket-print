@@ -21,9 +21,9 @@ export async function loadMainDataForm() {
 			continue;
 		}
 
-		const input = document.querySelector(
-			`[name="${name}"]`,
-		) as HTMLInputElement | null;
+		const input = document.querySelector(`[name="${name}"]`) as
+			| (HTMLInputElement | HTMLSelectElement)
+			| null;
 
 		if (input) {
 			input.value = `${value}`;

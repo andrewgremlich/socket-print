@@ -8,9 +8,7 @@ import type { MeshContext } from "./types";
 
 // Mock database actions
 vi.mock("@/db/appSettingsDbActions", () => ({
-	getRotateValues: vi
-		.fn()
-		.mockResolvedValue({ coronal: 0, sagittal: 0, transverse: 0 }),
+	getRotateValues: vi.fn().mockResolvedValue({ x: 0, y: 0, z: 0 }),
 	getTranslateValues: vi.fn().mockResolvedValue({ x: 0, y: 0, z: 0 }),
 	updateRotateValues: vi.fn().mockResolvedValue(undefined),
 	updateTranslateValues: vi.fn().mockResolvedValue(undefined),
@@ -18,9 +16,9 @@ vi.mock("@/db/appSettingsDbActions", () => ({
 
 // Mock HTML elements
 vi.mock("@/utils/htmlElements", () => ({
-	horizontalTranslate: { value: "0" },
-	verticalTranslate: { value: "0" },
-	depthTranslate: { value: "0" },
+	xTranslate: { value: "0" },
+	yTranslate: { value: "0" },
+	zTranslate: { value: "0" },
 }));
 
 // Mock mesh transforms
@@ -168,9 +166,9 @@ describe("MeshTransformController", () => {
 		test("restores rotation from database", async () => {
 			const { getRotateValues } = await import("@/db/appSettingsDbActions");
 			vi.mocked(getRotateValues).mockResolvedValueOnce({
-				coronal: Math.PI / 4,
-				sagittal: Math.PI / 2,
-				transverse: Math.PI,
+				x: Math.PI / 4,
+				y: Math.PI / 2,
+				z: Math.PI,
 			});
 
 			controller.setMesh(createMeshContext(mockMesh));

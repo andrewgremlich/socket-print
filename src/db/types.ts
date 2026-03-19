@@ -45,9 +45,9 @@ export type ProvelPrintSettings = {
 	translateX: number;
 	translateY: number;
 	translateZ: number;
-	rotateCoronal: number;
-	rotateSagittal: number;
-	rotateTransverse: number;
+	rotateX: number;
+	rotateY: number;
+	rotateZ: number;
 	startingCupLayerHeight: number;
 	lineWidthAdjustment: number;
 	testCylinderHeight: number;

@@ -24,12 +24,12 @@ function createMockCallbacks(): EventManagerCallbacks {
 		onClearData: vi.fn().mockResolvedValue(undefined),
 		onTestCylinder: vi.fn().mockResolvedValue(undefined),
 		onStlFileChange: vi.fn().mockResolvedValue(undefined),
-		onCoronalRotate: vi.fn(),
-		onSagittalRotate: vi.fn(),
-		onTransversalRotate: vi.fn(),
-		onVerticalChange: vi.fn(),
-		onHorizontalChange: vi.fn(),
-		onDepthChange: vi.fn(),
+		onXRotate: vi.fn(),
+		onYRotate: vi.fn(),
+		onZRotate: vi.fn(),
+		onXChange: vi.fn(),
+		onYChange: vi.fn(),
+		onZChange: vi.fn(),
 		onError: vi.fn(),
 		setCurrentType: vi.fn(),
 	};
@@ -68,12 +68,12 @@ describe("PrintObjectEventManager", () => {
 			expect(handlers).toHaveProperty("testStlClick");
 			expect(handlers).toHaveProperty("testCylinderClick");
 			expect(handlers).toHaveProperty("stlFileChange");
-			expect(handlers).toHaveProperty("coronalRotate");
-			expect(handlers).toHaveProperty("sagittalRotate");
-			expect(handlers).toHaveProperty("transversalRotate");
-			expect(handlers).toHaveProperty("verticalInput");
-			expect(handlers).toHaveProperty("horizontalInput");
-			expect(handlers).toHaveProperty("depthInput");
+			expect(handlers).toHaveProperty("xRotate");
+			expect(handlers).toHaveProperty("yRotate");
+			expect(handlers).toHaveProperty("zRotate");
+			expect(handlers).toHaveProperty("xInput");
+			expect(handlers).toHaveProperty("yInput");
+			expect(handlers).toHaveProperty("zInput");
 		});
 	});
 
@@ -205,14 +205,14 @@ describe("PrintObjectEventManager", () => {
 			const handlers = vi.mocked(attachPrintObjectEventListeners).mock
 				.calls[0][0];
 
-			handlers.coronalRotate();
-			expect(mockCallbacks.onCoronalRotate).toHaveBeenCalled();
+			handlers.xRotate();
+			expect(mockCallbacks.onXRotate).toHaveBeenCalled();
 
-			handlers.sagittalRotate();
-			expect(mockCallbacks.onSagittalRotate).toHaveBeenCalled();
+			handlers.yRotate();
+			expect(mockCallbacks.onYRotate).toHaveBeenCalled();
 
-			handlers.transversalRotate();
-			expect(mockCallbacks.onTransversalRotate).toHaveBeenCalled();
+			handlers.zRotate();
+			expect(mockCallbacks.onZRotate).toHaveBeenCalled();
 		});
 
 		test("translation handlers call appropriate callbacks", async () => {
@@ -226,14 +226,14 @@ describe("PrintObjectEventManager", () => {
 				.calls[0][0];
 			const mockEvent = {} as Event;
 
-			handlers.verticalInput(mockEvent);
-			expect(mockCallbacks.onVerticalChange).toHaveBeenCalledWith(mockEvent);
+			handlers.xInput(mockEvent);
+			expect(mockCallbacks.onXChange).toHaveBeenCalledWith(mockEvent);
 
-			handlers.horizontalInput(mockEvent);
-			expect(mockCallbacks.onHorizontalChange).toHaveBeenCalledWith(mockEvent);
+			handlers.yInput(mockEvent);
+			expect(mockCallbacks.onYChange).toHaveBeenCalledWith(mockEvent);
 
-			handlers.depthInput(mockEvent);
-			expect(mockCallbacks.onDepthChange).toHaveBeenCalledWith(mockEvent);
+			handlers.zInput(mockEvent);
+			expect(mockCallbacks.onZChange).toHaveBeenCalledWith(mockEvent);
 		});
 	});
 

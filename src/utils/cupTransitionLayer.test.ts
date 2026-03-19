@@ -170,10 +170,10 @@ describe("getTransitionLayer", () => {
 			{ point: new Vector3(10, 10, 0), calculatedLayerHeight: 0.3 },
 		];
 
-		const result = await getTransitionLayer(points, baseOptions);
+		const { gcode } = await getTransitionLayer(points, baseOptions);
 
-		expect(typeof result).toBe("string");
-		expect(result.length).toBeGreaterThan(0);
+		expect(typeof gcode).toBe("string");
+		expect(gcode.length).toBeGreaterThan(0);
 	});
 
 	test("generates correct number of G1 commands (one less than points)", async () => {
@@ -184,8 +184,8 @@ describe("getTransitionLayer", () => {
 			{ point: new Vector3(0, 10, 0), calculatedLayerHeight: 0.35 },
 		];
 
-		const result = await getTransitionLayer(points, baseOptions);
-		const lines = result.split("\n");
+		const { gcode } = await getTransitionLayer(points, baseOptions);
+		const lines = gcode.split("\n");
 
 		expect(lines).toHaveLength(3);
 	});
@@ -197,8 +197,8 @@ describe("getTransitionLayer", () => {
 			{ point: new Vector3(10, 10, 0), calculatedLayerHeight: 0.3 },
 		];
 
-		const result = await getTransitionLayer(points, baseOptions);
-		const lines = result.split("\n");
+		const { gcode } = await getTransitionLayer(points, baseOptions);
+		const lines = gcode.split("\n");
 
 		for (const line of lines) {
 			expect(line).toMatch(/^G1 /);
@@ -211,13 +211,13 @@ describe("getTransitionLayer", () => {
 			{ point: new Vector3(10, 5, 2), calculatedLayerHeight: 0.25 },
 		];
 
-		const result = await getTransitionLayer(points, baseOptions);
+		const { gcode } = await getTransitionLayer(points, baseOptions);
 
-		expect(result).toMatch(/X-?\d+\.?\d*/);
-		expect(result).toMatch(/Y-?\d+\.?\d*/);
-		expect(result).toMatch(/Z-?\d+\.?\d*/);
-		expect(result).toMatch(/E-?\d+\.?\d*/);
-		expect(result).toMatch(/F\d+/);
+		expect(gcode).toMatch(/X-?\d+\.?\d*/);
+		expect(gcode).toMatch(/Y-?\d+\.?\d*/);
+		expect(gcode).toMatch(/Z-?\d+\.?\d*/);
+		expect(gcode).toMatch(/E-?\d+\.?\d*/);
+		expect(gcode).toMatch(/F\d+/);
 	});
 
 	test("applies offsetHeight to Z values", async () => {
@@ -226,30 +226,30 @@ describe("getTransitionLayer", () => {
 			{ point: new Vector3(10, 0, 0), calculatedLayerHeight: 0.25 },
 		];
 
-		const result = await getTransitionLayer(points, {
+		const { gcode } = await getTransitionLayer(points, {
 			...baseOptions,
 			offsetHeight: 5,
 		});
 
-		expect(result).toMatch(/Z5/);
+		expect(gcode).toMatch(/Z5/);
 	});
 
-	test("returns empty string when only one point provided", async () => {
+	test("returns empty gcode when only one point provided", async () => {
 		const points = [
 			{ point: new Vector3(0, 0, 0), calculatedLayerHeight: 0.2 },
 		];
 
-		const result = await getTransitionLayer(points, baseOptions);
+		const { gcode } = await getTransitionLayer(points, baseOptions);
 
-		expect(result).toBe("");
+		expect(gcode).toBe("");
 	});
 
-	test("returns empty string when no points provided", async () => {
+	test("returns empty gcode when no points provided", async () => {
 		const points: { point: Vector3; calculatedLayerHeight: number }[] = [];
 
-		const result = await getTransitionLayer(points, baseOptions);
+		const { gcode } = await getTransitionLayer(points, baseOptions);
 
-		expect(result).toBe("");
+		expect(gcode).toBe("");
 	});
 
 	test("X values are negated in output", async () => {
@@ -258,8 +258,8 @@ describe("getTransitionLayer", () => {
 			{ point: new Vector3(10, 0, 0), calculatedLayerHeight: 0.25 },
 		];
 
-		const result = await getTransitionLayer(points, baseOptions);
+		const { gcode } = await getTransitionLayer(points, baseOptions);
 
-		expect(result).toMatch(/X-10/);
+		expect(gcode).toMatch(/X-10/);
 	});
 });

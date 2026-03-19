@@ -16,6 +16,7 @@ export class CollisionDetector implements ICollisionDetector {
 	#socketCup: SocketCup;
 	#scene: Scene;
 	#transitionInstance: CupToSocketTransition | null = null;
+	#computeId = 0;
 
 	constructor(socketCup: SocketCup, scene: Scene) {
 		this.#socketCup = socketCup;
@@ -33,6 +34,7 @@ export class CollisionDetector implements ICollisionDetector {
 		currentType: PrintObjectType | undefined,
 	): Promise<CollisionState> {
 		if (!mesh || !this.#socketCup?.mesh) {
+			this.#clearTransition();
 			return { hasCollision: false, hasInvalidFit: false, message: null };
 		}
 
@@ -49,6 +51,7 @@ export class CollisionDetector implements ICollisionDetector {
 		).intersectsGeometry(mesh.geometry, transformMatrix);
 
 		if (hit) {
+			this.#clearTransition();
 			return {
 				hasCollision: true,
 				hasInvalidFit: false,
@@ -67,19 +70,37 @@ export class CollisionDetector implements ICollisionDetector {
 					message: "Imperfect fit: Socket does not fully cover the cup edge",
 				};
 			}
+		} else {
+			this.#clearTransition();
 		}
 
 		// No collision and valid transition
 		return { hasCollision: false, hasInvalidFit: false, message: null };
 	}
 
+	#clearTransition(): void {
+		this.#computeId++;
+		this.#removeTransitionMeshesFromScene();
+		this.#transitionInstance?.dispose();
+		this.#transitionInstance = null;
+	}
+
+	#removeTransitionMeshesFromScene(): void {
+		const toRemove = this.#scene.children.filter(
+			(child) => child.userData?.isTransition,
+		);
+		for (const child of toRemove) {
+			this.#scene.remove(child);
+		}
+	}
+
 	/**
 	 * Computes the cup-to-socket transition and validates the fit.
 	 */
 	async #computeTransition(mesh: Mesh): Promise<{ isValid: boolean }> {
-		// Dispose existing transition
-		this.#transitionInstance?.dispose();
-		this.#transitionInstance = null;
+		this.#clearTransition();
+
+		const id = this.#computeId;
 
 		mesh.updateMatrixWorld(true);
 
@@ -89,7 +110,23 @@ export class CollisionDetector implements ICollisionDetector {
 			this.#scene,
 		);
 
-		return await this.#transitionInstance.computeTransition();
+		// If a newer computation started while we were awaiting, discard this one
+		if (id !== this.#computeId) {
+			this.#transitionInstance.dispose();
+			this.#transitionInstance = null;
+			return { isValid: false };
+		}
+
+		const result = await this.#transitionInstance.computeTransition();
+
+		// Check again after the second await
+		if (id !== this.#computeId) {
+			this.#transitionInstance?.dispose();
+			this.#transitionInstance = null;
+			return { isValid: false };
+		}
+
+		return result;
 	}
 
 	/**
@@ -110,7 +147,6 @@ export class CollisionDetector implements ICollisionDetector {
 	 * Disposes the collision detector and its resources.
 	 */
 	dispose(): void {
-		this.#transitionInstance?.dispose();
-		this.#transitionInstance = null;
+		this.#clearTransition();
 	}
 }

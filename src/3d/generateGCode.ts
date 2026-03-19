@@ -105,7 +105,6 @@ function generateGCodeHeader(params: {
 		"T0 ; select tool 0",
 		"",
 		";## Set temperatures ##",
-		"M106 P0 S0 H3 L0.15 X0.25 T20:40",
 		`M568 P0 S${materialProfile.nozzleTemp} ; set temperature for barrel`,
 		`M140 P1 S${materialProfile.cupTemp} ; set cup heater temperature`,
 		"",
@@ -114,16 +113,19 @@ function generateGCodeHeader(params: {
 		"",
 		";## move to prime position / pickup cup heater start position ##",
 		`G1 Y0 Z${formValues.cupHeight + 10} F6000 ; Z down to cup height + 10, Y moves back to cup center`,
-		"G1 X-90 ; move in to register with cup heater for pickup",
+		"G1 X-93 ; move in to register with cup heater for pickup",
 		"M116 P0 S5 ; wait for nozzle temperature +/-5C",
 		"M116 H2 S2 ; wait for cup temperature +/-2C",
+		"",
+		";## Enclosure blower thermostatic control ##",
+		"M106 P0 S0 H3 L0.20 X0.60 T20:24",
 		"",
 		";## cup heater removal sequence ##",
 		"M140 P1 S0 ; cup heater off",
 		"set global.pelletFeedOn = true ; enable pellet feed",
 		"G1 Z70 F6000 ; Z moves up to pick up cup heater",
 		"G1 X130 F6000 ; X right to park cup heater",
-		"G1 Z15 F6000 ; Z down to place cup heater on bed",
+		"G1 Z12 F6000 ; Z down to place cup heater on bed",
 		"G1 X100 F6000 ; X left to disengage cup heater",
 		`G1 Z${startingHeight} F6000 ; Z up to cup height + nozzleSize`,
 		'M98 P"0:/sys/provel/prime.g" ; prime extruder',
@@ -235,7 +237,10 @@ export async function generateGCode(
 		shrinkScale,
 		nozzleSizeOffset,
 	});
-	const transitionLayer = await getTransitionLayer(circlePoints, {
+	const {
+		gcode: transitionLayerGcode,
+		lastExtrusion: transitionLastExtrusion,
+	} = await getTransitionLayer(circlePoints, {
 		nozzleSize,
 		outputFactor,
 		offsetHeight: startingHeight,
@@ -246,7 +251,7 @@ export async function generateGCode(
 
 	gcode.push(
 		";START TRANSITION LAYER",
-		transitionLayer,
+		transitionLayerGcode,
 		";END TRANSITION LAYER",
 	);
 
@@ -261,12 +266,13 @@ export async function generateGCode(
 
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
-		gcode.push(";START NEW LEVEL");
+		gcode.push(`;START NEW LEVEL ${i + 1}`);
 
 		if (i === 0) gcode.push("M106 P2 S0 ; set fan speed");
 		if (i === 1) gcode.push("M106 P2 S0.5 ; set fan speed");
 
-		for (const point of pointLevel) {
+		for (let j = 0; j < pointLevel.length; j++) {
+			const point = pointLevel[j];
 			const adjustedPoint = point.clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(adjustedPoint);
 
@@ -294,10 +300,25 @@ export async function generateGCode(
 						outputFactor,
 					});
 
+			let roundedExtrusion = floor(extrusion, 2);
+
+			if (roundedExtrusion === 0) continue;
+
+			// Ramp extrusion down from transition layer value over first layer
+			if (i === 0) {
+				const t = j / pointLevel.length;
+				const rampedExtrusion =
+					transitionLastExtrusion + t * (extrusion - transitionLastExtrusion);
+				roundedExtrusion = Math.max(
+					floor(rampedExtrusion, 2),
+					roundedExtrusion,
+				);
+			}
+
 			previousPoint = adjustedPoint;
 
 			gcode.push(
-				`${makeGCodePoint(adjustedPoint, { flipHeight, verticalAxis })} E${floor(extrusion, 2)} F${feedratePerLevel[i]}`,
+				`${makeGCodePoint(adjustedPoint, { flipHeight, verticalAxis })} E${roundedExtrusion} F${feedratePerLevel[i]}`,
 			);
 		}
 	}
@@ -311,8 +332,9 @@ export async function generateGCode(
 		"  G91",
 		"  G1 Z3 F3000",
 		"  G90",
-		"G1 X-180 E30 F6000 ;move extruder head out of way",
+		"G1 X-180 F6000 ;move extruder head out of way",
 		"M568 P0 S0 ;set the temperature off",
+		"M106 P0 S0 H-1 ; turn off enclosure blower",
 		"M106 S0 ; turn the blowers and fan off",
 		"M140 S0 ; set bed temperature",
 		'M98 P"0:/sys/provel/end.g"',
@@ -325,25 +347,11 @@ export async function writeGCodeFile(
 	gcodeString: string,
 	fileName = "file.gcode",
 ) {
-	if (window.isTauri) {
-		const dialog = await import("@tauri-apps/plugin-dialog");
-		const fs = await import("@tauri-apps/plugin-fs");
-		const path = await dialog.save({
-			title: "Save GCode file",
-			defaultPath: fileName,
-			filters: [{ name: "GCode", extensions: ["gcode"] }],
-		});
-
-		if (path) {
-			await fs.writeFile(path, new TextEncoder().encode(gcodeString));
-		}
-	} else {
-		const blob = new Blob([gcodeString], { type: "text/plain" });
-		const link = document.createElement("a");
-		link.href = URL.createObjectURL(blob);
-		link.download = fileName;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	}
+	const blob = new Blob([gcodeString], { type: "text/plain" });
+	const link = document.createElement("a");
+	link.href = URL.createObjectURL(blob);
+	link.download = fileName;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
 }

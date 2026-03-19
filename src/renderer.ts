@@ -1,15 +1,16 @@
 import "@/global-style.css";
 import "@/app-style.css";
 
+import { initLogInterceptor } from "@/utils/logInterceptor";
 import { initializeTheme } from "@/web-components/Settings";
 
-// Initialize theme before any components render to prevent flash
+// Initialize log interceptor and theme before any components render
+initLogInterceptor();
 initializeTheme();
 
 import "@/db/store";
 import "@/web-components";
 import "@/utils/globalEvents";
-import "@/utils/updater";
 
 import {
 	Check,
@@ -42,19 +43,18 @@ import {
 	applyTrimLineCheckbox,
 	clearModelButton,
 	clearTrimLineBtn,
-	depthTranslate,
+	collisionWarning,
 	drawTrimLineBtn,
 	estimatedPrintTime,
 	generateGCodeButton,
-	horizontalTranslate,
 	loadingScreen,
 	printerFileInput,
 	progressBar,
-	progressBarDiv,
-	progressBarLabel,
-	toggleRotateTransformControlsButton,
+	toggleTransformControlsButton,
 	trimLineStatus,
-	verticalTranslate,
+	xTranslate,
+	yTranslate,
+	zTranslate,
 } from "@/utils/htmlElements";
 import { saveRotationToDatabase } from "@/utils/meshTransforms";
 import { SliceWorkerStatus } from "./3d/sliceWorker";
@@ -111,7 +111,10 @@ const printObject = new PrintObject({
 		}
 
 		const existingMeshes = app.scene.children.filter((child) => {
-			return child.type === "Mesh" && child.userData.isPrintObject;
+			return (
+				child.type === "Mesh" &&
+				(child.userData.isPrintObject || child.userData.isTransition)
+			);
 		});
 
 		if (existingMeshes.length > 0) {
@@ -131,6 +134,9 @@ const printObject = new PrintObject({
 			},
 		});
 
+		generateGCodeButton.disabled = false;
+		printerFileInput.disabled = false;
+
 		loadingScreen.style.display = "none";
 	},
 });
@@ -140,12 +146,15 @@ const removeMeshes = async (meshes: Mesh[]) => {
 		app.removeMeshFromScene(mesh);
 	});
 
-	toggleRotateTransformControlsButton.setAttribute("aria-pressed", "false");
+	toggleTransformControlsButton.setAttribute("aria-pressed", "false");
 
-	horizontalTranslate.value = "0";
-	depthTranslate.value = "0";
-	verticalTranslate.value = "0";
-	activeFileName.textContent = "";
+	xTranslate.value = "0";
+	yTranslate.value = "0";
+	zTranslate.value = "0";
+	activeFileName.textContent = "No file selected";
+	collisionWarning.style.display = "none";
+	generateGCodeButton.disabled = true;
+	printerFileInput.disabled = true;
 
 	estimatedPrintTime.textContent = "0m 0s";
 
@@ -170,7 +179,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 	const allGeometries = app.collectAllPrintableGeometries();
 
-	progressBarDiv.style.display = "flex";
+	progressBar.show();
 
 	const worker = new sliceWorker();
 
@@ -189,7 +198,6 @@ export async function slicingAction(sendToFile: boolean) {
 		if (type === SliceWorkerStatus.PROGRESS && typeof data === "number") {
 			const progress = ceil(data * 100);
 
-			progressBarLabel.textContent = `${progress}%`;
 			progressBar.value = progress;
 		} else if (type === SliceWorkerStatus.DONE && Array.isArray(data)) {
 			const vectors: Vector3[][] = [];
@@ -226,16 +234,14 @@ export async function slicingAction(sendToFile: boolean) {
 				await sendGCodeFile(new Blob([gcode]), filePathName);
 			}
 
-			progressBar.value = 0;
-			progressBarDiv.style.display = "none";
+			progressBar.reset();
 			worker.terminate();
 		}
 	};
 
 	worker.onerror = (error) => {
 		console.error("Worker error:", error);
-		progressBar.value = 0;
-		progressBarDiv.style.display = "none";
+		progressBar.reset();
 		worker.terminate();
 	};
 }
@@ -256,9 +262,9 @@ printerFileInput.addEventListener("click", async () => {
 	}
 });
 
-toggleRotateTransformControlsButton.addEventListener("click", () => {
-	const isVisible = app.toggleRotateTransformControls();
-	toggleRotateTransformControlsButton.setAttribute(
+toggleTransformControlsButton.addEventListener("click", () => {
+	const isVisible = app.translateRotationControls();
+	toggleTransformControlsButton.setAttribute(
 		"aria-pressed",
 		isVisible.toString(),
 	);

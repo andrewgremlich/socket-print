@@ -67,44 +67,26 @@ export const getTranslateValues = async () => {
 };
 
 export const updateRotateValues = async (
-	rotateCoronal: number,
-	rotateSagittal: number,
-	rotateTransverse: number,
+	rotateX: number,
+	rotateY: number,
+	rotateZ: number,
 ) => {
 	await Promise.all([
-		db.appSettings
-			.where("name")
-			.equals("rotateCoronal")
-			.modify({ value: rotateCoronal }),
-		db.appSettings
-			.where("name")
-			.equals("rotateSagittal")
-			.modify({ value: rotateSagittal }),
-		db.appSettings
-			.where("name")
-			.equals("rotateTransverse")
-			.modify({ value: rotateTransverse }),
+		db.appSettings.where("name").equals("rotateX").modify({ value: rotateX }),
+		db.appSettings.where("name").equals("rotateY").modify({ value: rotateY }),
+		db.appSettings.where("name").equals("rotateZ").modify({ value: rotateZ }),
 	]);
 };
 
 export const getRotateValues = async () => {
-	const rotateCoronal = await db.appSettings
-		.where("name")
-		.equals("rotateCoronal")
-		.first();
-	const rotateSagittal = await db.appSettings
-		.where("name")
-		.equals("rotateSagittal")
-		.first();
-	const rotateTransverse = await db.appSettings
-		.where("name")
-		.equals("rotateTransverse")
-		.first();
+	const rotateX = await db.appSettings.where("name").equals("rotateX").first();
+	const rotateY = await db.appSettings.where("name").equals("rotateY").first();
+	const rotateZ = await db.appSettings.where("name").equals("rotateZ").first();
 
 	return {
-		coronal: Number(rotateCoronal.value),
-		sagittal: Number(rotateSagittal.value),
-		transverse: Number(rotateTransverse.value),
+		x: Number(rotateX.value),
+		y: Number(rotateY.value),
+		z: Number(rotateZ.value),
 	};
 };
 

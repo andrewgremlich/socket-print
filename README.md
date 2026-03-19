@@ -31,13 +31,6 @@ When reading the code, keep in mind that variables like `verticalAxis` and `flip
 
 https://dyzedesign.com/2024/05/flow-to-rpm-factor-optimize-your-3d-printing-with-pellet-extruders/
 
-Signing Windows
-- https://www.josephguadagno.net/2024/07/17/ev-code-signing-certificates-with-azure-key-vault-and-digicert
-- https://codesigningstore.com/azure-key-vault-set-up-and-code-signing-tutorial-with-faqs
-- https://dev.to/obinnaijoma/how-to-create-a-key-vault-and-add-key-secret-and-certificate-on-microsoft-azure-2fe5
-- https://tauri.app/distribute/sign/windows/#azure-code-signing
-- code signing on windows
-  - https://melatonin.dev/blog/code-signing-on-windows-with-azure-trusted-signing/
 
 ## Clipping Library
 

@@ -101,12 +101,12 @@ export class PrintObject extends AppObject {
 				onClearData: () => this.clearData(),
 				onTestCylinder: () => this.#handleTestCylinder(),
 				onStlFileChange: (evt) => this.#onStlFileChange(evt),
-				onCoronalRotate: () => this.coronalRotate90(),
-				onSagittalRotate: () => this.sagittalRotate90(),
-				onTransversalRotate: () => this.transversalRotater90(),
-				onVerticalChange: (evt) => this.verticalChange(evt),
-				onHorizontalChange: (evt) => this.horizontalChange(evt),
-				onDepthChange: (evt) => this.depthChange(evt),
+				onXRotate: () => this.xRotate90(),
+				onYRotate: () => this.yRotate90(),
+				onZRotate: () => this.zRotate90(),
+				onXChange: (evt) => this.xChange(evt),
+				onYChange: (evt) => this.yChange(evt),
+				onZChange: (evt) => this.zChange(evt),
 				onError: (error, message) => this.#handleError(error, message),
 				setCurrentType: (type) => {
 					this.currentType = type;
@@ -406,9 +406,8 @@ export class PrintObject extends AppObject {
 		loadingScreen.style.display = "none";
 	};
 
-	#onStlFileChange = async (event: Event) => {
-		const { target: inputFiles } = event;
-		const file = (inputFiles as HTMLInputElement).files?.[0];
+	#onStlFileChange = async (_event: Event) => {
+		const file = stlFileInput?.files?.[0];
 
 		switch (this.currentType) {
 			case PrintObjectType.Socket:
@@ -434,17 +433,17 @@ export class PrintObject extends AppObject {
 		});
 	};
 
-	coronalRotate90 = () => this.handleRotationChange("x", QUARTER_TURN);
-	sagittalRotate90 = () => this.handleRotationChange("z", QUARTER_TURN);
-	transversalRotater90 = () => this.handleRotationChange("y", QUARTER_TURN);
+	xRotate90 = () => this.handleRotationChange("x", QUARTER_TURN);
+	yRotate90 = () => this.handleRotationChange("z", QUARTER_TURN);
+	zRotate90 = () => this.handleRotationChange("y", QUARTER_TURN);
 
 	handleTranslationChange = async (axis: TransformAxis, evt: Event) => {
 		await this.#transformController.handleTranslation(axis, evt);
 	};
 
-	horizontalChange = (evt: Event) => this.handleTranslationChange("x", evt);
-	verticalChange = (evt: Event) => this.handleTranslationChange("y", evt);
-	depthChange = (evt: Event) => this.handleTranslationChange("z", evt);
+	xChange = (evt: Event) => this.handleTranslationChange("x", evt);
+	yChange = (evt: Event) => this.handleTranslationChange("z", evt);
+	zChange = (evt: Event) => this.handleTranslationChange("y", evt);
 
 	getTransitionInstance(): CupToSocketTransition | null {
 		return this.#collisionDetector.getTransitionInstance() as CupToSocketTransition | null;

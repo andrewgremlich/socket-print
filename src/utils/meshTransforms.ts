@@ -49,7 +49,7 @@ export const applyRotation = (
 
 /**
  * Saves the current mesh rotation values to the database.
- * Note: The parameter order is (coronal/x, sagittal/z, transverse/y) to match DB schema.
+ * Note: The parameter order is (x, z, y) to match DB schema.
  */
 export const saveRotationToDatabase = async (mesh: Mesh): Promise<void> => {
 	await updateRotateValues(mesh.rotation.x, mesh.rotation.z, mesh.rotation.y);
