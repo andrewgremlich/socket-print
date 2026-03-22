@@ -100,9 +100,8 @@ main {
 
 #activeFileName {
 	position: absolute;
-	top: var(--spacing-sm);
-	left: var(--spacing-sm);
 	color: var(--text-primary);
+	margin: var(--spacing-sm);
 }
 
 #collisionWarning {
@@ -114,13 +113,16 @@ main {
 }
 
 #translateRotationControls {
+	background-color: rgba(0, 0, 0, 0.6);
+	border-radius: var(--radius-md);
+
 	position: absolute;
 	display: flex;
 	justify-content: flex-end;
 	flex-direction: column;
-	top: var(--spacing-sm);
-	right: var(--spacing-sm);
-	padding: var(--spacing-xs) var(--spacing-sm);
+	top: 0;
+	right: 0;
+	padding: var(--spacing-sm);
 	font-size: var(--font-sm);
 	cursor: pointer;
 	z-index: 1;
