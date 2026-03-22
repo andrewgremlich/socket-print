@@ -24,7 +24,7 @@ import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 import type { SocketCup } from "./SocketCup";
 
-export type TransitionResult = {
+type TransitionResult = {
 	isValid: boolean;
 	geometry?: BufferGeometry;
 	intersectionPoints?: Vector3[];

@@ -5,7 +5,7 @@ import {
 	updateTranslateValues,
 } from "@/db/appSettingsDbActions";
 
-export type TransformAxis = "x" | "y" | "z";
+type TransformAxis = "x" | "y" | "z";
 
 /**
  * Auto-aligns a mesh by centering it on X/Z and adjusting Y based on lock depth.

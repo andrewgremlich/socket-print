@@ -33,7 +33,7 @@ import {
 } from "@/utils/cupTransitionLayer";
 import { getExtrusionCalculation } from "@/utils/getExtrusionCalculation";
 
-export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
+function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
 }
 
