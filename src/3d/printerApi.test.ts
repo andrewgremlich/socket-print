@@ -3,7 +3,7 @@ import {
 	connectToPrinter,
 	getModelInformation,
 	sendGCodeFile,
-} from "./sendGCodeFile";
+} from "./printerApi";
 
 vi.mock("@/db/formValuesDbActions", () => ({
 	getIpAddress: vi.fn().mockResolvedValue("192.168.1.100"),

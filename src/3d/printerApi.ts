@@ -65,6 +65,28 @@ export async function getModelInformation(ipAddress: string) {
 	}
 }
 
+export async function getFirmwareVersion() {
+	try {
+		const ipAddress = await getIpAddress();
+		const { sessionTimeout } = await connectToPrinter(ipAddress);
+		const firmwareVersionCall = await fetch(
+			`http://${ipAddress}/rr_gcode?gcode=M115`,
+		);
+		const firmwareVersionResponse = await fetch(`http://${ipAddress}/rr_reply`);
+
+		if (!firmwareVersionCall.ok || !firmwareVersionResponse.ok) {
+			throw new Error("Could not fetch firmware version");
+		}
+
+		const firmwareVersionData: { reply: string } =
+			await firmwareVersionResponse.json();
+
+		return firmwareVersionData.reply;
+	} catch (error) {
+		throw new Error(`Could not fetch firmware version:${error}`);
+	}
+}
+
 function calculateCRC32(binaryData: Blob): Promise<number> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
