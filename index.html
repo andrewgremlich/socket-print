@@ -129,6 +129,17 @@
               title="Toggle rotation controls" aria-pressed="false">
               <i data-lucide="rotate-3d" aria-hidden="true"></i> Rotate
             </button>
+
+            <div id="trimLineControls">
+              <span><i data-lucide="scissors" aria-hidden="true"></i> Trim Line</span>
+              <button disabled id="drawTrimLineBtn" type="button">Draw</button>
+              <button disabled id="clearTrimLineBtn" type="button">Clear</button>
+              <label for="applyTrimLineCheckbox" style="display: flex; align-items: center; gap: 5px;">
+                <input type="checkbox" id="applyTrimLineCheckbox" disabled />
+                Apply
+              </label>
+              <span id="trimLineStatus">No trim line defined</span>
+            </div>
           </div>
           <div id="estimatedPrintTimeContainer" aria-label="Estimated Print Time">
             <span>Estimated Print Time:</span>
