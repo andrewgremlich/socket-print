@@ -1,3 +1,4 @@
+import { getFirmwareVersion } from "@/3d/printerApi";
 import {
 	getCircularSegments,
 	getEPerRevolution,
@@ -16,7 +17,6 @@ import {
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/db";
 import { downloadLogs } from "@/utils/logInterceptor";
-
 import { Dialog } from "../Dialog";
 
 type Theme = "dark" | "light" | "system";
@@ -44,6 +44,7 @@ export class Settings extends Dialog {
 	testCylinderForm: HTMLFormElement;
 	closeButton: HTMLButtonElement;
 	themeSelect: HTMLSelectElement;
+	firmwareVersionSpan: HTMLSpanElement;
 
 	constructor() {
 		super();
@@ -90,6 +91,11 @@ export class Settings extends Dialog {
 			</style>
 			<dialog id="${this.id}" aria-labelledby="settingsTitle">
 				<h3 id="settingsTitle">Settings</h3>
+
+				<h4>Printer</h4>
+				<p>Is connected: <span id="printerStatus">Unknown</span></p>
+				<p>Firmware version: <span id="firmwareVersion">Unknown</span></p>
+				<p>Download available: <span id="downloadAvailable">Unknown</span></p>
 
 				<h4>Appearance</h4>
 				<div id="themeContainer">
@@ -163,8 +169,52 @@ export class Settings extends Dialog {
 		this.themeSelect = this.shadowRoot.getElementById(
 			"themeSelect",
 		) as HTMLSelectElement;
+		this.firmwareVersionSpan = this.shadowRoot.getElementById(
+			"firmwareVersion",
+		) as HTMLSpanElement;
 
 		this.dialogEvents();
+		this.checkPrinterFirmwareVersion();
+	}
+
+	checkPrinterFirmwareVersion() {
+		// fetch("https://api.github.com/repos/Duet3D/RepRapFirmware/releases/latest")
+		// 	.then((response) => response.json())
+		// 	.then((data) => {
+		// 		const {
+		// 			tag_name,
+		// 			assets,
+		// 		}: {
+		// 			tag_name: string;
+		// 			assets: {
+		// 				browser_download_url: string;
+		// 				digest: string;
+		// 				name: string;
+		// 				size: number;
+		// 			}[];
+		// 		} = data;
+		// 		console.log(tag_name, assets);
+		// 	});
+
+		getFirmwareVersion()
+			.then((firmwareVersion) => {
+				this.firmwareVersionSpan.textContent = firmwareVersion;
+			})
+			.then(this.checkForFirmwareUpdates);
+	}
+
+	checkForFirmwareUpdates() {
+		return new Promise((resolve) => {
+			// Simulate async check for firmware updates
+			setTimeout(() => {
+				resolve(true); // Assume update is available for demo purposes
+			}, 1000);
+		}).then((updateAvailable) => {
+			const downloadAvailableSpan = this.shadowRoot.getElementById(
+				"downloadAvailable",
+			) as HTMLSpanElement;
+			downloadAvailableSpan.textContent = updateAvailable ? "Yes" : "No";
+		});
 	}
 
 	async showSettings() {
