@@ -1,11 +1,4 @@
-import {
-	BufferAttribute,
-	BufferGeometry,
-	DoubleSide,
-	Mesh,
-	MeshStandardMaterial,
-	Vector3,
-} from "three";
+import { BufferAttribute, BufferGeometry, type Mesh, Vector3 } from "three";
 import { ensureUV } from "./ensureUV";
 
 interface Facet {
@@ -28,6 +21,12 @@ function vertexKey(v: Vector3): string {
 	return `${v.x.toFixed(VERTEX_PRECISION)},${v.y.toFixed(VERTEX_PRECISION)},${v.z.toFixed(VERTEX_PRECISION)}`;
 }
 
+// Remember! Some vertices are shared between facets, so we need to know
+// all the usages of a vertex to calculate the offset position correctly.
+// We can't just take the normal of one facet and move the vertex along it,
+// because that would create gaps in the offset mesh. Instead, we need to
+// sum up all the normals of the facets that use this vertex and then move
+// it along the average normal direction.
 function buildVertexUsageMap(
 	facets: FacetCollection,
 ): Map<string, VertexUsageInfo[]> {
@@ -138,55 +137,9 @@ function createOffsetFacetsFromGeometry(
 	geometry: BufferGeometry,
 	offset: number,
 ): FacetCollection {
-	// Ensure we have a non-indexed (triangle soup) geometry so that shared vertices are duplicated;
-	// we'll still merge via spatial key for smooth-ish offset where coordinates match.
 	const working = geometry.index ? geometry.toNonIndexed() : geometry;
 	const facets = extractFacetsFromGeometry(working);
 	return buildOffsetFacetSet(facets, offset);
-}
-
-export async function createMeshFromObject(
-	object: FacetCollection,
-): Promise<Mesh> {
-	const geometry = new BufferGeometry();
-	const material = new MeshStandardMaterial({
-		color: 0xffffff,
-		opacity: 1,
-		transparent: false,
-		side: DoubleSide,
-		vertexColors: false,
-		wireframe: import.meta.env.DEV,
-	});
-
-	const faceCount = object.length;
-	const verticesPosition = new Float32Array(faceCount * 9); // 3 verts * 3 comps
-	const normalsPosition = new Float32Array(faceCount * 9);
-	let ptr = 0;
-	for (const facet of object) {
-		for (let i = 0; i < 3; i++) {
-			const v = facet.vertices[i];
-			const n = facet.normal; // flat shading per face
-			verticesPosition[ptr] = v.x;
-			verticesPosition[ptr + 1] = v.y;
-			verticesPosition[ptr + 2] = v.z;
-			normalsPosition[ptr] = n.x;
-			normalsPosition[ptr + 1] = n.y;
-			normalsPosition[ptr + 2] = n.z;
-			ptr += 3;
-		}
-	}
-
-	geometry.setAttribute("position", new BufferAttribute(verticesPosition, 3));
-	geometry.setAttribute("normal", new BufferAttribute(normalsPosition, 3));
-
-	geometry.computeBoundingBox();
-	geometry.computeBoundingSphere();
-	geometry.computeVertexNormals();
-
-	ensureUV(geometry);
-
-	const mesh = new Mesh(geometry, material);
-	return mesh;
 }
 
 export async function applyOffset(
