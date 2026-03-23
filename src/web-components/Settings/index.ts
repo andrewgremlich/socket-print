@@ -29,12 +29,12 @@ export function initializeTheme(): void {
 	document.documentElement.setAttribute("data-theme", theme);
 }
 
-export function setTheme(theme: Theme): void {
+function setTheme(theme: Theme): void {
 	localStorage.setItem(THEME_STORAGE_KEY, theme);
 	document.documentElement.setAttribute("data-theme", theme);
 }
 
-export function getTheme(): Theme {
+function getTheme(): Theme {
 	return (localStorage.getItem(THEME_STORAGE_KEY) as Theme) ?? "dark";
 }
 

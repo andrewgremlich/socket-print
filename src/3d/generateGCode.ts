@@ -34,7 +34,7 @@ import {
 import { getExtrusionCalculation } from "@/utils/getExtrusionCalculation";
 import { isPointAboveTrimLine } from "@/utils/trimLineFiltering";
 
-export function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
+function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
 }
 

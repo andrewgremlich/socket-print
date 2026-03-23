@@ -1,7 +1,6 @@
+/// <reference types="vitest/config" />
 import { resolve } from "node:path";
-import { defineConfig } from "vite";
-import topLevelAwait from "vite-plugin-top-level-await";
-import tsconfigPaths from "vite-tsconfig-paths";
+import { defineConfig } from 'vite'
 import { serviceWorkerPlugin } from "./vite-sw-plugin";
 
 export default defineConfig({
@@ -10,12 +9,10 @@ export default defineConfig({
 		alias: {
 			three: resolve(__dirname, "node_modules/three"),
 		},
+		tsconfigPaths: true
 	},
 	optimizeDeps: {
 		include: ["three", "three/examples/jsm/Addons.js"],
-		esbuildOptions: {
-			mainFields: ["module", "main"],
-		},
 	},
 	css: {
 		transformer: "lightningcss",
@@ -26,6 +23,16 @@ export default defineConfig({
 				safari: 14,
 				edge: 100,
 			},
+		},
+	},
+	test: {
+		globals: true,
+		environment: "jsdom",
+		include: ["**/*.{test,spec}.{js,ts}"],
+		coverage: {
+			provider: "v8",
+			reporter: ["text", "html"],
+			exclude: ["node_modules/"],
 		},
 	},
 	server: {
@@ -45,11 +52,11 @@ export default defineConfig({
 		minify: true,
 		target: "es2022",
 		// modulePreload: false,
-		rollupOptions: {
+		rolldownOptions: {
 			input: {
-				main: resolve(__dirname, "index.html"),
-				help: resolve(__dirname, "help.html"),
-				licenses: resolve(__dirname, "licenses.html"),
+				main: resolve(import.meta.dirname, "index.html"),
+				help: resolve(import.meta.dirname, "help.html"),
+				licenses: resolve(import.meta.dirname, "licenses.html"),
 			},
 			output: {
 				entryFileNames: "assets/[name].[hash].js",
@@ -67,8 +74,6 @@ export default defineConfig({
 		},
 	},
 	plugins: [
-		tsconfigPaths(), 
-		topLevelAwait(),
 		serviceWorkerPlugin({
 			swSrc: 'public/sw-template.js',
 			swDest: 'sw.js',

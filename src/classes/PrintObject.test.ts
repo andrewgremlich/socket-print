@@ -238,23 +238,6 @@ describe("PrintObject", () => {
 			expect(printObject.offsetYPosition).toBe(0);
 			expect(printObject.currentType).toBeUndefined();
 		});
-
-		test("throws error if stlFileInput is not found", async () => {
-			const originalStlFileInput = htmlElements.stlFileInput;
-			// @ts-expect-error - intentionally setting to null for test
-			htmlElements.stlFileInput = null;
-
-			expect(() => {
-				new PrintObject({
-					callback: mockCallback,
-					socketCup: mockSocketCup as never,
-					scene: mockScene,
-				});
-			}).toThrow("STL File Input not found");
-
-			// @ts-expect-error - restoring original value
-			htmlElements.stlFileInput = originalStlFileInput;
-		});
 	});
 
 	describe("dispose", () => {

@@ -1,6 +1,6 @@
 import { max, min } from "mathjs";
 import { isFQDN, isIP } from "validator";
-import { connectToPrinter } from "@/3d/sendGCodeFile";
+import { connectToPrinter } from "@/3d/printerApi";
 import { getIpAddress } from "@/db/formValuesDbActions";
 import {
 	ipAddressFailure,

@@ -80,12 +80,6 @@ export class PrintObject extends AppObject {
 
 		this.callback = callback;
 		this.socketCup = socketCup;
-
-		if (!stlFileInput) {
-			throw new Error("STL File Input not found");
-		}
-
-		// Initialize composed controllers (use injected or create defaults)
 		this.#transformController =
 			transformController ?? new MeshTransformController(this.#showError);
 		this.#collisionDetector =
@@ -273,26 +267,21 @@ export class PrintObject extends AppObject {
 	// Test Cylinder Handling
 	// ─────────────────────────────────────────────────────────────────────────────
 
-	#handleTestCylinder = async () => {
-		this.#testCylinderInstance?.dispose();
-		this.#testCylinderInstance = null;
+	#applyTransformsAndNotify = async () => {
+		await this.applyNozzleSizeOffset();
+		await this.applyShrinkScale();
+		this.computeBoundingBox();
+		this.mesh.position.set(0, this.size.y / 2, 0);
+		this.callback({ size: this.size });
+	};
 
+	#handleTestCylinder = async () => {
 		const testCylinder = await TestCylinder.create();
 		this.#testCylinderInstance = testCylinder;
 
-		testCylinder.onChange(async () => {
-			await this.applyNozzleSizeOffset();
-			await this.applyShrinkScale();
-			this.computeBoundingBox();
-			this.mesh.position.set(0, this.size.y / 2, 0);
-			this.callback({ size: this.size });
-		});
+		testCylinder.onChange(() => this.#applyTransformsAndNotify());
 
 		this.mesh = testCylinder.mesh;
-
-		await this.applyNozzleSizeOffset();
-		await this.applyShrinkScale();
-
 		this.mesh.name = "test_cylinder";
 		this.mesh.userData = { isPrintObject: true };
 		activeFileName.textContent = "test_cylinder";
@@ -308,17 +297,7 @@ export class PrintObject extends AppObject {
 			this.#showError("Failed to save test cylinder");
 		}
 
-		this.computeBoundingBox();
-		this.mesh.position.set(0, this.size.y / 2, 0);
-
-		this.callback({
-			size: {
-				x: testCylinder.size.x,
-				y: testCylinder.size.y,
-				z: testCylinder.size.z,
-			},
-		});
-
+		await this.#applyTransformsAndNotify();
 		await this.#checkCollisionAndUpdateUI();
 	};
 

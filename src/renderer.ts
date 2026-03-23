@@ -30,7 +30,7 @@ import { blendHardEdges } from "@/3d/blendHardEdges";
 import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 import { calculatePrintTime } from "@/3d/calculatePrintTime";
 import { generateGCode, writeGCodeFile } from "@/3d/generateGCode";
-import { sendGCodeFile } from "@/3d/sendGCodeFile";
+import { sendGCodeFile } from "@/3d/printerApi";
 import sliceWorker from "@/3d/sliceWorker?worker";
 import { Application } from "@/classes/Application";
 import { PrintObject } from "@/classes/PrintObject";
