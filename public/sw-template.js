@@ -1,6 +1,7 @@
 // Service Worker Template - Generated at build time
 // NOTE: This only works in HTTPS
 const cacheName = "__CACHE_VERSION__";
+const appVersion = "__APP_VERSION__";
 
 const assetsToCache = __ASSETS_TO_CACHE__;
 
@@ -44,6 +45,12 @@ self.addEventListener("activate", async (event) => {
     (async () => {
       // Take control of all clients immediately
       await self.clients.claim();
+
+      // Notify all clients of the new version
+      const allClients = await self.clients.matchAll();
+      for (const client of allClients) {
+        client.postMessage({ type: "SW_UPDATED", version: appVersion });
+      }
 
       // Clean up old caches
       const cacheWhitelist = [cacheName];
