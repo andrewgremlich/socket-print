@@ -36,7 +36,7 @@ class UpdateNotification extends HTMLElement {
 	#hide() {
 		this.#clearHideTimer();
 
-		const focused = this.shadowRoot.activeElement;
+		const focused = this.shadowRoot?.activeElement;
 		if (focused instanceof HTMLElement) {
 			focused.blur();
 		}
@@ -59,6 +59,8 @@ class UpdateNotification extends HTMLElement {
 	}
 
 	#render() {
+		if (!this.shadowRoot) return;
+
 		this.shadowRoot.innerHTML = `
 			<style>
 				:host {
@@ -147,19 +149,19 @@ class UpdateNotification extends HTMLElement {
 			</div>
 		`;
 
-		this.#banner = this.shadowRoot.querySelector(
+		this.#banner = this.shadowRoot?.querySelector(
 			".update-banner",
 		) as HTMLDivElement;
 
 		this.shadowRoot
-			.querySelector(".reload-btn")
-			.addEventListener("click", () => {
+			?.querySelector(".reload-btn")
+			?.addEventListener("click", () => {
 				window.location.reload();
 			});
 
 		this.shadowRoot
-			.querySelector(".dismiss-btn")
-			.addEventListener("click", () => {
+			?.querySelector(".dismiss-btn")
+			?.addEventListener("click", () => {
 				this.#hide();
 			});
 	}

@@ -6,15 +6,15 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
+    "strictNullChecks": false,
     "sourceMap": true,
     "outDir": "dist",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "baseUrl": "./",
     "types": ["vitest"],
     "paths": {
       "@/*": ["./src/*"],
-      "pkg": ["package.json"]
+      "pkg": ["./package.json"]
     }
   },
   "include": ["src"],
