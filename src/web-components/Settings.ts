@@ -17,7 +17,7 @@ import {
 import { deleteDb } from "@/db/db";
 import { downloadLogs } from "@/utils/logInterceptor";
 
-import { Dialog } from "../Dialog";
+import { Dialog } from "./Dialog";
 
 type Theme = "dark" | "light" | "system";
 

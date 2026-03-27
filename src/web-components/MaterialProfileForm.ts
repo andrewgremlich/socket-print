@@ -6,7 +6,7 @@ import {
 	updateMaterialProfile,
 } from "@/db/materialProfilesDbActions";
 import type { MaterialProfile } from "@/db/types";
-import { Dialog } from "../Dialog";
+import { Dialog } from "./Dialog";
 
 export class MaterialProfileForm extends Dialog {
 	formTitle: HTMLElement;
