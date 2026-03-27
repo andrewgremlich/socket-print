@@ -51,7 +51,6 @@ import {
 	printerFileInput,
 	progressBar,
 	toggleTransformControlsButton,
-	trimLineStatus,
 	xTranslate,
 	yTranslate,
 	zTranslate,
@@ -277,14 +276,10 @@ toggleTransformControlsButton.addEventListener("click", () => {
 const updateTrimLineUI = (hasPoints: boolean, isDrawing: boolean) => {
 	if (isDrawing) {
 		drawTrimLineBtn.textContent = "Finish";
-		trimLineStatus.textContent = "Click on model to add points...";
 		clearTrimLineBtn.disabled = true;
 	} else {
 		drawTrimLineBtn.textContent = "Draw";
 		clearTrimLineBtn.disabled = !hasPoints;
-		trimLineStatus.textContent = hasPoints
-			? `${app.trimLine.getPoints().length} points defined`
-			: "";
 	}
 };
 
@@ -318,7 +313,6 @@ drawTrimLineBtn.addEventListener("click", async () => {
 		await app.trimLine.finishDrawing();
 	} else {
 		if (!printObject.mesh) {
-			trimLineStatus.textContent = "Load a model first";
 			return;
 		}
 		app.trimLine.setTargetMesh(printObject.mesh);

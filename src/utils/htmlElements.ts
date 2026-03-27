@@ -88,6 +88,3 @@ export const clearTrimLineBtn = document.getElementById(
 export const applyTrimLineCheckbox = document.getElementById(
 	"applyTrimLineCheckbox",
 ) as HTMLInputElement;
-export const trimLineStatus = document.getElementById(
-	"trimLineStatus",
-) as HTMLParagraphElement;
