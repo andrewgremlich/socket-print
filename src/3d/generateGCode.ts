@@ -302,6 +302,15 @@ export async function generateGCode(
 
 			let roundedExtrusion = floor(extrusion, 2);
 
+			if (isAboveTrimLine) {
+				// Travel move (no extrusion) to keep tool path intact
+				previousPoint = adjustedPoint;
+				gcode.push(
+					`G0 ${makeGCodePoint(adjustedPoint, { flipHeight, verticalAxis })} F${feedratePerLevel[i]}`,
+				);
+				continue;
+			}
+
 			if (roundedExtrusion === 0) continue;
 
 			// Ramp extrusion down from transition layer value over first layer
