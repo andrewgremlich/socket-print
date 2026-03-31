@@ -1,4 +1,6 @@
+import { atan2, pi } from "mathjs";
 import type { Vector3 } from "three";
+
 import type { TrimLine } from "@/classes/TrimLine";
 
 /**
@@ -41,7 +43,7 @@ export function isPointAboveTrimLine(
 ): boolean {
 	if (trimLinePoints.length < 2) return false;
 
-	const pointAngle = Math.atan2(point.z, point.x);
+	const pointAngle = atan2(point.z, point.x);
 	const trimHeight = interpolateHeightAtAngle(pointAngle, trimLinePoints);
 
 	return point.y > trimHeight;
@@ -63,7 +65,7 @@ export function interpolateHeightAtAngle(
 
 	// Convert all trim points to angle/height pairs
 	const angleHeightPairs = trimLinePoints.map((p) => ({
-		angle: Math.atan2(p.z, p.x),
+		angle: atan2(p.z, p.x),
 		height: p.y,
 	}));
 
@@ -72,8 +74,8 @@ export function interpolateHeightAtAngle(
 
 	// Normalize target angle to [-PI, PI]
 	let normalizedTarget = targetAngle;
-	while (normalizedTarget > Math.PI) normalizedTarget -= 2 * Math.PI;
-	while (normalizedTarget < -Math.PI) normalizedTarget += 2 * Math.PI;
+	while (normalizedTarget > pi) normalizedTarget -= 2 * pi;
+	while (normalizedTarget < -pi) normalizedTarget += 2 * pi;
 
 	// Find the two adjacent points for interpolation
 	let lowerIdx = -1;
@@ -105,8 +107,8 @@ export function interpolateHeightAtAngle(
 	let angleOffset = normalizedTarget - lower.angle;
 
 	// Handle wrap-around
-	if (angleDiff < 0) angleDiff += 2 * Math.PI;
-	if (angleOffset < 0) angleOffset += 2 * Math.PI;
+	if (angleDiff < 0) angleDiff += 2 * pi;
+	if (angleOffset < 0) angleOffset += 2 * pi;
 
 	const t = angleDiff !== 0 ? angleOffset / angleDiff : 0;
 	return lower.height + t * (upper.height - lower.height);
