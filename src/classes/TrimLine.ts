@@ -36,6 +36,7 @@ export class TrimLine {
 	private controls: OrbitControls;
 	private onDrawingStateChange: ((isDrawing: boolean) => void) | null = null;
 	private onPointsChange: ((points: Vector3[]) => void) | null = null;
+	private shadingEnabled = false;
 
 	private boundHandlePointerDown: (event: PointerEvent) => void;
 
@@ -70,7 +71,9 @@ export class TrimLine {
 				(p: TrimLinePoint) => new Vector3(p.x, p.y, p.z),
 			);
 			this.updateVisualization();
-			this.updateShadedRegion();
+			if (this.shadingEnabled) {
+				this.updateShadedRegion();
+			}
 			this.onPointsChange?.(this.interpolatedPoints);
 		}
 	}
@@ -108,7 +111,9 @@ export class TrimLine {
 			this.interpolatedPoints = this.interpolatePoints(this.drawnPoints);
 			await setTrimLinePoints(this.interpolatedPoints);
 			this.updateVisualization();
-			this.updateShadedRegion();
+			if (this.shadingEnabled) {
+				this.updateShadedRegion();
+			}
 		}
 
 		this.onPointsChange?.(this.interpolatedPoints);
@@ -353,6 +358,15 @@ export class TrimLine {
 
 		const t = angleDiff !== 0 ? angleOffset / angleDiff : 0;
 		return lower.height + t * (upper.height - lower.height);
+	}
+
+	setShadingEnabled(enabled: boolean): void {
+		this.shadingEnabled = enabled;
+		if (enabled && this.interpolatedPoints.length >= 2 && this.targetMesh) {
+			this.updateShadedRegion();
+		} else if (!enabled) {
+			this.removeShadedRegion();
+		}
 	}
 
 	getPoints(): Vector3[] {
