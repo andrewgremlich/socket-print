@@ -32,7 +32,7 @@ import {
 	getTransitionLayer,
 } from "@/utils/cupTransitionLayer";
 import { getExtrusionCalculation } from "@/utils/getExtrusionCalculation";
-import { isPointAboveTrimLine } from "@/utils/trimLineFiltering";
+import { isPointAboveTrimLine } from "@/utils/trimLine";
 
 function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";

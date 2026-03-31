@@ -1,11 +1,8 @@
 import { Vector3 } from "three";
 import { describe, expect, it } from "vitest";
-import {
-	interpolateHeightAtAngle,
-	isPointAboveTrimLine,
-} from "./trimLineFiltering";
+import { interpolateHeightAtAngle, isPointAboveTrimLine } from "./trimLine";
 
-describe("trimLineFiltering", () => {
+describe("trimLine", () => {
 	describe("isPointAboveTrimLine", () => {
 		it("returns false when trim line has less than 2 points", () => {
 			const point = new Vector3(0, 50, 0);
