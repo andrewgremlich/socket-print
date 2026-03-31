@@ -10,6 +10,7 @@ import {
 	Vector3,
 } from "three";
 import type { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { getTrimLineSpacing } from "@/db/appSettingsDbActions";
 import {
 	getTrimLinePoints,
 	setTrimLinePoints,
@@ -20,7 +21,7 @@ const TRIM_LINE_POINT_COLOR = 0xff0000;
 const SHADED_REGION_COLOR = 0x333333;
 const SHADED_REGION_OPACITY = 0.5;
 const POINT_SPHERE_RADIUS = 1;
-const INTERPOLATION_DISTANCE_MM = 1;
+const DEFAULT_INTERPOLATION_DISTANCE_MM = 3;
 
 export class TrimLine {
 	private drawnPoints: Vector3[] = [];
@@ -108,7 +109,7 @@ export class TrimLine {
 
 		if (this.drawnPoints.length >= 2) {
 			// Interpolate points between drawn points
-			this.interpolatedPoints = this.interpolatePoints(this.drawnPoints);
+			this.interpolatedPoints = await this.interpolatePoints(this.drawnPoints);
 			await setTrimLinePoints(this.interpolatedPoints);
 			this.updateVisualization();
 			if (this.shadingEnabled) {
@@ -119,8 +120,15 @@ export class TrimLine {
 		this.onPointsChange?.(this.interpolatedPoints);
 	}
 
-	private interpolatePoints(points: Vector3[]): Vector3[] {
+	private async interpolatePoints(points: Vector3[]): Promise<Vector3[]> {
 		if (points.length < 2) return [...points];
+
+		let spacing = DEFAULT_INTERPOLATION_DISTANCE_MM;
+		try {
+			spacing = await getTrimLineSpacing();
+		} catch {
+			// fallback to default
+		}
 
 		const result: Vector3[] = [];
 
@@ -135,10 +143,8 @@ export class TrimLine {
 			const distance = currentPoint.distanceTo(nextPoint);
 
 			// If distance is greater than interpolation distance, add intermediate points
-			if (distance > INTERPOLATION_DISTANCE_MM) {
-				const numIntermediatePoints = Math.floor(
-					distance / INTERPOLATION_DISTANCE_MM,
-				);
+			if (distance > spacing) {
+				const numIntermediatePoints = Math.floor(distance / spacing);
 
 				for (let j = 1; j < numIntermediatePoints; j++) {
 					const t = j / numIntermediatePoints;

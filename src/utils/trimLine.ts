@@ -30,6 +30,49 @@ export function filterPointsByTrimLine(
 }
 
 /**
+ * Finds the set of sliced points that are closest to any trim line point
+ * by 3D distance. These points form the "punch line" — a narrow band of
+ * G0 travel moves that separates the printed region from the waste region.
+ *
+ * For each trim line point, the single closest sliced point (across all layers)
+ * is identified and added to the punch set.
+ *
+ * @param pointGatherer - 2D array of sliced Vector3 points, organized by layer
+ * @param trimLinePoints - Array of Vector3 points defining the trim line
+ * @returns Set of string keys ("layerIndex,pointIndex") identifying punch points
+ */
+export function findPunchLinePoints(
+	pointGatherer: Vector3[][],
+	trimLinePoints: Vector3[],
+): Set<string> {
+	const punchPoints = new Set<string>();
+
+	if (trimLinePoints.length < 2) return punchPoints;
+
+	for (const trimPoint of trimLinePoints) {
+		let closestKey: string | null = null;
+		let closestDistance = Number.POSITIVE_INFINITY;
+
+		for (let i = 0; i < pointGatherer.length; i++) {
+			const layer = pointGatherer[i];
+			for (let j = 0; j < layer.length; j++) {
+				const distance = layer[j].distanceTo(trimPoint);
+				if (distance < closestDistance) {
+					closestDistance = distance;
+					closestKey = `${i},${j}`;
+				}
+			}
+		}
+
+		if (closestKey) {
+			punchPoints.add(closestKey);
+		}
+	}
+
+	return punchPoints;
+}
+
+/**
  * Standalone function to check if a point is above a trim line.
  * Uses angle-based interpolation around the circumference.
  *

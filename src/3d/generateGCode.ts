@@ -32,7 +32,7 @@ import {
 	getTransitionLayer,
 } from "@/utils/cupTransitionLayer";
 import { getExtrusionCalculation } from "@/utils/getExtrusionCalculation";
-import { isPointAboveTrimLine } from "@/utils/trimLine";
+import { findPunchLinePoints } from "@/utils/trimLine";
 
 function flipVerticalAxis(currentAxis: "y" | "z"): "y" | "z" {
 	return currentAxis === "y" ? "z" : "y";
@@ -264,6 +264,19 @@ export async function generateGCode(
 
 	const lineWidth = nozzleSize * lineWidthAdjustment;
 
+	// Build a set of punch line points — sliced points closest to each trim line point.
+	// Trim line points are in world space; sliced points have startingHeight added,
+	// so subtract it for comparison.
+	const punchPoints =
+		trimLinePoints && trimLinePoints.length >= 2
+			? findPunchLinePoints(
+					pointGatherer.map((layer) =>
+						layer.map((p) => p.clone().sub(new Vector3(0, startingHeight, 0))),
+					),
+					trimLinePoints,
+				)
+			: new Set<string>();
+
 	for (let i = 0; i < pointGatherer.length; i++) {
 		const pointLevel = pointGatherer[i];
 		gcode.push(`;START NEW LEVEL ${i + 1}`);
@@ -276,40 +289,28 @@ export async function generateGCode(
 			const adjustedPoint = point.clone().add(new Vector3(0, layerHeight, 0));
 			const distance = previousPoint.distanceTo(adjustedPoint);
 
-			// Check if point is above trim line - if so, no extrusion
-			// Sliced points have startingHeight added by the slice worker,
-			// but trim line was drawn on the mesh in world space without that offset.
-			// Subtract startingHeight to compare in the same coordinate space.
-			const trimComparePoint = point
-				.clone()
-				.sub(new Vector3(0, startingHeight, 0));
-			const isAboveTrimLine =
-				trimLinePoints &&
-				trimLinePoints.length >= 2 &&
-				isPointAboveTrimLine(trimComparePoint, trimLinePoints);
+			const isPunchPoint = punchPoints.has(`${i},${j}`);
 
-			const extrusion = isAboveTrimLine
-				? 0
-				: getExtrusionCalculation({
-						distance,
-						layerHeight,
-						lineWidth,
-						gramsPerRevolution,
-						density,
-						ePerRevolution,
-						outputFactor,
-					});
-
-			let roundedExtrusion = floor(extrusion, 2);
-
-			if (isAboveTrimLine) {
-				// Travel move (no extrusion) to keep tool path intact
+			if (isPunchPoint) {
+				// Travel move (no extrusion) to punch through the trim line
 				previousPoint = adjustedPoint;
 				gcode.push(
 					`G0 ${makeGCodePoint(adjustedPoint, { flipHeight, verticalAxis })} F${feedratePerLevel[i]}`,
 				);
 				continue;
 			}
+
+			const extrusion = getExtrusionCalculation({
+				distance,
+				layerHeight,
+				lineWidth,
+				gramsPerRevolution,
+				density,
+				ePerRevolution,
+				outputFactor,
+			});
+
+			let roundedExtrusion = floor(extrusion, 2);
 
 			if (roundedExtrusion === 0) continue;
 
