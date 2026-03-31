@@ -183,3 +183,18 @@ export const setEPerRevolution = async (ePerRevolution: number) => {
 		.equals("ePerRevolution")
 		.modify({ value: ePerRevolution });
 };
+
+export const getTrimLineSpacing = async (): Promise<number> => {
+	const trimLineSpacing = await db.appSettings
+		.where("name")
+		.equals("trimLineSpacing")
+		.first();
+	return Number(trimLineSpacing.value);
+};
+
+export const setTrimLineSpacing = async (trimLineSpacing: number) => {
+	return await db.appSettings
+		.where("name")
+		.equals("trimLineSpacing")
+		.modify({ value: trimLineSpacing });
+};

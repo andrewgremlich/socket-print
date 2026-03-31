@@ -6,6 +6,7 @@ import {
 	getStartingCupLayerHeight,
 	getTestCylinderHeight,
 	getTestCylinderInnerDiameter,
+	getTrimLineSpacing,
 	setCircularSegments,
 	setEPerRevolution,
 	setLineWidthAdjustment,
@@ -13,6 +14,7 @@ import {
 	setStartingCupLayerHeight,
 	setTestCylinderHeight,
 	setTestCylinderInnerDiameter,
+	setTrimLineSpacing,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/db";
 import { downloadLogs } from "@/utils/logInterceptor";
@@ -118,6 +120,9 @@ export class Settings extends Dialog {
 
 					<label for="secondsPerLayer">Seconds Per Layer</label>
 					<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="14" />
+
+					<label for="trimLineSpacing">Trim Line Spacing (mm)</label>
+					<input type="number" id="trimLineSpacing" name="trimLineSpacing" step="0.5" min="1" max="10" />
 
 					<input type="submit" value="Save" class="button" id="saveSettings" />
 				</form>
@@ -231,6 +236,11 @@ export class Settings extends Dialog {
 			tasks.push(setEPerRevolution(ePerRevolutionVal));
 		}
 
+		const trimLineSpacingVal = Number(settings.trimLineSpacing);
+		if (!Number.isNaN(trimLineSpacingVal)) {
+			tasks.push(setTrimLineSpacing(trimLineSpacingVal));
+		}
+
 		if (tasks.length) {
 			await Promise.all(tasks);
 		}
@@ -257,6 +267,7 @@ export class Settings extends Dialog {
 			testCylinderInnerDiameter,
 			secondsPerLayer,
 			ePerRevolution,
+			trimLineSpacing,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
 			getLineWidthAdjustment(),
@@ -265,6 +276,7 @@ export class Settings extends Dialog {
 			getTestCylinderInnerDiameter(),
 			getSecondsPerLayer(),
 			getEPerRevolution(),
+			getTrimLineSpacing(),
 		]);
 
 		const mainSettingMap: Record<string, number> = {
@@ -275,6 +287,7 @@ export class Settings extends Dialog {
 			ePerRevolution,
 			testCylinderHeight,
 			testCylinderInnerDiameter,
+			trimLineSpacing,
 		};
 
 		Object.entries(mainSettingMap).forEach(([key, value]) => {

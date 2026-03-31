@@ -57,6 +57,7 @@ const defaultSettingNames: ProvelPrintSettings = {
 	ePerRevolution: 31.3,
 	trimLinePoints: "[]",
 	trimLineEnabled: false,
+	trimLineSpacing: 3,
 };
 
 const initData = async () => {

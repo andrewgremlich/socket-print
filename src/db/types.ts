@@ -56,6 +56,7 @@ export type ProvelPrintSettings = {
 	ePerRevolution: number;
 	trimLinePoints: string;
 	trimLineEnabled: boolean;
+	trimLineSpacing: number;
 };
 
 type KeyValueSetting = {
