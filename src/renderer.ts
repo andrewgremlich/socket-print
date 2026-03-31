@@ -22,6 +22,7 @@ import {
 	PrinterCheck,
 	Rotate3d,
 	RotateCw,
+	Scissors,
 	Settings,
 } from "lucide";
 import { ceil } from "mathjs";
@@ -72,6 +73,7 @@ createIcons({
 		Move3d,
 		Rotate3d,
 		RotateCw,
+		Scissors,
 	},
 });
 
@@ -306,6 +308,7 @@ app.trimLine.loadFromDatabase().then(() => {
 // Load trim line enabled state from database
 getTrimLineEnabled().then((enabled) => {
 	applyTrimLineCheckbox.checked = enabled;
+	app.trimLine.setShadingEnabled(enabled);
 });
 
 drawTrimLineBtn.addEventListener("click", async () => {
@@ -326,7 +329,9 @@ clearTrimLineBtn.addEventListener("click", async () => {
 });
 
 applyTrimLineCheckbox.addEventListener("change", async () => {
-	await setTrimLineEnabled(applyTrimLineCheckbox.checked);
+	const enabled = applyTrimLineCheckbox.checked;
+	await setTrimLineEnabled(enabled);
+	app.trimLine.setShadingEnabled(enabled);
 });
 
 // Enable trim line controls when a model is loaded

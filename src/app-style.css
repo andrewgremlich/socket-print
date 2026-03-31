@@ -150,6 +150,17 @@ main {
 	}
 }
 
+#trimLineControls {
+	margin-top: var(--spacing-sm);
+
+	span {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		margin-right: var(--spacing-lg);
+	}
+}
+
 #estimatedPrintTimeContainer {
 	position: absolute;
 	bottom: var(--spacing-sm);
