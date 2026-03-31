@@ -173,8 +173,9 @@
   <script>
     // Enhanced service worker registration with update handling
     if ('serviceWorker' in navigator) {
-      // Register service worker for both HTTPS and localhost development
-      const shouldRegister = location.protocol === 'https:';
+      // Only register service worker in production builds (sw.js is generated at build time)
+      const isDev = location.port === '4200';
+      const shouldRegister = !isDev && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 
       if (shouldRegister) {
         navigator.serviceWorker.register('/sw.js')
@@ -186,7 +187,14 @@
               registration.update();
             }, 60000);
 
-            // Handle service worker updates
+            // Listen for version messages from the service worker
+            navigator.serviceWorker.addEventListener('message', (event) => {
+              if (event.data && event.data.type === 'SW_UPDATED') {
+                document.querySelector('update-notification').show(event.data.version);
+              }
+            });
+
+            // Handle service worker updates (fallback if message isn't received)
             registration.addEventListener('updatefound', () => {
               const newWorker = registration.installing;
               if (newWorker) {
