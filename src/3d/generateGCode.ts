@@ -45,7 +45,7 @@ function makeGCodePoint(
 		verticalAxis: "y" | "z";
 	},
 ): string {
-	return `G1 X${-floor(point.x, 2)} Y${floor(point[opts.flipHeight], 2)} Z${floor(point[opts.verticalAxis], 2)}`;
+	return `X${-floor(point.x, 2)} Y${floor(point[opts.flipHeight], 2)} Z${floor(point[opts.verticalAxis], 2)}`;
 }
 
 async function getStartingX() {
@@ -328,7 +328,7 @@ export async function generateGCode(
 			previousPoint = adjustedPoint;
 
 			gcode.push(
-				`${makeGCodePoint(adjustedPoint, { flipHeight, verticalAxis })} E${roundedExtrusion} F${feedratePerLevel[i]}`,
+				`G1 ${makeGCodePoint(adjustedPoint, { flipHeight, verticalAxis })} E${roundedExtrusion} F${feedratePerLevel[i]}`,
 			);
 		}
 	}
