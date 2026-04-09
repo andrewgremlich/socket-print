@@ -1,6 +1,6 @@
 import { version } from "pkg";
 
-import { Dialog } from "../Dialog";
+import { Dialog } from "./Dialog";
 
 export class Info extends Dialog {
 	constructor() {

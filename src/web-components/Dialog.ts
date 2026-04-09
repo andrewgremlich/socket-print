@@ -1,4 +1,4 @@
-import { formContainerStyle } from "./style";
+import { formContainerStyle } from "./DialogStyle";
 
 export class Dialog extends HTMLElement {
 	dialog: HTMLDialogElement;

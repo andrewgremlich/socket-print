@@ -29,6 +29,11 @@ export default defineConfig({
 		globals: true,
 		environment: "jsdom",
 		include: ["**/*.{test,spec}.{js,ts}"],
+		server: {
+			deps: {
+				inline: ["three"],
+			},
+		},
 		coverage: {
 			provider: "v8",
 			reporter: ["text", "html"],

@@ -25,6 +25,7 @@ export function serviceWorkerPlugin(options: ServiceWorkerPluginOptions): Plugin
       const swTemplate = readFileSync(swSrc, 'utf-8');
       const swContent = swTemplate
         .replace('__CACHE_VERSION__', version)
+        .replace('__APP_VERSION__', packageJson.version)
         .replace('__ASSETS_TO_CACHE__', JSON.stringify(allAssets, null, 2));
       const outputDir = outputOptions.dir || 'dist';
 
