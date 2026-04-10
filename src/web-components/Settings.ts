@@ -1,4 +1,12 @@
-import { getFirmwareVersion } from "@/3d/printerApi";
+import {
+	type GitHubRelease,
+	getBoardInfo,
+	getLatestFirmwareRelease,
+	isNewerVersion,
+	pollUntilOnline,
+	triggerFirmwareFlash,
+	uploadFirmwareFile,
+} from "@/3d/printerApi";
 import {
 	getCircularSegments,
 	getEPerRevolution,
@@ -16,6 +24,7 @@ import {
 	setTestCylinderInnerDiameter,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/db";
+import { getIpAddress } from "@/db/formValuesDbActions";
 import { downloadLogs } from "@/utils/logInterceptor";
 
 import { Dialog } from "./Dialog";
@@ -46,6 +55,13 @@ export class Settings extends Dialog {
 	closeButton: HTMLButtonElement;
 	themeSelect: HTMLSelectElement;
 	firmwareVersionSpan: HTMLSpanElement;
+	firmwareUpdateContainer: HTMLDivElement;
+	updateFirmwareButton: HTMLButtonElement;
+	firmwareUpdateStatus: HTMLParagraphElement;
+	firmwareUpdateProgress: HTMLProgressElement;
+	updateStatusSpan: HTMLSpanElement;
+	#latestRelease: GitHubRelease | null = null;
+	#currentIpAddress: string | null = null;
 
 	constructor() {
 		super();
@@ -89,14 +105,28 @@ export class Settings extends Dialog {
 				#themeContainer label {
 					margin-bottom: 0;
 				}
+
+				#firmwareUpdateContainer input[type="button"]:disabled {
+					opacity: 0.5;
+					cursor: not-allowed;
+				}
+
+				.firmware-error {
+					color: var(--text-error);
+				}
 			</style>
 			<dialog id="${this.id}" aria-labelledby="settingsTitle">
 				<h3 id="settingsTitle">Settings</h3>
 
 				<h4>Printer</h4>
 				<p>Is connected: <span id="printerStatus">Unknown</span></p>
-				<p>Firmware version: <span id="firmwareVersion">Unknown</span></p>
-				<p>Download available: <span id="downloadAvailable">Unknown</span></p>
+				<p>Firmware version: <span id="firmwareVersion">Checking...</span></p>
+				<p>Update status: <span id="updateStatus">Checking...</span></p>
+				<div id="firmwareUpdateContainer" style="display: none; margin-top: 0.5rem;">
+					<input type="button" class="button" id="updateFirmwareButton" value="Update Firmware" />
+					<p id="firmwareUpdateStatus" style="margin-top: 0.25rem; font-size: 0.85rem;"></p>
+					<progress id="firmwareUpdateProgress" value="0" max="100" style="display: none; width: 100%; margin-top: 0.25rem;"></progress>
+				</div>
 
 				<h4>Appearance</h4>
 				<div id="themeContainer">
@@ -173,55 +203,136 @@ export class Settings extends Dialog {
 		this.firmwareVersionSpan = this.shadowRoot.getElementById(
 			"firmwareVersion",
 		) as HTMLSpanElement;
+		this.firmwareUpdateContainer = this.shadowRoot.getElementById(
+			"firmwareUpdateContainer",
+		) as HTMLDivElement;
+		this.updateFirmwareButton = this.shadowRoot.getElementById(
+			"updateFirmwareButton",
+		) as HTMLButtonElement;
+		this.firmwareUpdateStatus = this.shadowRoot.getElementById(
+			"firmwareUpdateStatus",
+		) as HTMLParagraphElement;
+		this.firmwareUpdateProgress = this.shadowRoot.getElementById(
+			"firmwareUpdateProgress",
+		) as HTMLProgressElement;
+		this.updateStatusSpan = this.shadowRoot.getElementById(
+			"updateStatus",
+		) as HTMLSpanElement;
 
 		this.dialogEvents();
-		this.checkPrinterFirmwareVersion();
 	}
 
-	checkPrinterFirmwareVersion() {
-		// fetch("https://api.github.com/repos/Duet3D/RepRapFirmware/releases/latest")
-		// 	.then((response) => response.json())
-		// 	.then((data) => {
-		// 		const {
-		// 			tag_name,
-		// 			assets,
-		// 		}: {
-		// 			tag_name: string;
-		// 			assets: {
-		// 				browser_download_url: string;
-		// 				digest: string;
-		// 				name: string;
-		// 				size: number;
-		// 			}[];
-		// 		} = data;
-		// 		console.log(tag_name, assets);
-		// 	});
+	async checkPrinterFirmwareVersion() {
+		const printerStatusSpan = this.shadowRoot.getElementById(
+			"printerStatus",
+		) as HTMLSpanElement;
 
-		getFirmwareVersion()
-			.then((firmwareVersion) => {
-				this.firmwareVersionSpan.textContent = firmwareVersion;
-			})
-			.then(this.checkForFirmwareUpdates);
+		try {
+			const ipAddress = await getIpAddress();
+			this.#currentIpAddress = ipAddress;
+
+			if (!ipAddress) {
+				printerStatusSpan.textContent = "No IP configured";
+				this.firmwareVersionSpan.textContent = "—";
+				this.updateStatusSpan.textContent = "Not connected";
+				return;
+			}
+
+			const boardInfo = await getBoardInfo();
+			printerStatusSpan.textContent = "Yes";
+			this.firmwareVersionSpan.textContent = boardInfo.firmwareVersion;
+
+			try {
+				const latestRelease = await getLatestFirmwareRelease();
+				this.#latestRelease = latestRelease;
+
+				if (isNewerVersion(boardInfo.firmwareVersion, latestRelease.tag_name)) {
+					this.updateStatusSpan.textContent = `Update available: v${latestRelease.tag_name}`;
+					this.firmwareUpdateContainer.style.display = "block";
+				} else {
+					this.updateStatusSpan.textContent = "Up to date";
+				}
+			} catch {
+				this.updateStatusSpan.textContent = "Could not check for updates";
+			}
+		} catch {
+			printerStatusSpan.textContent = "No";
+			this.firmwareVersionSpan.textContent = "—";
+			this.updateStatusSpan.textContent = "Not connected";
+		}
 	}
 
-	checkForFirmwareUpdates() {
-		return new Promise((resolve) => {
-			// Simulate async check for firmware updates
-			setTimeout(() => {
-				resolve(true); // Assume update is available for demo purposes
-			}, 1000);
-		}).then((updateAvailable) => {
-			const downloadAvailableSpan = this.shadowRoot.getElementById(
-				"downloadAvailable",
-			) as HTMLSpanElement;
-			downloadAvailableSpan.textContent = updateAvailable ? "Yes" : "No";
-		});
+	async performFirmwareUpdate() {
+		if (!this.#latestRelease || !this.#currentIpAddress) return;
+
+		const FIRMWARE_FILE = "Duet3Firmware_MB6XD.bin";
+
+		const setStatus = (msg: string, isError = false) => {
+			this.firmwareUpdateStatus.textContent = msg;
+			this.firmwareUpdateStatus.className = isError ? "firmware-error" : "";
+		};
+
+		this.updateFirmwareButton.disabled = true;
+		this.firmwareUpdateProgress.style.display = "block";
+		this.firmwareUpdateProgress.value = 0;
+
+		try {
+			const asset = this.#latestRelease.assets.find(
+				(a) => a.name === FIRMWARE_FILE,
+			);
+
+			if (!asset) {
+				throw new Error(`Required file not found in release: ${FIRMWARE_FILE}`);
+			}
+
+			setStatus(`Downloading ${FIRMWARE_FILE}...`);
+			const downloadResponse = await fetch(asset.browser_download_url);
+			if (!downloadResponse.ok) {
+				throw new Error(`Failed to download ${FIRMWARE_FILE}`);
+			}
+			const fileData = await downloadResponse.arrayBuffer();
+
+			setStatus(`Uploading ${FIRMWARE_FILE} to printer...`);
+			await uploadFirmwareFile(this.#currentIpAddress, FIRMWARE_FILE, fileData);
+			this.firmwareUpdateProgress.value = 70;
+
+			setStatus("Triggering firmware flash (M997)...");
+			await triggerFirmwareFlash(this.#currentIpAddress);
+			this.firmwareUpdateProgress.value = 85;
+
+			setStatus("Waiting for printer to reboot...");
+			await pollUntilOnline(this.#currentIpAddress);
+			this.firmwareUpdateProgress.value = 100;
+
+			setStatus("Firmware update complete. Refreshing status...");
+			await this.checkPrinterFirmwareVersion();
+			this.firmwareUpdateProgress.style.display = "none";
+		} catch (error) {
+			setStatus(
+				`Update failed: ${error instanceof Error ? error.message : String(error)}`,
+				true,
+			);
+			this.updateFirmwareButton.disabled = false;
+			this.firmwareUpdateProgress.style.display = "none";
+		}
 	}
 
 	async showSettings() {
 		await this.loadDataIntoForm();
 		this.themeSelect.value = getTheme();
+
+		const printerStatusSpan = this.shadowRoot.getElementById(
+			"printerStatus",
+		) as HTMLSpanElement;
+		printerStatusSpan.textContent = "Unknown";
+		this.firmwareVersionSpan.textContent = "Checking...";
+		this.updateStatusSpan.textContent = "Checking...";
+		this.firmwareUpdateContainer.style.display = "none";
+		this.firmwareUpdateStatus.textContent = "";
+		this.firmwareUpdateProgress.style.display = "none";
+
 		this.show();
+		this.checkPrinterFirmwareVersion();
 	}
 
 	dialogEvents() {
@@ -238,6 +349,9 @@ export class Settings extends Dialog {
 		this.themeSelect.addEventListener("change", () => {
 			setTheme(this.themeSelect.value as Theme);
 		});
+		this.updateFirmwareButton.addEventListener("click", () =>
+			this.performFirmwareUpdate(),
+		);
 	}
 
 	async resetApplication() {
