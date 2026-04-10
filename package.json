@@ -34,32 +34,32 @@
 		]
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.9",
-		"@types/node": "^25.5.0",
+		"@biomejs/biome": "^2.4.11",
+		"@types/node": "^25.5.2",
 		"@types/three": "^0.183.1",
 		"@types/validator": "^13.15.10",
-		"@vitest/coverage-v8": "^4.1.2",
-		"browserslist": "^4.28.1",
+		"@vitest/coverage-v8": "^4.1.4",
+		"browserslist": "^4.28.2",
 		"conventional-changelog": "^7.2.0",
-		"conventional-changelog-conventionalcommits": "^9.3.0",
+		"conventional-changelog-conventionalcommits": "^9.3.1",
 		"husky": "^9.1.7",
-		"jsdom": "^29.0.1",
-		"knip": "^6.0.6",
+		"jsdom": "^29.0.2",
+		"knip": "^6.3.1",
 		"lightningcss": "^1.32.0",
 		"lint-staged": "^16.4.0",
 		"rimraf": "^6.1.3",
 		"typescript": "^6.0.2",
-		"vite": "^8.0.3",
-		"vitest": "^4.1.2"
+		"vite": "^8.0.8",
+		"vitest": "^4.1.4"
 	},
 	"dependencies": {
 		"crc-32": "^1.2.2",
-		"dexie": "^4.4.1",
-		"hotkeys-js": "^4.0.2",
-		"lucide": "1.7.0",
-		"mathjs": "^15.1.1",
+		"dexie": "^4.4.2",
+		"hotkeys-js": "^4.0.3",
+		"lucide": "1.8.0",
+		"mathjs": "^15.2.0",
 		"three": "^0.183.2",
 		"three-mesh-bvh": "^0.9.9",
-		"validator": "^13.15.26"
+		"validator": "^13.15.35"
 	}
 }
