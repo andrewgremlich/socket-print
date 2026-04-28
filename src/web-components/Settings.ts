@@ -15,6 +15,7 @@ import {
 	getStartingCupLayerHeight,
 	getTestCylinderHeight,
 	getTestCylinderInnerDiameter,
+	getUseSecondsPerLayer,
 	setCircularSegments,
 	setEPerRevolution,
 	setLineWidthAdjustment,
@@ -22,6 +23,7 @@ import {
 	setStartingCupLayerHeight,
 	setTestCylinderHeight,
 	setTestCylinderInnerDiameter,
+	setUseSecondsPerLayer,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/db";
 import { getIpAddress } from "@/db/formValuesDbActions";
@@ -155,6 +157,9 @@ export class Settings extends Dialog {
 
 					<label for="secondsPerLayer">Seconds Per Layer</label>
 					<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="14" />
+
+					<label for="useSecondsPerLayer">Use Seconds Per Layer</label>
+					<input type="checkbox" id="useSecondsPerLayer" name="useSecondsPerLayer" />
 
 					<input type="submit" value="Save" class="button" id="saveSettings" />
 				</form>
@@ -336,7 +341,7 @@ export class Settings extends Dialog {
 	}
 
 	dialogEvents() {
-		this.form.addEventListener("submit", () => this.saveSettings());
+		this.form.addEventListener("submit", this.saveSettings);
 		// Separate form for test cylinder dimensions; prevent full dialog close
 		this.testCylinderForm.addEventListener("submit", (evt) =>
 			this.saveTestCylinderSettings(evt),
@@ -365,33 +370,40 @@ export class Settings extends Dialog {
 		}
 	}
 
-	async saveSettings() {
-		const formData = new FormData(this.form);
-		const settings = Object.fromEntries(formData.entries());
-
+	async saveSettings(e: SubmitEvent) {
+		const settingsForm = new FormData(e.target as HTMLFormElement);
 		const tasks: Promise<unknown>[] = [];
 
-		const startingCupLayerHeightVal = Number(settings.startingCupLayerHeight);
+		const startingCupLayerHeightVal = Number(
+			settingsForm.get("startingCupLayerHeight"),
+		);
 		if (!Number.isNaN(startingCupLayerHeightVal)) {
 			tasks.push(setStartingCupLayerHeight(startingCupLayerHeightVal));
 		}
 
-		const lineWidthAdjustmentVal = Number(settings.lineWidthAdjustment);
+		const lineWidthAdjustmentVal = Number(
+			settingsForm.get("lineWidthAdjustment"),
+		);
 		if (!Number.isNaN(lineWidthAdjustmentVal)) {
 			tasks.push(setLineWidthAdjustment(lineWidthAdjustmentVal));
 		}
 
-		const circularSegmentsVal = Number(settings.circularResolution);
+		const circularSegmentsVal = Number(settingsForm.get("circularResolution"));
 		if (!Number.isNaN(circularSegmentsVal)) {
 			tasks.push(setCircularSegments(circularSegmentsVal));
 		}
 
-		const secondsPerLayerVal = Number(settings.secondsPerLayer);
+		const secondsPerLayerVal = Number(settingsForm.get("secondsPerLayer"));
 		if (!Number.isNaN(secondsPerLayerVal)) {
 			tasks.push(setSecondsPerLayer(secondsPerLayerVal));
 		}
 
-		const ePerRevolutionVal = Number(settings.ePerRevolution);
+		const useSecondsPerLayerVal =
+			settingsForm.get("useSecondsPerLayer") === "on";
+		console.log("Saving useSecondsPerLayer:", useSecondsPerLayerVal);
+		tasks.push(setUseSecondsPerLayer(useSecondsPerLayerVal));
+
+		const ePerRevolutionVal = Number(settingsForm.get("ePerRevolution"));
 		if (!Number.isNaN(ePerRevolutionVal)) {
 			tasks.push(setEPerRevolution(ePerRevolutionVal));
 		}
@@ -421,6 +433,7 @@ export class Settings extends Dialog {
 			testCylinderHeight,
 			testCylinderInnerDiameter,
 			secondsPerLayer,
+			useSecondsPerLayer,
 			ePerRevolution,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
@@ -429,14 +442,16 @@ export class Settings extends Dialog {
 			getTestCylinderHeight(),
 			getTestCylinderInnerDiameter(),
 			getSecondsPerLayer(),
+			getUseSecondsPerLayer(),
 			getEPerRevolution(),
 		]);
 
-		const mainSettingMap: Record<string, number> = {
+		const mainSettingMap: Record<string, number | boolean> = {
 			startingCupLayerHeight,
 			lineWidthAdjustment,
 			circularResolution: circularSegments,
 			secondsPerLayer,
+			useSecondsPerLayer,
 			ePerRevolution,
 			testCylinderHeight,
 			testCylinderInnerDiameter,
@@ -447,7 +462,15 @@ export class Settings extends Dialog {
 				`#${key}`,
 			) as HTMLInputElement;
 
-			if (input) input.value = value.toString();
+			if (input && input.type === "checkbox") {
+				input.checked = Boolean(value);
+			} else if (input) {
+				input.value = value.toString();
+			} else {
+				console.warn(
+					`Input element with id "${key}" not found in settings form.`,
+				);
+			}
 		});
 	}
 }
