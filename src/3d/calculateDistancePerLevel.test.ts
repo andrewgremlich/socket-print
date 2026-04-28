@@ -5,6 +5,7 @@ import { calculateFeedratePerLevel } from "./calculateDistancePerLevel";
 vi.mock("@/db/appSettingsDbActions", () => ({
 	getCircularSegments: vi.fn().mockResolvedValue(64),
 	getSecondsPerLayer: vi.fn().mockResolvedValue(8),
+	getUseSecondsPerLayer: vi.fn().mockResolvedValue(true),
 }));
 
 describe("calculateFeedratePerLevel", () => {
