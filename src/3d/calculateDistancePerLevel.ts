@@ -47,8 +47,8 @@ export const calculateFeedratePerLevel = async (points: Vector3[][]) => {
 
 		return feedratePerLevel;
 	} else {
-		// If not using seconds per layer, return a default feedrate (e.g., 1500 mm/min) for all levels
-		const defaultFeedrate = 1500;
-		return distances.map(() => defaultFeedrate);
+		const totalDistance = distances.reduce((sum, d) => sum + d, 0);
+		const feedrate = round(totalDistance / 34);
+		return distances.map(() => feedrate);
 	}
 };

@@ -1,6 +1,5 @@
 import { atan2, cos, floor, pi, round, sin, sqrt } from "mathjs";
 import { Vector3 } from "three";
-import { calculateFeedratePerLevel } from "@/3d/calculateDistancePerLevel";
 import {
 	getLineWidthAdjustment,
 	getStartingCupLayerHeight,
@@ -65,6 +64,7 @@ export async function getTransitionLayer(
 		gramsPerRevolution,
 		density,
 		ePerRevolution,
+		feedrate,
 	}: {
 		nozzleSize: number;
 		outputFactor: number;
@@ -72,13 +72,11 @@ export async function getTransitionLayer(
 		gramsPerRevolution: number;
 		density: number;
 		ePerRevolution: number;
+		feedrate: number;
 	},
 ): Promise<{ gcode: string; lastExtrusion: number }> {
 	const transitionLayer: string[] = [];
 	const lineWidthAdjustment = await getLineWidthAdjustment();
-	const feedrate = await calculateFeedratePerLevel([
-		points.map((p) => p.point),
-	]);
 
 	let previousPoint: Vector3 | undefined;
 	let lastExtrusion = 0;

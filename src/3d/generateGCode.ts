@@ -245,6 +245,7 @@ export async function generateGCode(
 		gramsPerRevolution,
 		density,
 		ePerRevolution,
+		feedrate: 2000,
 	});
 
 	gcode.push(
