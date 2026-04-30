@@ -146,7 +146,7 @@ export class Settings extends Dialog {
 					<label for="startingCupLayerHeight">Starting Cup Layer Height</label>
 					<input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />
 
-					<label for="lineWidthAdjustment">Line Width Adjustment</label>
+					<label for="lineWidthAdjustment">Layer width adjustment</label>
 					<input type="number" id="lineWidthAdjustment" name="lineWidthAdjustment" step="0.1" min="1" max="2" />
 
 					<label for="circularResolution">Circular Resolution</label>
