@@ -17,10 +17,16 @@ export class CollisionDetector implements ICollisionDetector {
 	#scene: Scene;
 	#transitionInstance: CupToSocketTransition | null = null;
 	#computeId = 0;
+	#onTransitionRecompute: (() => void) | null = null;
 
 	constructor(socketCup: SocketCup, scene: Scene) {
 		this.#socketCup = socketCup;
 		this.#scene = scene;
+	}
+
+	setRecomputeCallback(cb: () => void): void {
+		this.#onTransitionRecompute = cb;
+		this.#transitionInstance?.setRecomputeCallback(cb);
 	}
 
 	/**
@@ -98,6 +104,11 @@ export class CollisionDetector implements ICollisionDetector {
 				mesh,
 				this.#scene,
 			);
+			if (this.#onTransitionRecompute) {
+				this.#transitionInstance.setRecomputeCallback(
+					this.#onTransitionRecompute,
+				);
+			}
 		}
 
 		if (id !== this.#computeId) return { isValid: false };

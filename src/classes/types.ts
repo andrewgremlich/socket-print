@@ -43,6 +43,7 @@ export interface ICollisionDetector {
 	dispose(): void;
 	getTransitionInstance(): unknown;
 	isValidFit(): boolean;
+	setRecomputeCallback(cb: () => void): void;
 }
 
 /**

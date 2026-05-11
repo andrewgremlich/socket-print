@@ -43,6 +43,7 @@ export class CupToSocketTransition extends AppObject {
 	#intersectionPoints: Vector3[] = [];
 	#bottomRingPoints: Vector3[] = [];
 	#lastDiameter: number | null = null;
+	#onRecompute: (() => void) | null = null;
 	$liveTestCylinderDiameter: Subscription | null = null;
 
 	private constructor(
@@ -81,7 +82,7 @@ export class CupToSocketTransition extends AppObject {
 			if (!diameter || diameter <= 0) return;
 			if (diameter === this.#lastDiameter) return;
 			this.#lastDiameter = diameter;
-			this.recompute();
+			this.recompute().then(() => this.#onRecompute?.());
 		});
 	}
 
@@ -216,6 +217,10 @@ export class CupToSocketTransition extends AppObject {
 
 	async recompute(): Promise<TransitionResult> {
 		return this.computeTransition();
+	}
+
+	setRecomputeCallback(cb: () => void): void {
+		this.#onRecompute = cb;
 	}
 
 	isValidFit(): boolean {

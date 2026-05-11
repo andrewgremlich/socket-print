@@ -84,6 +84,9 @@ export class PrintObject extends AppObject {
 			transformController ?? new MeshTransformController(this.#showError);
 		this.#collisionDetector =
 			collisionDetector ?? new CollisionDetector(socketCup, scene);
+		this.#collisionDetector.setRecomputeCallback(
+			this.#checkCollisionAndUpdateUI,
+		);
 
 		this.#transformController.onTransformChange(async () => {
 			await this.#checkCollisionAndUpdateUI();
