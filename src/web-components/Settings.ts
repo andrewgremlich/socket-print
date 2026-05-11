@@ -357,6 +357,16 @@ export class Settings extends Dialog {
 		this.updateFirmwareButton.addEventListener("click", () =>
 			this.performFirmwareUpdate(),
 		);
+
+		const useSecondsPerLayerCheckbox = this.shadowRoot.getElementById(
+			"useSecondsPerLayer",
+		) as HTMLInputElement;
+		const secondsPerLayerInput = this.shadowRoot.getElementById(
+			"secondsPerLayer",
+		) as HTMLInputElement;
+		useSecondsPerLayerCheckbox.addEventListener("change", () => {
+			secondsPerLayerInput.disabled = useSecondsPerLayerCheckbox.checked;
+		});
 	}
 
 	async resetApplication() {
@@ -472,6 +482,11 @@ export class Settings extends Dialog {
 				);
 			}
 		});
+
+		const secondsPerLayerInput = this.shadowRoot.getElementById(
+			"secondsPerLayer",
+		) as HTMLInputElement;
+		secondsPerLayerInput.disabled = Boolean(useSecondsPerLayer);
 	}
 }
 
