@@ -80,51 +80,31 @@ export class CollisionDetector implements ICollisionDetector {
 
 	#clearTransition(): void {
 		this.#computeId++;
-		this.#removeTransitionMeshesFromScene();
 		this.#transitionInstance?.dispose();
 		this.#transitionInstance = null;
-	}
-
-	#removeTransitionMeshesFromScene(): void {
-		const toRemove = this.#scene.children.filter(
-			(child) => child.userData?.isTransition,
-		);
-		for (const child of toRemove) {
-			this.#scene.remove(child);
-		}
 	}
 
 	/**
 	 * Computes the cup-to-socket transition and validates the fit.
 	 */
 	async #computeTransition(mesh: Mesh): Promise<{ isValid: boolean }> {
-		this.#clearTransition();
-
-		const id = this.#computeId;
+		const id = ++this.#computeId;
 
 		mesh.updateMatrixWorld(true);
 
-		this.#transitionInstance = await CupToSocketTransition.create(
-			this.#socketCup,
-			mesh,
-			this.#scene,
-		);
-
-		// If a newer computation started while we were awaiting, discard this one
-		if (id !== this.#computeId) {
-			this.#transitionInstance.dispose();
-			this.#transitionInstance = null;
-			return { isValid: false };
+		if (!this.#transitionInstance) {
+			this.#transitionInstance = await CupToSocketTransition.create(
+				this.#socketCup,
+				mesh,
+				this.#scene,
+			);
 		}
+
+		if (id !== this.#computeId) return { isValid: false };
 
 		const result = await this.#transitionInstance.computeTransition();
 
-		// Check again after the second await
-		if (id !== this.#computeId) {
-			this.#transitionInstance?.dispose();
-			this.#transitionInstance = null;
-			return { isValid: false };
-		}
+		if (id !== this.#computeId) return { isValid: false };
 
 		return result;
 	}
