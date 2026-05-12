@@ -176,7 +176,7 @@ describe("CollisionDetector", () => {
 
 			expect(result.hasInvalidFit).toBe(true);
 			expect(result.message).toBe(
-				"Imperfect fit: Socket does not fully cover the cup edge",
+				"Imperfect fit — check alignment and dimensions over the socket cup.",
 			);
 		});
 	});
