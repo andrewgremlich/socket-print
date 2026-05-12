@@ -127,7 +127,7 @@ main {
 	cursor: pointer;
 	z-index: 1;
 
-	& > * {
+	&>* {
 		flex-grow: 0;
 		align-self: flex-end;
 	}
@@ -141,7 +141,7 @@ main {
 		gap: var(--spacing-xs);
 	}
 
-	& > div {
+	&>div {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
@@ -171,7 +171,7 @@ main {
 }
 
 #changePosition {
-	& > span {
+	&>span {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--spacing-s);
@@ -212,12 +212,12 @@ main {
 	flex: 1;
 	min-height: 0;
 
-	& > #appForm {
+	&>#appForm {
 		grid-column: 1 / 4;
 		overflow-y: auto;
 	}
 
-	& > #secondaryInterface {
+	&>#secondaryInterface {
 		grid-column: 4 / 13;
 		min-height: 0;
 	}
@@ -245,6 +245,7 @@ main {
 	from {
 		transform: rotate(0deg);
 	}
+
 	to {
 		transform: rotate(360deg);
 	}

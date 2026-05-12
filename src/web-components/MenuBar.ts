@@ -266,10 +266,6 @@ export class MenuBar extends HTMLElement {
 				height: var(--menu-bar-height);
 			}
 
-			.show {
-				display: block !important;
-			}
-
 			h1 {
 				color: var(--text-primary);
 				font-size: var(--font-size-2xl);
@@ -336,8 +332,8 @@ export class MenuBar extends HTMLElement {
 				position: relative;
 
 				& .menuBarDropdown {
-					display: none;
-					z-index: var(--z-dropdown);
+					opacity: 0;
+					z-index: -1;
 					background-color: var(--bg-menu);
 					padding: 8px var(--spacing-xs);
 					box-shadow: var(--shadow-dropdown);
@@ -345,6 +341,16 @@ export class MenuBar extends HTMLElement {
 					position: absolute;
 					left: 0;
 					top: var(--menu-bar-height);
+				}
+
+				& .show {
+					animation: fade-in 200ms ease-in-out forwards;
+					z-index: var(--z-dropdown);
+
+					@media (prefers-reduced-motion: reduce) {
+						animation: none;
+						opacity: 1;
+					}
 				}
 			}
 
@@ -380,6 +386,18 @@ export class MenuBar extends HTMLElement {
 
 				& > .fileInput {
 					display: none;
+				}
+			}
+
+			@keyframes fade-in {
+				from {
+					opacity: 0;
+					transform: translateY(-5px);
+				}
+
+				to {
+					opacity: 1;
+					transform: translateY(0);
 				}
 			}
 		`;

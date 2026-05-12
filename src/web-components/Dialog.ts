@@ -23,6 +23,13 @@ export class Dialog extends HTMLElement {
 	show() {
 		if (!this.dialog.open) {
 			this.dialog.showModal();
+			if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+				this.dialog.animate([{ opacity: 0 }, { opacity: 1 }], {
+					duration: 250,
+					easing: "ease-in-out",
+					fill: "forwards",
+				});
+			}
 			const firstFocusable = this.dialog.querySelector<HTMLElement>(
 				'button, [href], input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])',
 			);
