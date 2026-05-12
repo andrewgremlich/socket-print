@@ -73,7 +73,8 @@ export class CollisionDetector implements ICollisionDetector {
 				return {
 					hasCollision: false,
 					hasInvalidFit: true,
-					message: "Imperfect fit: Socket does not fully cover the cup edge",
+					message:
+						"Imperfect fit — check alignment and dimensions over the socket cup.",
 				};
 			}
 		} else {

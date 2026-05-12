@@ -137,6 +137,7 @@ export class MeshTransformController implements IMeshTransformController {
 
 		applyRotation(this.#mesh, axis, amount);
 		this.autoAlign(computeBoundingBox);
+		this.#syncInputsFromMesh();
 
 		try {
 			await saveRotationToDatabase(this.#mesh);
