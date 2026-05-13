@@ -93,7 +93,6 @@ export class CupToSocketTransition extends AppObject {
 		const material = new MeshStandardMaterial({
 			color: COLOR_HIT,
 			side: DoubleSide,
-			wireframe: import.meta.env.DEV,
 		});
 
 		this.mesh = new Mesh(geometry, material);
@@ -187,12 +186,13 @@ export class CupToSocketTransition extends AppObject {
 
 		const allHit = rayResults.every((r) => r.point !== null);
 
-		this.#ensureMesh();
-		(this.mesh.material as MeshStandardMaterial).color.set(
-			allHit ? COLOR_HIT : COLOR_MISS,
-		);
-
 		if (allHit) {
+			this.#ensureMesh();
+			const hitMaterial = this.mesh.material as MeshStandardMaterial;
+			hitMaterial.color.set(COLOR_HIT);
+			hitMaterial.wireframe = false;
+			this.mesh.visible = true;
+
 			for (const r of rayResults) {
 				// biome-ignore lint/style/noNonNullAssertion: allHit guarantees point is set
 				this.#intersectionPoints.push(r.point!);
@@ -206,7 +206,12 @@ export class CupToSocketTransition extends AppObject {
 			};
 		}
 
-		// For misses, project bottom ring upward so the red band is visible
+		this.#ensureMesh();
+		const missMaterial = this.mesh.material as MeshStandardMaterial;
+		missMaterial.color.set(COLOR_MISS);
+		missMaterial.wireframe = true;
+		this.mesh.visible = true;
+
 		const missTopRing = this.#bottomRingPoints.map((p) =>
 			p.clone().add(new Vector3(0, 50, 0)),
 		);
