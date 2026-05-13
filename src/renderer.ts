@@ -48,8 +48,11 @@ import {
 	printerFileInput,
 	progressBar,
 	toggleTransformControlsButton,
+	xRotateDisplay,
 	xTranslate,
+	yRotateDisplay,
 	yTranslate,
+	zRotateDisplay,
 	zTranslate,
 } from "@/utils/htmlElements";
 import { saveRotationToDatabase } from "@/utils/meshTransforms";
@@ -122,10 +125,14 @@ const printObject = new PrintObject({
 
 		app.attachTransformControls(printObject.mesh, {
 			onChange: async () => {
-				// Save the rotation values to IndexedDB
 				await saveRotationToDatabase(printObject.mesh);
-				// Update collision detection and cup-to-socket transition
 				await printObject.isIntersectingWithSocketCup();
+
+				const toDeg = (rad: number) =>
+					`${((Math.round((rad * 180) / Math.PI) % 360) + 360) % 360}°`;
+				xRotateDisplay.value = toDeg(printObject.mesh.rotation.x);
+				yRotateDisplay.value = toDeg(printObject.mesh.rotation.z);
+				zRotateDisplay.value = toDeg(printObject.mesh.rotation.y);
 			},
 		});
 
@@ -146,6 +153,9 @@ const removeMeshes = async (meshes: Mesh[]) => {
 	xTranslate.value = "0";
 	yTranslate.value = "0";
 	zTranslate.value = "0";
+	xRotateDisplay.value = "0°";
+	yRotateDisplay.value = "0°";
+	zRotateDisplay.value = "0°";
 	activeFileName.textContent = "No file selected";
 	collisionWarning.style.display = "none";
 	generateGCodeButton.disabled = true;

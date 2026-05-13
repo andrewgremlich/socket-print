@@ -6,7 +6,14 @@ import {
 	updateRotateValues,
 	updateTranslateValues,
 } from "@/db/appSettingsDbActions";
-import { xTranslate, yTranslate, zTranslate } from "@/utils/htmlElements";
+import {
+	xRotateDisplay,
+	xTranslate,
+	yRotateDisplay,
+	yTranslate,
+	zRotateDisplay,
+	zTranslate,
+} from "@/utils/htmlElements";
 import {
 	applyRotation,
 	applyTranslation,
@@ -123,6 +130,14 @@ export class MeshTransformController implements IMeshTransformController {
 			0,
 		).toString();
 		yTranslate.value = (-this.#mesh.position.z).toString();
+
+		const toDeg = (rad: number) => {
+			const deg = (rad * 180) / Math.PI;
+			return `${((round(deg, 0) % 360) + 360) % 360}°`;
+		};
+		xRotateDisplay.value = toDeg(this.#mesh.rotation.x);
+		yRotateDisplay.value = toDeg(this.#mesh.rotation.z);
+		zRotateDisplay.value = toDeg(this.#mesh.rotation.y);
 	}
 
 	/**
