@@ -16,6 +16,7 @@ export class CollisionDetector implements ICollisionDetector {
 	#socketCup: SocketCup;
 	#scene: Scene;
 	#transitionInstance: CupToSocketTransition | null = null;
+	#transitionCreating: Promise<CupToSocketTransition> | null = null;
 	#computeId = 0;
 	#onTransitionRecompute: (() => void) | null = null;
 
@@ -89,6 +90,7 @@ export class CollisionDetector implements ICollisionDetector {
 		this.#computeId++;
 		this.#transitionInstance?.dispose();
 		this.#transitionInstance = null;
+		this.#transitionCreating = null;
 	}
 
 	/**
@@ -100,11 +102,15 @@ export class CollisionDetector implements ICollisionDetector {
 		mesh.updateMatrixWorld(true);
 
 		if (!this.#transitionInstance) {
-			this.#transitionInstance = await CupToSocketTransition.create(
-				this.#socketCup,
-				mesh,
-				this.#scene,
-			);
+			if (!this.#transitionCreating) {
+				this.#transitionCreating = CupToSocketTransition.create(
+					this.#socketCup,
+					mesh,
+					this.#scene,
+				);
+			}
+			this.#transitionInstance = await this.#transitionCreating;
+			this.#transitionCreating = null;
 			if (this.#onTransitionRecompute) {
 				this.#transitionInstance.setRecomputeCallback(
 					this.#onTransitionRecompute,
