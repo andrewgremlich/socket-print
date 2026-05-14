@@ -91,8 +91,9 @@ export class CupToSocketTransition extends AppObject {
 
 		const geometry = new BufferGeometry();
 		const material = new MeshStandardMaterial({
-			color: COLOR_HIT,
+			color: 0xffffff,
 			side: DoubleSide,
+			vertexColors: true,
 		});
 
 		this.mesh = new Mesh(geometry, material);
@@ -105,24 +106,34 @@ export class CupToSocketTransition extends AppObject {
 		this.#scene.add(this.mesh);
 	}
 
-	#updateGeometry(topRing: Vector3[]): void {
+	#updateGeometry(topRing: Vector3[], hitMask: boolean[]): void {
 		const positions: number[] = [];
 		const normals: number[] = [];
+		const colors: number[] = [];
 		const indices: number[] = [];
 		const segments = this.#segments;
 
+		const pushColor = (hit: boolean) => {
+			const c = hit ? COLOR_HIT : COLOR_MISS;
+			colors.push(c.r, c.g, c.b);
+		};
+
 		for (let i = 0; i <= segments; i++) {
-			const point = this.#bottomRingPoints[i % segments];
+			const ringIdx = i % segments;
+			const point = this.#bottomRingPoints[ringIdx];
 			positions.push(point.x, point.y, point.z);
 			const len = Math.sqrt(point.x * point.x + point.z * point.z);
 			normals.push(point.x / len, 0, point.z / len);
+			pushColor(hitMask[ringIdx]);
 		}
 
 		for (let i = 0; i <= segments; i++) {
-			const point = topRing[i % segments];
+			const ringIdx = i % segments;
+			const point = topRing[ringIdx];
 			positions.push(point.x, point.y, point.z);
 			const len = Math.sqrt(point.x * point.x + point.z * point.z);
 			normals.push(point.x / len, 0, point.z / len);
+			pushColor(hitMask[ringIdx]);
 		}
 
 		const topStart = segments + 1;
@@ -138,6 +149,7 @@ export class CupToSocketTransition extends AppObject {
 		const geo = this.mesh.geometry;
 		geo.setAttribute("position", new Float32BufferAttribute(positions, 3));
 		geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+		geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
 		geo.setIndex(indices);
 		geo.computeVertexNormals();
 
@@ -184,20 +196,22 @@ export class CupToSocketTransition extends AppObject {
 			});
 		}
 
-		const allHit = rayResults.every((r) => r.point !== null);
+		const hitMask = rayResults.map((r) => r.point !== null);
+		const allHit = hitMask.every((h) => h);
+
+		this.#ensureMesh();
+		const material = this.mesh.material as MeshStandardMaterial;
+		material.wireframe = false;
+		this.mesh.visible = true;
+
+		const topRing = this.#buildTopRing(rayResults, hitMask);
 
 		if (allHit) {
-			this.#ensureMesh();
-			const hitMaterial = this.mesh.material as MeshStandardMaterial;
-			hitMaterial.color.set(COLOR_HIT);
-			hitMaterial.wireframe = false;
-			this.mesh.visible = true;
-
 			for (const r of rayResults) {
 				// biome-ignore lint/style/noNonNullAssertion: allHit guarantees point is set
 				this.#intersectionPoints.push(r.point!);
 			}
-			this.#updateGeometry(this.#intersectionPoints);
+			this.#updateGeometry(this.#intersectionPoints, hitMask);
 			this.#isValidFit = true;
 			return {
 				isValid: true,
@@ -206,18 +220,48 @@ export class CupToSocketTransition extends AppObject {
 			};
 		}
 
-		this.#ensureMesh();
-		const missMaterial = this.mesh.material as MeshStandardMaterial;
-		missMaterial.color.set(COLOR_MISS);
-		missMaterial.wireframe = true;
-		this.mesh.visible = true;
-
-		const missTopRing = this.#bottomRingPoints.map((p) =>
-			p.clone().add(new Vector3(0, 50, 0)),
-		);
-		this.#updateGeometry(missTopRing);
+		this.#updateGeometry(topRing, hitMask);
 		this.#isValidFit = false;
 		return { isValid: false };
+	}
+
+	/**
+	 * Build the top ring for visualization. Hits use their intersection point.
+	 * Misses inherit Y from the nearest hit neighbor on the ring so the band
+	 * stays continuous and red verts sit on the same surface as blue ones.
+	 * Falls back to bottom-ring Y when no rays hit at all.
+	 */
+	#buildTopRing(
+		rayResults: { origin: Vector3; point: Vector3 | null }[],
+		hitMask: boolean[],
+	): Vector3[] {
+		const segments = this.#segments;
+		const result: Vector3[] = new Array(segments);
+		const yValues: (number | null)[] = rayResults.map((r) =>
+			r.point ? r.point.y : null,
+		);
+
+		const findNearestHitY = (i: number): number | null => {
+			for (let d = 1; d <= segments / 2; d++) {
+				const left = yValues[(i - d + segments) % segments];
+				if (left !== null) return left;
+				const right = yValues[(i + d) % segments];
+				if (right !== null) return right;
+			}
+			return null;
+		};
+
+		for (let i = 0; i < segments; i++) {
+			const origin = rayResults[i].origin;
+			if (hitMask[i]) {
+				// biome-ignore lint/style/noNonNullAssertion: hitMask guards .point
+				result[i] = rayResults[i].point!.clone();
+			} else {
+				const y = findNearestHitY(i) ?? origin.y;
+				result[i] = new Vector3(origin.x, y, origin.z);
+			}
+		}
+		return result;
 	}
 
 	async recompute(): Promise<TransitionResult> {
