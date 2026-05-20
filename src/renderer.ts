@@ -185,6 +185,11 @@ export async function slicingAction(sendToFile: boolean) {
 
 	const allGeometries = app.collectAllPrintableGeometries();
 
+	if (!allGeometries) {
+		console.error("Failed to merge printable geometries — nothing to slice.");
+		return;
+	}
+
 	progressBar.show();
 
 	const worker = new sliceWorker();
