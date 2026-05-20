@@ -57,7 +57,7 @@ import {
 	zTranslate,
 } from "@/utils/htmlElements";
 import { saveRotationToDatabase } from "@/utils/meshTransforms";
-import { SliceWorkerStatus } from "./3d/sliceWorker";
+import { SliceMode, SliceWorkerStatus } from "./3d/sliceWorker";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
 
@@ -196,6 +196,7 @@ export async function slicingAction(sendToFile: boolean) {
 
 	worker.postMessage({
 		positions: allGeometries.attributes.position.array,
+		mode: SliceMode.VASE,
 	});
 
 	worker.onmessage = async (
