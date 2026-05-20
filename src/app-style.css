@@ -141,7 +141,6 @@ main {
 }
 
 #translateRotationControls {
-	background-color: rgba(0, 0, 0, 0.6);
 	border-radius: var(--radius-md);
 
 	position: absolute;
@@ -189,6 +188,23 @@ main {
 	}
 }
 
+#translateRotationControls {
+	& span,
+	& output {
+		background-color: rgba(0, 0, 0, 0.55);
+		color: #ffffff;
+		padding: 2px 6px;
+		border-radius: var(--radius-sm, 4px);
+	}
+
+	& app-input::part(label) {
+		background-color: rgba(0, 0, 0, 0.55);
+		color: #ffffff;
+		padding: 2px 6px;
+		border-radius: var(--radius-sm, 4px);
+	}
+}
+
 #rotateSocket {
 	& span {
 		display: inline-flex;
@@ -198,7 +214,6 @@ main {
 	}
 
 	& output {
-		color: var(--text-secondary);
 		font-size: 14px;
 		margin-right: 1rem;
 	}
