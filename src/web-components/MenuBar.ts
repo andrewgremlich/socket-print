@@ -35,7 +35,6 @@ export class MenuBar extends HTMLElement {
 	// -- Lifecycle --
 
 	connectedCallback() {
-		this.#setupDropdownLogic();
 		this.#setupFileInputDropdownClose();
 		this.#setupMenuActions();
 		this.#setupKeyboardNavigation();
@@ -43,65 +42,21 @@ export class MenuBar extends HTMLElement {
 
 	// -- Internal logic --
 
-	#setupDropdownLogic() {
-		const nav = this.#shadow.getElementById("menuBar") as HTMLElement;
-		const dropdowns = this.#shadow.querySelectorAll(
-			".menuBarDropdown",
-		) as NodeListOf<HTMLElement>;
-
-		nav.addEventListener("click", (evt) => {
-			const target = evt.target as HTMLElement;
-
-			// Don't close dropdowns when clicking the file input label —
-			// the browser needs the input visible to open the file picker.
-			if (target.closest(".fileInputLabel")) {
-				return;
-			}
-
-			for (const dropdown of dropdowns) {
-				if (dropdown !== target.nextElementSibling) {
-					dropdown.classList.remove("show");
-				}
-			}
-
-			if (
-				target.matches(".menuBarButton") &&
-				!target.classList.contains("noDropdown")
-			) {
-				const nextSibling = target.nextElementSibling as HTMLElement;
-				nextSibling.classList.toggle("show");
-			}
-		});
-
-		// Close dropdowns when clicking outside
-		window.addEventListener("click", (evt) => {
-			const path = evt.composedPath();
-			if (!path.includes(this)) {
-				for (const dropdown of dropdowns) {
-					dropdown.classList.remove("show");
-				}
-			}
-		});
-	}
-
-	#closeAllDropdowns() {
-		const dropdowns = this.#shadow.querySelectorAll(
-			".menuBarDropdown",
-		) as NodeListOf<HTMLElement>;
-		for (const dropdown of dropdowns) {
-			dropdown.classList.remove("show");
-		}
-	}
-
 	#setupFileInputDropdownClose() {
 		this.fileInput?.addEventListener("change", () => {
-			this.#closeAllDropdowns();
+			const popover = this.#shadow.getElementById(
+				"fileDropdown",
+			) as HTMLElement & { hidePopover(): void };
+			popover?.hidePopover();
 		});
 	}
 
 	#setupMenuActions() {
 		const dispatch = (name: string) => {
-			this.#closeAllDropdowns();
+			const popovers = this.#shadow.querySelectorAll("[popover]") as NodeListOf<
+				HTMLElement & { hidePopover(): void }
+			>;
+			for (const p of popovers) p.hidePopover();
 			this.dispatchEvent(new CustomEvent(name, { bubbles: true }));
 		};
 
@@ -141,25 +96,27 @@ export class MenuBar extends HTMLElement {
 		nav.addEventListener("keydown", (evt) => {
 			const target = evt.target as HTMLElement;
 
-			// Find the open dropdown, if any
-			const openDropdown = this.#shadow.querySelector(
-				".menuBarDropdown.show",
+			const openPopover = this.#shadow.querySelector(
+				"[popover]:popover-open",
 			) as HTMLElement | null;
 
 			if (evt.key === "Escape") {
-				this.#closeAllDropdowns();
-				// Focus the parent top-level button
-				const container = target.closest(".menuBarButtonContainer");
-				if (container) {
-					(container.querySelector(".menuBarButton") as HTMLElement)?.focus();
+				if (openPopover) {
+					(openPopover as HTMLElement & { hidePopover(): void }).hidePopover();
+					const triggerId = openPopover.id;
+					(
+						this.#shadow.querySelector(
+							`[popovertarget="${triggerId}"]`,
+						) as HTMLElement | null
+					)?.focus();
 				}
 				evt.preventDefault();
 				return;
 			}
 
-			// Navigation within an open dropdown
-			if (openDropdown?.contains(target)) {
-				const items = openDropdown.querySelectorAll(
+			// Navigation within an open popover
+			if (openPopover?.contains(target)) {
+				const items = openPopover.querySelectorAll(
 					"button.menuBarDropdownButton, label.menuBarDropdownButton",
 				) as NodeListOf<HTMLElement>;
 				const currentIndex = Array.from(items).indexOf(target);
@@ -191,19 +148,24 @@ export class MenuBar extends HTMLElement {
 					topLevelButtons.length;
 				topLevelButtons[prev].focus();
 			} else if (evt.key === "ArrowDown") {
-				// Open dropdown and focus first item
 				if (
 					target.matches(".menuBarButton") &&
 					!target.classList.contains("noDropdown")
 				) {
 					evt.preventDefault();
-					const dropdown = target.nextElementSibling as HTMLElement;
-					this.#closeAllDropdowns();
-					dropdown.classList.add("show");
-					const firstItem = dropdown.querySelector(
-						"button.menuBarDropdownButton, label.menuBarDropdownButton",
-					) as HTMLElement | null;
-					firstItem?.focus();
+					const targetId = target.getAttribute("popovertarget");
+					if (targetId) {
+						const popover = this.#shadow.getElementById(
+							targetId,
+						) as HTMLElement & {
+							showPopover(): void;
+						};
+						popover?.showPopover();
+						const firstItem = popover?.querySelector(
+							"button.menuBarDropdownButton, label.menuBarDropdownButton",
+						) as HTMLElement | null;
+						firstItem?.focus();
+					}
 				}
 			}
 		});
@@ -217,8 +179,8 @@ export class MenuBar extends HTMLElement {
 				<h1><a href="/" aria-label="ProvelPrint - Return to home page">ProvelPrint</a></h1>
 
 				<div class="menuBarButtonContainer">
-					<button role="menuitem" aria-haspopup="true" class="menuBarButton" type="button">File</button>
-					<div class="menuBarDropdown" role="menu">
+					<button role="menuitem" aria-haspopup="true" class="menuBarButton" type="button" popovertarget="fileDropdown" style="anchor-name: --file-trigger">File</button>
+					<div id="fileDropdown" class="menuBarDropdown" popover role="menu" style="position-anchor: --file-trigger">
 						<label class="menuBarDropdownButton fileInputLabel" for="stlFileInput" id="stlFileInputLabel" tabindex="0">
 							Open STL file
 							<input role="menuitem" type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput" />
@@ -230,8 +192,8 @@ export class MenuBar extends HTMLElement {
 				</div>
 
 				<div class="menuBarButtonContainer">
-					<button role="menuitem" aria-haspopup="true" class="menuBarButton" type="button">Edit</button>
-					<div class="menuBarDropdown" role="menu">
+					<button role="menuitem" aria-haspopup="true" class="menuBarButton" type="button" popovertarget="editDropdown" style="anchor-name: --edit-trigger">Edit</button>
+					<div id="editDropdown" class="menuBarDropdown" popover role="menu" style="position-anchor: --edit-trigger">
 						<button role="menuitem" class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material Profile</button>
 						<button role="menuitem" class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit Active Material Profile</button>
 						<button role="menuitem" class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete Active Material Profile</button>
@@ -328,30 +290,18 @@ export class MenuBar extends HTMLElement {
 				}
 			}
 
-			.menuBarButtonContainer {
-				position: relative;
-
-				& .menuBarDropdown {
-					opacity: 0;
-					z-index: -1;
-					background-color: var(--bg-menu);
-					padding: 8px var(--spacing-xs);
-					box-shadow: var(--shadow-dropdown);
-					border-radius: var(--radius-sm);
-					position: absolute;
-					left: 0;
-					top: var(--menu-bar-height);
-				}
-
-				& .show {
-					animation: fade-in 200ms ease-in-out forwards;
-					z-index: var(--z-dropdown);
-
-					@media (prefers-reduced-motion: reduce) {
-						animation: none;
-						opacity: 1;
-					}
-				}
+			.menuBarDropdown {
+				z-index: var(--z-dropdown);
+				background-color: var(--bg-menu);
+				padding: 8px var(--spacing-xs);
+				box-shadow: var(--shadow-dropdown);
+				border-radius: var(--radius-sm);
+				position: absolute;
+				margin: 0;
+				border: none;
+				inset: unset;
+				top: anchor(bottom);
+				left: anchor(left);
 			}
 
 			.menuBarDropdownButton {
