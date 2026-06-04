@@ -296,12 +296,30 @@ export class MenuBar extends HTMLElement {
 				padding: 8px var(--spacing-xs);
 				box-shadow: var(--shadow-dropdown);
 				border-radius: var(--radius-sm);
-				position: absolute;
+				position: fixed;
 				margin: 0;
 				border: none;
 				inset: unset;
 				top: anchor(bottom);
 				left: anchor(left);
+
+				opacity: 0;
+				transform: translateY(-5px);
+				transition:
+					opacity 150ms ease-out,
+					transform 150ms ease-out,
+					display 150ms allow-discrete,
+					overlay 150ms allow-discrete;
+
+				&:popover-open {
+					opacity: 1;
+					transform: translateY(0);
+
+					@starting-style {
+						opacity: 0;
+						transform: translateY(-5px);
+					}
+				}
 			}
 
 			.menuBarDropdownButton {
@@ -339,17 +357,6 @@ export class MenuBar extends HTMLElement {
 				}
 			}
 
-			@keyframes fade-in {
-				from {
-					opacity: 0;
-					transform: translateY(-5px);
-				}
-
-				to {
-					opacity: 1;
-					transform: translateY(0);
-				}
-			}
 		`;
 	}
 }
