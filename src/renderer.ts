@@ -42,7 +42,6 @@ import {
 	activeFileName,
 	clearModelButton,
 	collisionWarning,
-	doublePrimeCheckbox,
 	estimatedPrintTime,
 	generateGCodeButton,
 	loadingScreen,
@@ -229,7 +228,6 @@ export async function slicingAction(sendToFile: boolean) {
 
 			const gcode = await generateGCode(blended, feedratePerLevel, "y", {
 				estimatedTime: printTime,
-				doublePrime: doublePrimeCheckbox?.checked ?? false,
 			});
 			const filePathName = `${printObject.mesh?.name}.gcode`;
 

@@ -75,7 +75,7 @@ appForm.addEventListener("change", async (event) => {
 	const storeForm = new FormData(appForm);
 	const storeFormEntries = Object.fromEntries(storeForm.entries());
 
-	const { cupSize, doublePrime: _doublePrime, ...rest } = storeFormEntries;
+	const { cupSize, ...rest } = storeFormEntries;
 	const cupSizeHydrated = {
 		cupSize: [defaultCupSize, smallCupSize].find(
 			(size) => size.name === cupSize,

@@ -46,10 +46,6 @@ export const leftRadio = document.getElementById(
 export const rightRadio = document.getElementById(
 	"lockPositionRight",
 ) as HTMLInputElement | null;
-export const doublePrimeCheckbox = document.getElementById(
-	"doublePrime",
-) as HTMLInputElement | null;
-
 export const activeMaterialProfileSelect = document.getElementById(
 	"activeMaterialProfile",
 ) as HTMLSelectElement;
