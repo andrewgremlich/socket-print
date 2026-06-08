@@ -193,10 +193,13 @@ export async function slicingAction(sendToFile: boolean) {
 
 	const worker = new sliceWorker();
 
-	worker.postMessage({
-		positions: allGeometries.attributes.position.array,
-		mode: SliceMode.VASE,
-	});
+	const rawPositions = allGeometries.attributes.position.array;
+	const positions =
+		rawPositions instanceof Float32Array
+			? rawPositions
+			: new Float32Array(rawPositions);
+
+	worker.postMessage({ positions, mode: SliceMode.VASE }, [positions.buffer]);
 
 	worker.onmessage = async (
 		event: MessageEvent<{
@@ -231,10 +234,17 @@ export async function slicingAction(sendToFile: boolean) {
 			});
 			const filePathName = `${printObject.mesh?.name}.gcode`;
 
-			if (sendToFile) {
-				await writeGCodeFile(gcode, filePathName);
-			} else {
-				await sendGCodeFile(new Blob([gcode]), filePathName);
+			try {
+				if (sendToFile) {
+					await writeGCodeFile(gcode, filePathName);
+				} else {
+					await sendGCodeFile(new Blob([gcode]), filePathName);
+				}
+			} catch (error) {
+				console.error("Failed to deliver G-code:", error);
+				alert(
+					`Failed to send G-code to printer: ${error instanceof Error ? error.message : String(error)}`,
+				);
 			}
 
 			progressBar.reset();

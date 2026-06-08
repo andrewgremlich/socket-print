@@ -6,11 +6,8 @@ import {
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
-	PerspectiveCamera,
 	Raycaster,
-	Scene,
 	Vector3,
-	WebGLRenderer,
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import {
@@ -249,7 +246,7 @@ function jacketMode({
 
 self.onmessage = async (
 	event: MessageEvent<{
-		positions: number[];
+		positions: Float32Array;
 		mode?: SliceMode;
 	}>,
 ) => {
@@ -258,18 +255,9 @@ self.onmessage = async (
 	const segments = await getCircularSegments();
 	const nozzleSize = await getNozzleSize();
 	const socketHeight = (await getCupSizeHeight()) + nozzleSize;
-	const scene = new Scene();
-	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
-	const camera = new PerspectiveCamera(75, 1, 0.1, 1000);
 	const rawgeometry = new BufferGeometry();
 
-	camera.position.set(0, 0, 10);
-	renderer.render(scene, camera);
-
-	rawgeometry.setAttribute(
-		"position",
-		new BufferAttribute(new Float32Array(positions), 3),
-	);
+	rawgeometry.setAttribute("position", new BufferAttribute(positions, 3));
 	rawgeometry.computeBoundingBox();
 	rawgeometry.computeBoundingSphere();
 	rawgeometry.computeVertexNormals();
@@ -292,8 +280,6 @@ self.onmessage = async (
 	const center = boundingBox.getCenter(new Vector3());
 	const maxHeight = boundingBox.max.y;
 
-	camera.lookAt(center);
-	scene.add(mesh);
 	mesh.geometry.computeBoundsTree = computeBoundsTree;
 	mesh.geometry.disposeBoundsTree = disposeBoundsTree;
 	mesh.geometry.boundsTree = bvh;
