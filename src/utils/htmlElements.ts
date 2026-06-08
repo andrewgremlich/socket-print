@@ -22,6 +22,15 @@ export const generateGCodeButton = document.getElementById(
 export const xRotate = document.getElementById("xRotate") as HTMLInputElement;
 export const yRotate = document.getElementById("yRotate") as HTMLInputElement;
 export const zRotate = document.getElementById("zRotate") as HTMLInputElement;
+export const xRotateDisplay = document.getElementById(
+	"xRotateDisplay",
+) as HTMLOutputElement;
+export const yRotateDisplay = document.getElementById(
+	"yRotateDisplay",
+) as HTMLOutputElement;
+export const zRotateDisplay = document.getElementById(
+	"zRotateDisplay",
+) as HTMLOutputElement;
 export const xTranslate = document.getElementById("xTranslate") as AppInput;
 export const yTranslate = document.getElementById("yTranslate") as AppInput;
 export const zTranslate = document.getElementById("zTranslate") as AppInput;
@@ -37,7 +46,6 @@ export const leftRadio = document.getElementById(
 export const rightRadio = document.getElementById(
 	"lockPositionRight",
 ) as HTMLInputElement | null;
-
 export const activeMaterialProfileSelect = document.getElementById(
 	"activeMaterialProfile",
 ) as HTMLSelectElement;

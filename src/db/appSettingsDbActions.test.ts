@@ -170,7 +170,7 @@ describe("setStartingCupLayerHeight", () => {
 });
 
 describe("getLineWidthAdjustment", () => {
-	test("returns line width adjustment as a number", async () => {
+	test("returns layer width adjustment as a number", async () => {
 		mockFirst.mockResolvedValue({ name: "lineWidthAdjustment", value: 0.4 });
 
 		const result = await getLineWidthAdjustment();
@@ -181,7 +181,7 @@ describe("getLineWidthAdjustment", () => {
 });
 
 describe("setLineWidthAdjustment", () => {
-	test("modifies line width adjustment", async () => {
+	test("modifies layer width adjustment", async () => {
 		mockModify.mockResolvedValue(1);
 
 		await setLineWidthAdjustment(0.6);

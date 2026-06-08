@@ -19,6 +19,9 @@ vi.mock("@/utils/htmlElements", () => ({
 	xTranslate: { value: "0" },
 	yTranslate: { value: "0" },
 	zTranslate: { value: "0" },
+	xRotateDisplay: { value: "0°" },
+	yRotateDisplay: { value: "0°" },
+	zRotateDisplay: { value: "0°" },
 }));
 
 // Mock mesh transforms

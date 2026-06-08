@@ -65,6 +65,13 @@ main {
 #printActions {
 	width: 100%;
 	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--spacing-sm);
+}
+
+#printActionsButtons {
+	display: flex;
 	align-items: center;
 	justify-content: flex-start;
 
@@ -80,6 +87,27 @@ main {
 			margin-right: 8px;
 			width: var(--spacing-lg);
 		}
+	}
+}
+
+#primeModeGroup {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-md);
+
+	& label {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		cursor: pointer;
+	}
+
+	& input[type="checkbox"] {
+		accent-color: var(--accent-color);
+		width: 18px;
+		height: 18px;
+		margin: 0;
+		cursor: pointer;
 	}
 }
 
@@ -113,7 +141,6 @@ main {
 }
 
 #translateRotationControls {
-	background-color: rgba(0, 0, 0, 0.6);
 	border-radius: var(--radius-md);
 
 	position: absolute;
@@ -172,12 +199,34 @@ main {
 	}
 }
 
+#translateRotationControls {
+	& span,
+	& output {
+		background-color: rgba(0, 0, 0, 0.55);
+		color: #ffffff;
+		padding: 2px 6px;
+		border-radius: var(--radius-sm, 4px);
+	}
+
+	& app-input::part(label) {
+		background-color: rgba(0, 0, 0, 0.55);
+		color: #ffffff;
+		padding: 2px 6px;
+		border-radius: var(--radius-sm, 4px);
+	}
+}
+
 #rotateSocket {
 	& span {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--spacing-xs);
 		margin-right: var(--spacing-lg);
+	}
+
+	& output {
+		font-size: 14px;
+		margin-right: 1rem;
 	}
 }
 
@@ -256,6 +305,7 @@ main {
 	from {
 		transform: rotate(0deg);
 	}
+
 	to {
 		transform: rotate(360deg);
 	}

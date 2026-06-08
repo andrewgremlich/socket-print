@@ -105,8 +105,8 @@ export class Application {
 			const cloned = object.geometry.clone();
 			cloned.applyMatrix4(object.matrixWorld);
 			const nonIndexed = cloned.index ? cloned.toNonIndexed() : cloned;
-			if (nonIndexed.hasAttribute("uv")) {
-				nonIndexed.deleteAttribute("uv");
+			for (const name of Object.keys(nonIndexed.attributes)) {
+				if (name !== "position") nonIndexed.deleteAttribute(name);
 			}
 			geometries.push(nonIndexed);
 		});

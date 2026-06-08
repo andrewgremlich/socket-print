@@ -169,6 +169,21 @@ export const setSecondsPerLayer = async (secondsPerLayer: number) => {
 		.modify({ value: secondsPerLayer });
 };
 
+export const getUseSecondsPerLayer = async (): Promise<boolean> => {
+	const useSecondsPerLayer = await db.appSettings
+		.where("name")
+		.equals("useSecondsPerLayer")
+		.first();
+	return Boolean(useSecondsPerLayer.value);
+};
+
+export const setUseSecondsPerLayer = async (useSecondsPerLayer: boolean) => {
+	return await db.appSettings
+		.where("name")
+		.equals("useSecondsPerLayer")
+		.modify({ value: useSecondsPerLayer });
+};
+
 export const getEPerRevolution = async (): Promise<number> => {
 	const ePerRevolution = await db.appSettings
 		.where("name")

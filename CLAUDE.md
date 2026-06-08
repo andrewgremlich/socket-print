@@ -21,11 +21,13 @@ Socket Print (Product name: Provel Print) is a CAD-like web application for fast
 ```bash
 npm install              # Install dependencies
 npm run dev              # Start dev server (localhost:4200)
-npm run build            # Production build
+npm run build            # Production build (runs tests first)
 npm run test             # Run tests
 npm run test:watch       # Run tests in watch mode
 npm run test:coverage    # Generate coverage report
 npm run check            # TypeScript check + Biome formatting
+npm run knip             # Find unused files, exports, and dependencies
+npm run changelog        # Regenerate CHANGELOG.md from conventional commits
 ```
 
 ## Architecture
@@ -38,8 +40,14 @@ See `.claude/docs/` for detailed reference:
 ### Key Entry Points
 
 - `index.html` → `src/renderer.ts` → `src/classes/Application.ts`
-- Slicing: `src/3d/sliceWorker.ts` (Web Worker)
+- `help.html` → `src/help-renderer.ts`
+- `licenses.html` → `src/license-renderer.ts`
+- Slicing: `src/3d/sliceWorker.ts` (Web Worker, vase + jacket modes)
 - G-code: `src/3d/generateGCode.ts`
+
+### Coordinate Systems
+
+Three.js uses **Y-up**; G-code uses **Z-up**. The G-code pipeline carries both axes and swaps them at output via `flipVerticalAxis()` in `src/3d/generateGCode.ts`. See `README.md` for details.
 
 ### Core Flow
 
@@ -90,5 +98,5 @@ Trigger automatically based on what files are being modified. See individual ski
 ### Agents (`.claude/agents/`)
 Specialized subagents for code review, G-code validation, geometry analysis, accessibility auditing, and test writing.
 
-### MCP Servers (`.claude/mcp.json`)
+### MCP Servers (`.mcp.json` at repo root)
 - **context7** — Up-to-date documentation and code examples for libraries/frameworks

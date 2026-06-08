@@ -53,6 +53,7 @@ export type ProvelPrintSettings = {
 	testCylinderHeight: number;
 	testCylinderInnerDiameter: number;
 	secondsPerLayer: number;
+	useSecondsPerLayer: boolean;
 	ePerRevolution: number;
 	trimLinePoints: string;
 	trimLineEnabled: boolean;

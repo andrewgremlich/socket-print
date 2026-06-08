@@ -118,8 +118,7 @@ describe("sendGCodeFile", () => {
 		vi.restoreAllMocks();
 	});
 
-	// TODO: FileReader is not defined in the Node environment, so we need to mock it
-	test.skip("uploads file with correct CRC32 and encoded filename", async () => {
+	test("uploads file with correct CRC32 and encoded filename", async () => {
 		const calls: string[] = [];
 
 		globalThis.fetch = vi.fn().mockImplementation((url: string) => {
@@ -161,7 +160,7 @@ describe("sendGCodeFile", () => {
 		expect(uploadCall).toContain("crc32=");
 	});
 
-	test("does not throw on upload failure (logs error)", async () => {
+	test("throws on upload failure", async () => {
 		globalThis.fetch = vi.fn().mockImplementation((url: string) => {
 			if (url.includes("rr_connect")) {
 				return Promise.resolve({
@@ -176,7 +175,8 @@ describe("sendGCodeFile", () => {
 		});
 
 		const blob = new Blob(["G28\n"]);
-		// sendGCodeFile catches errors internally, so it should not throw
-		await expect(sendGCodeFile(blob, "test.gcode")).resolves.toBeUndefined();
+		await expect(sendGCodeFile(blob, "test.gcode")).rejects.toThrow(
+			"Upload failed",
+		);
 	});
 });

@@ -6,7 +6,7 @@ export async function calculatePrintTime(
 	feedratePerLevel: number[],
 ): Promise<string> {
 	if (levelsOfPoints.length < 2) {
-		return "0h 0m 0s";
+		return "0m 0s";
 	}
 
 	let totalDistance = 0;
@@ -72,9 +72,9 @@ export async function calculatePrintTime(
 		totalDistance += layerDistance / feedratePerLevel[i];
 	}
 
-	const roundedPrintTime = ceil(totalDistance);
-	const minutes = floor(roundedPrintTime % 60);
-	const seconds = roundedPrintTime % 60;
+	const totalSeconds = ceil(totalDistance * 60);
+	const minutes = floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
 	const estimatedPrintTimeString = `${minutes}m ${seconds}s`;
 
 	return estimatedPrintTimeString;

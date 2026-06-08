@@ -52,12 +52,15 @@ import {
 	printerFileInput,
 	progressBar,
 	toggleTransformControlsButton,
+	xRotateDisplay,
 	xTranslate,
+	yRotateDisplay,
 	yTranslate,
+	zRotateDisplay,
 	zTranslate,
 } from "@/utils/htmlElements";
 import { saveRotationToDatabase } from "@/utils/meshTransforms";
-import { SliceWorkerStatus } from "./3d/sliceWorker";
+import { SliceMode, SliceWorkerStatus } from "./3d/sliceWorker";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
 import { getTrimLineEnabled, setTrimLineEnabled } from "./db/trimLineDbActions";
@@ -128,10 +131,14 @@ const printObject = new PrintObject({
 
 		app.attachTransformControls(printObject.mesh, {
 			onChange: async () => {
-				// Save the rotation values to IndexedDB
 				await saveRotationToDatabase(printObject.mesh);
-				// Update collision detection and cup-to-socket transition
 				await printObject.isIntersectingWithSocketCup();
+
+				const toDeg = (rad: number) =>
+					`${((Math.round((rad * 180) / Math.PI) % 360) + 360) % 360}°`;
+				xRotateDisplay.value = toDeg(printObject.mesh.rotation.x);
+				yRotateDisplay.value = toDeg(printObject.mesh.rotation.z);
+				zRotateDisplay.value = toDeg(printObject.mesh.rotation.y);
 			},
 		});
 
@@ -152,6 +159,9 @@ const removeMeshes = async (meshes: Mesh[]) => {
 	xTranslate.value = "0";
 	yTranslate.value = "0";
 	zTranslate.value = "0";
+	xRotateDisplay.value = "0°";
+	yRotateDisplay.value = "0°";
+	zRotateDisplay.value = "0°";
 	activeFileName.textContent = "No file selected";
 	collisionWarning.style.display = "none";
 	generateGCodeButton.disabled = true;
@@ -180,13 +190,22 @@ export async function slicingAction(sendToFile: boolean) {
 
 	const allGeometries = app.collectAllPrintableGeometries();
 
+	if (!allGeometries) {
+		console.error("Failed to merge printable geometries — nothing to slice.");
+		return;
+	}
+
 	progressBar.show();
 
 	const worker = new sliceWorker();
 
-	worker.postMessage({
-		positions: allGeometries.attributes.position.array,
-	});
+	const rawPositions = allGeometries.attributes.position.array;
+	const positions =
+		rawPositions instanceof Float32Array
+			? rawPositions
+			: new Float32Array(rawPositions);
+
+	worker.postMessage({ positions, mode: SliceMode.VASE }, [positions.buffer]);
 
 	worker.onmessage = async (
 		event: MessageEvent<{
@@ -229,10 +248,17 @@ export async function slicingAction(sendToFile: boolean) {
 			});
 			const filePathName = `${printObject.mesh?.name}.gcode`;
 
-			if (sendToFile) {
-				await writeGCodeFile(gcode, filePathName);
-			} else {
-				await sendGCodeFile(new Blob([gcode]), filePathName);
+			try {
+				if (sendToFile) {
+					await writeGCodeFile(gcode, filePathName);
+				} else {
+					await sendGCodeFile(new Blob([gcode]), filePathName);
+				}
+			} catch (error) {
+				console.error("Failed to deliver G-code:", error);
+				alert(
+					`Failed to send G-code to printer: ${error instanceof Error ? error.message : String(error)}`,
+				);
 			}
 
 			progressBar.reset();

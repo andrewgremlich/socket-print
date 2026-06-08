@@ -1,17 +1,43 @@
-# Socket Print
+# Socket Print (Provel Print)
 
 A utility CAD-like application to apply modifications to a prosthetic limb socket STL file, and output the modifications to a GCode file.
 
-## Testing
+## Getting Started
 
-In order to test GCode files, use the [NCViewer](https://ncviewer.com/) website.
+Requires Node.js 24+ (see `.nvmrc`).
+
+```bash
+git clone https://github.com/andrewgremlich/socket-print.git
+cd socket-print
+npm install
+npm run dev
+```
+
+Open <http://localhost:4200>.
+
+### Other commands
+
+```bash
+npm run build            # Production build (runs tests first)
+npm run test             # Run Vitest
+npm run check            # TypeScript + Biome
+npm run knip             # Find unused files/exports/deps
+```
+
+## Offline Support
+
+The app installs a service worker for offline use. See [SERVICE_WORKER.md](SERVICE_WORKER.md).
+
+## Testing GCode Output
+
+To inspect a generated GCode file, use [NCViewer](https://ncviewer.com/).
 
 ## Coordinate System Transformation
 
 This application bridges two different coordinate system conventions:
 
 - **Three.js (3D visualization)**: Y-up coordinate system where Y is the vertical axis
-- **3D Printing/GCode**: Z-up coordinate system where Z is the vertical axis
+- **3D Printing / GCode**: Z-up coordinate system where Z is the vertical axis
 
 ### Why This Matters
 
@@ -22,21 +48,12 @@ When generating GCode from Three.js geometries, coordinate transformations are n
 
 ### Where Transformations Occur
 
-- **[generateGCode.ts](src/3d/generateGCode.ts)**: The `makeGCodePoint()` function (line 42-50) and `flipVerticalAxis()` function (line 38-40) handle the Y↔Z axis transformations when converting Three.js Vector3 points to GCode coordinates
-- **[sliceWorker.ts](src/3d/sliceWorker.ts)**: Points are collected in Three.js coordinate space (Y-up) and later transformed during GCode generation
+- **[src/3d/generateGCode.ts](src/3d/generateGCode.ts)** — `makeGCodePoint()` and `flipVerticalAxis()` handle the Y↔Z swap when emitting GCode points
+- **[src/3d/sliceWorker.ts](src/3d/sliceWorker.ts)** — points are collected in Three.js (Y-up) space and later transformed during GCode generation
 
-When reading the code, keep in mind that variables like `verticalAxis` and `flipHeight` are used to manage this coordinate system transformation throughout the pipeline.
+Variables like `verticalAxis` and `flipHeight` carry this transformation through the pipeline.
 
-## Notes
+## References
 
-https://dyzedesign.com/2024/05/flow-to-rpm-factor-optimize-your-3d-printing-with-pellet-extruders/
-
-
-## Clipping Library
-
-https://www.npmjs.com/search?q=clipper-lib
-
-https://www.npmjs.com/package/clipper-lib
-
-https://github.com/junmer/clipper-lib?tab=readme-ov-file
-
+- Pellet extruder flow / RPM: https://dyzedesign.com/2024/05/flow-to-rpm-factor-optimize-your-3d-printing-with-pellet-extruders/
+- Clipper polygon-clipping library (under evaluation): https://github.com/junmer/clipper-lib

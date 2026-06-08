@@ -92,12 +92,14 @@
         </div>
 
         <div id="printActions">
-          <button type="button" id="generateGCodeButton" aria-label="Save G-Code file" disabled><i data-lucide="file"
-              aria-hidden="true"></i>File</button>
+          <div id="printActionsButtons">
+            <button type="button" id="generateGCodeButton" aria-label="Save G-Code file" disabled><i data-lucide="file"
+                aria-hidden="true"></i>File</button>
 
-          <button type="button" id="printerFileInput" name="printerFileInput" aria-label="Send to printer" disabled><i
-              data-lucide="printer" aria-hidden="true"></i>
-            Print</button>
+            <button type="button" id="printerFileInput" name="printerFileInput" aria-label="Send to printer" disabled><i
+                data-lucide="printer" aria-hidden="true"></i>
+              Print</button>
+          </div>
         </div>
       </form>
 
@@ -120,8 +122,11 @@
             <div id="rotateSocket">
               <span><i data-lucide="rotate-cw" aria-hidden="true"></i> Rotate 90°</span>
               <button disabled id="xRotate" type="button" aria-describedby="rotateDisabledHint">X</button>
+              <output id="xRotateDisplay" aria-label="X rotation in degrees">0°</output>
               <button disabled id="yRotate" type="button" aria-describedby="rotateDisabledHint">Y</button>
+              <output id="yRotateDisplay" aria-label="Y rotation in degrees">0°</output>
               <button disabled id="zRotate" type="button" aria-describedby="rotateDisabledHint">Z</button>
+              <output id="zRotateDisplay" aria-label="Z rotation in degrees">0°</output>
               <span id="rotateDisabledHint" class="hide">Load a model to enable rotation controls</span>
             </div>
 

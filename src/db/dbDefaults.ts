@@ -9,7 +9,7 @@ import {
 const materialProfileDefaults: Omit<MaterialProfile, "id"> = {
 	name: "cp1",
 	nozzleTemp: 200,
-	cupTemp: 190,
+	cupTemp: 200,
 	shrinkFactor: 2.6,
 	outputFactor: 1,
 	gramsPerRevolution: 0.2,

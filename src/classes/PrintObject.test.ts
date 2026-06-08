@@ -78,6 +78,9 @@ vi.mock("@/utils/htmlElements", () => ({
 	zRotate: Object.assign(document.createElement("button"), {
 		disabled: false,
 	}),
+	xRotateDisplay: { value: "0°" },
+	yRotateDisplay: { value: "0°" },
+	zRotateDisplay: { value: "0°" },
 	xTranslate: Object.assign(document.createElement("input"), {
 		value: "0",
 		disabled: false,

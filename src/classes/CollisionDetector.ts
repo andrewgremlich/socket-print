@@ -16,11 +16,18 @@ export class CollisionDetector implements ICollisionDetector {
 	#socketCup: SocketCup;
 	#scene: Scene;
 	#transitionInstance: CupToSocketTransition | null = null;
+	#transitionCreating: Promise<CupToSocketTransition> | null = null;
 	#computeId = 0;
+	#onTransitionRecompute: (() => void) | null = null;
 
 	constructor(socketCup: SocketCup, scene: Scene) {
 		this.#socketCup = socketCup;
 		this.#scene = scene;
+	}
+
+	setRecomputeCallback(cb: () => void): void {
+		this.#onTransitionRecompute = cb;
+		this.#transitionInstance?.setRecomputeCallback(cb);
 	}
 
 	/**
@@ -67,7 +74,8 @@ export class CollisionDetector implements ICollisionDetector {
 				return {
 					hasCollision: false,
 					hasInvalidFit: true,
-					message: "Imperfect fit: Socket does not fully cover the cup edge",
+					message:
+						"Imperfect fit — check alignment and dimensions over the socket cup.",
 				};
 			}
 		} else {
@@ -80,51 +88,41 @@ export class CollisionDetector implements ICollisionDetector {
 
 	#clearTransition(): void {
 		this.#computeId++;
-		this.#removeTransitionMeshesFromScene();
 		this.#transitionInstance?.dispose();
 		this.#transitionInstance = null;
-	}
-
-	#removeTransitionMeshesFromScene(): void {
-		const toRemove = this.#scene.children.filter(
-			(child) => child.userData?.isTransition,
-		);
-		for (const child of toRemove) {
-			this.#scene.remove(child);
-		}
+		this.#transitionCreating = null;
 	}
 
 	/**
 	 * Computes the cup-to-socket transition and validates the fit.
 	 */
 	async #computeTransition(mesh: Mesh): Promise<{ isValid: boolean }> {
-		this.#clearTransition();
-
-		const id = this.#computeId;
+		const id = ++this.#computeId;
 
 		mesh.updateMatrixWorld(true);
 
-		this.#transitionInstance = await CupToSocketTransition.create(
-			this.#socketCup,
-			mesh,
-			this.#scene,
-		);
-
-		// If a newer computation started while we were awaiting, discard this one
-		if (id !== this.#computeId) {
-			this.#transitionInstance.dispose();
-			this.#transitionInstance = null;
-			return { isValid: false };
+		if (!this.#transitionInstance) {
+			if (!this.#transitionCreating) {
+				this.#transitionCreating = CupToSocketTransition.create(
+					this.#socketCup,
+					mesh,
+					this.#scene,
+				);
+			}
+			this.#transitionInstance = await this.#transitionCreating;
+			this.#transitionCreating = null;
+			if (this.#onTransitionRecompute) {
+				this.#transitionInstance.setRecomputeCallback(
+					this.#onTransitionRecompute,
+				);
+			}
 		}
+
+		if (id !== this.#computeId) return { isValid: false };
 
 		const result = await this.#transitionInstance.computeTransition();
 
-		// Check again after the second await
-		if (id !== this.#computeId) {
-			this.#transitionInstance?.dispose();
-			this.#transitionInstance = null;
-			return { isValid: false };
-		}
+		if (id !== this.#computeId) return { isValid: false };
 
 		return result;
 	}

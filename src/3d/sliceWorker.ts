@@ -6,11 +6,8 @@ import {
 	DoubleSide,
 	Mesh,
 	MeshStandardMaterial,
-	PerspectiveCamera,
 	Raycaster,
-	Scene,
 	Vector3,
-	WebGLRenderer,
 } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import {
@@ -34,71 +31,38 @@ export enum SliceWorkerStatus {
 	PROGRESS = "progress",
 }
 
-self.onmessage = async (
-	event: MessageEvent<{
-		positions: number[];
-	}>,
-) => {
-	const { positions } = event.data;
-	const layerHeight = await getLayerHeight();
-	const segments = await getCircularSegments();
-	const nozzleSize = await getNozzleSize();
-	const socketHeight = (await getCupSizeHeight()) + nozzleSize;
+export enum SliceMode {
+	VASE = "vase",
+	JACKET = "jacket",
+}
+
+type SliceParams = {
+	mesh: Mesh;
+	center: Vector3;
+	maxHeight: number;
+	layerHeight: number;
+	segments: number;
+	socketHeight: number;
+};
+
+function vaseMode({
+	mesh,
+	center,
+	maxHeight,
+	layerHeight,
+	segments,
+	socketHeight,
+}: SliceParams): Vector3[][] {
 	const angleIncrement = (pi * 2) / segments;
-	const scene = new Scene();
-	const renderer = new WebGLRenderer({ canvas: new OffscreenCanvas(100, 100) });
-	const camera = new PerspectiveCamera(75, 1, 0.1, 1000);
-	const rawgeometry = new BufferGeometry();
-
-	camera.position.set(0, 0, 10);
-	renderer.render(scene, camera);
-
-	rawgeometry.setAttribute(
-		"position",
-		new BufferAttribute(new Float32Array(positions), 3),
-	);
-	rawgeometry.computeBoundingBox();
-	rawgeometry.computeBoundingSphere();
-	rawgeometry.computeVertexNormals();
-	rawgeometry.setIndex([
-		...Array(rawgeometry.attributes.position.count).keys(),
-	]);
-	ensureUV(rawgeometry);
-
-	const mesh = new Mesh(
-		BufferGeometryUtils.mergeVertices(rawgeometry, 1e-5),
-		new MeshStandardMaterial({
-			color: 0x00ff00,
-			side: DoubleSide,
-		}),
-	);
-
-	const bvh = new MeshBVH(mesh.geometry);
-
-	const boundingBox = new Box3().setFromObject(mesh);
-	const center = boundingBox.getCenter(new Vector3());
-	const maxHeight = boundingBox.max.y;
-
-	camera.lookAt(center);
-	scene.add(mesh);
-	mesh.geometry.computeBoundsTree = computeBoundsTree;
-	mesh.geometry.disposeBoundsTree = disposeBoundsTree;
-	mesh.geometry.boundsTree = bvh;
-	mesh.updateMatrixWorld(true);
-
 	const pointGatherer: Vector3[][] = [];
 	const raycaster = new Raycaster();
 	const direction = new Vector3();
 	const ray = raycaster.ray;
 
-	// Threshold for minimum points required per layer (percentage of segments)
 	const MIN_POINTS_THRESHOLD = 0.95;
 	const minPointsRequired = Math.floor(segments * MIN_POINTS_THRESHOLD);
-
-	// Maximum allowed gap in consecutive points (in terms of angle indices)
 	const MAX_CONSECUTIVE_MISSING = 3;
-
-	const trimTop = 2 * layerHeight; // Trim top layers to avoid slicing issues at the very top of the model
+	const trimTop = 2 * layerHeight;
 
 	for (
 		let heightPosition = 0;
@@ -139,20 +103,199 @@ self.onmessage = async (
 				consecutiveMissing = 0;
 			} else {
 				consecutiveMissing++;
-				// Detect if we have too many consecutive missing points
 				if (consecutiveMissing > MAX_CONSECUTIVE_MISSING) {
 					hasLargeGap = true;
 				}
 			}
 		}
 
-		// Stop collecting layers if we don't have enough points OR if there's a large gap
 		if (pointLevel.length < minPointsRequired || hasLargeGap) {
 			break;
 		}
 
 		pointGatherer.push(pointLevel);
 	}
+
+	return pointGatherer;
+}
+
+function detectOpening(
+	mesh: Mesh,
+	center: Vector3,
+	heightPosition: number,
+	segments: number,
+	angleIncrement: number,
+): { startIdx: number; endIdx: number } | null {
+	const raycaster = new Raycaster();
+	const direction = new Vector3();
+	const ray = raycaster.ray;
+	const hits: boolean[] = new Array(segments);
+	const startAngle = pi;
+
+	for (let i = 0; i < segments; i++) {
+		const angle = startAngle + i * angleIncrement;
+		direction.set(cos(-angle), 0, sin(-angle)).normalize();
+		ray.origin.set(center.x, heightPosition, center.z);
+		ray.direction.copy(direction);
+		hits[i] = raycaster.intersectObject(mesh).length > 0;
+	}
+
+	// Find the longest contiguous miss run, treating the array as circular.
+	let bestStart = -1;
+	let bestLen = 0;
+	let i = 0;
+	while (i < segments * 2) {
+		if (hits[i % segments]) {
+			i++;
+			continue;
+		}
+		const runStart = i;
+		while (i < segments * 2 && !hits[i % segments]) i++;
+		const runLen = i - runStart;
+		if (runLen > bestLen) {
+			bestLen = runLen;
+			bestStart = runStart % segments;
+		}
+		if (runLen >= segments) break; // Full miss — no opening to detect
+	}
+
+	// Only count as an opening if the miss run exceeds the noise tolerance.
+	if (bestLen <= 3 || bestLen >= segments) return null;
+
+	return {
+		startIdx: bestStart,
+		endIdx: (bestStart + bestLen - 1) % segments,
+	};
+}
+
+function jacketMode({
+	mesh,
+	center,
+	maxHeight,
+	layerHeight,
+	segments,
+	socketHeight,
+}: SliceParams): Vector3[][] {
+	const angleIncrement = (pi * 2) / segments;
+	const pointGatherer: Vector3[][] = [];
+	const raycaster = new Raycaster();
+	const direction = new Vector3();
+	const ray = raycaster.ray;
+	const startAngle = pi;
+	const trimTop = 2 * layerHeight;
+
+	const opening = detectOpening(
+		mesh,
+		center,
+		layerHeight,
+		segments,
+		angleIncrement,
+	);
+
+	if (!opening) {
+		throw new Error(
+			"No opening detected — jacket mode requires a mesh with a lace opening.",
+		);
+	}
+
+	// Build the ordered list of solid-arc angle indices: from just-after openingEnd
+	// to just-before openingStart, wrapping around the circle.
+	const arcIndices: number[] = [];
+	let idx = (opening.endIdx + 1) % segments;
+	while (idx !== opening.startIdx) {
+		arcIndices.push(idx);
+		idx = (idx + 1) % segments;
+	}
+
+	let layerIndex = 0;
+	for (
+		let heightPosition = 0;
+		heightPosition < maxHeight - trimTop;
+		heightPosition += layerHeight
+	) {
+		self.postMessage({
+			type: SliceWorkerStatus.PROGRESS,
+			data: ceil(heightPosition / maxHeight, 2),
+		});
+
+		const sweep = layerIndex % 2 === 0 ? arcIndices : [...arcIndices].reverse();
+		const pointLevel: Vector3[] = [];
+
+		for (const i of sweep) {
+			const angle = startAngle + i * angleIncrement;
+			direction.set(cos(-angle), 0, sin(-angle)).normalize();
+			ray.origin.set(center.x, heightPosition, center.z);
+			ray.direction.copy(direction);
+			const intersects = raycaster.intersectObject(mesh);
+
+			if (intersects.length > 0) {
+				const intersection = intersects[intersects.length - 1].point;
+				intersection.add(new Vector3(0, socketHeight, 0));
+				pointLevel.push(intersection);
+			}
+		}
+
+		if (pointLevel.length === 0) break;
+
+		pointGatherer.push(pointLevel);
+		layerIndex++;
+	}
+
+	return pointGatherer;
+}
+
+self.onmessage = async (
+	event: MessageEvent<{
+		positions: Float32Array;
+		mode?: SliceMode;
+	}>,
+) => {
+	const { positions, mode = SliceMode.VASE } = event.data;
+	const layerHeight = await getLayerHeight();
+	const segments = await getCircularSegments();
+	const nozzleSize = await getNozzleSize();
+	const socketHeight = (await getCupSizeHeight()) + nozzleSize;
+	const rawgeometry = new BufferGeometry();
+
+	rawgeometry.setAttribute("position", new BufferAttribute(positions, 3));
+	rawgeometry.computeBoundingBox();
+	rawgeometry.computeBoundingSphere();
+	rawgeometry.computeVertexNormals();
+	rawgeometry.setIndex([
+		...Array(rawgeometry.attributes.position.count).keys(),
+	]);
+	ensureUV(rawgeometry);
+
+	const mesh = new Mesh(
+		BufferGeometryUtils.mergeVertices(rawgeometry, 1e-5),
+		new MeshStandardMaterial({
+			color: 0x00ff00,
+			side: DoubleSide,
+		}),
+	);
+
+	const bvh = new MeshBVH(mesh.geometry);
+
+	const boundingBox = new Box3().setFromObject(mesh);
+	const center = boundingBox.getCenter(new Vector3());
+	const maxHeight = boundingBox.max.y;
+
+	mesh.geometry.computeBoundsTree = computeBoundsTree;
+	mesh.geometry.disposeBoundsTree = disposeBoundsTree;
+	mesh.geometry.boundsTree = bvh;
+	mesh.updateMatrixWorld(true);
+
+	const params: SliceParams = {
+		mesh,
+		center,
+		maxHeight,
+		layerHeight,
+		segments,
+		socketHeight,
+	};
+
+	const pointGatherer =
+		mode === SliceMode.JACKET ? jacketMode(params) : vaseMode(params);
 
 	self.postMessage({
 		type: SliceWorkerStatus.DONE,

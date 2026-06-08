@@ -2,6 +2,7 @@ import { liveQuery, type Subscription } from "dexie";
 import { cos, floor, pi, sin } from "mathjs";
 import {
 	BufferGeometry,
+	Color,
 	DoubleSide,
 	Float32BufferAttribute,
 	Mesh,
@@ -24,6 +25,9 @@ import { getRadialSegments } from "@/utils/getRadialSegments";
 import { AppObject } from "./AppObject";
 import type { SocketCup } from "./SocketCup";
 
+const COLOR_HIT = new Color(0x4a90d9);
+const COLOR_MISS = new Color(0xff0000);
+
 type TransitionResult = {
 	isValid: boolean;
 	geometry?: BufferGeometry;
@@ -39,6 +43,7 @@ export class CupToSocketTransition extends AppObject {
 	#intersectionPoints: Vector3[] = [];
 	#bottomRingPoints: Vector3[] = [];
 	#lastDiameter: number | null = null;
+	#onRecompute: (() => void) | null = null;
 	$liveTestCylinderDiameter: Subscription | null = null;
 
 	private constructor(
@@ -74,174 +79,197 @@ export class CupToSocketTransition extends AppObject {
 		this.$liveTestCylinderDiameter = liveQuery(() =>
 			getTestCylinderInnerDiameter(),
 		).subscribe((diameter) => {
-			if (!diameter || diameter <= 0 || !this.mesh) return;
+			if (!diameter || diameter <= 0) return;
 			if (diameter === this.#lastDiameter) return;
 			this.#lastDiameter = diameter;
-			this.recompute();
+			this.recompute().then(() => this.#onRecompute?.());
 		});
 	}
 
+	#ensureMesh(): void {
+		if (this.mesh) return;
+
+		const geometry = new BufferGeometry();
+		const material = new MeshStandardMaterial({
+			color: 0xffffff,
+			side: DoubleSide,
+			vertexColors: true,
+		});
+
+		this.mesh = new Mesh(geometry, material);
+		this.mesh.name = "cup-to-socket-transition";
+		this.mesh.userData = { isTransition: true };
+		this.mesh.raycast = acceleratedRaycast;
+		this.mesh.geometry.computeBoundsTree = computeBoundsTree;
+		this.mesh.geometry.disposeBoundsTree = disposeBoundsTree;
+
+		this.#scene.add(this.mesh);
+	}
+
+	#updateGeometry(topRing: Vector3[], hitMask: boolean[]): void {
+		const positions: number[] = [];
+		const normals: number[] = [];
+		const colors: number[] = [];
+		const indices: number[] = [];
+		const segments = this.#segments;
+
+		const pushColor = (hit: boolean) => {
+			const c = hit ? COLOR_HIT : COLOR_MISS;
+			colors.push(c.r, c.g, c.b);
+		};
+
+		for (let i = 0; i <= segments; i++) {
+			const ringIdx = i % segments;
+			const point = this.#bottomRingPoints[ringIdx];
+			positions.push(point.x, point.y, point.z);
+			const len = Math.sqrt(point.x * point.x + point.z * point.z);
+			normals.push(point.x / len, 0, point.z / len);
+			pushColor(hitMask[ringIdx]);
+		}
+
+		for (let i = 0; i <= segments; i++) {
+			const ringIdx = i % segments;
+			const point = topRing[ringIdx];
+			positions.push(point.x, point.y, point.z);
+			const len = Math.sqrt(point.x * point.x + point.z * point.z);
+			normals.push(point.x / len, 0, point.z / len);
+			pushColor(hitMask[ringIdx]);
+		}
+
+		const topStart = segments + 1;
+		for (let i = 0; i < segments; i++) {
+			const bA = i;
+			const bB = i + 1;
+			const tA = topStart + i;
+			const tB = topStart + i + 1;
+			indices.push(bA, bB, tA);
+			indices.push(tA, bB, tB);
+		}
+
+		const geo = this.mesh.geometry;
+		geo.setAttribute("position", new Float32BufferAttribute(positions, 3));
+		geo.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+		geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
+		geo.setIndex(indices);
+		geo.computeVertexNormals();
+
+		geo.boundsTree = new MeshBVH(geo);
+	}
+
 	async computeTransition(): Promise<TransitionResult> {
-		// Get transformation parameters
 		const shrinkFactor = await getActiveMaterialProfileShrinkFactor();
 		const nozzleSize = await getNozzleSize();
 		const testCylinderDiameter = await getTestCylinderInnerDiameter();
 		const shrinkScale = floor(1 / (1 - shrinkFactor / 100), 4);
 		const nozzleSizeOffset = nozzleSize / NOZZLE_SIZE_OFFSET_FACTOR;
 
-		// Calculate transformed radius using test cylinder diameter
 		const testCylinderRadius = (testCylinderDiameter ?? 75) / 2;
 		const transformedRadius =
 			testCylinderRadius * shrinkScale + nozzleSizeOffset;
 
-		// Cup top Y position (accounting for bump danger zone)
 		const cupTopY = -this.#socketCup.bumpDangerZone;
 
-		// Setup raycaster
 		const raycaster = new Raycaster();
 		raycaster.firstHitOnly = false;
 
-		// Ensure socket mesh has updated matrices
 		this.#socketMesh.updateMatrixWorld(true);
-
-		// Clear previous points
 		this.#intersectionPoints = [];
 		this.#bottomRingPoints = [];
 
-		// Cast rays from cup's top edge circumference
+		const rayResults: { origin: Vector3; point: Vector3 | null }[] = [];
+
 		for (let i = 0; i < this.#segments; i++) {
 			const theta = (i / this.#segments) * pi * 2;
 			const x = Number(cos(theta)) * transformedRadius;
 			const z = Number(sin(theta)) * transformedRadius;
 
-			// Store bottom ring point
-			this.#bottomRingPoints.push(new Vector3(x, cupTopY, z));
+			const origin = new Vector3(x, cupTopY, z);
+			this.#bottomRingPoints.push(origin);
 
-			// Set ray origin at cup top edge
 			raycaster.ray.origin.set(x, cupTopY, z);
-			// Ray direction: straight up (positive Y)
 			raycaster.ray.direction.set(0, 1, 0);
 
 			const intersects = raycaster.intersectObject(this.#socketMesh, false);
-
-			if (intersects.length === 0) {
-				// Imperfect fit - ray missed the socket
-				this.#isValidFit = false;
-				return { isValid: false };
-			}
-
-			// Store the first (closest) intersection point
-			this.#intersectionPoints.push(intersects[0].point.clone());
+			rayResults.push({
+				origin,
+				point: intersects.length > 0 ? intersects[0].point.clone() : null,
+			});
 		}
 
-		// All rays hit - valid fit
-		this.#isValidFit = true;
+		const hitMask = rayResults.map((r) => r.point !== null);
+		const allHit = hitMask.every((h) => h);
 
-		// Generate tapered geometry
-		const geometry = this.#createTaperedGeometry();
+		this.#ensureMesh();
+		const material = this.mesh.material as MeshStandardMaterial;
+		material.wireframe = false;
+		this.mesh.visible = true;
 
-		// Create mesh and add to scene
-		this.#createMesh(geometry);
+		const topRing = this.#buildTopRing(rayResults, hitMask);
 
-		return {
-			isValid: true,
-			geometry,
-			intersectionPoints: this.#intersectionPoints,
-		};
+		if (allHit) {
+			for (const r of rayResults) {
+				// biome-ignore lint/style/noNonNullAssertion: allHit guarantees point is set
+				this.#intersectionPoints.push(r.point!);
+			}
+			this.#updateGeometry(this.#intersectionPoints, hitMask);
+			this.#isValidFit = true;
+			return {
+				isValid: true,
+				geometry: this.mesh.geometry,
+				intersectionPoints: this.#intersectionPoints,
+			};
+		}
+
+		this.#updateGeometry(topRing, hitMask);
+		this.#isValidFit = false;
+		return { isValid: false };
 	}
 
-	#createTaperedGeometry(): BufferGeometry {
-		const positions: number[] = [];
-		const normals: number[] = [];
-		const indices: number[] = [];
-
+	/**
+	 * Build the top ring for visualization. Hits use their intersection point.
+	 * Misses inherit Y from the nearest hit neighbor on the ring so the band
+	 * stays continuous and red verts sit on the same surface as blue ones.
+	 * Falls back to bottom-ring Y when no rays hit at all.
+	 */
+	#buildTopRing(
+		rayResults: { origin: Vector3; point: Vector3 | null }[],
+		hitMask: boolean[],
+	): Vector3[] {
 		const segments = this.#segments;
+		const result: Vector3[] = new Array(segments);
+		const yValues: (number | null)[] = rayResults.map((r) =>
+			r.point ? r.point.y : null,
+		);
 
-		// Add bottom ring vertices (from cup's top edge)
-		for (let i = 0; i <= segments; i++) {
-			const idx = i % segments;
-			const point = this.#bottomRingPoints[idx];
-			positions.push(point.x, point.y, point.z);
-
-			// Normal points outward (approximation for bottom ring)
-			const nx = point.x;
-			const nz = point.z;
-			const len = Math.sqrt(nx * nx + nz * nz);
-			normals.push(nx / len, 0, nz / len);
-		}
-
-		// Add top ring vertices (from intersection points)
-		for (let i = 0; i <= segments; i++) {
-			const idx = i % segments;
-			const point = this.#intersectionPoints[idx];
-			positions.push(point.x, point.y, point.z);
-
-			// Normal points outward (approximation for top ring)
-			const nx = point.x;
-			const nz = point.z;
-			const len = Math.sqrt(nx * nx + nz * nz);
-			normals.push(nx / len, 0, nz / len);
-		}
-
-		// Create triangles connecting bottom ring to top ring
-		const bottomStart = 0;
-		const topStart = segments + 1;
+		const findNearestHitY = (i: number): number | null => {
+			for (let d = 1; d <= segments / 2; d++) {
+				const left = yValues[(i - d + segments) % segments];
+				if (left !== null) return left;
+				const right = yValues[(i + d) % segments];
+				if (right !== null) return right;
+			}
+			return null;
+		};
 
 		for (let i = 0; i < segments; i++) {
-			const bottomA = bottomStart + i;
-			const bottomB = bottomStart + i + 1;
-			const topA = topStart + i;
-			const topB = topStart + i + 1;
-
-			// Two triangles per quad
-			// Triangle 1: bottomA -> bottomB -> topA
-			indices.push(bottomA, bottomB, topA);
-			// Triangle 2: topA -> bottomB -> topB
-			indices.push(topA, bottomB, topB);
-		}
-
-		const geometry = new BufferGeometry();
-		geometry.setAttribute("position", new Float32BufferAttribute(positions, 3));
-		geometry.setAttribute("normal", new Float32BufferAttribute(normals, 3));
-		geometry.setIndex(indices);
-		geometry.computeVertexNormals();
-
-		return geometry;
-	}
-
-	#createMesh(geometry: BufferGeometry): void {
-		// Dispose existing mesh if any
-		if (this.mesh) {
-			this.#scene.remove(this.mesh);
-			this.mesh.geometry.dispose();
-			if (this.mesh.material instanceof MeshStandardMaterial) {
-				this.mesh.material.dispose();
+			const origin = rayResults[i].origin;
+			if (hitMask[i]) {
+				// biome-ignore lint/style/noNonNullAssertion: hitMask guards .point
+				result[i] = rayResults[i].point!.clone();
+			} else {
+				const y = findNearestHitY(i) ?? origin.y;
+				result[i] = new Vector3(origin.x, y, origin.z);
 			}
 		}
-
-		const material = new MeshStandardMaterial({
-			color: 0x4a90d9, // Blue-ish color to distinguish from cup and socket
-			side: DoubleSide,
-			wireframe: import.meta.env.DEV,
-		});
-
-		this.mesh = new Mesh(geometry, material);
-		this.mesh.name = "cup-to-socket-transition";
-		this.mesh.userData = { isTransition: true };
-
-		// Setup BVH for ray casting
-		const bvh = new MeshBVH(geometry);
-		this.mesh.raycast = acceleratedRaycast;
-		this.mesh.geometry.computeBoundsTree = computeBoundsTree;
-		this.mesh.geometry.disposeBoundsTree = disposeBoundsTree;
-		this.mesh.geometry.boundsTree = bvh;
-
-		// Add to scene
-		this.#scene.add(this.mesh);
+		return result;
 	}
 
 	async recompute(): Promise<TransitionResult> {
 		return this.computeTransition();
+	}
+
+	setRecomputeCallback(cb: () => void): void {
+		this.#onRecompute = cb;
 	}
 
 	isValidFit(): boolean {
@@ -268,14 +296,11 @@ export class CupToSocketTransition extends AppObject {
 
 		if (this.mesh) {
 			this.#scene.remove(this.mesh);
-
-			if (this.mesh.geometry) {
-				this.mesh.geometry.dispose();
-			}
-
+			this.mesh.geometry.dispose();
 			if (this.mesh.material instanceof MeshStandardMaterial) {
 				this.mesh.material.dispose();
 			}
+			this.mesh = null;
 		}
 
 		this.#intersectionPoints = [];

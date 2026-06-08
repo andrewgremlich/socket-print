@@ -7,10 +7,6 @@ vi.mock("@/db/appSettingsDbActions", () => ({
 	getLineWidthAdjustment: vi.fn().mockResolvedValue(1.2),
 }));
 
-vi.mock("@/3d/calculateDistancePerLevel", () => ({
-	calculateFeedratePerLevel: vi.fn().mockResolvedValue(1000),
-}));
-
 vi.mock("./getExtrusionCalculation", () => ({
 	getExtrusionCalculation: vi.fn().mockReturnValue(5.0),
 }));
@@ -161,6 +157,7 @@ describe("getTransitionLayer", () => {
 		gramsPerRevolution: 0.05,
 		density: 1.24,
 		ePerRevolution: 1,
+		feedrate: 2000,
 	};
 
 	test("returns G-code string", async () => {

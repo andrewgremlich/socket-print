@@ -1,7 +1,7 @@
 const rrConnectResponse = {
 	sessionTimeout: 8000,
 	boardType: "duetwifi",
-	fwVersion: "3.4.6",
+	fwVersion: "3.5.0",
 };
 
 let isRebooting = false;
@@ -36,6 +36,44 @@ Deno.serve({ port: 8080 }, async (req) => {
 			status: 200,
 			headers: { "Content-Type": "application/json", ...corsHeaders },
 		});
+	}
+
+	// GET /rr_model
+	if (req.method === "GET" && url.pathname === "/rr_model") {
+		const key = url.searchParams.get("key");
+		if (key === "boards[0]") {
+			console.log("[MODEL] boards[0] requested");
+			return new Response(
+				JSON.stringify({
+					key: "boards[0]",
+					flags: 0,
+					result: {
+						firmwareVersion: "3.5.0",
+						name: "Duet 3 Mainboard 6XD",
+						shortName: "MB6XD",
+					},
+				}),
+				{
+					status: 200,
+					headers: { "Content-Type": "application/json", ...corsHeaders },
+				},
+			);
+		}
+	}
+
+	// GET /rr_reply
+	if (req.method === "GET" && url.pathname === "/rr_reply") {
+		console.log("[REPLY] rr_reply requested");
+		return new Response(
+			JSON.stringify({
+				reply:
+					"FIRMWARE_NAME:RepRapFirmware for Duet 3 MB6XD FIRMWARE_VERSION:3.5.0 ELECTRONICS:Duet 3 MB6XD",
+			}),
+			{
+				status: 200,
+				headers: { "Content-Type": "application/json", ...corsHeaders },
+			},
+		);
 	}
 
 	// POST /rr_upload — firmware upload
