@@ -1,57 +1,65 @@
-# Database Schema (Dexie v21)
+# Database Schema (Dexie v23)
 
-Four main tables:
+Defined in `src/db/db.ts`. Types in `src/db/types.ts`.
 
-## formValues
-- IP address
-- Lock position (left/right)
-- Cup size
-- Nozzle size
-- Layer height
-- Active material profile
+Four tables:
 
-## appSettings
-- Lock depth
-- circularSegments
-- Translations (X/Y/Z)
-- Rotations (X/Y/Z)
-- startingCupLayerHeight
-- lineWidthAdjustment
-- testCylinderHeight
-- testCylinderInnerDiameter
-- Seconds per layer
-- E per revolution
+## formValues (key/value rows)
 
-## materialProfiles
-- Name
-- Nozzle temp
-- Cup temp
-- Shrink factor
-- Output factor
-- Grams per revolution
-- Density
+Stored as `KeyValueSetting` rows (`{ id, name, value }`). The logical shape (see `FormValues` type) is:
 
-## savedFiles
-- Name
-- Type (Socket/TestCylinder)
-- File blob
+- `ipAddress` — printer IP
+- `lockPosition` — "left" | "right"
+- `cupSize` — `CupSize` object (innerDiameter, outerDiameter, height, name)
+- `nozzleSize`
+- `layerHeight`
+- `activeMaterialProfile` — name of active material profile
 
-## Print Object Types
+## appSettings (key/value rows)
+
+Stored as `KeyValueSetting` rows. The logical shape (see `ProvelPrintSettings` type) is:
+
+- `lockDepth`
+- `circularSegments`
+- `translateX`, `translateY`, `translateZ`
+- `rotateX`, `rotateY`, `rotateZ`
+- `startingCupLayerHeight`
+- `lineWidthAdjustment`
+- `testCylinderHeight`
+- `testCylinderInnerDiameter`
+- `secondsPerLayer`
+- `useSecondsPerLayer`
+- `ePerRevolution`
+
+## materialProfiles (object rows)
+
+Indexed columns: `++id, name, nozzleTemp, cupTemp, shrinkFactor, outputFactor`.
+
+`MaterialProfile` shape (`src/db/types.ts`):
+
+- `name`
+- `nozzleTemp`
+- `cupTemp`
+- `shrinkFactor`
+- `outputFactor`
+- `gramsPerRevolution`
+- `density`
+
+## savedFiles (object rows)
+
+Indexed columns: `++id, name, file, type`.
+
+`SavedFile` shape:
+
+- `name`
+- `type` — `PrintObjectType` enum
+- `file` — Blob
+
+## Enums
 
 ```typescript
 enum PrintObjectType {
   TestCylinder = "TestCylinder",
   Socket = "Socket",
 }
-```
-
-## Cup Size Configuration
-
-```typescript
-type CupSize = {
-  innerDiameter: number;
-  outerDiameter: number;
-  height: number;
-  name: string;
-};
 ```
