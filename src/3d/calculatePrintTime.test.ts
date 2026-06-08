@@ -7,18 +7,31 @@ describe("calculatePrintTime", () => {
 		vi.clearAllMocks();
 	});
 
-	test("returns '0h 0m 0s' for empty input", async () => {
+	test("returns '0m 0s' for empty input", async () => {
 		const result = await calculatePrintTime([], []);
-		expect(result).toBe("0h 0m 0s");
+		expect(result).toBe("0m 0s");
 	});
 
-	test("returns '0h 0m 0s' for single level", async () => {
+	test("returns '0m 0s' for single level", async () => {
 		const points = [[new Vector3(0, 0, 0), new Vector3(10, 0, 0)]];
 		const feedrates = [1000];
 
 		const result = await calculatePrintTime(points, feedrates);
 
-		expect(result).toBe("0h 0m 0s");
+		expect(result).toBe("0m 0s");
+	});
+
+	test("formats minutes and seconds independently", async () => {
+		// Two 50mm intra-layer segments + one 50mm inter-layer travel = 150mm at 60mm/min = 150s = 2m 30s
+		const points = [
+			[new Vector3(0, 0, 0), new Vector3(50, 0, 0)],
+			[new Vector3(0, 0, 0), new Vector3(50, 0, 0)],
+		];
+		const feedrates = [60, 60];
+
+		const result = await calculatePrintTime(points, feedrates);
+
+		expect(result).toBe("2m 30s");
 	});
 
 	test("returns formatted time string with minutes and seconds", async () => {

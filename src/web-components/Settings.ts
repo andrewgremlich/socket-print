@@ -15,7 +15,6 @@ import {
 	getStartingCupLayerHeight,
 	getTestCylinderHeight,
 	getTestCylinderInnerDiameter,
-	getUseSecondsPerLayer,
 	setCircularSegments,
 	setEPerRevolution,
 	setLineWidthAdjustment,
@@ -23,7 +22,6 @@ import {
 	setStartingCupLayerHeight,
 	setTestCylinderHeight,
 	setTestCylinderInnerDiameter,
-	setUseSecondsPerLayer,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/db";
 import { getIpAddress } from "@/db/formValuesDbActions";
@@ -157,9 +155,6 @@ export class Settings extends Dialog {
 
 					<label for="secondsPerLayer">Seconds Per Layer</label>
 					<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="14" />
-
-					<label for="useSecondsPerLayer">Use Seconds Per Layer</label>
-					<input type="checkbox" id="useSecondsPerLayer" name="useSecondsPerLayer" />
 
 					<input type="submit" value="Save" class="button" id="saveSettings" />
 				</form>
@@ -357,16 +352,6 @@ export class Settings extends Dialog {
 		this.updateFirmwareButton.addEventListener("click", () =>
 			this.performFirmwareUpdate(),
 		);
-
-		const useSecondsPerLayerCheckbox = this.shadowRoot.getElementById(
-			"useSecondsPerLayer",
-		) as HTMLInputElement;
-		const secondsPerLayerInput = this.shadowRoot.getElementById(
-			"secondsPerLayer",
-		) as HTMLInputElement;
-		useSecondsPerLayerCheckbox.addEventListener("change", () => {
-			secondsPerLayerInput.disabled = useSecondsPerLayerCheckbox.checked;
-		});
 	}
 
 	async resetApplication() {
@@ -403,15 +388,13 @@ export class Settings extends Dialog {
 			tasks.push(setCircularSegments(circularSegmentsVal));
 		}
 
-		const secondsPerLayerVal = Number(settingsForm.get("secondsPerLayer"));
-		if (!Number.isNaN(secondsPerLayerVal)) {
-			tasks.push(setSecondsPerLayer(secondsPerLayerVal));
+		const secondsPerLayerRaw = settingsForm.get("secondsPerLayer");
+		if (secondsPerLayerRaw !== null && secondsPerLayerRaw !== "") {
+			const secondsPerLayerVal = Number(secondsPerLayerRaw);
+			if (!Number.isNaN(secondsPerLayerVal) && secondsPerLayerVal > 0) {
+				tasks.push(setSecondsPerLayer(secondsPerLayerVal));
+			}
 		}
-
-		const useSecondsPerLayerVal =
-			settingsForm.get("useSecondsPerLayer") === "on";
-		console.log("Saving useSecondsPerLayer:", useSecondsPerLayerVal);
-		tasks.push(setUseSecondsPerLayer(useSecondsPerLayerVal));
 
 		const ePerRevolutionVal = Number(settingsForm.get("ePerRevolution"));
 		if (!Number.isNaN(ePerRevolutionVal)) {
@@ -443,7 +426,6 @@ export class Settings extends Dialog {
 			testCylinderHeight,
 			testCylinderInnerDiameter,
 			secondsPerLayer,
-			useSecondsPerLayer,
 			ePerRevolution,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
@@ -452,7 +434,6 @@ export class Settings extends Dialog {
 			getTestCylinderHeight(),
 			getTestCylinderInnerDiameter(),
 			getSecondsPerLayer(),
-			getUseSecondsPerLayer(),
 			getEPerRevolution(),
 		]);
 
@@ -461,7 +442,6 @@ export class Settings extends Dialog {
 			lineWidthAdjustment,
 			circularResolution: circularSegments,
 			secondsPerLayer,
-			useSecondsPerLayer,
 			ePerRevolution,
 			testCylinderHeight,
 			testCylinderInnerDiameter,
@@ -482,11 +462,6 @@ export class Settings extends Dialog {
 				);
 			}
 		});
-
-		const secondsPerLayerInput = this.shadowRoot.getElementById(
-			"secondsPerLayer",
-		) as HTMLInputElement;
-		secondsPerLayerInput.disabled = Boolean(useSecondsPerLayer);
 	}
 }
 
