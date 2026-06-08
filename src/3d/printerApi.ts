@@ -204,20 +204,9 @@ export async function getFirmwareVersion() {
 	}
 }
 
-function calculateCRC32(binaryData: Blob): Promise<number> {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = () => {
-			const arrayBuffer = reader.result as ArrayBuffer;
-			const uint8Array = new Uint8Array(arrayBuffer);
-			const crc = crc32.buf(uint8Array, 0) >>> 0;
-			resolve(crc);
-		};
-		reader.onerror = () => {
-			reject(new Error("Failed to read the binary data"));
-		};
-		reader.readAsArrayBuffer(binaryData);
-	});
+async function calculateCRC32(binaryData: Blob): Promise<number> {
+	const buf = await binaryData.arrayBuffer();
+	return crc32.buf(new Uint8Array(buf), 0) >>> 0;
 }
 
 function decimalToHex(decimal: number) {
@@ -229,39 +218,32 @@ function decimalToHex(decimal: number) {
 }
 
 export async function sendGCodeFile(binaryData: Blob, fileName: string) {
-	try {
-		const ipAddress = await getIpAddress();
+	const ipAddress = await getIpAddress();
+	await connectToPrinter(ipAddress);
 
-		console.log(ipAddress);
+	const crc = await calculateCRC32(binaryData);
+	const crcHex = decimalToHex(crc);
 
-		await connectToPrinter(ipAddress);
-
-		const crc = await calculateCRC32(binaryData);
-		const crcHex = decimalToHex(crc);
-
-		const response = await fetch(
-			`http://${ipAddress}/rr_upload?name=/gcodes/${encodeURIComponent(
-				fileName,
-			)}&crc32=${crcHex}`,
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/octet-stream",
-				},
-				body: binaryData,
+	const response = await fetch(
+		`http://${ipAddress}/rr_upload?name=/gcodes/${encodeURIComponent(
+			fileName,
+		)}&crc32=${crcHex}`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/octet-stream",
 			},
-		);
+			body: binaryData,
+		},
+	);
 
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
+	if (!response.ok) {
+		throw new Error("Network response was not ok");
+	}
 
-		const data: UploadResponse = await response.json();
+	const data: UploadResponse = await response.json();
 
-		if (data.err === 1) {
-			throw new Error("Upload failed");
-		}
-	} catch (error) {
-		console.error(error);
+	if (data.err === 1) {
+		throw new Error("Upload failed");
 	}
 }
