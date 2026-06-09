@@ -60,7 +60,7 @@ import {
 	zTranslate,
 } from "@/utils/htmlElements";
 import { saveRotationToDatabase } from "@/utils/meshTransforms";
-import { SliceMode, SliceWorkerStatus } from "./3d/sliceWorker";
+import { SliceWorkerStatus } from "./3d/sliceWorker";
 import { SocketCup } from "./classes/SocketCup";
 import { deleteAllFiles } from "./db/file";
 import { getTrimLineEnabled, setTrimLineEnabled } from "./db/trimLineDbActions";
@@ -205,7 +205,7 @@ export async function slicingAction(sendToFile: boolean) {
 			? rawPositions
 			: new Float32Array(rawPositions);
 
-	worker.postMessage({ positions, mode: SliceMode.VASE }, [positions.buffer]);
+	worker.postMessage({ positions }, [positions.buffer]);
 
 	worker.onmessage = async (
 		event: MessageEvent<{
