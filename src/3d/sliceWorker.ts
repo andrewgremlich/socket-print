@@ -154,16 +154,14 @@ self.onmessage = async (
 	mesh.geometry.boundsTree = bvh;
 	mesh.updateMatrixWorld(true);
 
-	const params: SliceParams = {
+	const pointGatherer = vaseMode({
 		mesh,
 		center,
 		maxHeight,
 		layerHeight,
 		segments,
 		socketHeight,
-	};
-
-	const pointGatherer = vaseMode(params);
+	});
 
 	self.postMessage({
 		type: SliceWorkerStatus.DONE,
