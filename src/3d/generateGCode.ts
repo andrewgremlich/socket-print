@@ -113,7 +113,7 @@ function generateGCodeHeader(params: {
 		";## move to prime position / pickup cup heater start position ##",
 		`G1 Y0 Z${formValues.cupHeight + 8.5} F6000 ; Z down to cup height + 8.5, Y moves back to cup center`,
 		"G1 X-93 ; move in to register with cup heater for pickup",
-		"M116 P0 S5 ; wait for nozzle temperature +/-5C",
+		"M116 P0 S2 ; wait for nozzle temperature +/-2C",
 		"M116 H2 S2 ; wait for cup temperature +/-2C",
 		"",
 		";## Enclosure blower thermostatic control ##",
@@ -273,6 +273,19 @@ export async function generateGCode(
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j];
 			const adjustedPoint = point.clone().add(new Vector3(0, layerHeight, 0));
+
+			// Second cup layer: shift 1mm outward radially so the cup-to-print transition
+			// creates an inward step instead of a thin section from shrinkage
+			if (i === 0) {
+				const radialDir = new Vector3(
+					adjustedPoint.x,
+					0,
+					adjustedPoint.z,
+				).normalize();
+				adjustedPoint.x += radialDir.x;
+				adjustedPoint.z += radialDir.z;
+			}
+
 			const distance = previousPoint.distanceTo(adjustedPoint);
 			const extrusion = getExtrusionCalculation({
 				distance,
