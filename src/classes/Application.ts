@@ -8,6 +8,7 @@ import {
 	MeshBasicMaterial,
 	PerspectiveCamera,
 	Scene,
+	Vector3,
 	WebGLRenderer,
 } from "three";
 import {
@@ -31,6 +32,11 @@ export class Application {
 	width: number;
 	height: number;
 	transformControls: TransformControls | null = null;
+
+	// Half-extent of the area the camera target (pan) is allowed to roam,
+	// keeping scene objects from being panned out of view. The grid is 200
+	// units wide, so ±100 keeps the target over the build area.
+	#panBounds = new Vector3(100, 150, 100);
 
 	constructor() {
 		if (!this.#provelPrintView) {
@@ -236,8 +242,20 @@ export class Application {
 	};
 
 	#animate = () => {
+		this.#clampControlsTarget();
 		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
+	};
+
+	// Keep the pan target (moved via right-click drag) within #panBounds so
+	// objects can never be panned out of view and lost.
+	#clampControlsTarget = () => {
+		const { target } = this.controls;
+		const { x, y, z } = this.#panBounds;
+
+		target.x = Math.max(-x, Math.min(x, target.x));
+		target.y = Math.max(-y, Math.min(y, target.y));
+		target.z = Math.max(-z, Math.min(z, target.z));
 	};
 
 	#onWindowResize = () => {
