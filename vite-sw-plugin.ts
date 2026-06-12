@@ -15,7 +15,9 @@ export function serviceWorkerPlugin(options: ServiceWorkerPluginOptions): Plugin
     name: 'service-worker-plugin',
     apply: 'build',
     writeBundle(outputOptions, bundle) {
-      const assets = Object.keys(bundle).map(fileName => `/${fileName}`);
+      const assets = Object.keys(bundle)
+        .filter(fileName => !fileName.endsWith('.map'))
+        .map(fileName => `/${fileName}`);
       const allAssets = [
         ...staticAssets,
         ...assets

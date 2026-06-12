@@ -67,7 +67,14 @@ const initData = async () => {
 	await loadActiveMaterialProfileForm();
 };
 
-await initData();
+try {
+	await initData();
+} catch (error) {
+	const message = error instanceof Error ? error.message : String(error);
+	alert(
+		`App initialization failed: ${message}\n\nThis app requires IndexedDB storage. Try reloading, or check that storage is not blocked (e.g. private browsing mode).`,
+	);
+}
 
 appForm.addEventListener("change", async (event) => {
 	event.preventDefault();

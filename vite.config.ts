@@ -84,9 +84,6 @@ export default defineConfig({
 			swDest: 'sw.js',
 			staticAssets: [
 				'/test_stl_file.stl',
-				'/TF-IschialContainment.stl',
-				'/Crosswalk.stl',
-				'/acme_J_needs-trimming.stl',
 				'/helvetiker_regular.typeface.json',
 				'/manifest.webmanifest',
 				'/favicon.ico',

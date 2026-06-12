@@ -214,41 +214,54 @@ export async function slicingAction(sendToFile: boolean) {
 
 			progressBar.value = progress;
 		} else if (type === SliceWorkerStatus.DONE && Array.isArray(data)) {
-			const vectors: Vector3[][] = [];
-			for (const level of data) {
-				const levelVectors: Vector3[] = [];
-				for (const point of level) {
-					levelVectors.push(new Vector3(point.x, point.y, point.z));
-				}
-				vectors.push(levelVectors);
-			}
-
-			const blended = blendHardEdges(vectors, 1);
-			const feedratePerLevel = await calculateFeedratePerLevel(blended);
-			const printTime = await calculatePrintTime(blended, feedratePerLevel);
-
-			estimatedPrintTime.textContent = printTime;
-
-			const gcode = await generateGCode(blended, feedratePerLevel, "y", {
-				estimatedTime: printTime,
-			});
-			const filePathName = `${printObject.mesh?.name}.gcode`;
-
 			try {
-				if (sendToFile) {
-					await writeGCodeFile(gcode, filePathName);
-				} else {
-					await sendGCodeFile(new Blob([gcode]), filePathName);
+				const vectors: Vector3[][] = [];
+				for (const level of data) {
+					const levelVectors: Vector3[] = [];
+					for (const point of level) {
+						levelVectors.push(new Vector3(point.x, point.y, point.z));
+					}
+					vectors.push(levelVectors);
+				}
+
+				if (vectors.length === 0) {
+					throw new Error(
+						"Slicing produced no layers — model may be too small or misaligned.",
+					);
+				}
+
+				const blended = blendHardEdges(vectors, 1);
+				const feedratePerLevel = await calculateFeedratePerLevel(blended);
+				const printTime = await calculatePrintTime(blended, feedratePerLevel);
+
+				estimatedPrintTime.textContent = printTime;
+
+				const gcode = await generateGCode(blended, feedratePerLevel, "y", {
+					estimatedTime: printTime,
+				});
+				const filePathName = `${printObject.mesh?.name}.gcode`;
+
+				try {
+					if (sendToFile) {
+						await writeGCodeFile(gcode, filePathName);
+					} else {
+						await sendGCodeFile(new Blob([gcode]), filePathName);
+					}
+				} catch (error) {
+					console.error("Failed to deliver G-code:", error);
+					alert(
+						`Failed to send G-code to printer: ${error instanceof Error ? error.message : String(error)}`,
+					);
 				}
 			} catch (error) {
-				console.error("Failed to deliver G-code:", error);
+				console.error("Slicing pipeline failed:", error);
 				alert(
-					`Failed to send G-code to printer: ${error instanceof Error ? error.message : String(error)}`,
+					`Slicing failed: ${error instanceof Error ? error.message : String(error)}`,
 				);
+			} finally {
+				progressBar.reset();
+				worker.terminate();
 			}
-
-			progressBar.reset();
-			worker.terminate();
 		}
 	};
 

@@ -146,6 +146,7 @@ export class PrintObject extends AppObject {
 
 	#showError = (message: string) => {
 		console.error(message);
+		alert(message);
 	};
 
 	#handleError = (error: unknown, userMessage: string) => {

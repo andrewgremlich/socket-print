@@ -100,6 +100,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Only intercept same-origin requests
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
   event.respondWith(
     (async () => {
       try {
