@@ -1,20 +1,6 @@
 @import url("./reset.css");
-
-@font-face {
-	font-family: "Inter";
-	font-style: normal;
-	font-weight: 100 900;
-	font-display: swap;
-	src: url("/Inter/InterVariable.ttf") format("truetype-variations");
-}
-
-@font-face {
-	font-family: "Inter";
-	font-style: italic;
-	font-weight: 100 900;
-	font-display: swap;
-	src: url("/Inter/InterVariable-Italic.ttf") format("truetype-variations");
-}
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/inter/wght-italic.css";
 
 :root {
 	/* Static values (theme-independent) */
@@ -39,8 +25,8 @@
 
 	/* Typography */
 	--font-family:
-		"Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI",
-		Roboto, "Helvetica Neue", Arial, sans-serif;
+		"Inter Variable", "SF Pro Display", -apple-system, BlinkMacSystemFont,
+		"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	--font-size-xs: 0.875rem;
 	--font-size-sm: 0.9375rem;
 	--font-size-base: 1rem;
