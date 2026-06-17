@@ -276,15 +276,15 @@ export async function generateGCode(
 
 			// Second cup layer: shift 1mm outward radially so the cup-to-print transition
 			// creates an inward step instead of a thin section from shrinkage
-			if (i === 0) {
-				const radialDir = new Vector3(
-					adjustedPoint.x,
-					0,
-					adjustedPoint.z,
-				).normalize();
-				adjustedPoint.x += radialDir.x;
-				adjustedPoint.z += radialDir.z;
-			}
+			// if (i === 0) {
+			// 	const radialDir = new Vector3(
+			// 		adjustedPoint.x,
+			// 		0,
+			// 		adjustedPoint.z,
+			// 	).normalize();
+			// 	adjustedPoint.x += radialDir.x;
+			// 	adjustedPoint.z += radialDir.z;
+			// }
 
 			const distance = previousPoint.distanceTo(adjustedPoint);
 			const extrusion = getExtrusionCalculation({
