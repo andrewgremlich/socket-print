@@ -3,6 +3,8 @@ import { resolve } from "node:path";
 import { defineConfig } from 'vite'
 import { serviceWorkerPlugin } from "./vite-sw-plugin";
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 export default defineConfig({
 	resolve: {
 		dedupe: ["three"],
@@ -78,20 +80,18 @@ export default defineConfig({
 			},
 		},
 	},
-	plugins: [
-		serviceWorkerPlugin({
-			swSrc: 'public/sw-template.js',
-			swDest: 'sw.js',
-			staticAssets: [
-				'/test_stl_file.stl',
-				'/helvetiker_regular.typeface.json',
-				'/manifest.webmanifest',
-				'/favicon.ico',
-				'/64x64.png',
-				'/128x128@2x.png',
-				'/AppIcon-512@2x.png',
-				'/Square310x310Logo.png'
-			]
-		})
-	],
+	plugins: [serviceWorkerPlugin({
+        swSrc: 'public/sw-template.js',
+        swDest: 'sw.js',
+        staticAssets: [
+            '/test_stl_file.stl',
+            '/helvetiker_regular.typeface.json',
+            '/manifest.webmanifest',
+            '/favicon.ico',
+            '/64x64.png',
+            '/128x128@2x.png',
+            '/AppIcon-512@2x.png',
+            '/Square310x310Logo.png'
+        ]
+    }), cloudflare()],
 });
