@@ -37,6 +37,11 @@ notary.sh
 apple_envs.sh
 export-env.ps1
 
+# Cloudflare Wrangler
+.wrangler/
+.dev.vars
+.dev.vars.*
+
 # Claude Code
 .claude/settings.local.json
 .claude/agent-memory/
