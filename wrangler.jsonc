@@ -1,21 +1,14 @@
 {
-	"$schema": "./node_modules/wrangler/config-schema.json",
-	"name": "socket-print",
-	"compatibility_date": "2026-06-22",
-	// Static-only site: Vite emits everything to ./dist and Cloudflare serves it
-	// directly from the edge. No Worker script (`main`) is required.
-	"assets": {
-		"directory": "./dist",
-		// Multi-page app. Default handling serves "/" from index.html and exposes
-		// clean, extensionless URLs (/help, /licenses); the hardcoded .html links
-		// 308-redirect to those once on first visit, then the service worker serves
-		// the precached pages directly.
-		"html_handling": "auto-trailing-slash",
-		// Not an SPA — unknown paths should 404 rather than rebound to index.html.
-		// The service worker already provides the offline fallback.
-		"not_found_handling": "none"
-	},
-	"observability": {
-		"enabled": true
-	}
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "socket-print",
+  "compatibility_date": "2026-06-24",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
 }
