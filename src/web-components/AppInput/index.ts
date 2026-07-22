@@ -1,3 +1,9 @@
+import styles from "./AppInput.css?inline";
+import template from "./AppInput.html?raw";
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(styles);
+
 export class AppInput extends HTMLElement {
 	static formAssociated = true;
 
@@ -28,70 +34,8 @@ export class AppInput extends HTMLElement {
 		super();
 		this.#shadow = this.attachShadow({ mode: "open" });
 		this.#internals = this.attachInternals();
-		this.#shadow.innerHTML = `
-			<style>
-				:host {
-					display: flex;
-					flex-direction: column;
-				}
-
-				:host([direction="row"]) {
-					flex-direction: row;
-					align-items: center;
-					gap: var(--spacing-sm);
-				}
-
-				label {
-					color: var(--text-secondary);
-					font-size: 14px;
-					font-family: var(--font-family);
-				}
-
-				input {
-					font-family: var(--font-family);
-					font-size: var(--font-size-sm);
-					font-weight: 400;
-					background-color: var(--bg-input);
-					color: var(--text-primary);
-					border: 1px solid var(--border-default);
-					border-radius: var(--radius-md);
-					padding: 8px 12px;
-					box-shadow: var(--shadow-sm);
-					transition:
-						border-color var(--transition-normal),
-						box-shadow var(--transition-normal),
-						background-color var(--transition-normal);
-				}
-
-				input::placeholder {
-					color: var(--text-placeholder);
-				}
-
-				input:hover:not(:focus):not([disabled]) {
-					border-color: var(--border-hover);
-					background-color: var(--bg-input-hover);
-				}
-
-				input:focus {
-					outline: none;
-					border-color: var(--accent-color);
-					box-shadow:
-						0 0 0 3px var(--accent-color-subtle),
-						var(--shadow-sm);
-					background-color: var(--bg-input);
-				}
-
-				input[disabled] {
-					background-color: var(--bg-disabled);
-					border-color: var(--border-disabled);
-					color: var(--text-disabled);
-					cursor: not-allowed;
-					box-shadow: none;
-				}
-			</style>
-			<label part="label"></label>
-			<input part="input" />
-		`;
+		this.#shadow.adoptedStyleSheets = [sheet];
+		this.#shadow.innerHTML = template;
 
 		this.#label = this.#shadow.querySelector("label") as HTMLLabelElement;
 		this.#input = this.#shadow.querySelector("input") as HTMLInputElement;
