@@ -1,0 +1,46 @@
+:host {
+	position: fixed;
+	z-index: var(--z-dropdown);
+	bottom: var(--spacing-sm);
+	left: var(--spacing-sm);
+	background-color: var(--bg-menu);
+	padding: 0px var(--spacing-md);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-dropdown);
+	display: none;
+	align-items: center;
+}
+
+:host > * {
+	margin: var(--spacing-sm);
+}
+
+.spin-icon {
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	border: 3px solid var(--text-secondary);
+	border-top-color: var(--accent-color);
+	border-radius: 50%;
+	animation: loading 1s linear infinite;
+}
+
+label {
+	color: var(--text-primary);
+	font-size: 14px;
+}
+
+@keyframes loading {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.spin-icon {
+		animation: none;
+	}
+}
