@@ -1,3 +1,9 @@
+import styles from "./OfflineIndicator.css?inline";
+import template from "./OfflineIndicator.html?raw";
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(styles);
+
 class OfflineIndicator extends HTMLElement {
 	#indicator: HTMLDivElement;
 	#isOnline: boolean = navigator.onLine;
@@ -6,6 +12,7 @@ class OfflineIndicator extends HTMLElement {
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
+		this.shadowRoot.adoptedStyleSheets = [sheet];
 	}
 
 	connectedCallback() {
@@ -97,93 +104,7 @@ class OfflineIndicator extends HTMLElement {
 	}
 
 	#render() {
-		this.shadowRoot.innerHTML = `
-			<style>
-				:host {
-					position: fixed;
-					top: 10px;
-					right: 10px;
-					z-index: 10000;
-					pointer-events: none;
-				}
-
-				.offline-indicator {
-					background: #dc2626;
-					color: white;
-					padding: 8px 16px;
-					border-radius: 4px;
-					font-size: 14px;
-					font-weight: bold;
-					box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-					display: none;
-					transition: all 0.3s ease;
-					pointer-events: auto;
-				}
-
-				.offline-indicator.cached {
-					background: #0d9488;
-				}
-
-				.offline-indicator.show {
-					display: block;
-					animation: slideIn 0.3s ease-out;
-				}
-
-				.offline-indicator.fade-out {
-					animation: fadeOut 0.3s ease-out;
-				}
-
-				@keyframes slideIn {
-					from {
-						transform: translateX(100%);
-						opacity: 0;
-					}
-					to {
-						transform: translateX(0);
-						opacity: 1;
-					}
-				}
-
-				@keyframes fadeOut {
-					from {
-						opacity: 1;
-					}
-					to {
-						opacity: 0;
-					}
-				}
-
-				@media (prefers-reduced-motion: reduce) {
-					.offline-indicator {
-						transition: none;
-					}
-
-					.offline-indicator.show {
-						animation: none;
-					}
-
-					.offline-indicator.fade-out {
-						animation: none;
-						opacity: 0;
-					}
-				}
-
-				@media (max-width: 768px) {
-					:host {
-						top: 5px;
-						right: 5px;
-					}
-
-					.offline-indicator {
-						font-size: 12px;
-						padding: 6px 12px;
-					}
-				}
-			</style>
-			<div class="offline-indicator" id="indicator" role="status" aria-live="polite" aria-label="Network status indicator">
-				Offline Mode
-			</div>
-		`;
+		this.shadowRoot.innerHTML = template;
 
 		this.#indicator = this.shadowRoot.getElementById(
 			"indicator",
