@@ -1,5 +1,7 @@
 import { version as currentVersion } from "pkg";
 
+import template from "./UpdateNotification.html?raw";
+
 class UpdateNotification extends HTMLElement {
 	#banner: HTMLDivElement;
 	#message: HTMLSpanElement;
@@ -73,14 +75,7 @@ class UpdateNotification extends HTMLElement {
 	#render() {
 		if (!this.shadowRoot) return;
 
-		this.shadowRoot.innerHTML = `
-			<link rel="stylesheet" href="styles/update-notification.css">
-			<div class="update-banner" role="alert" aria-live="polite">
-				<span class="message">A new version is available.</span>
-				<button class="reload-btn">Reload</button>
-				<button class="dismiss-btn">Dismiss</button>
-			</div>
-		`;
+		this.shadowRoot.innerHTML = template;
 
 		this.#banner = this.shadowRoot?.querySelector(
 			".update-banner",
