@@ -1,4 +1,7 @@
-import { formContainerStyle } from "./DialogStyle";
+import styles from "./Dialog.css?inline";
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(styles);
 
 export class Dialog extends HTMLElement {
 	dialog: HTMLDialogElement;
@@ -8,13 +11,16 @@ export class Dialog extends HTMLElement {
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
-		this.shadowRoot.innerHTML = `<style>
-      ${formContainerStyle}
-      </style>`;
+		this.shadowRoot.adoptedStyleSheets = [sheet];
 	}
 
-	attachHTML(strings: TemplateStringsArray, ...args: string[]) {
-		const html = String.raw(strings, ...args);
+	attachHTML(html: string, extraStyles?: CSSStyleSheet) {
+		if (extraStyles) {
+			this.shadowRoot.adoptedStyleSheets = [
+				...this.shadowRoot.adoptedStyleSheets,
+				extraStyles,
+			];
+		}
 		this.shadowRoot.innerHTML += html;
 
 		this.dialog = this.shadowRoot.getElementById(this.id) as HTMLDialogElement;

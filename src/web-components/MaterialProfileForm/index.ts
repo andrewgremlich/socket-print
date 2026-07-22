@@ -6,7 +6,12 @@ import {
 	updateMaterialProfile,
 } from "@/db/materialProfilesDbActions";
 import type { MaterialProfile } from "@/db/types";
-import { Dialog } from "./Dialog";
+import { Dialog } from "../Dialog";
+import styles from "./MaterialProfileForm.css?inline";
+import template from "./MaterialProfileForm.html?raw";
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(styles);
 
 export class MaterialProfileForm extends Dialog {
 	formTitle: HTMLElement;
@@ -18,52 +23,7 @@ export class MaterialProfileForm extends Dialog {
 	constructor() {
 		super();
 		this.id = "materialDialog";
-		this.attachHTML`
-      <style>
-        .visually-hidden {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border: 0;
-        }
-      </style>
-      <dialog id="${this.id}" aria-labelledby="formTitle">
-        <h3 id="formTitle" aria-live="polite"></h3>
-        <form id="materialForm" method="dialog">
-			<input type="hidden" id="materialProfileId" name="materialProfileId" placeholder="Material Profile ID" />
-
-            <label for="materialProfileName">Material Profile Name</label>
-            <input type="text" id="materialProfileName" name="materialProfileName" required aria-describedby="nameReadOnlyHint" />
-            <span id="nameReadOnlyHint" class="visually-hidden"></span>
-
-            <label for="nozzleTemp">Nozzle Temp (C)</label>
-            <input type="number" id="nozzleTemp" name="nozzleTemp" value="200" min="160" max="260" required />
-
-            <label for="cupTemp">Cup Temp (C)</label>
-            <input type="number" id="cupTemp" name="cupTemp" value="200" min="140" max="210" required />
-
-            <label for="shrinkFactor">Shrink Factor (%)</label>
-            <input type="number" id="shrinkFactor" name="shrinkFactor" value="2.6" min="0.1" max="4.0" step="0.01" required />
-
-            <label for="outputFactor">Output Factor</label>
-            <input type="number" id="outputFactor" name="outputFactor" value="1" min="0.9" max="1.1" step="0.01" required />
-
-			<label for="gramsPerRevolution">Grams Per Revolution</label>
-            <input type="number" id="gramsPerRevolution" name="gramsPerRevolution" value="0.2" min="0.1" max="0.3" step="0.01" required />
-
-			<label for="density">Density (g/cm³)</label>
-            <input type="number" id="density" name="density" value="0.0009" min="0.0005" max="0.0020" step="0.0001" required />
-
-            <input type="submit" id="saveMaterialProfile" value="Save" class="button" />
-            <input type="button" id="cancelMaterialProfile" value="Cancel" class="button" />
-        </form>
-      </dialog>
-    `;
+		this.attachHTML(template, sheet);
 
 		this.form = this.shadowRoot.getElementById(
 			"materialForm",
