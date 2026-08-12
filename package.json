@@ -17,6 +17,7 @@
   "scripts": {
     "dev": "npm run dev:web",
     "dev:web": "vite --config vite.config.ts",
+    "mock-printer": "cd deno_scripts && deno task mock-printer",
     "build": "npm run test && npm run clean && vite build",
     "preview": "npm run build && wrangler dev",
     "prepare": "husky",

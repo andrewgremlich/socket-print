@@ -1,7 +1,10 @@
 {
+	"imports": {
+		"crc-32": "npm:crc-32@^1.2.2"
+	},
 	"tasks": {
 		"mock-printer": {
-			"command": "deno run --allow-net mock-printer.ts"
+			"command": "deno run --allow-net --allow-env mock-printer.ts"
 		}
 	}
 }

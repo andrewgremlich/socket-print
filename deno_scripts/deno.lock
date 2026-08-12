@@ -3,7 +3,8 @@
   "specifiers": {
     "jsr:@std/async@0.224": "0.224.2",
     "jsr:@std/http@*": "0.224.0",
-    "jsr:@std/http@0.224.0": "0.224.0"
+    "jsr:@std/http@0.224.0": "0.224.0",
+    "npm:crc-32@^1.2.2": "1.2.2"
   },
   "jsr": {
     "@std/async@0.224.2": {
@@ -15,5 +16,16 @@
         "jsr:@std/async"
       ]
     }
+  },
+  "npm": {
+    "crc-32@1.2.2": {
+      "integrity": "sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==",
+      "bin": true
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:crc-32@^1.2.2"
+    ]
   }
 }

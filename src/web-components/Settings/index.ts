@@ -1,12 +1,12 @@
 import {
-	type GitHubRelease,
-	getBoardInfo,
-	getLatestFirmwareRelease,
-	isNewerVersion,
-	pollUntilOnline,
-	triggerFirmwareFlash,
-	uploadFirmwareFile,
-} from "@/3d/printerApi";
+	type BoardFileGroupName,
+	checkBoardFileVersions,
+	type FileResult,
+	type GroupStatus,
+	installBoardFiles,
+	restartBoard,
+} from "@/3d/boardFiles";
+import { getBoardInfo } from "@/3d/printerApi";
 import {
 	getCircularSegments,
 	getEPerRevolution,
@@ -60,13 +60,14 @@ export class Settings extends Dialog {
 	closeButton: HTMLButtonElement;
 	themeSelect: HTMLSelectElement;
 	firmwareVersionSpan: HTMLSpanElement;
-	firmwareUpdateContainer: HTMLDivElement;
-	updateFirmwareButton: HTMLButtonElement;
-	firmwareUpdateStatus: HTMLParagraphElement;
-	firmwareUpdateProgress: HTMLProgressElement;
-	updateStatusSpan: HTMLSpanElement;
-	#latestRelease: GitHubRelease | null = null;
-	#currentIpAddress: string | null = null;
+	printerStatusSpan: HTMLSpanElement;
+	screenFirmwareRow: HTMLParagraphElement;
+	installBoardFilesButton: HTMLButtonElement;
+	restartBoardButton: HTMLButtonElement;
+	boardFileStatus: HTMLParagraphElement;
+	boardFileProgress: HTMLProgressElement;
+	boardFileLog: HTMLOListElement;
+	#groupStatuses: GroupStatus[] = [];
 
 	constructor() {
 		super();
@@ -94,117 +95,216 @@ export class Settings extends Dialog {
 		this.firmwareVersionSpan = this.shadowRoot.getElementById(
 			"firmwareVersion",
 		) as HTMLSpanElement;
-		this.firmwareUpdateContainer = this.shadowRoot.getElementById(
-			"firmwareUpdateContainer",
-		) as HTMLDivElement;
-		this.updateFirmwareButton = this.shadowRoot.getElementById(
-			"updateFirmwareButton",
-		) as HTMLButtonElement;
-		this.firmwareUpdateStatus = this.shadowRoot.getElementById(
-			"firmwareUpdateStatus",
-		) as HTMLParagraphElement;
-		this.firmwareUpdateProgress = this.shadowRoot.getElementById(
-			"firmwareUpdateProgress",
-		) as HTMLProgressElement;
-		this.updateStatusSpan = this.shadowRoot.getElementById(
-			"updateStatus",
+		this.printerStatusSpan = this.shadowRoot.getElementById(
+			"printerStatus",
 		) as HTMLSpanElement;
+		this.screenFirmwareRow = this.shadowRoot.getElementById(
+			"screenFirmwareRow",
+		) as HTMLParagraphElement;
+		this.installBoardFilesButton = this.shadowRoot.getElementById(
+			"installBoardFilesButton",
+		) as HTMLButtonElement;
+		this.restartBoardButton = this.shadowRoot.getElementById(
+			"restartBoardButton",
+		) as HTMLButtonElement;
+		this.boardFileStatus = this.shadowRoot.getElementById(
+			"boardFileStatus",
+		) as HTMLParagraphElement;
+		this.boardFileProgress = this.shadowRoot.getElementById(
+			"boardFileProgress",
+		) as HTMLProgressElement;
+		this.boardFileLog = this.shadowRoot.getElementById(
+			"boardFileLog",
+		) as HTMLOListElement;
 
 		this.dialogEvents();
 	}
 
-	async checkPrinterFirmwareVersion() {
-		const printerStatusSpan = this.shadowRoot.getElementById(
-			"printerStatus",
-		) as HTMLSpanElement;
+	#statusSpanFor(group: BoardFileGroupName): HTMLSpanElement | null {
+		return this.shadowRoot.getElementById(
+			`${group}FileStatus`,
+		) as HTMLSpanElement | null;
+	}
 
+	#appendLogLine(text: string, ok: boolean) {
+		const line = document.createElement("li");
+		line.textContent = text;
+		line.className = ok ? "board-file-ok" : "board-file-fail";
+		this.boardFileLog.appendChild(line);
+		this.boardFileLog.scrollTop = this.boardFileLog.scrollHeight;
+	}
+
+	#setBoardFileStatus(message: string, isError = false) {
+		this.boardFileStatus.textContent = message;
+		this.boardFileStatus.className = isError ? "firmware-error" : "";
+	}
+
+	#renderGroupStatuses(statuses: GroupStatus[]) {
+		for (const status of statuses) {
+			const span = this.#statusSpanFor(status.group);
+			if (!span) continue;
+
+			if (status.installedVersion === null) {
+				span.textContent = `Not installed (${status.fileCount} files to send, v${status.bundledVersion})`;
+			} else if (status.needsUpdate) {
+				span.textContent = `Update available: ${status.installedVersion} → ${status.bundledVersion}`;
+			} else {
+				span.textContent = `Up to date (v${status.installedVersion})`;
+			}
+
+			if (status.group === "screen") {
+				this.screenFirmwareRow.style.display = "block";
+			}
+		}
+
+		// Groups with nothing bundled never come back from the version check.
+		const reported = new Set(statuses.map((status) => status.group));
+		for (const group of ["system", "provel"] as BoardFileGroupName[]) {
+			if (reported.has(group)) continue;
+			const span = this.#statusSpanFor(group);
+			if (span) span.textContent = "No files bundled with this app version";
+		}
+	}
+
+	/**
+	 * Reads the board's firmware version for display, then compares each
+	 * board-file group's bundled package.json against the one installed on the
+	 * SD card (fetched over rr_download).
+	 */
+	async checkBoardFileStatus() {
 		try {
 			const ipAddress = await getIpAddress();
-			this.#currentIpAddress = ipAddress;
 
 			if (!ipAddress) {
-				printerStatusSpan.textContent = "No IP configured";
+				this.printerStatusSpan.textContent = "No IP configured";
 				this.firmwareVersionSpan.textContent = "—";
-				this.updateStatusSpan.textContent = "Not connected";
+				this.#setBoardFileStatus("Set a printer IP address to check.");
+				this.#renderGroupStatuses([]);
 				return;
 			}
 
 			const boardInfo = await getBoardInfo();
-			printerStatusSpan.textContent = "Yes";
+			this.printerStatusSpan.textContent = "Yes";
 			this.firmwareVersionSpan.textContent = boardInfo.firmwareVersion;
-
-			try {
-				const latestRelease = await getLatestFirmwareRelease();
-				this.#latestRelease = latestRelease;
-
-				if (isNewerVersion(boardInfo.firmwareVersion, latestRelease.tag_name)) {
-					this.updateStatusSpan.textContent = `Update available: v${latestRelease.tag_name}`;
-					this.firmwareUpdateContainer.style.display = "block";
-				} else {
-					this.updateStatusSpan.textContent = "Up to date";
-				}
-			} catch {
-				this.updateStatusSpan.textContent = "Could not check for updates";
-			}
-		} catch {
-			printerStatusSpan.textContent = "No";
+		} catch (error) {
+			this.printerStatusSpan.textContent = "No";
 			this.firmwareVersionSpan.textContent = "—";
-			this.updateStatusSpan.textContent = "Not connected";
+			this.#setBoardFileStatus(
+				`Not connected: ${error instanceof Error ? error.message : String(error)}`,
+				true,
+			);
+			this.#renderGroupStatuses([]);
+			return;
+		}
+
+		try {
+			const statuses = await checkBoardFileVersions();
+			this.#groupStatuses = statuses;
+			this.#renderGroupStatuses(statuses);
+
+			const outdated = statuses.filter((status) => status.needsUpdate);
+			const neverInstalled = outdated.some(
+				(status) => status.installedVersion === null,
+			);
+
+			this.installBoardFilesButton.disabled = outdated.length === 0;
+			this.installBoardFilesButton.value = neverInstalled
+				? "Install Board Files"
+				: "Update Board Files";
+
+			this.#setBoardFileStatus(
+				outdated.length === 0
+					? "All board files are up to date."
+					: `${outdated.length} group(s) need updating.`,
+			);
+		} catch (error) {
+			this.#groupStatuses = [];
+			this.installBoardFilesButton.disabled = true;
+			this.#setBoardFileStatus(
+				`Could not check board files: ${error instanceof Error ? error.message : String(error)}`,
+				true,
+			);
 		}
 	}
 
-	async performFirmwareUpdate() {
-		if (!this.#latestRelease || !this.#currentIpAddress) return;
+	async performBoardFileInstall() {
+		const groups = this.#groupStatuses
+			.filter((status) => status.needsUpdate)
+			.map((status) => status.group);
 
-		const FIRMWARE_FILE = "Duet3Firmware_MB6XD.bin";
+		if (groups.length === 0) return;
 
-		const setStatus = (msg: string, isError = false) => {
-			this.firmwareUpdateStatus.textContent = msg;
-			this.firmwareUpdateStatus.className = isError ? "firmware-error" : "";
+		const totalFiles = this.#groupStatuses
+			.filter((status) => groups.includes(status.group))
+			.reduce((sum, status) => sum + status.fileCount, 0);
+
+		this.installBoardFilesButton.disabled = true;
+		this.restartBoardButton.style.display = "none";
+		this.boardFileLog.replaceChildren();
+		this.boardFileProgress.style.display = "block";
+		this.boardFileProgress.value = 0;
+		this.boardFileProgress.max = totalFiles;
+		this.#setBoardFileStatus(`Uploading ${totalFiles} files...`);
+
+		let completed = 0;
+
+		const onProgress = (result: FileResult) => {
+			completed += 1;
+			this.boardFileProgress.value = completed;
+			this.#appendLogLine(
+				result.ok
+					? `${result.group}/${result.file} (${result.bytes} B, ${result.ms.toFixed(0)} ms)`
+					: `${result.group}/${result.file} — ${result.error}`,
+				result.ok,
+			);
 		};
 
-		this.updateFirmwareButton.disabled = true;
-		this.firmwareUpdateProgress.style.display = "block";
-		this.firmwareUpdateProgress.value = 0;
-
 		try {
-			const asset = this.#latestRelease.assets.find(
-				(a) => a.name === FIRMWARE_FILE,
+			const summary = await installBoardFiles(groups, onProgress);
+
+			this.#setBoardFileStatus(
+				summary.failed === 0
+					? `Uploaded ${summary.uploaded} files successfully.`
+					: `Uploaded ${summary.uploaded} files, ${summary.failed} failed. See the log above and Download Logs for details.`,
+				summary.failed > 0,
 			);
 
-			if (!asset) {
-				throw new Error(`Required file not found in release: ${FIRMWARE_FILE}`);
+			if (summary.restartRequired) {
+				this.restartBoardButton.style.display = "inline-block";
+				this.#appendLogLine(
+					"0:/sys changed — restart the board so config.g is re-read.",
+					true,
+				);
 			}
 
-			setStatus(`Downloading ${FIRMWARE_FILE}...`);
-			const downloadResponse = await fetch(asset.browser_download_url);
-			if (!downloadResponse.ok) {
-				throw new Error(`Failed to download ${FIRMWARE_FILE}`);
-			}
-			const fileData = await downloadResponse.arrayBuffer();
-
-			setStatus(`Uploading ${FIRMWARE_FILE} to printer...`);
-			await uploadFirmwareFile(this.#currentIpAddress, FIRMWARE_FILE, fileData);
-			this.firmwareUpdateProgress.value = 70;
-
-			setStatus("Triggering firmware flash (M997)...");
-			await triggerFirmwareFlash(this.#currentIpAddress);
-			this.firmwareUpdateProgress.value = 85;
-
-			setStatus("Waiting for printer to reboot...");
-			await pollUntilOnline(this.#currentIpAddress);
-			this.firmwareUpdateProgress.value = 100;
-
-			setStatus("Firmware update complete. Refreshing status...");
-			await this.checkPrinterFirmwareVersion();
-			this.firmwareUpdateProgress.style.display = "none";
+			await this.checkBoardFileStatus();
 		} catch (error) {
-			setStatus(
-				`Update failed: ${error instanceof Error ? error.message : String(error)}`,
+			this.#setBoardFileStatus(
+				`Install failed: ${error instanceof Error ? error.message : String(error)}`,
 				true,
 			);
-			this.updateFirmwareButton.disabled = false;
-			this.firmwareUpdateProgress.style.display = "none";
+			this.installBoardFilesButton.disabled = false;
+		} finally {
+			this.boardFileProgress.style.display = "none";
+		}
+	}
+
+	async performBoardRestart() {
+		this.restartBoardButton.disabled = true;
+		this.#setBoardFileStatus("Restarting board (M999)...");
+
+		try {
+			await restartBoard();
+			this.#setBoardFileStatus(
+				"Restart sent. The board will be offline for a few seconds.",
+			);
+		} catch (error) {
+			this.#setBoardFileStatus(
+				`Restart failed: ${error instanceof Error ? error.message : String(error)}`,
+				true,
+			);
+		} finally {
+			this.restartBoardButton.disabled = false;
 		}
 	}
 
@@ -212,18 +312,27 @@ export class Settings extends Dialog {
 		await this.loadDataIntoForm();
 		this.themeSelect.value = getTheme();
 
-		const printerStatusSpan = this.shadowRoot.getElementById(
-			"printerStatus",
-		) as HTMLSpanElement;
-		printerStatusSpan.textContent = "Unknown";
+		this.printerStatusSpan.textContent = "Unknown";
 		this.firmwareVersionSpan.textContent = "Checking...";
-		this.updateStatusSpan.textContent = "Checking...";
-		this.firmwareUpdateContainer.style.display = "none";
-		this.firmwareUpdateStatus.textContent = "";
-		this.firmwareUpdateProgress.style.display = "none";
+		this.installBoardFilesButton.disabled = true;
+		this.restartBoardButton.style.display = "none";
+		this.boardFileStatus.textContent = "";
+		this.boardFileStatus.className = "";
+		this.boardFileProgress.style.display = "none";
+		this.boardFileLog.replaceChildren();
+		this.screenFirmwareRow.style.display = "none";
+
+		for (const group of [
+			"system",
+			"provel",
+			"screen",
+		] as BoardFileGroupName[]) {
+			const span = this.#statusSpanFor(group);
+			if (span) span.textContent = "Checking...";
+		}
 
 		this.show();
-		this.checkPrinterFirmwareVersion();
+		this.checkBoardFileStatus();
 	}
 
 	dialogEvents() {
@@ -240,8 +349,11 @@ export class Settings extends Dialog {
 		this.themeSelect.addEventListener("change", () => {
 			setTheme(this.themeSelect.value as Theme);
 		});
-		this.updateFirmwareButton.addEventListener("click", () =>
-			this.performFirmwareUpdate(),
+		this.installBoardFilesButton.addEventListener("click", () =>
+			this.performBoardFileInstall(),
+		);
+		this.restartBoardButton.addEventListener("click", () =>
+			this.performBoardRestart(),
 		);
 	}
 

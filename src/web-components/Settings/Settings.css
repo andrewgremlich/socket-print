@@ -36,9 +36,55 @@ dialog form {
 	margin-bottom: 0;
 }
 
-#firmwareUpdateContainer input[type="button"]:disabled {
+#boardFileContainer {
+	margin-top: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+
+#boardFileContainer input[type="button"]:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
+}
+
+.board-file-row code {
+	font-size: 0.85em;
+}
+
+#boardFileStatus {
+	margin-top: 0.25rem;
+	font-size: 0.85rem;
+}
+
+#boardFileProgress {
+	width: 100%;
+	margin-top: 0.25rem;
+}
+
+#boardFileLog {
+	margin: 0.5rem 0 0;
+	padding: 0;
+	list-style: none;
+	max-height: 12rem;
+	overflow-y: auto;
+	font-family: monospace;
+	font-size: 0.75rem;
+	line-height: 1.5;
+}
+
+#boardFileLog:empty {
+	display: none;
+}
+
+.board-file-ok::before {
+	content: "✓ ";
+}
+
+.board-file-fail {
+	color: var(--text-error);
+}
+
+.board-file-fail::before {
+	content: "✗ ";
 }
 
 .firmware-error {
