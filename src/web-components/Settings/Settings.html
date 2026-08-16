@@ -3,12 +3,19 @@
 
 	<h4>Printer</h4>
 	<p>Is connected: <span id="printerStatus">Unknown</span></p>
-	<p>Firmware version: <span id="firmwareVersion">Checking...</span></p>
-	<p>Update status: <span id="updateStatus">Checking...</span></p>
-	<div id="firmwareUpdateContainer" style="display: none; margin-top: 0.5rem;">
-		<input type="button" class="button" id="updateFirmwareButton" value="Update Firmware" />
-		<p id="firmwareUpdateStatus" style="margin-top: 0.25rem; font-size: 0.85rem;"></p>
-		<progress id="firmwareUpdateProgress" value="0" max="100" style="display: none; width: 100%; margin-top: 0.25rem;"></progress>
+	<p>Board firmware version: <span id="firmwareVersion">Checking...</span></p>
+
+	<h4>Board Files</h4>
+	<p class="board-file-row">System files (<code>0:/sys</code>): <span id="systemFileStatus">Checking...</span></p>
+	<p class="board-file-row">Provel macros (<code>0:/sys/provel</code>): <span id="provelFileStatus">Checking...</span></p>
+	<p class="board-file-row" id="screenFirmwareRow" style="display: none;">Screen firmware (<code>0:/firmware</code>): <span id="screenFileStatus">Checking...</span></p>
+
+	<div id="boardFileContainer">
+		<input type="button" class="button" id="installBoardFilesButton" value="Install Board Files" disabled />
+		<input type="button" class="button" id="restartBoardButton" value="Restart Board (M999)" style="display: none;" />
+		<p id="boardFileStatus"></p>
+		<progress id="boardFileProgress" value="0" max="100" style="display: none;"></progress>
+		<ol id="boardFileLog"></ol>
 	</div>
 
 	<h4>Appearance</h4>

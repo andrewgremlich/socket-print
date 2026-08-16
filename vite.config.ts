@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { resolve } from "node:path";
 import { defineConfig } from 'vite'
+import { boardFilesPlugin } from "./vite-board-files-plugin";
 import { serviceWorkerPlugin } from "./vite-sw-plugin";
 
 import { cloudflare } from "@cloudflare/vite-plugin";
@@ -80,13 +81,22 @@ export default defineConfig({
 			},
 		},
 	},
-	plugins: [serviceWorkerPlugin({
+	plugins: [boardFilesPlugin({
+        sourceDir: 'public/board-files',
+        manifestPath: '/board-files/manifest.json',
+        groups: {
+            system: { target: '0:/sys', kind: 'macros' },
+            provel: { target: '0:/sys/provel', kind: 'macros' },
+            screen: { target: '0:/firmware', kind: 'screen-firmware' },
+        }
+    }), serviceWorkerPlugin({
         swSrc: 'public/sw-template.js',
         swDest: 'sw.js',
         staticAssets: [
             '/test_stl_file.stl',
             '/helvetiker_regular.typeface.json',
             '/manifest.webmanifest',
+            '/board-files/manifest.json',
             '/favicon.ico',
             '/64x64.png',
             '/128x128@2x.png',
