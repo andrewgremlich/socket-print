@@ -24,6 +24,24 @@ npm run check            # TypeScript + Biome
 npm run knip             # Find unused files/exports/deps
 ```
 
+## Deployment
+
+The app is a fully static site deployed to **Cloudflare Workers** via [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/). No Worker script is required — Cloudflare serves the `dist/` build directly from the edge. Config lives in [wrangler.jsonc](wrangler.jsonc); edge caching/header rules live in [public/\_headers](public/_headers).
+
+```bash
+npm run deploy        # Build, then `wrangler deploy`
+npm run cf:preview    # Build, then serve the production bundle locally via `wrangler dev`
+```
+
+### CI deploys
+
+[.github/workflows/deploy-cloudflare.yml](.github/workflows/deploy-cloudflare.yml) deploys on every push to `main`. Set these repository secrets:
+
+- `CLOUDFLARE_API_TOKEN` — a token with the **Edit Cloudflare Workers** permission
+- `CLOUDFLARE_ACCOUNT_ID` — your Cloudflare account ID
+
+The first deploy (locally via `npm run deploy`) creates the Worker and prints its `*.workers.dev` URL; attach a custom domain in the Cloudflare dashboard or via a `routes` entry in `wrangler.jsonc`.
+
 ## Offline Support
 
 The app installs a service worker for offline use. See [SERVICE_WORKER.md](SERVICE_WORKER.md).

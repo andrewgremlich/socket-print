@@ -1,0 +1,92 @@
+dialog h3 {
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+}
+
+dialog h4 {
+	font-size: 1.2rem;
+	margin-bottom: 0.75rem;
+}
+
+dialog form {
+	margin-bottom: 1.5rem;
+}
+
+#resetAppContainer {
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+
+	& h4 {
+		margin-bottom: 0.5rem;
+	}
+}
+
+#resetWarning {
+	color: var(--text-error);
+}
+
+#themeContainer {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+#themeContainer label {
+	margin-bottom: 0;
+}
+
+#boardFileContainer {
+	margin-top: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+
+#boardFileContainer input[type="button"]:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.board-file-row code {
+	font-size: 0.85em;
+}
+
+#boardFileStatus {
+	margin-top: 0.25rem;
+	font-size: 0.85rem;
+}
+
+#boardFileProgress {
+	width: 100%;
+	margin-top: 0.25rem;
+}
+
+#boardFileLog {
+	margin: 0.5rem 0 0;
+	padding: 0;
+	list-style: none;
+	max-height: 12rem;
+	overflow-y: auto;
+	font-family: monospace;
+	font-size: 0.75rem;
+	line-height: 1.5;
+}
+
+#boardFileLog:empty {
+	display: none;
+}
+
+.board-file-ok::before {
+	content: "✓ ";
+}
+
+.board-file-fail {
+	color: var(--text-error);
+}
+
+.board-file-fail::before {
+	content: "✗ ";
+}
+
+.firmware-error {
+	color: var(--text-error);
+}
