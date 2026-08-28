@@ -68,17 +68,7 @@ export type InstallSummary = {
 
 const MANIFEST_URL = "/board-files/manifest.json";
 const VERSION_MARKER = "package.json";
-
-/** Groups install in this order: system config first, then its macros. */
 const GROUP_ORDER: BoardFileGroupName[] = ["system", "provel", "screen"];
-
-function log(message: string) {
-	console.log(`[BOARD-FILES] ${message}`);
-}
-
-function logError(message: string) {
-	console.error(`[BOARD-FILES] ${message}`);
-}
 
 /** Joins a board directory and file name into a full SD card path. */
 function boardPath(target: string, fileName: string): string {
@@ -94,16 +84,14 @@ export async function fetchManifest(): Promise<BoardFilesManifest> {
 	const response = await fetch(MANIFEST_URL, { cache: "no-cache" });
 
 	if (!response.ok) {
-		throw new Error(
-			`Could not load board file manifest: HTTP ${response.status}`,
-		);
+		console.warn(`Could not fetch manifest: HTTP ${response.status}`);
 	}
 
 	const manifest: BoardFilesManifest = await response.json();
-	log(`Manifest generated ${manifest.generatedAt}`);
+	console.log(`Manifest generated ${manifest.generatedAt}`);
 
 	for (const [name, group] of Object.entries(manifest.groups)) {
-		log(
+		console.log(
 			`  ${name}: v${group.version}, ${group.files.length} files -> ${group.target}`,
 		);
 	}
@@ -120,28 +108,25 @@ async function readInstalledVersion(
 	const body = await downloadFile(session, path);
 
 	if (body === null) {
-		log(`${path} not found on board — nothing installed yet`);
+		console.log(`${path} not found on board — nothing installed yet`);
 		return null;
 	}
 
 	try {
 		const parsed = JSON.parse(body);
 		if (typeof parsed.version !== "string") {
-			logError(`${path} has no "version" field — treating as not installed`);
+			console.warn(
+				`${path} has no "version" field — treating as not installed`,
+			);
 			return null;
 		}
 		return parsed.version;
 	} catch {
-		logError(`${path} is not valid JSON — treating as not installed`);
+		console.warn(`${path} is not valid JSON — treating as not installed`);
 		return null;
 	}
 }
 
-/**
- * Compares each group's bundled version against the version installed on the
- * board. A missing, unreadable, or version-less package.json on the board
- * counts as "not installed" rather than an error.
- */
 export async function checkBoardFileVersions(): Promise<GroupStatus[]> {
 	const manifest = await fetchManifest();
 
@@ -151,7 +136,7 @@ export async function checkBoardFileVersions(): Promise<GroupStatus[]> {
 		for (const name of GROUP_ORDER) {
 			const group = manifest.groups[name];
 			if (!group || group.files.length === 0) {
-				log(`${name}: no files bundled — skipping`);
+				console.log(`${name}: no files bundled — skipping`);
 				continue;
 			}
 
@@ -163,7 +148,7 @@ export async function checkBoardFileVersions(): Promise<GroupStatus[]> {
 				installedVersion === null ||
 				isNewerVersion(installedVersion, group.version);
 
-			log(
+			console.log(
 				`${name}: board ${installedVersion ?? "not installed"} (${boardPath(group.target, VERSION_MARKER)}) vs app ${group.version} -> ${needsUpdate ? "update needed" : "up to date"}`,
 			);
 
@@ -223,7 +208,7 @@ async function uploadGroup(
 				bytes: blob.size,
 				ms: performance.now() - startedAt,
 			};
-			log(`${name}/${fileName} uploaded (${blob.size} B)`);
+			console.log(`${name}/${fileName} uploaded (${blob.size} B)`);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
 			result = {
@@ -236,7 +221,7 @@ async function uploadGroup(
 			};
 			// Keep going: a half-applied config is bad, but stopping at file 3
 			// of 26 with no diagnosis is worse when debugging remotely.
-			logError(`${name}/${fileName} FAILED: ${message}`);
+			console.warn(`${name}/${fileName} FAILED: ${message}`);
 		}
 
 		results.push(result);
@@ -256,13 +241,13 @@ async function flashScreenFirmware(
 	binaryName: string,
 ): Promise<void> {
 	const target = boardPath(group.target, binaryName);
-	log(`Flashing PanelDue from ${target}`);
+	console.log(`Flashing PanelDue from ${target}`);
 
 	// M997 S4 pushes the binary to the PanelDue over the serial link. Unlike a
 	// bare M997 it does not restart the mainboard, so there is nothing to poll
 	// for here — the reply is the only signal.
 	const reply = await sendGCode(session, `M997 S4 P"${target}"`);
-	log(`M997 S4 reply: ${reply || "(empty)"}`);
+	console.log(`M997 S4 reply: ${reply || "(empty)"}`);
 
 	if (/error/i.test(reply)) {
 		throw new Error(`Screen firmware flash rejected: ${reply}`);
@@ -288,17 +273,17 @@ export async function installBoardFiles(
 		for (const name of ordered) {
 			const group = manifest.groups[name];
 			if (!group || group.files.length === 0) {
-				log(`${name}: no files bundled — skipping`);
+				console.log(`${name}: no files bundled — skipping`);
 				continue;
 			}
 
 			// The board ships with 0:/sys but not necessarily 0:/sys/provel.
 			if (await directoryExists(session, group.target)) {
-				log(`${group.target} already exists`);
+				console.log(`${group.target} already exists`);
 			} else {
-				log(`${group.target} missing — creating`);
+				console.log(`${group.target} missing — creating`);
 				const created = await makeDirectory(session, group.target);
-				log(
+				console.log(
 					created
 						? `${group.target} created`
 						: `${group.target} reported as already existing`,
@@ -330,7 +315,7 @@ export async function installBoardFiles(
 		const uploaded = results.filter((result) => result.ok).length;
 		const failed = results.length - uploaded;
 
-		log(
+		console.log(
 			`Install complete: ${uploaded}/${results.length} uploaded, ${failed} failed`,
 		);
 
@@ -341,7 +326,7 @@ export async function installBoardFiles(
 /** Sends M999 so the board re-reads 0:/sys/config.g. */
 export async function restartBoard(): Promise<void> {
 	await withPrinterSession(async (session) => {
-		log("Sending M999 to restart the board");
+		console.log("Sending M999 to restart the board");
 		// Deliberately not read back via rr_reply: the board goes offline
 		// immediately, so the follow-up request would fail on a success.
 		await session.request(`/rr_gcode?gcode=${encodeURIComponent("M999")}`);
