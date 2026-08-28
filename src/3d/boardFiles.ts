@@ -1,3 +1,11 @@
+import type {
+	BoardFileGroup,
+	BoardFileGroupName,
+	BoardFilesManifest,
+	FileResult,
+	GroupStatus,
+	InstallSummary,
+} from "./boardFileTypes";
 import {
 	directoryExists,
 	downloadFile,
@@ -9,65 +17,7 @@ import {
 	withPrinterSession,
 } from "./printerApi";
 
-/**
- * Installs the RepRapFirmware configuration that lives in `public/board-files`
- * onto the printer's SD card.
- *
- * The board's mainboard firmware is generic to the 6XD and is not managed here.
- * What is machine-specific — and what this module owns — are the macros in
- * `0:/sys` and `0:/sys/provel`, plus an optional PanelDue screen firmware
- * binary in `0:/firmware`.
- *
- * Each group carries a `package.json` holding its version. The same file is
- * written to the board, so a later run can read it back with rr_download and
- * decide whether an update is needed.
- */
-
-export type BoardFileGroupName = "system" | "provel" | "screen";
-
-export type BoardFileGroup = {
-	version: string;
-	/** Directory on the printer SD card, e.g. "0:/sys". */
-	target: string;
-	kind: "macros" | "screen-firmware";
-	files: string[];
-};
-
-export type BoardFilesManifest = {
-	generatedAt: string;
-	groups: Record<string, BoardFileGroup>;
-};
-
-export type GroupStatus = {
-	group: BoardFileGroupName;
-	target: string;
-	/** Version bundled with this build of the app. */
-	bundledVersion: string;
-	/** Version reported by the board, or null when nothing is installed. */
-	installedVersion: string | null;
-	needsUpdate: boolean;
-	fileCount: number;
-};
-
-export type FileResult = {
-	group: BoardFileGroupName;
-	file: string;
-	ok: boolean;
-	bytes: number;
-	ms: number;
-	error?: string;
-};
-
-export type InstallSummary = {
-	results: FileResult[];
-	uploaded: number;
-	failed: number;
-	/** Set when 0:/sys changed, since config.g is only read at board start-up. */
-	restartRequired: boolean;
-};
-
-const MANIFEST_URL = "/board-files/manifest.json";
-const VERSION_MARKER = "package.json";
+const PKG_JSON_FILE = "package.json";
 const GROUP_ORDER: BoardFileGroupName[] = ["system", "provel", "screen"];
 
 /** Joins a board directory and file name into a full SD card path. */
@@ -81,13 +31,22 @@ function assetUrl(group: BoardFileGroupName, fileName: string): string {
 }
 
 export async function fetchManifest(): Promise<BoardFilesManifest> {
-	const response = await fetch(MANIFEST_URL, { cache: "no-cache" });
+	const response = await fetch("/board-files/manifest.json", {
+		cache: "no-cache",
+	});
 
 	if (!response.ok) {
-		console.warn(`Could not fetch manifest: HTTP ${response.status}`);
+		throw new Error(
+			`Could not load board files manifest. HTTP ${response.status}`,
+		);
 	}
 
 	const manifest: BoardFilesManifest = await response.json();
+
+	if (!manifest?.groups) {
+		throw new Error("Board files manifest is missing its groups.");
+	}
+
 	console.log(`Manifest generated ${manifest.generatedAt}`);
 
 	for (const [name, group] of Object.entries(manifest.groups)) {
@@ -104,7 +63,7 @@ async function readInstalledVersion(
 	session: PrinterSession,
 	target: string,
 ): Promise<string | null> {
-	const path = boardPath(target, VERSION_MARKER);
+	const path = boardPath(target, PKG_JSON_FILE);
 	const body = await downloadFile(session, path);
 
 	if (body === null) {
@@ -149,7 +108,7 @@ export async function checkBoardFileVersions(): Promise<GroupStatus[]> {
 				isNewerVersion(installedVersion, group.version);
 
 			console.log(
-				`${name}: board ${installedVersion ?? "not installed"} (${boardPath(group.target, VERSION_MARKER)}) vs app ${group.version} -> ${needsUpdate ? "update needed" : "up to date"}`,
+				`${name}: board ${installedVersion ?? "not installed"} (${boardPath(group.target, PKG_JSON_FILE)}) vs app ${group.version} -> ${needsUpdate ? "update needed" : "up to date"}`,
 			);
 
 			statuses.push({

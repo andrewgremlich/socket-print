@@ -130,24 +130,6 @@
   </main>
 
   <script type="module" src="./src/help-renderer.ts"></script>
-
-  <script>
-    // Enhanced service worker registration with update handling
-    if ('serviceWorker' in navigator) {
-      // Register service worker for both HTTPS and localhost development
-      const shouldRegister = location.protocol === 'https:';
-
-      if (shouldRegister) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('Service Worker registered successfully:', registration.scope);
-          })
-          .catch(error => {
-            console.error('Service Worker registration failed:', error);
-          });
-      }
-    }
-  </script>
 </body>
 
 </html>

@@ -1,10 +1,21 @@
 /// <reference types="vitest/config" />
 import { resolve } from "node:path";
 import { defineConfig } from 'vite'
-import { boardFilesPlugin } from "./vite-board-files-plugin";
+import { boardFilesAssetUrls, boardFilesPlugin } from "./vite-board-files-plugin";
 import { serviceWorkerPlugin } from "./vite-sw-plugin";
 
 import { cloudflare } from "@cloudflare/vite-plugin";
+
+// Shared so the service worker precaches exactly the files this plugin emits.
+const boardFilesOptions = {
+	sourceDir: 'public/board-files',
+	manifestPath: '/board-files/manifest.json',
+	groups: {
+		system: { target: '0:/sys', kind: 'macros' },
+		provel: { target: '0:/sys/provel', kind: 'macros' },
+		screen: { target: '0:/firmware', kind: 'screen-firmware' },
+	},
+} as const;
 
 export default defineConfig({
 	resolve: {
@@ -81,27 +92,22 @@ export default defineConfig({
 			},
 		},
 	},
-	plugins: [boardFilesPlugin({
-        sourceDir: 'public/board-files',
-        manifestPath: '/board-files/manifest.json',
-        groups: {
-            system: { target: '0:/sys', kind: 'macros' },
-            provel: { target: '0:/sys/provel', kind: 'macros' },
-            screen: { target: '0:/firmware', kind: 'screen-firmware' },
-        }
-    }), serviceWorkerPlugin({
+	plugins: [boardFilesPlugin(boardFilesOptions), serviceWorkerPlugin({
         swSrc: 'public/sw-template.js',
         swDest: 'sw.js',
+        // The manifest and the board files themselves come from extraAssets.
         staticAssets: [
             '/test_stl_file.stl',
             '/helvetiker_regular.typeface.json',
             '/manifest.webmanifest',
-            '/board-files/manifest.json',
             '/favicon.ico',
             '/64x64.png',
             '/128x128@2x.png',
             '/AppIcon-512@2x.png',
             '/Square310x310Logo.png'
-        ]
+        ],
+        // Lazy: read at writeBundle time, so it reflects public/board-files as
+        // it stands for this build rather than when the config was loaded.
+        extraAssets: () => boardFilesAssetUrls(boardFilesOptions, import.meta.dirname)
     }), cloudflare()],
 });

@@ -1,9 +1,6 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import {
-	type BoardFilesManifest,
-	checkBoardFileVersions,
-	installBoardFiles,
-} from "./boardFiles";
+import { checkBoardFileVersions, installBoardFiles } from "./boardFiles";
+import type { BoardFilesManifest } from "./boardFileTypes";
 
 vi.mock("@/db/formValuesDbActions", () => ({
 	getIpAddress: vi.fn().mockResolvedValue("192.168.1.100"),
@@ -181,6 +178,25 @@ describe("checkBoardFileVersions", () => {
 		const statuses = await checkBoardFileVersions();
 
 		expect(statuses.some((status) => status.group === "screen")).toBe(false);
+	});
+
+	// The service worker answers an unreachable origin with a 503 whose body is
+	// valid JSON, so the status has to be checked before parsing or the failure
+	// surfaces as a TypeError on Object.entries(undefined) instead.
+	test("reports the HTTP status when the manifest is unavailable", async () => {
+		stubFetch((url) => {
+			if (url.includes("/board-files/manifest.json")) {
+				return {
+					status: 503,
+					body: { error: "Network unavailable", offline: true, url },
+				};
+			}
+			return baseRoutes(url);
+		});
+
+		await expect(checkBoardFileVersions()).rejects.toThrow(
+			"Could not load board files manifest. HTTP 503",
+		);
 	});
 });
 

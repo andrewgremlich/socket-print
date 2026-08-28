@@ -165,48 +165,6 @@
   <update-notification></update-notification>
 
   <script type="module" src="./src/renderer.ts"></script>
-  <script>
-    // Enhanced service worker registration with update handling
-    if ('serviceWorker' in navigator) {
-      // Only register service worker in production builds (sw.js is generated at build time)
-      const isDev = location.port === '4200';
-      const shouldRegister = !isDev && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
-
-      if (shouldRegister) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('Service Worker registered successfully:', registration.scope);
-
-            // Check for updates every 60 seconds
-            setInterval(() => {
-              registration.update();
-            }, 60000);
-
-            // Listen for version messages from the service worker
-            navigator.serviceWorker.addEventListener('message', (event) => {
-              if (event.data && event.data.type === 'SW_UPDATED') {
-                document.querySelector('update-notification').show(event.data.version);
-              }
-            });
-
-            // Handle service worker updates (fallback if message isn't received)
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              if (newWorker) {
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    document.querySelector('update-notification').show();
-                  }
-                });
-              }
-            });
-          })
-          .catch(error => {
-            console.error('Service Worker registration failed:', error);
-          });
-      }
-    }
-  </script>
 </body>
 
 </html>

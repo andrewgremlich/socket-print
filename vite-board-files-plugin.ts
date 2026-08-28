@@ -108,10 +108,39 @@ function buildManifest(
 	return { generatedAt: new Date().toISOString(), groups };
 }
 
+function toServedPath(manifestPath: string): string {
+	return manifestPath.startsWith("/") ? manifestPath : `/${manifestPath}`;
+}
+
+/**
+ * Every URL the built site serves for board files, the manifest included.
+ *
+ * Vite copies `public/` into `dist/` verbatim, so none of these ever appear in
+ * the Rollup bundle the service worker plugin walks. Without this list the app
+ * shell caches for offline use but `readBundledFile` still hits the network for
+ * all ~48 files. Mirrors `assetUrl()` in src/3d/boardFiles.ts so entries are
+ * precached under exactly the keys the app later requests.
+ */
+export function boardFilesAssetUrls(
+	options: BoardFilesPluginOptions,
+	root: string = process.cwd(),
+): string[] {
+	const servedPath = toServedPath(options.manifestPath);
+	const base = servedPath.slice(0, servedPath.lastIndexOf("/"));
+	const manifest = buildManifest(root, options);
+	const urls = [servedPath];
+
+	for (const [name, group] of Object.entries(manifest.groups)) {
+		for (const file of group.files) {
+			urls.push(`${base}/${name}/${encodeURIComponent(file)}`);
+		}
+	}
+
+	return urls;
+}
+
 export function boardFilesPlugin(options: BoardFilesPluginOptions): Plugin {
-	const servedPath = options.manifestPath.startsWith("/")
-		? options.manifestPath
-		: `/${options.manifestPath}`;
+	const servedPath = toServedPath(options.manifestPath);
 	let root = process.cwd();
 
 	return {

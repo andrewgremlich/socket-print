@@ -12,3 +12,6 @@
 # HTML entry points should revalidate so users get new builds promptly.
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
+
+/board-files/manifest.json
+  Cache-Control: public, max-age=0, must-revalidate

@@ -1,12 +1,13 @@
 import "@/global-style.css";
 import "@/app-style.css";
 
+import { registerServiceWorker } from "@/registerServiceWorker";
 import { initLogInterceptor } from "@/utils/logInterceptor";
 import { initializeTheme } from "@/web-components/Settings";
 
-// Initialize log interceptor and theme before any components render
 initLogInterceptor();
 initializeTheme();
+registerServiceWorker();
 
 import "@/db/store";
 import "@/web-components";

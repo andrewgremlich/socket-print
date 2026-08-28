@@ -1,11 +1,13 @@
 import {
-	type BoardFileGroupName,
 	checkBoardFileVersions,
-	type FileResult,
-	type GroupStatus,
 	installBoardFiles,
 	restartBoard,
 } from "@/3d/boardFiles";
+import type {
+	BoardFileGroupName,
+	FileResult,
+	GroupStatus,
+} from "@/3d/boardFileTypes";
 import { getBoardInfo } from "@/3d/printerApi";
 import {
 	getCircularSegments,
@@ -140,6 +142,14 @@ export class Settings extends Dialog {
 	}
 
 	#renderGroupStatuses(statuses: GroupStatus[]) {
+		if (statuses.length === 0) {
+			for (const group of ["system", "provel"] as BoardFileGroupName[]) {
+				const span = this.#statusSpanFor(group);
+				if (span) span.textContent = "No files found. Probably needs a sync.";
+			}
+			return;
+		}
+
 		for (const status of statuses) {
 			const span = this.#statusSpanFor(status.group);
 			if (!span) continue;
@@ -156,14 +166,6 @@ export class Settings extends Dialog {
 				this.screenFirmwareRow.style.display = "block";
 			}
 		}
-
-		// Groups with nothing bundled never come back from the version check.
-		const reported = new Set(statuses.map((status) => status.group));
-		for (const group of ["system", "provel"] as BoardFileGroupName[]) {
-			if (reported.has(group)) continue;
-			const span = this.#statusSpanFor(group);
-			if (span) span.textContent = "No files bundled with this app version";
-		}
 	}
 
 	/**
@@ -174,12 +176,12 @@ export class Settings extends Dialog {
 	async checkBoardFileStatus() {
 		try {
 			const ipAddress = await getIpAddress();
+			this.#renderGroupStatuses([]);
 
 			if (!ipAddress) {
 				this.printerStatusSpan.textContent = "No IP configured";
 				this.firmwareVersionSpan.textContent = "—";
 				this.#setBoardFileStatus("Set a printer IP address to check.");
-				this.#renderGroupStatuses([]);
 				return;
 			}
 
@@ -193,7 +195,6 @@ export class Settings extends Dialog {
 				`Not connected: ${error instanceof Error ? error.message : String(error)}`,
 				true,
 			);
-			this.#renderGroupStatuses([]);
 			return;
 		}
 

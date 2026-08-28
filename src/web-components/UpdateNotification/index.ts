@@ -7,6 +7,10 @@ class UpdateNotification extends HTMLElement {
 	#message: HTMLSpanElement;
 	#hideTimer: number | null = null;
 
+	onReload: () => void = () => {
+		window.location.reload();
+	};
+
 	constructor() {
 		super();
 		this.attachShadow({ mode: "open" });
@@ -88,7 +92,7 @@ class UpdateNotification extends HTMLElement {
 		this.shadowRoot
 			?.querySelector(".reload-btn")
 			?.addEventListener("click", () => {
-				window.location.reload();
+				this.onReload();
 			});
 
 		this.shadowRoot
