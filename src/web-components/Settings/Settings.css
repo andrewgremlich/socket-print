@@ -41,7 +41,8 @@ dialog form {
 	margin-bottom: 1.5rem;
 }
 
-#boardFileContainer input[type="button"]:disabled {
+#boardFileContainer input[type="button"]:disabled,
+#resetAppContainer input[type="button"]:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
 }
@@ -50,7 +51,8 @@ dialog form {
 	font-size: 0.85em;
 }
 
-#boardFileStatus {
+#boardFileStatus,
+#extrusionTestStatus {
 	margin-top: 0.25rem;
 	font-size: 0.85rem;
 }
