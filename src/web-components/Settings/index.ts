@@ -8,7 +8,7 @@ import type {
 	FileResult,
 	GroupStatus,
 } from "@/3d/boardFileTypes";
-import { getBoardInfo, sendGCodeFile } from "@/3d/printerApi";
+import { sendGCodeFile } from "@/3d/printerApi";
 import {
 	getCircularSegments,
 	getEPerRevolution,
@@ -61,7 +61,6 @@ export class Settings extends Dialog {
 	testCylinderForm: HTMLFormElement;
 	closeButton: HTMLButtonElement;
 	themeSelect: HTMLSelectElement;
-	firmwareVersionSpan: HTMLSpanElement;
 	printerStatusSpan: HTMLSpanElement;
 	screenFirmwareRow: HTMLParagraphElement;
 	installBoardFilesButton: HTMLButtonElement;
@@ -96,9 +95,6 @@ export class Settings extends Dialog {
 		this.themeSelect = this.shadowRoot.getElementById(
 			"themeSelect",
 		) as HTMLSelectElement;
-		this.firmwareVersionSpan = this.shadowRoot.getElementById(
-			"firmwareVersion",
-		) as HTMLSpanElement;
 		this.printerStatusSpan = this.shadowRoot.getElementById(
 			"printerStatus",
 		) as HTMLSpanElement;
@@ -193,17 +189,13 @@ export class Settings extends Dialog {
 
 			if (!ipAddress) {
 				this.printerStatusSpan.textContent = "No IP configured";
-				this.firmwareVersionSpan.textContent = "—";
 				this.#setBoardFileStatus("Set a printer IP address to check.");
 				return;
 			}
 
-			const boardInfo = await getBoardInfo();
 			this.printerStatusSpan.textContent = "Yes";
-			this.firmwareVersionSpan.textContent = boardInfo.firmwareVersion;
 		} catch (error) {
 			this.printerStatusSpan.textContent = "No";
-			this.firmwareVersionSpan.textContent = "—";
 			this.#setBoardFileStatus(
 				`Not connected: ${error instanceof Error ? error.message : String(error)}`,
 				true,
@@ -369,7 +361,6 @@ export class Settings extends Dialog {
 		this.themeSelect.value = getTheme();
 
 		this.printerStatusSpan.textContent = "Unknown";
-		this.firmwareVersionSpan.textContent = "Checking...";
 		this.installBoardFilesButton.disabled = true;
 		this.restartBoardButton.style.display = "none";
 		this.boardFileStatus.textContent = "";
