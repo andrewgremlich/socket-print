@@ -4,13 +4,12 @@
 	<h4>Printer</h4>
 	<p>Connected: <span id="printerStatus">Unknown</span></p>
 
-	<h4>Firmware Files</h4>
 	<p class="board-file-row">System files (<code>0:/sys</code>): <span id="systemFileStatus">Checking...</span></p>
 	<p class="board-file-row">Provel macros (<code>0:/sys/provel</code>): <span id="provelFileStatus">Checking...</span></p>
 	<p class="board-file-row" id="screenFirmwareRow" style="display: none;">Screen firmware (<code>0:/firmware</code>): <span id="screenFileStatus">Checking...</span></p>
 
 	<div id="boardFileContainer">
-		<input type="button" class="button" id="installBoardFilesButton" value="Install Board Files" disabled />
+		<input type="button" class="button" id="installBoardFilesButton" value="Install System Files" disabled />
 		<input type="button" class="button" id="restartBoardButton" value="Restart Board (M999)" style="display: none;" />
 		<p id="boardFileStatus"></p>
 		<progress id="boardFileProgress" value="0" max="100" style="display: none;"></progress>
