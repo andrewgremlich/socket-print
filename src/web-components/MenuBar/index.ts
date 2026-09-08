@@ -6,6 +6,11 @@ sheet.replaceSync(styles);
 
 export class MenuBar extends HTMLElement {
 	#shadow: ShadowRoot;
+	#onDocumentPointerDown = (evt: Event) => {
+		if (!evt.composedPath().includes(this)) {
+			this.#closeAllMenus();
+		}
+	};
 
 	constructor() {
 		super();
@@ -37,28 +42,68 @@ export class MenuBar extends HTMLElement {
 	// -- Lifecycle --
 
 	connectedCallback() {
+		this.#setupTriggers();
 		this.#setupFileInputDropdownClose();
 		this.#setupMenuActions();
 		this.#setupKeyboardNavigation();
+
+		document.addEventListener("pointerdown", this.#onDocumentPointerDown);
+	}
+
+	disconnectedCallback() {
+		document.removeEventListener("pointerdown", this.#onDocumentPointerDown);
 	}
 
 	// -- Internal logic --
 
+	#openMenu(dropdown: HTMLElement) {
+		this.#closeAllMenus();
+		dropdown.classList.add("open");
+		this.#shadow
+			.querySelector(`[aria-controls="${dropdown.id}"]`)
+			?.setAttribute("aria-expanded", "true");
+	}
+
+	#closeAllMenus() {
+		for (const dropdown of this.#shadow.querySelectorAll(".menuBarDropdown")) {
+			dropdown.classList.remove("open");
+		}
+		for (const trigger of this.#shadow.querySelectorAll("[aria-controls]")) {
+			trigger.setAttribute("aria-expanded", "false");
+		}
+	}
+
+	#setupTriggers() {
+		const triggers = this.#shadow.querySelectorAll(
+			".menuBarButton[aria-controls]",
+		) as NodeListOf<HTMLElement>;
+
+		for (const trigger of triggers) {
+			trigger.addEventListener("click", (evt) => {
+				evt.stopPropagation();
+
+				const dropdownId = trigger.getAttribute("aria-controls");
+				if (!dropdownId) return;
+
+				const dropdown = this.#shadow.getElementById(dropdownId);
+				if (!dropdown) return;
+
+				if (dropdown.classList.contains("open")) {
+					this.#closeAllMenus();
+				} else {
+					this.#openMenu(dropdown);
+				}
+			});
+		}
+	}
+
 	#setupFileInputDropdownClose() {
-		this.fileInput?.addEventListener("change", () => {
-			const popover = this.#shadow.getElementById(
-				"fileDropdown",
-			) as HTMLElement & { hidePopover(): void };
-			popover?.hidePopover();
-		});
+		this.fileInput?.addEventListener("change", () => this.#closeAllMenus());
 	}
 
 	#setupMenuActions() {
 		const dispatch = (name: string) => {
-			const popovers = this.#shadow.querySelectorAll("[popover]") as NodeListOf<
-				HTMLElement & { hidePopover(): void }
-			>;
-			for (const p of popovers) p.hidePopover();
+			this.#closeAllMenus();
 			this.dispatchEvent(new CustomEvent(name, { bubbles: true }));
 		};
 
@@ -98,17 +143,17 @@ export class MenuBar extends HTMLElement {
 		nav.addEventListener("keydown", (evt) => {
 			const target = evt.target as HTMLElement;
 
-			const openPopover = this.#shadow.querySelector(
-				"[popover]:popover-open",
+			const openDropdown = this.#shadow.querySelector(
+				".menuBarDropdown.open",
 			) as HTMLElement | null;
 
 			if (evt.key === "Escape") {
-				if (openPopover) {
-					(openPopover as HTMLElement & { hidePopover(): void }).hidePopover();
-					const triggerId = openPopover.id;
+				if (openDropdown) {
+					const dropdownId = openDropdown.id;
+					this.#closeAllMenus();
 					(
 						this.#shadow.querySelector(
-							`[popovertarget="${triggerId}"]`,
+							`[aria-controls="${dropdownId}"]`,
 						) as HTMLElement | null
 					)?.focus();
 				}
@@ -116,9 +161,9 @@ export class MenuBar extends HTMLElement {
 				return;
 			}
 
-			// Navigation within an open popover
-			if (openPopover?.contains(target)) {
-				const items = openPopover.querySelectorAll(
+			// Navigation within an open dropdown
+			if (openDropdown?.contains(target)) {
+				const items = openDropdown.querySelectorAll(
 					"button.menuBarDropdownButton, label.menuBarDropdownButton",
 				) as NodeListOf<HTMLElement>;
 				const currentIndex = Array.from(items).indexOf(target);
@@ -155,15 +200,13 @@ export class MenuBar extends HTMLElement {
 					!target.classList.contains("noDropdown")
 				) {
 					evt.preventDefault();
-					const targetId = target.getAttribute("popovertarget");
+					const targetId = target.getAttribute("aria-controls");
 					if (targetId) {
-						const popover = this.#shadow.getElementById(
-							targetId,
-						) as HTMLElement & {
-							showPopover(): void;
-						};
-						popover?.showPopover();
-						const firstItem = popover?.querySelector(
+						const dropdown = this.#shadow.getElementById(targetId);
+						if (!dropdown) return;
+
+						this.#openMenu(dropdown);
+						const firstItem = dropdown.querySelector(
 							"button.menuBarDropdownButton, label.menuBarDropdownButton",
 						) as HTMLElement | null;
 						firstItem?.focus();

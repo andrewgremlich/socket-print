@@ -2,8 +2,8 @@
 	<h1><a href="/" aria-label="ProvelPrint - Return to home page">ProvelPrint</a></h1>
 
 	<div class="menuBarButtonContainer">
-		<button role="menuitem" aria-haspopup="true" class="menuBarButton" type="button" popovertarget="fileDropdown" style="anchor-name: --file-trigger">File</button>
-		<div id="fileDropdown" class="menuBarDropdown" popover role="menu" style="position-anchor: --file-trigger">
+		<button role="menuitem" aria-haspopup="true" aria-controls="fileDropdown" aria-expanded="false" class="menuBarButton" type="button">File</button>
+		<div id="fileDropdown" class="menuBarDropdown" role="menu">
 			<label class="menuBarDropdownButton fileInputLabel" for="stlFileInput" id="stlFileInputLabel" tabindex="0">
 				Open STL file
 				<input role="menuitem" type="file" accept=".stl" id="stlFileInput" name="stlFileInput" class="fileInput" />
@@ -15,8 +15,8 @@
 	</div>
 
 	<div class="menuBarButtonContainer">
-		<button role="menuitem" aria-haspopup="true" class="menuBarButton" type="button" popovertarget="editDropdown" style="anchor-name: --edit-trigger">Edit</button>
-		<div id="editDropdown" class="menuBarDropdown" popover role="menu" style="position-anchor: --edit-trigger">
+		<button role="menuitem" aria-haspopup="true" aria-controls="editDropdown" aria-expanded="false" class="menuBarButton" type="button">Edit</button>
+		<div id="editDropdown" class="menuBarDropdown" role="menu">
 			<button role="menuitem" class="menuBarDropdownButton" id="addMaterialProfile" type="button">Add Material Profile</button>
 			<button role="menuitem" class="menuBarDropdownButton" id="editActiveMaterialProfile" type="button">Edit Active Material Profile</button>
 			<button role="menuitem" class="menuBarDropdownButton" id="deleteMaterialProfile" type="button">Delete Active Material Profile</button>

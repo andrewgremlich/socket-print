@@ -4,6 +4,11 @@
 	width: 100%;
 	background-color: var(--bg-menu);
 	padding: 0 var(--spacing-lg);
+
+	/* Keeps open dropdowns painted above the rest of the app, which follows the
+	   menu bar in the document. */
+	position: relative;
+	z-index: var(--z-dropdown);
 }
 
 #menuBar {
@@ -74,35 +79,36 @@ h1 {
 	}
 }
 
+.menuBarButtonContainer {
+	position: relative;
+}
+
 .menuBarDropdown {
 	z-index: var(--z-dropdown);
 	background-color: var(--bg-menu);
 	padding: 8px var(--spacing-xs);
 	box-shadow: var(--shadow-dropdown);
 	border-radius: var(--radius-sm);
-	position: fixed;
+	position: absolute;
+	top: 100%;
+	left: 0;
 	margin: 0;
 	border: none;
-	inset: unset;
-	top: anchor(bottom);
-	left: anchor(left);
 
 	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
 	transform: translateY(-5px);
 	transition:
 		opacity 150ms ease-out,
 		transform 150ms ease-out,
-		display 150ms allow-discrete,
-		overlay 150ms allow-discrete;
+		visibility 150ms;
 
-	&:popover-open {
+	&.open {
 		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
 		transform: translateY(0);
-
-		@starting-style {
-			opacity: 0;
-			transform: translateY(-5px);
-		}
 	}
 }
 
