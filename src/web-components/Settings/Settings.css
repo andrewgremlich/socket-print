@@ -41,7 +41,16 @@ dialog form {
 	margin-bottom: 1.5rem;
 }
 
+#screenFirmwareContainer {
+	margin-bottom: 1.5rem;
+}
+
+#screenFirmwareContainer h4 {
+	margin-bottom: 0;
+}
+
 #boardFileContainer input[type="button"]:disabled,
+#screenFirmwareContainer input[type="button"]:disabled,
 #resetAppContainer input[type="button"]:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
@@ -52,6 +61,7 @@ dialog form {
 }
 
 #boardFileStatus,
+#screenFirmwareStatus,
 #extrusionTestStatus {
 	margin-top: 0.25rem;
 	font-size: 0.85rem;
@@ -62,7 +72,8 @@ dialog form {
 	margin-top: 0.25rem;
 }
 
-#boardFileLog {
+#boardFileLog,
+#screenFirmwareLog {
 	margin: 0.5rem 0 0;
 	padding: 0;
 	list-style: none;
@@ -73,7 +84,8 @@ dialog form {
 	line-height: 1.5;
 }
 
-#boardFileLog:empty {
+#boardFileLog:empty,
+#screenFirmwareLog:empty {
 	display: none;
 }
 

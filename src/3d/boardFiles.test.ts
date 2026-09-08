@@ -30,6 +30,20 @@ const manifest: BoardFilesManifest = {
 	},
 };
 
+/** The same manifest with a firmware binary bundled in the screen group. */
+const manifestWithFirmware: BoardFilesManifest = {
+	...manifest,
+	groups: {
+		...manifest.groups,
+		screen: {
+			version: "1.0.0",
+			target: "0:/firmware",
+			kind: "screen-firmware",
+			files: ["display_firmware.bin", "package.json"],
+		},
+	},
+};
+
 type Route = {
 	status?: number;
 	body?: unknown;
@@ -316,9 +330,119 @@ describe("installBoardFiles", () => {
 	test("skips the screen group when no firmware binary is bundled", async () => {
 		const calls = stubFetch(baseRoutes);
 
-		await installBoardFiles(["screen"], () => {});
+		const summary = await installBoardFiles(["screen"], () => {});
 
 		expect(calls.some((call) => call.url.includes("rr_upload"))).toBe(false);
 		expect(calls.some((call) => call.url.includes("M997"))).toBe(false);
+		expect(summary.screenFlash).toBeNull();
+	});
+});
+
+describe("screen firmware flashing", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+		vi.restoreAllMocks();
+	});
+
+	/** baseRoutes, but serving the manifest that bundles a firmware binary. */
+	function firmwareRoutes(
+		override?: (url: string) => Route | undefined,
+	): (url: string) => Route | undefined {
+		return (url: string) => {
+			if (url.includes("/board-files/manifest.json")) {
+				return { body: manifestWithFirmware };
+			}
+			return override?.(url) ?? baseRoutes(url);
+		};
+	}
+
+	function uploads(calls: Call[]): string[] {
+		return calls
+			.filter((call) => call.url.includes("rr_upload"))
+			.map((call) => downloadedName(call.url));
+	}
+
+	function gcodes(calls: Call[]): string[] {
+		return calls
+			.filter((call) => call.url.includes("rr_gcode"))
+			.map((call) =>
+				decodeURIComponent(new URL(call.url).searchParams.get("gcode") ?? ""),
+			);
+	}
+
+	/**
+	 * Drives an install past the reply polling that follows M997, which sleeps
+	 * between reads.
+	 */
+	async function runFlash(routes: (url: string) => Route | undefined) {
+		vi.useFakeTimers();
+		const calls = stubFetch(routes);
+		const pending = installBoardFiles(["screen"], () => {});
+		await vi.advanceTimersByTimeAsync(30_000);
+		return { calls, summary: await pending };
+	}
+
+	test("uploads the binary, flashes it, then writes the version marker", async () => {
+		const { calls, summary } = await runFlash(firmwareRoutes());
+
+		expect(uploads(calls)).toEqual([
+			"0:/firmware/display_firmware.bin",
+			"0:/firmware/package.json",
+		]);
+		expect(summary.screenFlash).toMatchObject({
+			binary: "display_firmware.bin",
+			ok: true,
+		});
+	});
+
+	test("passes M997 the bare file name, not the full board path", async () => {
+		const { calls } = await runFlash(firmwareRoutes());
+
+		expect(gcodes(calls)).toEqual(['M997 S4 P"display_firmware.bin"']);
+	});
+
+	test("flashes only after the binary is on the board", async () => {
+		const { calls } = await runFlash(firmwareRoutes());
+
+		const binaryUpload = calls.findIndex((call) =>
+			call.url.includes("display_firmware.bin"),
+		);
+		const flash = calls.findIndex((call) => call.url.includes("M997"));
+		const marker = calls.findIndex(
+			(call) =>
+				call.url.includes("rr_upload") && call.url.includes("package.json"),
+		);
+
+		expect(binaryUpload).toBeLessThan(flash);
+		expect(flash).toBeLessThan(marker);
+	});
+
+	test("withholds the version marker when the board rejects the flash", async () => {
+		const { calls, summary } = await runFlash(
+			firmwareRoutes((url) =>
+				url.includes("rr_reply")
+					? { text: "Error: Firmware file not found" }
+					: undefined,
+			),
+		);
+
+		expect(uploads(calls)).toEqual(["0:/firmware/display_firmware.bin"]);
+		expect(summary.screenFlash?.ok).toBe(false);
+		expect(summary.screenFlash?.error).toContain("Firmware file not found");
+	});
+
+	test("does not flash when the binary fails to upload", async () => {
+		const { calls, summary } = await runFlash(
+			firmwareRoutes((url) =>
+				url.includes("rr_upload") && url.includes("display_firmware.bin")
+					? { body: { err: 1 } }
+					: undefined,
+			),
+		);
+
+		expect(gcodes(calls)).toEqual([]);
+		expect(uploads(calls)).toEqual(["0:/firmware/display_firmware.bin"]);
+		expect(summary.screenFlash).toBeNull();
+		expect(summary.failed).toBe(1);
 	});
 });

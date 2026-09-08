@@ -33,10 +33,22 @@ export type FileResult = {
 	error?: string;
 };
 
+/** Outcome of an M997 S4 PanelDue flash. */
+export type FlashOutcome = {
+	/** File name passed to M997, e.g. "display_firmware.bin". */
+	binary: string;
+	ok: boolean;
+	/** Reply text the board produced, empty when it said nothing. */
+	reply: string;
+	error?: string;
+};
+
 export type InstallSummary = {
 	results: FileResult[];
 	uploaded: number;
 	failed: number;
 	/** Set when 0:/sys changed, since config.g is only read at board start-up. */
 	restartRequired: boolean;
+	/** Present only when the screen group was part of the install. */
+	screenFlash: FlashOutcome | null;
 };

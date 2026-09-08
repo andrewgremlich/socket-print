@@ -3,22 +3,30 @@ import type {
 	BoardFileGroupName,
 	BoardFilesManifest,
 	FileResult,
+	FlashOutcome,
 	GroupStatus,
 	InstallSummary,
 } from "./boardFileTypes";
 import {
 	directoryExists,
 	downloadFile,
+	getReply,
 	isNewerVersion,
 	makeDirectory,
 	type PrinterSession,
-	sendGCode,
 	uploadFile,
 	withPrinterSession,
 } from "./printerApi";
 
 const PKG_JSON_FILE = "package.json";
 const GROUP_ORDER: BoardFileGroupName[] = ["system", "provel", "screen"];
+
+// M997 S4 hands the binary to the PanelDue over the serial link and returns
+// straight away, so the first rr_reply is usually empty and any complaint
+// ("Error: Firmware file not found") lands a beat later. Read a few times
+// before calling the flash clean.
+const FLASH_REPLY_POLLS = 4;
+const FLASH_REPLY_INTERVAL_MS = 1500;
 
 /** Joins a board directory and file name into a full SD card path. */
 function boardPath(target: string, fileName: string): string {
@@ -147,13 +155,14 @@ async function uploadGroup(
 	session: PrinterSession,
 	name: BoardFileGroupName,
 	group: BoardFileGroup,
+	files: string[],
 	onProgress: (result: FileResult) => void,
 ): Promise<FileResult[]> {
 	const results: FileResult[] = [];
 
 	// The manifest already orders package.json last so a partial batch never
 	// leaves the board advertising a version it does not fully have.
-	for (const fileName of group.files) {
+	for (const fileName of files) {
 		const startedAt = performance.now();
 		let result: FileResult;
 
@@ -190,27 +199,125 @@ async function uploadGroup(
 	return results;
 }
 
+/** Collects whatever the board says over the seconds after M997 is sent. */
+async function collectFlashReply(session: PrinterSession): Promise<string> {
+	const lines: string[] = [];
+
+	for (let poll = 0; poll < FLASH_REPLY_POLLS; poll += 1) {
+		const reply = (await getReply(session)).trim();
+
+		if (reply) {
+			lines.push(reply);
+			console.log(`M997 S4 reply: ${reply}`);
+		}
+
+		if (poll < FLASH_REPLY_POLLS - 1) {
+			await new Promise((resolve) =>
+				setTimeout(resolve, FLASH_REPLY_INTERVAL_MS),
+			);
+		}
+	}
+
+	return lines.join(" ");
+}
+
 /**
- * Flashes the PanelDue screen. The binary is uploaded to 0:/firmware and the
- * board is then told to push it over the serial link with M997 S4.
+ * Flashes the PanelDue screen with a binary already uploaded to the group's
+ * target directory. Resolves with the outcome rather than throwing on a board
+ * refusal, so the caller can withhold the version marker and still report the
+ * rest of the install.
  */
 async function flashScreenFirmware(
 	session: PrinterSession,
 	group: BoardFileGroup,
 	binaryName: string,
-): Promise<void> {
-	const target = boardPath(group.target, binaryName);
-	console.log(`Flashing PanelDue from ${target}`);
+): Promise<FlashOutcome> {
+	console.log(`Flashing PanelDue from ${boardPath(group.target, binaryName)}`);
 
-	// M997 S4 pushes the binary to the PanelDue over the serial link. Unlike a
-	// bare M997 it does not restart the mainboard, so there is nothing to poll
-	// for here — the reply is the only signal.
-	const reply = await sendGCode(session, `M997 S4 P"${target}"`);
-	console.log(`M997 S4 reply: ${reply || "(empty)"}`);
+	try {
+		// M997 S4 pushes the binary to the PanelDue over the serial link. Unlike
+		// a bare M997 it does not restart the mainboard. P takes the file name on
+		// its own: RepRapFirmware resolves it against the board's firmware
+		// directory, which is what group.target ("0:/firmware") points at.
+		const response = await session.request(
+			`/rr_gcode?gcode=${encodeURIComponent(`M997 S4 P"${binaryName}"`)}`,
+		);
 
-	if (/error/i.test(reply)) {
-		throw new Error(`Screen firmware flash rejected: ${reply}`);
+		if (!response.ok) {
+			throw new Error(`HTTP ${response.status}`);
+		}
+
+		const reply = await collectFlashReply(session);
+
+		// An empty reply is the normal success path: the board accepts the
+		// command and says nothing while the screen reflashes.
+		if (/error|fail|not found|unknown/i.test(reply)) {
+			return {
+				binary: binaryName,
+				ok: false,
+				reply,
+				error: `Board rejected the flash: ${reply}`,
+			};
+		}
+
+		return { binary: binaryName, ok: true, reply };
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.warn(`Screen firmware flash failed: ${message}`);
+		return { binary: binaryName, ok: false, reply: "", error: message };
 	}
+}
+
+/**
+ * Uploads the firmware payload, flashes the screen, and only then writes the
+ * version marker. Doing the marker last means a board that reports v1.2.0 in
+ * 0:/firmware/package.json is a board actually running v1.2.0 — so a failed
+ * flash still shows as "update available" and can simply be retried.
+ *
+ * Appends its file results to `results` and resolves with the flash outcome,
+ * or null when nothing was flashed.
+ */
+async function installScreenGroup(
+	session: PrinterSession,
+	group: BoardFileGroup,
+	onProgress: (result: FileResult) => void,
+	results: FileResult[],
+): Promise<FlashOutcome | null> {
+	const payload = group.files.filter((file) => file !== PKG_JSON_FILE);
+	const marker = group.files.filter((file) => file === PKG_JSON_FILE);
+	const binary = payload.find((file) => file.endsWith(".bin"));
+
+	const payloadResults = await uploadGroup(
+		session,
+		"screen",
+		group,
+		payload,
+		onProgress,
+	);
+	results.push(...payloadResults);
+
+	if (!payloadResults.every((result) => result.ok)) {
+		console.warn("Screen firmware upload failed — not flashing");
+		return null;
+	}
+
+	if (!binary) {
+		console.log("screen: no .bin bundled — nothing to flash");
+		return null;
+	}
+
+	const flash = await flashScreenFirmware(session, group, binary);
+
+	if (!flash.ok) {
+		console.warn("Flash failed — withholding the version marker");
+		return flash;
+	}
+
+	results.push(
+		...(await uploadGroup(session, "screen", group, marker, onProgress)),
+	);
+
+	return flash;
 }
 
 /**
@@ -228,6 +335,7 @@ export async function installBoardFiles(
 	return withPrinterSession(async (session) => {
 		const results: FileResult[] = [];
 		let restartRequired = false;
+		let screenFlash: FlashOutcome | null = null;
 
 		for (const name of ordered) {
 			const group = manifest.groups[name];
@@ -249,7 +357,24 @@ export async function installBoardFiles(
 				);
 			}
 
-			const groupResults = await uploadGroup(session, name, group, onProgress);
+			if (name === "screen" && group.kind === "screen-firmware") {
+				const outcome = await installScreenGroup(
+					session,
+					group,
+					onProgress,
+					results,
+				);
+				screenFlash = outcome;
+				continue;
+			}
+
+			const groupResults = await uploadGroup(
+				session,
+				name,
+				group,
+				group.files,
+				onProgress,
+			);
 			results.push(...groupResults);
 
 			const allSucceeded = groupResults.every((result) => result.ok);
@@ -257,17 +382,6 @@ export async function installBoardFiles(
 			if (name === "system" && allSucceeded) {
 				// config.g is only read at start-up.
 				restartRequired = true;
-			}
-
-			if (
-				name === "screen" &&
-				allSucceeded &&
-				group.kind === "screen-firmware"
-			) {
-				const binary = group.files.find((file) => file.endsWith(".bin"));
-				if (binary) {
-					await flashScreenFirmware(session, group, binary);
-				}
 			}
 		}
 
@@ -278,7 +392,7 @@ export async function installBoardFiles(
 			`Install complete: ${uploaded}/${results.length} uploaded, ${failed} failed`,
 		);
 
-		return { results, uploaded, failed, restartRequired };
+		return { results, uploaded, failed, restartRequired, screenFlash };
 	});
 }
 

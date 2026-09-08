@@ -6,6 +6,7 @@ import {
 import type {
 	BoardFileGroupName,
 	FileResult,
+	FlashOutcome,
 	GroupStatus,
 } from "@/3d/boardFileTypes";
 import { sendGCodeFile } from "@/3d/printerApi";
@@ -40,6 +41,10 @@ type Theme = "dark" | "light" | "system";
 
 const THEME_STORAGE_KEY = "app-theme";
 
+// The macro groups install together; the screen firmware is flashed on its own
+// so an operator never reflashes the PanelDue just to push a macro change.
+const MACRO_GROUPS: BoardFileGroupName[] = ["system", "provel"];
+
 export function initializeTheme(): void {
 	const storedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
 	const theme: Theme = storedTheme ?? "dark";
@@ -62,7 +67,10 @@ export class Settings extends Dialog {
 	closeButton: HTMLButtonElement;
 	themeSelect: HTMLSelectElement;
 	printerStatusSpan: HTMLSpanElement;
-	screenFirmwareRow: HTMLParagraphElement;
+	screenFirmwareContainer: HTMLDivElement;
+	flashScreenFirmwareButton: HTMLButtonElement;
+	screenFirmwareStatus: HTMLParagraphElement;
+	screenFirmwareLog: HTMLOListElement;
 	installBoardFilesButton: HTMLButtonElement;
 	restartBoardButton: HTMLButtonElement;
 	boardFileStatus: HTMLParagraphElement;
@@ -98,9 +106,18 @@ export class Settings extends Dialog {
 		this.printerStatusSpan = this.shadowRoot.getElementById(
 			"printerStatus",
 		) as HTMLSpanElement;
-		this.screenFirmwareRow = this.shadowRoot.getElementById(
-			"screenFirmwareRow",
+		this.screenFirmwareContainer = this.shadowRoot.getElementById(
+			"screenFirmwareContainer",
+		) as HTMLDivElement;
+		this.flashScreenFirmwareButton = this.shadowRoot.getElementById(
+			"flashScreenFirmwareButton",
+		) as HTMLButtonElement;
+		this.screenFirmwareStatus = this.shadowRoot.getElementById(
+			"screenFirmwareStatus",
 		) as HTMLParagraphElement;
+		this.screenFirmwareLog = this.shadowRoot.getElementById(
+			"screenFirmwareLog",
+		) as HTMLOListElement;
 		this.installBoardFilesButton = this.shadowRoot.getElementById(
 			"installBoardFilesButton",
 		) as HTMLButtonElement;
@@ -132,17 +149,22 @@ export class Settings extends Dialog {
 		) as HTMLSpanElement | null;
 	}
 
-	#appendLogLine(text: string, ok: boolean) {
+	#appendLogLine(log: HTMLOListElement, text: string, ok: boolean) {
 		const line = document.createElement("li");
 		line.textContent = text;
 		line.className = ok ? "board-file-ok" : "board-file-fail";
-		this.boardFileLog.appendChild(line);
-		this.boardFileLog.scrollTop = this.boardFileLog.scrollHeight;
+		log.appendChild(line);
+		log.scrollTop = log.scrollHeight;
 	}
 
 	#setBoardFileStatus(message: string, isError = false) {
 		this.boardFileStatus.textContent = message;
 		this.boardFileStatus.className = isError ? "firmware-error" : "";
+	}
+
+	#setScreenFirmwareStatus(message: string, isError = false) {
+		this.screenFirmwareStatus.textContent = message;
+		this.screenFirmwareStatus.className = isError ? "firmware-error" : "";
 	}
 
 	#setExtrusionTestStatus(message: string, isError = false) {
@@ -152,7 +174,7 @@ export class Settings extends Dialog {
 
 	#renderGroupStatuses(statuses: GroupStatus[]) {
 		if (statuses.length === 0) {
-			for (const group of ["system", "provel"] as BoardFileGroupName[]) {
+			for (const group of MACRO_GROUPS) {
 				const span = this.#statusSpanFor(group);
 				if (span) span.textContent = "No files found. Probably needs a sync.";
 			}
@@ -164,15 +186,28 @@ export class Settings extends Dialog {
 			if (!span) continue;
 
 			if (status.installedVersion === null) {
-				span.textContent = `Not installed (${status.fileCount} files to send, v${status.bundledVersion})`;
+				span.textContent =
+					status.group === "screen"
+						? `Not flashed yet (v${status.bundledVersion} bundled)`
+						: `Not installed (${status.fileCount} files to send, v${status.bundledVersion})`;
 			} else if (status.needsUpdate) {
 				span.textContent = `Update available: ${status.installedVersion} → ${status.bundledVersion}`;
 			} else {
 				span.textContent = `Up to date (v${status.installedVersion})`;
 			}
 
+			// The screen block only exists when a firmware binary is bundled; the
+			// build omits the group entirely otherwise.
 			if (status.group === "screen") {
-				this.screenFirmwareRow.style.display = "block";
+				this.screenFirmwareContainer.style.display = "block";
+				this.flashScreenFirmwareButton.value = status.needsUpdate
+					? `Flash Screen Firmware (v${status.bundledVersion})`
+					: `Reflash Screen Firmware (v${status.bundledVersion})`;
+				this.#setScreenFirmwareStatus(
+					status.needsUpdate
+						? "The screen goes blank for up to a minute while it reflashes."
+						: "Already up to date. Reflash only if the screen is misbehaving.",
+				);
 			}
 		}
 	}
@@ -208,7 +243,11 @@ export class Settings extends Dialog {
 			this.#groupStatuses = statuses;
 			this.#renderGroupStatuses(statuses);
 
-			const outdated = statuses.filter((status) => status.needsUpdate);
+			// Screen firmware is reported and flashed separately, so it must not
+			// enable or label the board files button.
+			const outdated = statuses.filter(
+				(status) => status.needsUpdate && MACRO_GROUPS.includes(status.group),
+			);
 			const neverInstalled = outdated.some(
 				(status) => status.installedVersion === null,
 			);
@@ -235,7 +274,9 @@ export class Settings extends Dialog {
 
 	async performBoardFileInstall() {
 		const groups = this.#groupStatuses
-			.filter((status) => status.needsUpdate)
+			.filter(
+				(status) => status.needsUpdate && MACRO_GROUPS.includes(status.group),
+			)
 			.map((status) => status.group);
 
 		if (groups.length === 0) return;
@@ -245,6 +286,7 @@ export class Settings extends Dialog {
 			.reduce((sum, status) => sum + status.fileCount, 0);
 
 		this.installBoardFilesButton.disabled = true;
+		this.flashScreenFirmwareButton.disabled = true;
 		this.restartBoardButton.style.display = "none";
 		this.boardFileLog.replaceChildren();
 		this.boardFileProgress.style.display = "block";
@@ -258,6 +300,7 @@ export class Settings extends Dialog {
 			completed += 1;
 			this.boardFileProgress.value = completed;
 			this.#appendLogLine(
+				this.boardFileLog,
 				result.ok
 					? `${result.group}/${result.file} (${result.bytes} B, ${result.ms.toFixed(0)} ms)`
 					: `${result.group}/${result.file} — ${result.error}`,
@@ -278,6 +321,7 @@ export class Settings extends Dialog {
 			if (summary.restartRequired) {
 				this.restartBoardButton.style.display = "inline-block";
 				this.#appendLogLine(
+					this.boardFileLog,
 					"0:/sys changed — restart the board so config.g is re-read.",
 					true,
 				);
@@ -292,6 +336,93 @@ export class Settings extends Dialog {
 			this.installBoardFilesButton.disabled = false;
 		} finally {
 			this.boardFileProgress.style.display = "none";
+			this.flashScreenFirmwareButton.disabled = false;
+		}
+	}
+
+	#reportFlashOutcome(flash: FlashOutcome | null) {
+		if (!flash) {
+			this.#setScreenFirmwareStatus(
+				"Firmware upload failed — the screen was not flashed. See the log above.",
+				true,
+			);
+			return;
+		}
+
+		if (!flash.ok) {
+			this.#appendLogLine(
+				this.screenFirmwareLog,
+				`M997 S4 ${flash.binary} — ${flash.error}`,
+				false,
+			);
+			this.#setScreenFirmwareStatus(
+				`Flash failed: ${flash.error}. The recorded version is unchanged, so you can try again.`,
+				true,
+			);
+			return;
+		}
+
+		this.#appendLogLine(
+			this.screenFirmwareLog,
+			`M997 S4 ${flash.binary} — ${flash.reply || "accepted, no reply"}`,
+			true,
+		);
+		this.#setScreenFirmwareStatus(
+			"Flash sent. The screen reflashes and restarts on its own — leave the printer powered on until it comes back.",
+		);
+	}
+
+	/**
+	 * Uploads the bundled PanelDue binary and flashes it with M997 S4. Runs
+	 * whatever the recorded version says, so a failed flash can be retried.
+	 */
+	async performScreenFirmwareFlash() {
+		const screen = this.#groupStatuses.find(
+			(status) => status.group === "screen",
+		);
+
+		if (!screen) return;
+
+		if (
+			!confirm(
+				`Flash PanelDue firmware v${screen.bundledVersion} to the screen?\n\nThe screen goes blank for up to a minute. Do not power off the printer until it comes back.`,
+			)
+		) {
+			return;
+		}
+
+		this.flashScreenFirmwareButton.disabled = true;
+		this.installBoardFilesButton.disabled = true;
+		this.screenFirmwareLog.replaceChildren();
+		this.#setScreenFirmwareStatus("Uploading firmware to 0:/firmware...");
+
+		const onProgress = (result: FileResult) => {
+			this.#appendLogLine(
+				this.screenFirmwareLog,
+				result.ok
+					? `${result.file} (${result.bytes} B, ${result.ms.toFixed(0)} ms)`
+					: `${result.file} — ${result.error}`,
+				result.ok,
+			);
+
+			if (result.ok && result.file.endsWith(".bin")) {
+				this.#setScreenFirmwareStatus("Flashing the screen (M997 S4)...");
+			}
+		};
+
+		try {
+			const summary = await installBoardFiles(["screen"], onProgress);
+			// Refresh first: re-reading the board rewrites the firmware status
+			// line, so the outcome has to be written after it.
+			await this.checkBoardFileStatus();
+			this.#reportFlashOutcome(summary.screenFlash);
+		} catch (error) {
+			this.#setScreenFirmwareStatus(
+				`Flash failed: ${error instanceof Error ? error.message : String(error)}`,
+				true,
+			);
+		} finally {
+			this.flashScreenFirmwareButton.disabled = false;
 		}
 	}
 
@@ -367,14 +498,13 @@ export class Settings extends Dialog {
 		this.boardFileStatus.className = "";
 		this.boardFileProgress.style.display = "none";
 		this.boardFileLog.replaceChildren();
-		this.screenFirmwareRow.style.display = "none";
+		this.screenFirmwareContainer.style.display = "none";
+		this.flashScreenFirmwareButton.disabled = false;
+		this.screenFirmwareLog.replaceChildren();
+		this.#setScreenFirmwareStatus("");
 		this.#setExtrusionTestStatus("");
 
-		for (const group of [
-			"system",
-			"provel",
-			"screen",
-		] as BoardFileGroupName[]) {
+		for (const group of [...MACRO_GROUPS, "screen" as const]) {
 			const span = this.#statusSpanFor(group);
 			if (span) span.textContent = "Checking...";
 		}
@@ -399,6 +529,9 @@ export class Settings extends Dialog {
 		});
 		this.installBoardFilesButton.addEventListener("click", () =>
 			this.performBoardFileInstall(),
+		);
+		this.flashScreenFirmwareButton.addEventListener("click", () =>
+			this.performScreenFirmwareFlash(),
 		);
 		this.restartBoardButton.addEventListener("click", () =>
 			this.performBoardRestart(),
