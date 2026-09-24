@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import { resolve } from "node:path";
 import { defineConfig } from 'vite'
 import { boardFilesAssetUrls, boardFilesPlugin } from "./vite-board-files-plugin.ts";
@@ -34,21 +33,6 @@ export default defineConfig({
 				safari: 14,
 				edge: 100,
 			},
-		},
-	},
-	test: {
-		globals: true,
-		environment: "jsdom",
-		include: ["**/*.{test,spec}.{js,ts}"],
-		server: {
-			deps: {
-				inline: ["three"],
-			},
-		},
-		coverage: {
-			provider: "v8",
-			reporter: ["text", "html"],
-			exclude: ["node_modules/"],
 		},
 	},
 	server: {
