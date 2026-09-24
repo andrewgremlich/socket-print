@@ -1,5 +1,5 @@
 import type { BufferGeometry, Mesh } from "three";
-import { STLExporter } from "three/addons/exporters/STLExporter.js";
+import { STLExporter } from "three/examples/jsm/Addons.js";
 import { STLLoader as ThreeSTLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import { setFileByName } from "@/db/file";
 import type { PrintObjectType } from "@/db/types";

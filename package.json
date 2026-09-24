@@ -63,7 +63,7 @@
     "hotkeys-js": "^4.0.8",
     "lucide": "1.47.0",
     "mathjs": "^15.2.0",
-    "three": "^0.186.0",
+    "three": "0.185.0",
     "three-mesh-bvh": "^0.9.15",
     "validator": "^13.15.35"
   },

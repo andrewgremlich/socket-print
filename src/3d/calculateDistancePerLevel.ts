@@ -32,5 +32,5 @@ export const calculateFeedratePerLevel = async (points: Vector3[][]) => {
 	const distances = await calculateDistancePerLevel(points);
 	const timePerLayer = await getSecondsPerLayer();
 
-	return distances.map((distance) => round((distance * 60) / timePerLayer));
+	return distances.map((distance) => round((distance * 60) / timePerLayer)); // mm/min
 };

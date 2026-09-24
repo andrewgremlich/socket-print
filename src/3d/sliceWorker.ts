@@ -9,7 +9,7 @@ import {
 	Raycaster,
 	Vector3,
 } from "three";
-import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import {
 	acceleratedRaycast,
 	computeBoundsTree,

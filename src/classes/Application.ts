@@ -11,10 +11,12 @@ import {
 	Vector3,
 	WebGLRenderer,
 } from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { TransformControls } from "three/addons/controls/TransformControls.js";
-import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
-import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import {
+	FontLoader,
+	OrbitControls,
+	TextGeometry,
+	TransformControls,
+} from "three/examples/jsm/Addons.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { threeDViewer } from "@/utils/htmlElements";
 import type { TransformControlsOptions } from "./types";

@@ -25,9 +25,6 @@ export default defineConfig({
 		},
 		tsconfigPaths: true
 	},
-	optimizeDeps: {
-		include: ["three", "three/addons/utils/BufferGeometryUtils.js", "three/addons/exporters/STLExporter.js"],
-	},
 	css: {
 		transformer: "lightningcss",
 		lightningcss: {
