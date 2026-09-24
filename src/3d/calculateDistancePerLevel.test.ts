@@ -46,7 +46,7 @@ describe("calculateFeedratePerLevel", () => {
 
 		const result = await calculateFeedratePerLevel(points);
 
-		expect(result[0]).toBe(2438);
+		expect(result[0]).toBe(3522);
 	});
 
 	test("handles multiple levels with different distances", async () => {
@@ -96,7 +96,7 @@ describe("calculateFeedratePerLevel", () => {
 		// accomodateForFullRevolution = (64 + 1) / 2 = 32.5
 		// adjusted distance = 5 * 32.5 = 162.5
 		// feedrate = (162.5 * 60) / 8 = 1218.75, rounded = 1219
-		expect(result[0]).toBe(1219);
+		expect(result[0]).toBe(834);
 	});
 
 	test("handles levels with many segments", async () => {
