@@ -1,8 +1,8 @@
 /// <reference types="vitest/config" />
 import { resolve } from "node:path";
 import { defineConfig } from 'vite'
-import { boardFilesAssetUrls, boardFilesPlugin } from "./vite-board-files-plugin";
-import { serviceWorkerPlugin } from "./vite-sw-plugin";
+import { boardFilesAssetUrls, boardFilesPlugin } from "./vite-board-files-plugin.ts";
+import { serviceWorkerPlugin } from "./vite-sw-plugin.ts";
 
 import { cloudflare } from "@cloudflare/vite-plugin";
 
@@ -21,12 +21,12 @@ export default defineConfig({
 	resolve: {
 		dedupe: ["three"],
 		alias: {
-			three: resolve(__dirname, "node_modules/three"),
+			three: resolve(import.meta.dirname, "node_modules/three"),
 		},
 		tsconfigPaths: true
 	},
 	optimizeDeps: {
-		include: ["three", "three/examples/jsm/Addons.js"],
+		include: ["three", "three/addons/utils/BufferGeometryUtils.js", "three/addons/exporters/STLExporter.js"],
 	},
 	css: {
 		transformer: "lightningcss",

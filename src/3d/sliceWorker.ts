@@ -9,7 +9,7 @@ import {
 	Raycaster,
 	Vector3,
 } from "three";
-import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import {
 	acceleratedRaycast,
 	computeBoundsTree,
@@ -136,7 +136,7 @@ self.onmessage = async (
 	ensureUV(rawgeometry);
 
 	const mesh = new Mesh(
-		BufferGeometryUtils.mergeVertices(rawgeometry, 1e-5),
+		mergeVertices(rawgeometry, 1e-5),
 		new MeshStandardMaterial({
 			color: 0x00ff00,
 			side: DoubleSide,
