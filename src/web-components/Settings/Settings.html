@@ -1,80 +1,223 @@
 <dialog id="settingsDialog" aria-labelledby="settingsTitle">
-	<h3 id="settingsTitle">Settings</h3>
+    <div id="settingsDialogWrapper">
+        <h2 id="settingsTitle">Settings</h2>
 
-	<h4>Printer</h4>
-	<p>Connected: <span id="printerStatus">Unknown</span></p>
+        <section>
+            <h3>Printer</h3>
+            <p>Connected: <span id="printerStatus">Unknown</span></p>
 
-	<p class="board-file-row">System files (<code>0:/sys</code>): <span id="systemFileStatus">Checking...</span></p>
-	<p class="board-file-row">Provel macros (<code>0:/sys/provel</code>): <span id="provelFileStatus">Checking...</span></p>
+            <p class="board-file-row">
+                System files (<code>0:/sys</code>):
+                <span id="systemFileStatus">Checking...</span>
+            </p>
+            <p class="board-file-row">
+                Provel macros (<code>0:/sys/provel</code>):
+                <span id="provelFileStatus">Checking...</span>
+            </p>
+        </section>
 
-	<div id="boardFileContainer">
-		<input type="button" class="button" id="installBoardFilesButton" value="Install Board Files" disabled />
-		<input type="button" class="button" id="restartBoardButton" value="Restart Board (M999)" style="display: none;" />
-		<p id="boardFileStatus"></p>
-		<progress id="boardFileProgress" value="0" max="100" style="display: none;"></progress>
-		<ol id="boardFileLog"></ol>
-	</div>
+        <section id="boardFileContainer">
+            <input
+                type="button"
+                class="button"
+                id="installBoardFilesButton"
+                value="Install Board Files"
+                disabled
+            />
+            <input
+                type="button"
+                class="button"
+                id="restartBoardButton"
+                value="Restart Board (M999)"
+                style="display: none"
+            />
+            <p id="boardFileStatus"></p>
+            <progress
+                id="boardFileProgress"
+                value="0"
+                max="100"
+                style="display: none"
+            ></progress>
+            <ol id="boardFileLog"></ol>
+        </section>
 
-	<div id="screenFirmwareContainer">
-		<h4>Screen Firmware</h4>
-		<p class="board-file-row">PanelDue (<code>0:/firmware</code>): <span id="screenFileStatus">Checking...</span></p>
-		<input type="button" class="button" id="flashScreenFirmwareButton" value="Flash Screen Firmware"
-			aria-describedby="screenFirmwareStatus" />
-		<p id="screenFirmwareStatus"></p>
-		<ol id="screenFirmwareLog"></ol>
-	</div>
+        <section id="screenFirmwareContainer">
+            <h3>Screen Firmware</h3>
+            <p class="board-file-row">
+                PanelDue (<code>0:/firmware</code>):
+                <span id="screenFileStatus">Checking...</span>
+            </p>
+            <input
+                type="button"
+                class="button"
+                id="flashScreenFirmwareButton"
+                value="Flash Screen Firmware"
+                aria-describedby="screenFirmwareStatus"
+            />
+            <p id="screenFirmwareStatus"></p>
+            <ol id="screenFirmwareLog"></ol>
+        </section>
 
-	<h4>Appearance</h4>
-	<div id="themeContainer">
-		<label for="themeSelect">Theme</label>
-		<select id="themeSelect" name="theme">
-			<option value="dark">Dark</option>
-			<option value="light">Light</option>
-			<option value="system">System</option>
-		</select>
-	</div>
+        <section id="themeContainer">
+            <h3>Appearance</h3>
+            <div id="themeSelectWrapper">
+                <label for="themeSelect">Theme</label>
+                <select id="themeSelect" name="theme">
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
+                    <option value="system">System</option>
+                </select>
+            </div>
+        </section>
 
-	<h4>GCode Generation Factors</h4>
+        <h3>GCode Generation Factors</h3>
 
-	<form id="settingsForm" method="dialog">
-		<label for="startingCupLayerHeight">Starting Cup Layer Height</label>
-		<input type="number" id="startingCupLayerHeight" name="startingCupLayerHeight" step="0.1" min="1" max="4" />
+        <form id="settingsForm" method="dialog">
+            <label for="startingCupLayerHeight"
+                >Starting Cup Layer Height</label
+            >
+            <input
+                type="number"
+                id="startingCupLayerHeight"
+                name="startingCupLayerHeight"
+                step="0.1"
+                min="1"
+                max="4"
+            />
 
-		<label for="lineWidthAdjustment">Layer width adjustment</label>
-		<input type="number" id="lineWidthAdjustment" name="lineWidthAdjustment" step="0.1" min="1" max="2" />
+            <label for="lineWidthAdjustment">Layer width adjustment</label>
+            <input
+                type="number"
+                id="lineWidthAdjustment"
+                name="lineWidthAdjustment"
+                step="0.1"
+                min="1"
+                max="2"
+            />
 
-		<label for="circularResolution">Circular Resolution</label>
-		<input type="number" id="circularResolution" name="circularResolution" step="1" min="100" max="300" />
+            <label for="circularResolution">Circular Resolution</label>
+            <input
+                type="number"
+                id="circularResolution"
+                name="circularResolution"
+                step="1"
+                min="100"
+                max="300"
+            />
 
-		<label for="ePerRevolution">E Per Revolution</label>
-		<input type="number" id="ePerRevolution" name="ePerRevolution" step="0.1" min="10" max="50" />
+            <label for="ePerRevolution">E Per Revolution</label>
+            <input
+                type="number"
+                id="ePerRevolution"
+                name="ePerRevolution"
+                step="0.1"
+                min="10"
+                max="50"
+            />
 
-		<label for="secondsPerLayer">Seconds Per Layer</label>
-		<input type="number" id="secondsPerLayer" name="secondsPerLayer" step="1" min="6" max="16" />
+            <h4 id="f-value-title">F Value</h4>
 
-		<input type="submit" value="Save" class="button" id="saveSettings" />
-	</form>
+            <label for="useSecondsPerLayer">Use Seconds Per Layer</label>
+            <input
+                id="useSecondsPerLayer"
+                type="checkbox"
+                name="useSecondsPerLayer"
+            />
 
-	<h4>Test Cylinder Dimensions</h4>
-	<form id="testCylinderSettings">
-		<label for="testCylinderHeight">Test Cylinder Height</label>
-		<input type="number" id="testCylinderHeight" name="testCylinderHeight" step="1" min="10" max="100" />
+            <label for="secondsPerLayer">Seconds Per Layer</label>
+            <input
+                type="number"
+                id="secondsPerLayer"
+                name="secondsPerLayer"
+                step="1"
+                min="6"
+                max="16"
+            />
 
-		<label for="testCylinderInnerDiameter">Test Cylinder Inner Diameter</label>
-		<input type="number" id="testCylinderInnerDiameter" name="testCylinderInnerDiameter" step="1" min="70" max="80" />
+            <label for="constantSpeed">Constant Speed (F Value)</label>
+            <input
+                type="number"
+                id="constantSpeed"
+                name="constantSpeed"
+                value="1200"
+                min="1200"
+                max="2200"
+            />
 
-		<input type="submit" value="Update Test Cylinder" class="button" id="updateTestCylinder" />
-	</form>
+            <input
+                type="submit"
+                value="Save"
+                class="button"
+                id="saveSettings"
+            />
+        </form>
 
-	<div id="resetAppContainer">
-		<h4>Application Help</h4>
-		<input type="button" class="button" id="downloadLogs" value="Download Logs" />
-		<input type="button" class="button" id="resetApp" value="Reset Application" aria-describedby="resetWarning" />
-		<input type="button" class="button" id="extrusionTestGcode" value="Extrusion test gcode" aria-describedby="extrusionTestStatus" />
-		<p id="extrusionTestStatus"></p>
-	</div>
+        <h3>Test Cylinder Dimensions</h3>
+        <form id="testCylinderSettings">
+            <label for="testCylinderHeight">Test Cylinder Height</label>
+            <input
+                type="number"
+                id="testCylinderHeight"
+                name="testCylinderHeight"
+                step="1"
+                min="10"
+                max="100"
+            />
 
-	<div id="closeContainer" style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
-		<input type="button" class="button" id="closeSettings" value="Close" />
-	</div>
+            <label for="testCylinderInnerDiameter"
+                >Test Cylinder Inner Diameter</label
+            >
+            <input
+                type="number"
+                id="testCylinderInnerDiameter"
+                name="testCylinderInnerDiameter"
+                step="1"
+                min="70"
+                max="80"
+            />
+
+            <input
+                type="submit"
+                value="Update Test Cylinder"
+                class="button"
+                id="updateTestCylinder"
+            />
+        </form>
+
+        <section id="resetAppContainer">
+            <h3>Application Help</h3>
+            <input
+                type="button"
+                class="button"
+                id="downloadLogs"
+                value="Download Logs"
+            />
+            <label for="resetApp"
+                >This will reset all data in the app.
+                <input
+                    type="button"
+                    class="button"
+                    id="resetApp"
+                    value="Reset Application"
+                />
+            </label>
+            <input
+                type="button"
+                class="button"
+                id="extrusionTestGcode"
+                value="Extrusion test gcode"
+                aria-describedby="extrusionTestStatus"
+            />
+            <p id="extrusionTestStatus"></p>
+        </section>
+
+        <section id="closeContainer">
+            <input
+                type="button"
+                class="button"
+                id="closeSettings"
+                value="Close"
+            />
+        </section>
+    </div>
 </dialog>
