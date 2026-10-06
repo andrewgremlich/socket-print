@@ -1,66 +1,66 @@
 dialog h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
 }
 
 dialog h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.75rem;
+	font-size: 1.2rem;
+	margin-bottom: 0.75rem;
 }
 
 section {
-    margin-bottom: 1.5rem;
+	margin-bottom: 1.5rem;
 }
 
 .board-file-row code {
-    font-size: 0.85em;
+	font-size: 0.85em;
 }
 
 #boardFileProgress {
-    width: 100%;
-    margin-top: 0.25rem;
+	width: 100%;
+	margin-top: 0.25rem;
 }
 
 #closeContainer {
-    display: flex;
-    justify-content: flex-end;
+	display: flex;
+	justify-content: flex-end;
 }
 
 #boardFileLog,
 #screenFirmwareLog {
-    margin: 0.5rem 0 0;
-    padding: 0;
-    list-style: none;
-    max-height: 12rem;
-    overflow-y: auto;
-    font-family: monospace;
-    font-size: 0.75rem;
-    line-height: 1.5;
+	margin: 0.5rem 0 0;
+	padding: 0;
+	list-style: none;
+	max-height: 12rem;
+	overflow-y: auto;
+	font-family: monospace;
+	font-size: 0.75rem;
+	line-height: 1.5;
 }
 
 #boardFileLog:empty,
 #screenFirmwareLog:empty {
-    display: none;
+	display: none;
 }
 
 #fValueTitle {
-    grid-column: 1/-1;
-    color: white;
-    font-size: 18px;
+	grid-column: 1 / -1;
+	color: white;
+	font-size: 18px;
 }
 
 .board-file-ok::before {
-    content: "✓ ";
+	content: "✓ ";
 }
 
 .board-file-fail {
-    color: var(--text-error);
+	color: var(--text-error);
 }
 
 .board-file-fail::before {
-    content: "✗ ";
+	content: "✗ ";
 }
 
 .firmware-error {
-    color: var(--text-error);
+	color: var(--text-error);
 }
