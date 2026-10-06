@@ -55,6 +55,7 @@ const defaultSettingNames: ProvelPrintSettings = {
 	testCylinderInnerDiameter: 70,
 	secondsPerLayer: 12,
 	useSecondsPerLayer: true,
+	constantSpeed: 1200,
 	ePerRevolution: 31.3,
 };
 

@@ -1,9 +1,9 @@
-dialog h3 {
+dialog h2 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 
-dialog h4 {
+dialog h3 {
     font-size: 1.2rem;
     margin-bottom: 0.75rem;
 }
@@ -12,52 +12,8 @@ section {
     margin-bottom: 1.5rem;
 }
 
-#resetAppContainer {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-
-    & h4 {
-        margin-bottom: 0.5rem;
-    }
-}
-
-#resetWarning {
-    color: var(--text-error);
-}
-
-#themeContainer label {
-    margin-bottom: 0;
-}
-
-#boardFileContainer {
-    margin-top: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-#screenFirmwareContainer {
-    margin-bottom: 1.5rem;
-}
-
-#screenFirmwareContainer h4 {
-    margin-bottom: 0;
-}
-
-#boardFileContainer input[type="button"]:disabled,
-#screenFirmwareContainer input[type="button"]:disabled,
-#resetAppContainer input[type="button"]:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .board-file-row code {
     font-size: 0.85em;
-}
-
-#boardFileStatus,
-#screenFirmwareStatus,
-#extrusionTestStatus {
-    margin-top: 0.25rem;
-    font-size: 0.85rem;
 }
 
 #boardFileProgress {
@@ -66,7 +22,6 @@ section {
 }
 
 #closeContainer {
-    margin-top: 1.5rem;
     display: flex;
     justify-content: flex-end;
 }
@@ -88,7 +43,7 @@ section {
     display: none;
 }
 
-#f-value-title {
+#fValueTitle {
     grid-column: 1/-1;
     color: white;
     font-size: 18px;

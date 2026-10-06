@@ -115,7 +115,7 @@
                 max="50"
             />
 
-            <h4 id="f-value-title">F Value</h4>
+            <h4 id="fValueTitle">F Value</h4>
 
             <label for="useSecondsPerLayer">Use Seconds Per Layer</label>
             <input
@@ -142,6 +142,7 @@
                 value="1200"
                 min="1200"
                 max="2200"
+                step="10"
             />
 
             <input
@@ -192,21 +193,17 @@
                 id="downloadLogs"
                 value="Download Logs"
             />
-            <label for="resetApp"
-                >This will reset all data in the app.
-                <input
-                    type="button"
-                    class="button"
-                    id="resetApp"
-                    value="Reset Application"
-                />
-            </label>
+						<input
+								type="button"
+								class="button"
+								id="resetApp"
+								value="Reset Application"
+						/>
             <input
                 type="button"
                 class="button"
                 id="extrusionTestGcode"
                 value="Extrusion test gcode"
-                aria-describedby="extrusionTestStatus"
             />
             <p id="extrusionTestStatus"></p>
         </section>

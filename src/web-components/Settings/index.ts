@@ -12,19 +12,23 @@ import type {
 import { sendGCodeFile } from "@/3d/printerApi";
 import {
 	getCircularSegments,
+	getConstantSpeed,
 	getEPerRevolution,
 	getLineWidthAdjustment,
 	getSecondsPerLayer,
 	getStartingCupLayerHeight,
 	getTestCylinderHeight,
 	getTestCylinderInnerDiameter,
+	getUseSecondsPerLayer,
 	setCircularSegments,
+	setConstantSpeed,
 	setEPerRevolution,
 	setLineWidthAdjustment,
 	setSecondsPerLayer,
 	setStartingCupLayerHeight,
 	setTestCylinderHeight,
 	setTestCylinderInnerDiameter,
+	setUseSecondsPerLayer,
 } from "@/db/appSettingsDbActions";
 import { deleteDb } from "@/db/db";
 import { getIpAddress } from "@/db/formValuesDbActions";
@@ -78,6 +82,7 @@ export class Settings extends Dialog {
 	boardFileLog: HTMLOListElement;
 	extrusionTestGcodeButton: HTMLButtonElement;
 	extrusionTestStatus: HTMLParagraphElement;
+	useSecondsPerLayer: HTMLInputElement;
 	#groupStatuses: GroupStatus[] = [];
 
 	constructor() {
@@ -139,6 +144,9 @@ export class Settings extends Dialog {
 		this.extrusionTestStatus = this.shadowRoot.getElementById(
 			"extrusionTestStatus",
 		) as HTMLParagraphElement;
+		this.useSecondsPerLayer = this.shadowRoot.getElementById(
+			"useSecondsPerLayer",
+		) as HTMLInputElement;
 
 		this.dialogEvents();
 	}
@@ -520,6 +528,10 @@ export class Settings extends Dialog {
 			this.saveTestCylinderSettings(evt),
 		);
 
+		this.useSecondsPerLayer.addEventListener("change", (evt) => {
+			const value = (evt.currentTarget as HTMLInputElement).checked;
+			setUseSecondsPerLayer(value);
+		});
 		this.closeButton.addEventListener("click", () => this.hide());
 		this.dialog.addEventListener("close", () => this.hide());
 		this.resetButton.addEventListener("click", () => this.resetApplication());
@@ -559,34 +571,26 @@ export class Settings extends Dialog {
 		const startingCupLayerHeightVal = Number(
 			settingsForm.get("startingCupLayerHeight"),
 		);
-		if (!Number.isNaN(startingCupLayerHeightVal)) {
-			tasks.push(setStartingCupLayerHeight(startingCupLayerHeightVal));
-		}
+		tasks.push(setStartingCupLayerHeight(startingCupLayerHeightVal));
 
 		const lineWidthAdjustmentVal = Number(
 			settingsForm.get("lineWidthAdjustment"),
 		);
-		if (!Number.isNaN(lineWidthAdjustmentVal)) {
-			tasks.push(setLineWidthAdjustment(lineWidthAdjustmentVal));
-		}
+		tasks.push(setLineWidthAdjustment(lineWidthAdjustmentVal));
 
 		const circularSegmentsVal = Number(settingsForm.get("circularResolution"));
-		if (!Number.isNaN(circularSegmentsVal)) {
-			tasks.push(setCircularSegments(circularSegmentsVal));
-		}
+		tasks.push(setCircularSegments(circularSegmentsVal));
 
-		const secondsPerLayerRaw = settingsForm.get("secondsPerLayer");
-		if (secondsPerLayerRaw !== null && secondsPerLayerRaw !== "") {
-			const secondsPerLayerVal = Number(secondsPerLayerRaw);
-			if (!Number.isNaN(secondsPerLayerVal) && secondsPerLayerVal > 0) {
-				tasks.push(setSecondsPerLayer(secondsPerLayerVal));
-			}
-		}
+		const constantSpeed = Number(settingsForm.get("constantSpeed"));
+		const secondsPerLayerVal = Number(settingsForm.get("secondsPerLayer"));
+
+		tasks.push(setSecondsPerLayer(secondsPerLayerVal));
+		tasks.push(setConstantSpeed(constantSpeed));
 
 		const ePerRevolutionVal = Number(settingsForm.get("ePerRevolution"));
-		if (!Number.isNaN(ePerRevolutionVal)) {
-			tasks.push(setEPerRevolution(ePerRevolutionVal));
-		}
+		tasks.push(setEPerRevolution(ePerRevolutionVal));
+
+		console.log({ tasks });
 
 		if (tasks.length) {
 			await Promise.all(tasks);
@@ -614,6 +618,8 @@ export class Settings extends Dialog {
 			testCylinderInnerDiameter,
 			secondsPerLayer,
 			ePerRevolution,
+			useSecondsPerLayer,
+			constantSpeed,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
 			getLineWidthAdjustment(),
@@ -622,6 +628,8 @@ export class Settings extends Dialog {
 			getTestCylinderInnerDiameter(),
 			getSecondsPerLayer(),
 			getEPerRevolution(),
+			getUseSecondsPerLayer(),
+			getConstantSpeed(),
 		]);
 
 		const mainSettingMap: Record<string, number | boolean> = {
@@ -632,12 +640,16 @@ export class Settings extends Dialog {
 			ePerRevolution,
 			testCylinderHeight,
 			testCylinderInnerDiameter,
+			constantSpeed,
+			useSecondsPerLayer,
 		};
 
 		Object.entries(mainSettingMap).forEach(([key, value]) => {
 			const input = this.shadowRoot.querySelector(
 				`#${key}`,
 			) as HTMLInputElement;
+
+			console.log(key, value, input);
 
 			if (input && input.type === "checkbox") {
 				input.checked = Boolean(value);

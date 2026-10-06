@@ -184,6 +184,22 @@ export const setUseSecondsPerLayer = async (useSecondsPerLayer: boolean) => {
 		.modify({ value: useSecondsPerLayer });
 };
 
+export const setConstantSpeed = async (constantSpeed: number) => {
+	return await db.appSettings
+		.where("name")
+		.equals("constantSpeed")
+		.modify({ value: constantSpeed });
+};
+
+export const getConstantSpeed = async () => {
+	const constantSpeed = await db.appSettings
+		.where("name")
+		.equals("constantSpeed")
+		.first();
+
+	return Number(constantSpeed.value);
+};
+
 export const getEPerRevolution = async (): Promise<number> => {
 	const ePerRevolution = await db.appSettings
 		.where("name")
