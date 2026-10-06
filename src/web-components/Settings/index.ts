@@ -590,8 +590,6 @@ export class Settings extends Dialog {
 		const ePerRevolutionVal = Number(settingsForm.get("ePerRevolution"));
 		tasks.push(setEPerRevolution(ePerRevolutionVal));
 
-		console.log({ tasks });
-
 		if (tasks.length) {
 			await Promise.all(tasks);
 		}
@@ -648,8 +646,6 @@ export class Settings extends Dialog {
 			const input = this.shadowRoot.querySelector(
 				`#${key}`,
 			) as HTMLInputElement;
-
-			console.log(key, value, input);
 
 			if (input && input.type === "checkbox") {
 				input.checked = Boolean(value);

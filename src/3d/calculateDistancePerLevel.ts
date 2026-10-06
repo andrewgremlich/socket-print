@@ -2,7 +2,9 @@ import { round } from "mathjs";
 import type { Vector3 } from "three";
 import {
 	getCircularSegments,
+	getConstantSpeed,
 	getSecondsPerLayer,
+	getUseSecondsPerLayer,
 } from "@/db/appSettingsDbActions";
 
 const calculateDistancePerLevel = async (
@@ -31,14 +33,15 @@ const calculateDistancePerLevel = async (
 export const calculateFeedratePerLevel = async (points: Vector3[][]) => {
 	const distances = await calculateDistancePerLevel(points);
 	const timePerLayer = await getSecondsPerLayer();
+	const useSecondsPerLayer = await getUseSecondsPerLayer();
+	const useConstantSpeed = await getConstantSpeed();
 
 	// distance in mm
 	// 8 seconds per layer (make programmable)
 	// formula conversion: feedrate = (mm distance / sec per layer) * 60 sec / 1 min
 	// gets standard mm/min feedrate
 
-	// biome-ignore lint/correctness/noConstantCondition: just a quick filler until I get a settings flag in.
-	return true
+	return useSecondsPerLayer
 		? distances.map((distance) => round((distance * 60) / timePerLayer))
-		: Array.from({ length: distances.length }, () => 2000);
+		: Array.from({ length: distances.length }, () => useConstantSpeed);
 };
