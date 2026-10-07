@@ -1,3 +1,7 @@
+dialog {
+	padding: 1rem;
+}
+
 .visually-hidden {
 	position: absolute;
 	width: 1px;
