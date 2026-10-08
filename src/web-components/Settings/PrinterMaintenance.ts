@@ -141,7 +141,7 @@ export class PrinterMaintenance {
 			// build omits the group entirely otherwise.
 			if (status.group === "screen") {
 				this.screenFirmwareContainer.style.display = "block";
-				this.flashScreenFirmwareButton.value = status.needsUpdate
+				this.flashScreenFirmwareButton.textContent = status.needsUpdate
 					? `Flash Screen Firmware (v${status.bundledVersion})`
 					: `Reflash Screen Firmware (v${status.bundledVersion})`;
 				this.#setScreenFirmwareStatus(
@@ -194,7 +194,7 @@ export class PrinterMaintenance {
 			);
 
 			this.installBoardFilesButton.disabled = outdated.length === 0;
-			this.installBoardFilesButton.value = neverInstalled
+			this.installBoardFilesButton.textContent = neverInstalled
 				? "Install Board Files"
 				: "Update Board Files";
 

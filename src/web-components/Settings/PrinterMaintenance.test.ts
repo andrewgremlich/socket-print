@@ -42,7 +42,7 @@ test("screen updates stay separate from macro installation", async () => {
 
 	expect(maintenance.installBoardFilesButton.disabled).toBe(true);
 	expect(maintenance.screenFirmwareContainer.style.display).toBe("block");
-	expect(maintenance.flashScreenFirmwareButton.value).toBe(
+	expect(maintenance.flashScreenFirmwareButton.textContent).toBe(
 		"Flash Screen Firmware (v2.0.0)",
 	);
 	await maintenance.performBoardFileInstall();

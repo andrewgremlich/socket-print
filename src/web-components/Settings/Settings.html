@@ -17,20 +17,22 @@
         </section>
 
         <section id="boardFileContainer">
-            <input
+            <button
                 type="button"
                 class="button"
                 id="installBoardFilesButton"
-                value="Install Board Files"
                 disabled
-            />
-            <input
+            >
+                Install Board Files
+            </button>
+            <button
                 type="button"
                 class="button"
                 id="restartBoardButton"
-                value="Restart Board (M999)"
                 style="display: none"
-            />
+            >
+                Restart Board (M999)
+            </button>
             <p id="boardFileStatus"></p>
             <progress
                 id="boardFileProgress"
@@ -47,13 +49,14 @@
                 PanelDue (<code>0:/firmware</code>):
                 <span id="screenFileStatus">Checking...</span>
             </p>
-            <input
+            <button
                 type="button"
                 class="button"
                 id="flashScreenFirmwareButton"
-                value="Flash Screen Firmware"
                 aria-describedby="screenFirmwareStatus"
-            />
+            >
+                Flash Screen Firmware
+            </button>
             <p id="screenFirmwareStatus"></p>
             <ol id="screenFirmwareLog"></ol>
         </section>
@@ -154,12 +157,13 @@
                 step="10"
             />
 
-            <input
+            <button
                 type="submit"
-                value="Save"
                 class="button"
                 id="saveSettings"
-            />
+            >
+                Save
+            </button>
         </form>
 
         <h3>Test Cylinder Dimensions</h3>
@@ -186,44 +190,49 @@
                 max="80"
             />
 
-            <input
+            <button
                 type="submit"
-                value="Update Test Cylinder"
                 class="button"
                 id="updateTestCylinder"
-            />
+            >
+                Update Test Cylinder
+            </button>
         </form>
 
         <section id="resetAppContainer">
             <h3>Application Help</h3>
-            <input
+            <button
                 type="button"
                 class="button"
                 id="downloadLogs"
-                value="Download Logs"
-            />
-						<input
-								type="button"
-								class="button"
-								id="resetApp"
-								value="Reset Application"
-						/>
-            <input
+            >
+                Download Logs
+            </button>
+            <button
+                type="button"
+                class="button"
+                id="resetApp"
+            >
+                Reset Application
+            </button>
+            <button
                 type="button"
                 class="button"
                 id="extrusionTestGcode"
-                value="Extrusion test gcode"
-            />
+            >
+                Extrusion test gcode
+            </button>
             <p id="extrusionTestStatus"></p>
         </section>
 
         <section id="closeContainer">
-            <input
+            <button
                 type="button"
                 class="button"
                 id="closeSettings"
-                value="Close"
-            />
+            >
+                Close
+            </button>
         </section>
     </div>
 </dialog>
