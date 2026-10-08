@@ -57,6 +57,9 @@ export type ProvelPrintSettings = {
 	ePerRevolution: number;
 	constantSpeed: number;
 	fanSpeed: number;
+	cupTransitionSpeed: number;
+	cupHeaterHoldTime: number;
+	cupHeaterTemperatureTolerance: number;
 };
 
 type KeyValueSetting = {

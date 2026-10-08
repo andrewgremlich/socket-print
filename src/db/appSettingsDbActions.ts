@@ -229,3 +229,50 @@ export const setFanSpeed = async (fanSpeed: number) => {
 		.equals("fanSpeed")
 		.modify({ value: fanSpeed });
 };
+
+export const getCupTransitionSpeed = async (): Promise<number> => {
+	const setting = await db.appSettings
+		.where("name")
+		.equals("cupTransitionSpeed")
+		.first();
+	return Number(setting.value);
+};
+
+export const setCupTransitionSpeed = async (cupTransitionSpeed: number) => {
+	return await db.appSettings
+		.where("name")
+		.equals("cupTransitionSpeed")
+		.modify({ value: cupTransitionSpeed });
+};
+
+export const getCupHeaterHoldTime = async (): Promise<number> => {
+	const setting = await db.appSettings
+		.where("name")
+		.equals("cupHeaterHoldTime")
+		.first();
+	return Number(setting.value);
+};
+
+export const setCupHeaterHoldTime = async (cupHeaterHoldTime: number) => {
+	return await db.appSettings
+		.where("name")
+		.equals("cupHeaterHoldTime")
+		.modify({ value: cupHeaterHoldTime });
+};
+
+export const getCupHeaterTemperatureTolerance = async (): Promise<number> => {
+	const setting = await db.appSettings
+		.where("name")
+		.equals("cupHeaterTemperatureTolerance")
+		.first();
+	return Number(setting.value);
+};
+
+export const setCupHeaterTemperatureTolerance = async (
+	cupHeaterTemperatureTolerance: number,
+) => {
+	return await db.appSettings
+		.where("name")
+		.equals("cupHeaterTemperatureTolerance")
+		.modify({ value: cupHeaterTemperatureTolerance });
+};

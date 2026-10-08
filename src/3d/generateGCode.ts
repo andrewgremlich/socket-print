@@ -4,6 +4,9 @@ import { Vector3 } from "three";
 
 import {
 	getCircularSegments,
+	getCupHeaterHoldTime,
+	getCupHeaterTemperatureTolerance,
+	getCupTransitionSpeed,
 	getEPerRevolution,
 	getFanSpeed,
 	getLineWidthAdjustment,
@@ -70,6 +73,8 @@ function generateGCodeHeader(params: {
 	};
 	appSettings: {
 		secondsPerLayer: number;
+		cupHeaterHoldTime: number;
+		cupHeaterTemperatureTolerance: number;
 		[key: string]: unknown;
 	};
 	startingHeight: number;
@@ -115,7 +120,12 @@ function generateGCodeHeader(params: {
 		`G1 Y0 Z${formValues.cupHeight + 8.5} F6000 ; Z down to cup height + 8.5, Y moves back to cup center`,
 		"G1 X-93 ; move in to register with cup heater for pickup",
 		"M116 P0 S2 ; wait for nozzle temperature +/-2C",
-		"M116 H2 S2 ; wait for cup temperature +/-2C",
+		`M116 H2 S${appSettings.cupHeaterTemperatureTolerance} ; wait for cup temperature +/-${appSettings.cupHeaterTemperatureTolerance}C`,
+		...(appSettings.cupHeaterHoldTime > 0
+			? [
+					`G4 S${appSettings.cupHeaterHoldTime} ; hold cup heater at temperature before removal`,
+				]
+			: []),
 		"",
 		";## Enclosure blower thermostatic control ##",
 		"M106 P0 S0 H3 L0.20 X0.60 T20:24",
@@ -172,6 +182,9 @@ export async function generateGCode(
 		ePerRevolution,
 		startingX,
 		fanSpeed,
+		cupTransitionSpeed,
+		cupHeaterHoldTime,
+		cupHeaterTemperatureTolerance,
 	] = await Promise.all([
 		getActiveMaterialProfileName(),
 		getActiveMaterialProfileOutputFactor(),
@@ -191,6 +204,9 @@ export async function generateGCode(
 		getEPerRevolution(),
 		getStartingX(),
 		getFanSpeed(),
+		getCupTransitionSpeed(),
+		getCupHeaterHoldTime(),
+		getCupHeaterTemperatureTolerance(),
 	]);
 
 	const materialProfile = {
@@ -213,6 +229,8 @@ export async function generateGCode(
 		secondsPerLayer,
 		lineWidthAdjustment,
 		ePerRevolution,
+		cupHeaterHoldTime,
+		cupHeaterTemperatureTolerance,
 	};
 	const startingHeight = cupHeight + nozzleSize;
 	const flipHeight = flipVerticalAxis(verticalAxis);
@@ -248,7 +266,7 @@ export async function generateGCode(
 		gramsPerRevolution,
 		density,
 		ePerRevolution,
-		feedrate: 2000,
+		feedrate: cupTransitionSpeed,
 	});
 
 	gcode.push(

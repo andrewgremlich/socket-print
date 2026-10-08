@@ -1,6 +1,9 @@
 import {
 	getCircularSegments,
 	getConstantSpeed,
+	getCupHeaterHoldTime,
+	getCupHeaterTemperatureTolerance,
+	getCupTransitionSpeed,
 	getEPerRevolution,
 	getFanSpeed,
 	getLineWidthAdjustment,
@@ -11,6 +14,9 @@ import {
 	getUseSecondsPerLayer,
 	setCircularSegments,
 	setConstantSpeed,
+	setCupHeaterHoldTime,
+	setCupHeaterTemperatureTolerance,
+	setCupTransitionSpeed,
 	setEPerRevolution,
 	setFanSpeed,
 	setLineWidthAdjustment,
@@ -75,6 +81,19 @@ export class SettingsForms {
 		const fanSpeed = Number(settingsForm.get("fanSpeed"));
 		tasks.push(setFanSpeed(fanSpeed));
 
+		tasks.push(
+			setCupTransitionSpeed(Number(settingsForm.get("cupTransitionSpeed"))),
+		);
+		tasks.push(
+			setCupHeaterHoldTime(Number(settingsForm.get("cupHeaterHoldTime"))),
+		);
+
+		tasks.push(
+			setCupHeaterTemperatureTolerance(
+				Number(settingsForm.get("cupHeaterTemperatureTolerance")),
+			),
+		);
+
 		if (tasks.length) {
 			await Promise.all(tasks);
 		}
@@ -104,6 +123,9 @@ export class SettingsForms {
 			useSecondsPerLayer,
 			constantSpeed,
 			fanSpeed,
+			cupTransitionSpeed,
+			cupHeaterHoldTime,
+			cupHeaterTemperatureTolerance,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
 			getLineWidthAdjustment(),
@@ -115,6 +137,9 @@ export class SettingsForms {
 			getUseSecondsPerLayer(),
 			getConstantSpeed(),
 			getFanSpeed(),
+			getCupTransitionSpeed(),
+			getCupHeaterHoldTime(),
+			getCupHeaterTemperatureTolerance(),
 		]);
 
 		const mainSettingMap: Record<string, number | boolean> = {
@@ -127,6 +152,9 @@ export class SettingsForms {
 			testCylinderInnerDiameter,
 			constantSpeed,
 			fanSpeed,
+			cupTransitionSpeed,
+			cupHeaterHoldTime,
+			cupHeaterTemperatureTolerance,
 			useSecondsPerLayer,
 		};
 

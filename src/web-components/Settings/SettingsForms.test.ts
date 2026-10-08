@@ -26,6 +26,9 @@ test("loads persisted settings into inputs, including the checkbox and fan speed
 	vi.mocked(settingsDb.getUseSecondsPerLayer).mockResolvedValue(true);
 	vi.mocked(settingsDb.getConstantSpeed).mockResolvedValue(1200);
 	vi.mocked(settingsDb.getFanSpeed).mockResolvedValue(65);
+	vi.mocked(settingsDb.getCupTransitionSpeed).mockResolvedValue(1000);
+	vi.mocked(settingsDb.getCupHeaterHoldTime).mockResolvedValue(30);
+	vi.mocked(settingsDb.getCupHeaterTemperatureTolerance).mockResolvedValue(2.5);
 
 	await forms.loadDataIntoForm();
 
@@ -34,15 +37,32 @@ test("loads persisted settings into inputs, including the checkbox and fan speed
 		root.querySelector<HTMLInputElement>("#circularResolution").value,
 	).toBe("128");
 	expect(forms.useSecondsPerLayer.checked).toBe(true);
+	expect(
+		root.querySelector<HTMLInputElement>("#cupHeaterTemperatureTolerance")
+			.value,
+	).toBe("2.5");
+	expect(
+		root.querySelector<HTMLInputElement>("#cupTransitionSpeed").value,
+	).toBe("1000");
+	expect(root.querySelector<HTMLInputElement>("#cupHeaterHoldTime").value).toBe(
+		"30",
+	);
 });
 
 test("form events save fan speed and checkbox changes", async () => {
 	root.querySelector<HTMLInputElement>("#fanSpeed").value = "75";
+	root.querySelector<HTMLInputElement>("#cupTransitionSpeed").value = "900";
+	root.querySelector<HTMLInputElement>("#cupHeaterHoldTime").value = "45";
+	root.querySelector<HTMLInputElement>("#cupHeaterTemperatureTolerance").value =
+		"1.5";
 	forms.form.dispatchEvent(new Event("submit", { cancelable: true }));
 	await vi.waitFor(() =>
 		expect(settingsDb.setFanSpeed).toHaveBeenCalledWith(75),
 	);
 
+	expect(settingsDb.setCupTransitionSpeed).toHaveBeenCalledWith(900);
+	expect(settingsDb.setCupHeaterHoldTime).toHaveBeenCalledWith(45);
+	expect(settingsDb.setCupHeaterTemperatureTolerance).toHaveBeenCalledWith(1.5);
 	forms.useSecondsPerLayer.checked = true;
 	forms.useSecondsPerLayer.dispatchEvent(new Event("change"));
 	expect(settingsDb.setUseSecondsPerLayer).toHaveBeenCalledWith(true);
