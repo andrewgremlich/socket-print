@@ -56,6 +56,7 @@ export type ProvelPrintSettings = {
 	useSecondsPerLayer: boolean;
 	ePerRevolution: number;
 	constantSpeed: number;
+	fanSpeed: number;
 };
 
 type KeyValueSetting = {

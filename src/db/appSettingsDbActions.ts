@@ -214,3 +214,18 @@ export const setEPerRevolution = async (ePerRevolution: number) => {
 		.equals("ePerRevolution")
 		.modify({ value: ePerRevolution });
 };
+
+export const getFanSpeed = async (): Promise<number> => {
+	const fanSpeed = await db.appSettings
+		.where("name")
+		.equals("fanSpeed")
+		.first();
+	return Number(fanSpeed.value);
+};
+
+export const setFanSpeed = async (fanSpeed: number) => {
+	return await db.appSettings
+		.where("name")
+		.equals("fanSpeed")
+		.modify({ value: fanSpeed });
+};

@@ -5,6 +5,7 @@ import { Vector3 } from "three";
 import {
 	getCircularSegments,
 	getEPerRevolution,
+	getFanSpeed,
 	getLineWidthAdjustment,
 	getSecondsPerLayer,
 	getTestCylinderInnerDiameter,
@@ -170,6 +171,7 @@ export async function generateGCode(
 		lineWidthAdjustment,
 		ePerRevolution,
 		startingX,
+		fanSpeed,
 	] = await Promise.all([
 		getActiveMaterialProfileName(),
 		getActiveMaterialProfileOutputFactor(),
@@ -188,6 +190,7 @@ export async function generateGCode(
 		getLineWidthAdjustment(),
 		getEPerRevolution(),
 		getStartingX(),
+		getFanSpeed(),
 	]);
 
 	const materialProfile = {
@@ -268,7 +271,7 @@ export async function generateGCode(
 		gcode.push(`;START NEW LEVEL ${i + 1}`);
 
 		if (i === 0) gcode.push("M106 P2 S0 ; set fan speed");
-		if (i === 1) gcode.push("M106 P2 S0.5 ; set fan speed");
+		if (i === 1) gcode.push(`M106 P2 S${fanSpeed / 100} ; set fan speed`);
 
 		for (let j = 0; j < pointLevel.length; j++) {
 			const point = pointLevel[j];

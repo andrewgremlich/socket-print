@@ -56,6 +56,7 @@ const defaultSettingNames: ProvelPrintSettings = {
 	secondsPerLayer: 12,
 	useSecondsPerLayer: true,
 	constantSpeed: 1200,
+	fanSpeed: 50,
 	ePerRevolution: 31.3,
 };
 

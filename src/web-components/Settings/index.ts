@@ -14,6 +14,7 @@ import {
 	getCircularSegments,
 	getConstantSpeed,
 	getEPerRevolution,
+	getFanSpeed,
 	getLineWidthAdjustment,
 	getSecondsPerLayer,
 	getStartingCupLayerHeight,
@@ -23,6 +24,7 @@ import {
 	setCircularSegments,
 	setConstantSpeed,
 	setEPerRevolution,
+	setFanSpeed,
 	setLineWidthAdjustment,
 	setSecondsPerLayer,
 	setStartingCupLayerHeight,
@@ -590,6 +592,9 @@ export class Settings extends Dialog {
 		const ePerRevolutionVal = Number(settingsForm.get("ePerRevolution"));
 		tasks.push(setEPerRevolution(ePerRevolutionVal));
 
+		const fanSpeed = Number(settingsForm.get("fanSpeed"));
+		tasks.push(setFanSpeed(fanSpeed));
+
 		if (tasks.length) {
 			await Promise.all(tasks);
 		}
@@ -618,6 +623,7 @@ export class Settings extends Dialog {
 			ePerRevolution,
 			useSecondsPerLayer,
 			constantSpeed,
+			fanSpeed,
 		] = await Promise.all([
 			getStartingCupLayerHeight(),
 			getLineWidthAdjustment(),
@@ -628,6 +634,7 @@ export class Settings extends Dialog {
 			getEPerRevolution(),
 			getUseSecondsPerLayer(),
 			getConstantSpeed(),
+			getFanSpeed(),
 		]);
 
 		const mainSettingMap: Record<string, number | boolean> = {
@@ -639,6 +646,7 @@ export class Settings extends Dialog {
 			testCylinderHeight,
 			testCylinderInnerDiameter,
 			constantSpeed,
+			fanSpeed,
 			useSecondsPerLayer,
 		};
 
