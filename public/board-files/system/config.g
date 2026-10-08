@@ -155,7 +155,7 @@ if !exists(global.manualPurgeTime)
 if !exists(global.purgeFeed)
   global purgeFeed = 3500 ; changed from 4000 to 3500 by KF 8.11.25 
 if !exists(global.primeFeed)
-  global primeFeed = 2350   ; 75 Screw RPM 10.25.25 KF
+  global primeFeed = 1175   ; halved from 2350 (75 Screw RPM); approximately 37.5 Screw RPM
 
 ;Heater feed forward(M309) variable
 M309 P0 S0.005 ; set feed forward
