@@ -112,6 +112,7 @@ function generateGCodeHeader(params: {
 		";## Set temperatures ##",
 		`M568 P0 S${materialProfile.nozzleTemp} ; set temperature for barrel`,
 		`M140 P1 S${materialProfile.cupTemp} ; set cup heater temperature`,
+		`M98 P"0:/sys/provel/coldSoak.g" ; soak the barrel after a cold start`,
 		"",
 		";## Home ##",
 		";G28",
