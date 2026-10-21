@@ -29,7 +29,8 @@ M118 P3 S{"priming for: "^global.remainingPrimeTime}
 ;M568 P0 S{global.manualPurgeTemp} ; set by the print file before primimg
 
 ;wait for temperature to be reached.
-while {!global.primeStop && heat.heaters[1].current < heat.heaters[1].active-20}
+;CHANGED 2026-10-16: wait until within 10C, was 20C
+while {!global.primeStop && heat.heaters[1].current < heat.heaters[1].active-10}
   ;M118 P3 S{"waiting for temperature, set temp: "^heat.heaters[1].active^", current temp: "^heat.heaters[1].current}
   G4 S0.5 ; wait 500ms
   M400
