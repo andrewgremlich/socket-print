@@ -4,8 +4,11 @@ import {
 	getCircularSegments,
 	getConstantSpeed,
 	getSecondsPerLayer,
+	getUseOutputCorrection,
 	getUseSecondsPerLayer,
 } from "@/db/appSettingsDbActions";
+
+import { correctFeedratesForOutput } from "@/utils/outputCorrection";
 
 const calculateDistancePerLevel = async (
 	points: Vector3[][],
@@ -35,6 +38,10 @@ export const calculateFeedratePerLevel = async (points: Vector3[][]) => {
 	const timePerLayer = await getSecondsPerLayer();
 	const useSecondsPerLayer = await getUseSecondsPerLayer();
 	const useConstantSpeed = await getConstantSpeed();
+	const useOutputCorrection = await getUseOutputCorrection();
+	const rawFeedrates = distances.map((distance) =>
+		round((distance * 60) / timePerLayer),
+	);
 
 	// distance in mm
 	// 8 seconds per layer (make programmable)
@@ -42,6 +49,8 @@ export const calculateFeedratePerLevel = async (points: Vector3[][]) => {
 	// gets standard mm/min feedrate
 
 	return useSecondsPerLayer
-		? distances.map((distance) => round((distance * 60) / timePerLayer))
+		? useOutputCorrection
+			? correctFeedratesForOutput(rawFeedrates)
+			: rawFeedrates
 		: Array.from({ length: distances.length }, () => useConstantSpeed);
 };

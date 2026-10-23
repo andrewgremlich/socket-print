@@ -276,3 +276,18 @@ export const setCupHeaterTemperatureTolerance = async (
 		.equals("cupHeaterTemperatureTolerance")
 		.modify({ value: cupHeaterTemperatureTolerance });
 };
+
+export const getUseOutputCorrection = async (): Promise<boolean> => {
+	const setting = await db.appSettings
+		.where("name")
+		.equals("useOutputCorrection")
+		.first();
+	return Boolean(setting?.value);
+};
+
+export const setUseOutputCorrection = async (useOutputCorrection: boolean) => {
+	return await db.appSettings
+		.where("name")
+		.equals("useOutputCorrection")
+		.modify({ value: useOutputCorrection });
+};

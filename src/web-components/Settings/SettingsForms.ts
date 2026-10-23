@@ -11,6 +11,7 @@ import {
 	getStartingCupLayerHeight,
 	getTestCylinderHeight,
 	getTestCylinderInnerDiameter,
+	getUseOutputCorrection,
 	getUseSecondsPerLayer,
 	setCircularSegments,
 	setConstantSpeed,
@@ -24,6 +25,7 @@ import {
 	setStartingCupLayerHeight,
 	setTestCylinderHeight,
 	setTestCylinderInnerDiameter,
+	setUseOutputCorrection,
 	setUseSecondsPerLayer,
 } from "@/db/appSettingsDbActions";
 
@@ -42,6 +44,11 @@ export class SettingsForms {
 		this.useSecondsPerLayer = this.shadowRoot.getElementById(
 			"useSecondsPerLayer",
 		) as HTMLInputElement;
+		this.shadowRoot
+			.getElementById("useOutputCorrection")
+			.addEventListener("change", (evt) => {
+				setUseOutputCorrection((evt.currentTarget as HTMLInputElement).checked);
+			});
 		this.form.addEventListener("submit", (evt) => this.saveSettings(evt));
 		this.testCylinderForm.addEventListener("submit", (evt) =>
 			this.saveTestCylinderSettings(evt),
@@ -121,6 +128,7 @@ export class SettingsForms {
 			secondsPerLayer,
 			ePerRevolution,
 			useSecondsPerLayer,
+			useOutputCorrection,
 			constantSpeed,
 			fanSpeed,
 			cupTransitionSpeed,
@@ -135,6 +143,7 @@ export class SettingsForms {
 			getSecondsPerLayer(),
 			getEPerRevolution(),
 			getUseSecondsPerLayer(),
+			getUseOutputCorrection(),
 			getConstantSpeed(),
 			getFanSpeed(),
 			getCupTransitionSpeed(),
@@ -156,6 +165,7 @@ export class SettingsForms {
 			cupHeaterHoldTime,
 			cupHeaterTemperatureTolerance,
 			useSecondsPerLayer,
+			useOutputCorrection,
 		};
 
 		Object.entries(mainSettingMap).forEach(([key, value]) => {

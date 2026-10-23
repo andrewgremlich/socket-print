@@ -54,6 +54,7 @@ export type ProvelPrintSettings = {
 	testCylinderInnerDiameter: number;
 	secondsPerLayer: number;
 	useSecondsPerLayer: boolean;
+	useOutputCorrection: boolean;
 	ePerRevolution: number;
 	constantSpeed: number;
 	fanSpeed: number;

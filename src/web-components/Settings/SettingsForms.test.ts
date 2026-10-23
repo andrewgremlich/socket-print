@@ -24,6 +24,7 @@ test("loads persisted settings into inputs, including the checkbox and fan speed
 	vi.mocked(settingsDb.getSecondsPerLayer).mockResolvedValue(12);
 	vi.mocked(settingsDb.getEPerRevolution).mockResolvedValue(31.3);
 	vi.mocked(settingsDb.getUseSecondsPerLayer).mockResolvedValue(true);
+	vi.mocked(settingsDb.getUseOutputCorrection).mockResolvedValue(true);
 	vi.mocked(settingsDb.getConstantSpeed).mockResolvedValue(1200);
 	vi.mocked(settingsDb.getFanSpeed).mockResolvedValue(65);
 	vi.mocked(settingsDb.getCupTransitionSpeed).mockResolvedValue(1000);
@@ -37,6 +38,9 @@ test("loads persisted settings into inputs, including the checkbox and fan speed
 		root.querySelector<HTMLInputElement>("#circularResolution").value,
 	).toBe("128");
 	expect(forms.useSecondsPerLayer.checked).toBe(true);
+	expect(
+		root.querySelector<HTMLInputElement>("#useOutputCorrection").checked,
+	).toBe(true);
 	expect(
 		root.querySelector<HTMLInputElement>("#cupHeaterTemperatureTolerance")
 			.value,
@@ -80,4 +84,14 @@ test("test cylinder submission saves dimensions and prevents closing the dialog"
 		expect(settingsDb.setTestCylinderHeight).toHaveBeenCalledWith(60);
 		expect(settingsDb.setTestCylinderInnerDiameter).toHaveBeenCalledWith(72);
 	});
+});
+
+test("output correction switch saves both enabled and disabled states", () => {
+	const input = root.querySelector<HTMLInputElement>("#useOutputCorrection");
+	expect(input.checked).toBe(false);
+	for (const checked of [true, false]) {
+		input.checked = checked;
+		input.dispatchEvent(new Event("change"));
+		expect(settingsDb.setUseOutputCorrection).toHaveBeenLastCalledWith(checked);
+	}
 });

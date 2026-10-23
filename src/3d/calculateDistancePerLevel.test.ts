@@ -1,5 +1,9 @@
 import { Vector3 } from "three";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	getUseOutputCorrection,
+	getUseSecondsPerLayer,
+} from "@/db/appSettingsDbActions";
 import { calculateFeedratePerLevel } from "./calculateDistancePerLevel";
 
 vi.mock("@/db/appSettingsDbActions", () => ({
@@ -7,11 +11,14 @@ vi.mock("@/db/appSettingsDbActions", () => ({
 	getSecondsPerLayer: vi.fn().mockResolvedValue(8),
 	getConstantSpeed: vi.fn().mockResolvedValue(1600),
 	getUseSecondsPerLayer: vi.fn().mockResolvedValue(true),
+	getUseOutputCorrection: vi.fn().mockResolvedValue(false),
 }));
 
 describe("calculateFeedratePerLevel", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		vi.mocked(getUseOutputCorrection).mockResolvedValue(false);
+		vi.mocked(getUseSecondsPerLayer).mockResolvedValue(true);
 	});
 
 	test("returns empty array for empty input", async () => {
@@ -129,4 +136,16 @@ describe("calculateFeedratePerLevel", () => {
 
 		expect(result[0]).toBe(result[1]);
 	});
+});
+
+test("corrects calculated feedrates when enabled", async () => {
+	vi.mocked(getUseOutputCorrection).mockResolvedValue(true);
+	const points = [[new Vector3(0, 0, 0), new Vector3(10, 0, 0)]];
+	expect(await calculateFeedratePerLevel(points)).toEqual([3522]);
+});
+test("keeps constant speed unchanged when correction is enabled", async () => {
+	vi.mocked(getUseOutputCorrection).mockResolvedValue(true);
+	vi.mocked(getUseSecondsPerLayer).mockResolvedValue(false);
+	const points = [[new Vector3(0, 0, 0), new Vector3(10, 0, 0)]];
+	expect(await calculateFeedratePerLevel(points)).toEqual([1600]);
 });
